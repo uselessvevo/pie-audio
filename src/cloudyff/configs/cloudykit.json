@@ -1,0 +1,8 @@
+{
+  "entrypoint": "app.main.main",
+  "managers": [
+    "cloudykit.managers.configs.manager.ConfigsManager",
+    "cloudykit.managers.locales.manager.LocalesManager",
+    "cloudykit.managers.assets.manager.AssetsManager"
+  ]
+}

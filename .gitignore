@@ -103,6 +103,7 @@ celerybeat.pid
 
 # Environments
 .env
+.envpy
 .venv
 env/
 venv/
@@ -110,11 +111,11 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
+# Spyder project settings.json
 .spyderproject
 .spyproject
 
-# Rope project settings
+# Rope project settings.json
 .ropeproject
 
 # mkdocs documentation
@@ -127,3 +128,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/cloudyff/assets/themes/dark theme/assets.json
+/cloudyff/assets/themes/dark theme/info.json

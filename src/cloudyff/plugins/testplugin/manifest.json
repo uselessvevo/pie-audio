@@ -1,0 +1,10 @@
+{
+  "name": "testplugin",
+  "title": "Test plugin",
+  "version": "0.0.1",
+  "tags": ["mp3"],
+  "init": "TestPlugin",
+  "requirements": [
+    "requests"
+  ]
+}
