@@ -8,6 +8,9 @@ from cloudykit.utils.modules import import_by_path
 from cloudykit.utils.logger import DummyLogger
 
 
+logger = DummyLogger('PluginsManager')
+
+
 class PluginsManager(IManager):
     """
     Plugin manager is the registry of all app plugins
@@ -15,14 +18,13 @@ class PluginsManager(IManager):
     name = 'plugins'
 
     def __init__(self):
-        self.logger = DummyLogger('PluginsManager')
         self._plugins_instances = dict()
 
     def mount(self, parent=None) -> None:
         plugins = (System.root / 'plugins')
         for plugin in plugins.iterdir():
             if plugin.is_dir() and plugin.name not in ('__pycache__',):
-                parent.logger.log(f'Mounting plugin "{plugin.name}"')
+                logger.log(f'Mounting plugin "{plugin.name}" in {self.__class__.__name__}')
                 plugin_path = System.root / f'plugins/{plugin.name}'
                 plugin_manifest = read_json(str(plugin_path / 'manifest.json'))
                 plugin_inst = import_by_path('plugin', str(plugin_path / 'plugin/plugin.py'))
@@ -37,7 +39,7 @@ class PluginsManager(IManager):
 
         else:
             for plugin in self._plugins_instances.values():
-                self.logger.log()
+                logger.log(f'Unmounting {parent.name} from {self.__class__.__name__}')
                 plugin.unmount()
 
     def reload(self, plugin: str) -> None:
@@ -46,4 +48,4 @@ class PluginsManager(IManager):
             plugin.reload()
 
     def get(self, key, default: Any) -> Any:
-        self._plugins_instances.get(key)
+        return self._plugins_instances.get(key)

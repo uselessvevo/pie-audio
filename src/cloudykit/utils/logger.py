@@ -1,3 +1,6 @@
+import os.path
+from pathlib import Path
+
 import colorama
 from datetime import datetime
 
@@ -13,9 +16,22 @@ class LoggingEnum:
 
 class DummyLogger:
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, root: str = 'logs') -> None:
         self._name = name
         self._format = f'[{datetime.now()} | {name}]'
+        self._file = f'{root}/logs_{datetime.now().date()}.log'
 
     def log(self, message: str, log_level: LoggingEnum = LoggingEnum.INFO):
-        print(f'{log_level}{self._format} {"":<3} {message}{colorama.Style.RESET_ALL}')
+        message = f'{log_level}{self._format} {"":<3} {message}{colorama.Style.RESET_ALL}'
+        print(message)
+        with open(self._file, 'a') as file:
+            file.writelines(f'{message}\n')
+
+    def info(self, message):
+        self.log(message)
+
+    def warn(self, message):
+        self.log(message, LoggingEnum.WARNING)
+
+    def critical(self, message):
+        self.log(message, LoggingEnum.CRITICAL)

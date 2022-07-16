@@ -26,12 +26,6 @@ class SystemManagersRegistry:
 
         return collect
 
-    def init(self, managers: List[IManager] = None) -> None:
-        """ Init managers """
-        managers = managers or self._managers
-        for manager in managers:
-            manager.init()
-
     def destroy(self, managers: List[IManager] = None) -> None:
         """ Destroy managers """
         managers = managers or self._managers

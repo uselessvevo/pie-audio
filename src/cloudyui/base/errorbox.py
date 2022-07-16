@@ -10,7 +10,7 @@ try:
     from PyQt5.QtWidgets import QCheckBox
     from PyQt5.QtWidgets import QPushButton
 
-    def SystemError(err_type: Union[Exception, str], err_value: str, err_traceback: Union[str, list]):
+    def SystemErrorWindow(err_type: Union[Exception, str], err_value: str, err_traceback: Union[str, list]):
         """
         A window will close after it initialization
         """

@@ -4,15 +4,20 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
 from cloudykit.system.manager import System
+from cloudykit.abstracts.component import IComponent
 
 
-class Workbench(QtWidgets.QToolBar):
+class Workbench(IComponent, QtWidgets.QToolBar):
+    name = 'cloudyff_workbench'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, parent) -> None:
+        super().__init__(parent)
+
+        self._parent = parent
+        self.assets = System.assets
         self.trans = System.locales
-        self.files = System.assets
 
+    def init(self):
         self.setMovable(False)
         self.setIconSize(QtCore.QSize(30, 30))
         self.setContextMenuPolicy(Qt.PreventContextMenu)
@@ -24,22 +29,22 @@ class Workbench(QtWidgets.QToolBar):
 
         openFolder = QtWidgets.QToolButton()
         openFolder.setToolTip(self.trans('Open folder'))
-        openFolder.setIcon(QtGui.QIcon(self.files('shared/icons/folder-open.svg')))
+        openFolder.setIcon(QtGui.QIcon(self.assets('shared/icons/folder-open.svg')))
         openFolder.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         search = QtWidgets.QToolButton()
         search.setToolTip(self.trans('Search'))
-        search.setIcon(QtGui.QIcon(self.files('shared/icons/search.svg')))
+        search.setIcon(QtGui.QIcon(self.assets('shared/icons/search.svg')))
         search.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         settings = QtWidgets.QToolButton()
         settings.setToolTip(self.trans('Settings'))
-        settings.setIcon(QtGui.QIcon(self.files('shared/icons/settings.svg')))
+        settings.setIcon(QtGui.QIcon(self.assets('shared/icons/settings.svg')))
         settings.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         runProcess = QtWidgets.QToolButton()
         runProcess.setToolTip(self.trans('Run process'))
-        runProcess.setIcon(QtGui.QIcon(self.files('shared/icons/start.svg')))
+        runProcess.setIcon(QtGui.QIcon(self.assets('shared/icons/start.svg')))
         runProcess.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         spacer = QtWidgets.QWidget()
@@ -51,7 +56,7 @@ class Workbench(QtWidgets.QToolBar):
 
         self.runConsole = QtWidgets.QToolButton()
         self.runConsole.setToolTip(self.trans('Open console'))
-        self.runConsole.setIcon(QtGui.QIcon(self.files('shared/icons/bug.svg')))
+        self.runConsole.setIcon(QtGui.QIcon(self.assets('shared/icons/bug.svg')))
         self.runConsole.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         # Pack all default actions

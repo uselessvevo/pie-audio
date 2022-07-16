@@ -1,26 +1,29 @@
 import abc
+from typing import Any
 
-from PyQt5.QtCore import QObject
 
-
-class IComponent(QObject, abc.ABC):
+class IComponent(abc.ABC):
     name: str
 
     @abc.abstractmethod
-    def init(self):
-        pass
+    def mount(self, parent=None) -> None:
+        """ Mount managers, services """
 
-    def mount(self):
-        pass
+    @abc.abstractmethod
+    def unmount(self, parent=None) -> None:
+        """ Method for object deregistration """
 
-    def unmount(self):
-        pass
+    def set(self, key, *args, **kwargs) -> None:
+        """ Set data by key """
 
-    def reload(self, *args, **kwargs):
-        pass
+    def get(self, key, default: Any = None) -> Any:
+        """ Get data by key """
 
-    def destroy(self):
-        pass
+    def delete(self, key) -> None:
+        """ Delete data by key """
+
+    def reload(self, *args, **kwargs) -> None:
+        """ Reload manager """
 
     def __str__(self) -> str:
         return self.__class__.__name__

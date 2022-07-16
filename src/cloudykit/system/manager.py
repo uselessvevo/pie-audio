@@ -4,11 +4,10 @@ System manager contains:
 * Configuration from `$APP/configs/*.json`
 """
 from pathlib import Path
-from typing import Any, List
 from dotty_dict import Dotty
 
+from cloudykit.objects.registry import ManagersRegistry
 from cloudykit.utils.logger import DummyLogger
-from cloudykit.objects.mixins import ManagersRegistry
 
 
 class SystemManager:
@@ -21,8 +20,8 @@ class SystemManager:
         self._config: Dotty = Dotty({})
 
         # Public attrs
-        self.managers_registry = ManagersRegistry(self)
-        self.logger = DummyLogger('SystemManager')
+        self.managers = ManagersRegistry(self)
+        self.logger = DummyLogger(self.__class__.__name__)
 
         super().__init__()
 

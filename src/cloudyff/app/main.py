@@ -4,12 +4,15 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 from cloudykit.system.manager import System
-from cloudykit.utils.logger import DummyLogger
 from cloudykit.utils.modules import is_debug
 from cloudyui.base.splashcreen import createSplashScreen
 from cloudykit.managers.components.manager import ComponentsManager
 
 from cloudykit.managers.plugins.manager import PluginsManager
+from utils.logger import DummyLogger
+
+
+logger = DummyLogger('CloudyApp')
 
 
 class CloudyApp(QtWidgets.QMainWindow):
@@ -23,7 +26,8 @@ class CloudyApp(QtWidgets.QMainWindow):
 
         self.pluginsManager = PluginsManager()
         self.componentsManager = ComponentsManager()
-        self.logger = DummyLogger('CloudyFF')
+
+        self.setMinimumSize(720, 480)
 
         self.prepareSignals()
         self.prepareStatusBar()

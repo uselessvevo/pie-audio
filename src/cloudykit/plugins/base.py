@@ -5,8 +5,8 @@ from pathlib import Path
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from cloudykit.objects.registry import ManagersRegistry
 from cloudykit.utils.logger import DummyLogger
-from objects.mixins import ManagersRegistry
 
 
 class Plugin(QObject):
@@ -61,7 +61,32 @@ class Plugin(QObject):
 
     @abc.abstractmethod
     def mount(self) -> None:
-        """ Mount (setup) managers, services, etc. """
+        """
+        Mount managers, services, etc.
+
+        In `Plugin` class we're using string import, because all
+        these managers are generic and don't require any additional setup.
+
+        Unless, if you need to do extra preparations for your manager,
+        you can import manager right in the `Plugin.mount` method
+        and do your thing
+
+        For example:
+        >>> from yourapp.managers.cool_manager.manager import CoolManager
+        >>> cool_manager = CoolManager()  # creating instance of our manager
+        >>> cool_manager.extra_method()  # extra preparation method
+        >>> cool_manager.mount()  # basic `mount` method
+
+        But if you're using generic plugins,
+        you just need to pass import strings into ManagersRegistry's `mount` method
+
+        For example:
+        >>> self.managers_registry.mount(
+        >>>     'from cloudykit.managers.assets.manager import AssetsManager',
+        >>>     'from cloudykit.managers.configs.manager import ConfigsManager',
+        >>>     'from cloudykit.managers.locales.manager import LocalesManager'
+        >>> )
+        """
         raise NotImplementedError('Method `mount` must be implemented')
 
     def unmount(self) -> None:

@@ -1,13 +1,10 @@
-from cloudykit.objects.component import IComponent
+from cloudykit.abstracts.component import IComponent
 
 
 class MenuComponent(IComponent):
 
-    def mount(self):
+    def mount(self, parent=None) -> None:
         pass
 
-    def reload(self):
-        pass
-
-    def destroy(self):
+    def unmount(self, parent=None) -> None:
         pass

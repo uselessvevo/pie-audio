@@ -5,19 +5,13 @@ from typing import Any
 class IManager(abc.ABC):
     name: str
 
-    def init(self, *args, **kwargs) -> None:
-        """ Main entrypoint. Call it before `mount` method """
-
-    def destroy(self, *args, **kwargs) -> None:
-        """ Main entrypoint for quiting """
-
     @abc.abstractmethod
     def mount(self, parent=None) -> None:
-        """ Method for objects registration """
+        """ Mount managers, services. A good example is `Plugin/GenericPlugin` """
 
     @abc.abstractmethod
     def unmount(self, parent=None) -> None:
-        """ Method for objects deregistration """
+        """ Method for object deregistration """
 
     def set(self, key, *args, **kwargs) -> None:
         """ Set data by key """
@@ -30,6 +24,9 @@ class IManager(abc.ABC):
 
     def reload(self, *args, **kwargs) -> None:
         """ Reload manager """
+
+    def __call__(self, *args, **kwargs):
+        return self.get(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.__class__.__name__
