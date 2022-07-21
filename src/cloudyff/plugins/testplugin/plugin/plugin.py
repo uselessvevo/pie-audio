@@ -7,5 +7,5 @@ class TestPlugin(GenericPlugin):
     def init(self) -> None:
         pass
 
-    def refresh(self):
+    def refresh(self) -> None:
         pass

@@ -15,12 +15,12 @@ class SystemManager:
     name = 'system'
 
     def __init__(self) -> None:
-        # Private attrs
+        # Protected/privdate attrs
         self._root: Path = None
         self._config: Dotty = Dotty({})
 
         # Public attrs
-        self.managers = ManagersRegistry(self)
+        self.registry = ManagersRegistry(self)
         self.logger = DummyLogger(self.__class__.__name__)
 
         super().__init__()

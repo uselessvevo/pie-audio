@@ -13,6 +13,12 @@ class IComponent(abc.ABC):
     def unmount(self, parent=None) -> None:
         """ Method for object deregistration """
 
+    def register(self, obj: object) -> None:
+        """ Register object in component """
+
+    def refresh(self):
+        """ Refresh widget """
+
     def set(self, key, *args, **kwargs) -> None:
         """ Set data by key """
 
@@ -23,7 +29,10 @@ class IComponent(abc.ABC):
         """ Delete data by key """
 
     def reload(self, *args, **kwargs) -> None:
-        """ Reload manager """
+        """
+        Reload manager and all registered
+        object and their managers
+        """
 
     def __str__(self) -> str:
         return self.__class__.__name__

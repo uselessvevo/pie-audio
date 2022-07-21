@@ -9,7 +9,7 @@ from cloudyui.base.splashcreen import createSplashScreen
 from cloudykit.managers.components.manager import ComponentsManager
 
 from cloudykit.managers.plugins.manager import PluginsManager
-from utils.logger import DummyLogger
+from cloudykit.utils.logger import DummyLogger
 
 
 logger = DummyLogger('CloudyApp')
@@ -60,7 +60,7 @@ class CloudyApp(QtWidgets.QMainWindow):
         self.signalLayoutReady.emit()
 
     def notifyPluginsReady(self):
-        self.statusBar.showMessage('Plugins are ready')
+        self.statusBar.showMessage(System.locales('Plugins are ready'))
 
     def prepareStatusBar(self):
         self.statusBar = QtWidgets.QStatusBar()

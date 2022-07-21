@@ -25,18 +25,31 @@ class PluginsManager(IManager):
         for plugin in plugins.iterdir():
             if plugin.is_dir() and plugin.name not in ('__pycache__',):
                 logger.log(f'Mounting plugin "{plugin.name}" in {self.__class__.__name__}')
+
+                # Reading data from plugin/manifest.json
                 plugin_path = System.root / f'plugins/{plugin.name}'
                 plugin_manifest = read_json(str(plugin_path / 'manifest.json'))
+
+                # Importing needed plugin and manually putting it in `sys.modules`
                 plugin_inst = import_by_path('plugin', str(plugin_path / 'plugin/plugin.py'))
                 sys.modules[plugin_manifest.get('init')] = plugin_inst
+
+                # Initializing class
                 plugin_inst = getattr(plugin_inst, plugin_manifest.get('init'))(parent)
                 plugin_inst.mount()
+
+                # Hashing plugin instance
                 self._plugins_instances[plugin_inst.name] = plugin_inst
 
-    def unmount(self, parent=None) -> None:
+    def unmount(self, parent=None, full_house=False) -> None:
+        """
+        Unmount managers, services in parent object or all at once
+        Args:
+            parent (object): parent object, f.e: `Plugin`
+            full_house (bool): reload all managers, services from all instances
+        """
         if parent:
             parent.unmount()
-
         else:
             for plugin in self._plugins_instances.values():
                 logger.log(f'Unmounting {parent.name} from {self.__class__.__name__}')

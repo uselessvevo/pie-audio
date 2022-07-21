@@ -1,8 +1,9 @@
 {
   "entrypoint": "app.main.main",
   "managers": [
-    "cloudykit.managers.configs.manager.ConfigsManager",
-    "cloudykit.managers.locales.manager.LocalesManager",
-    "cloudykit.managers.assets.manager.AssetsManager"
+    {"import": "cloudykit.managers.configs.manager.ConfigsManager", "mount": true},
+    {"import": "cloudykit.managers.locales.manager.LocalesManager", "mount": true},
+    {"import": "cloudykit.managers.assets.manager.AssetsManager", "mount": true},
+    {"import": "cloudykit.managers.plugins.manager.PluginsManager", "mount": false}
   ]
 }

@@ -1,12 +1,18 @@
-from cloudykit.plugins.base import Plugin
+from cloudykit.plugins.base import BasePlugin
+from cloudykit.plugins.mixins import MenuMixin
+from cloudykit.plugins.mixins import ActionMixin
+from cloudykit.plugins.mixins import ToolButtonMixin
+from cloudykit.plugins.mixins import ManagersMixin
 
 
-class GenericPlugin(Plugin):
+class GenericPlugin(
+    ManagersMixin,
+    MenuMixin,
+    ToolButtonMixin,
+    ActionMixin,
+    BasePlugin,
+):
     """ Generic plugin """
 
-    def mount(self) -> None:
-        self.managers_registry.mount(
-            'cloudykit.managers.assets.manager.AssetsManager',
-            'cloudykit.managers.configs.manager.ConfigsManager',
-            'cloudykit.managers.locales.manager.LocalesManager'
-        )
+    def init(self) -> None:
+        pass

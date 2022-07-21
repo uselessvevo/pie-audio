@@ -1,4 +1,3 @@
-import abc
 import sys
 import inspect
 from pathlib import Path
@@ -9,8 +8,9 @@ from cloudykit.objects.registry import ManagersRegistry
 from cloudykit.utils.logger import DummyLogger
 
 
-class Plugin(QObject):
+class BasePlugin(QObject):
     name: str = None
+    config: "BaseConfigPage" = None
 
     """
     Plugin signals:
@@ -37,32 +37,32 @@ class Plugin(QObject):
     def __init__(self, parent: QObject, *args, **kwargs) -> None:
         super().__init__(parent)
 
-        # Set main attributes
+        # Public attributes
         self.parent = parent
         self.shortcut = None
         self.widget = None
-
         self.is_registered = False
         # Setting plugin's root like this because we're importing it by `importlib`
         self.root = Path(inspect.getfile((sys.modules.get(self.__class__.__name__)))).parent
 
-        # Setup logger
+        # Private, protected attributes
         self.logger = DummyLogger(self.__class__.__name__)
+        self.registry = ManagersRegistry(self, as_mixin=True)
 
-        self.managers_registry = ManagersRegistry(self)
+    # Ui methods
 
-    @abc.abstractmethod
     def init(self) -> None:
+        """ Method for widget initialization """
         raise NotImplementedError('Method `init` must be implemented')
 
-    @abc.abstractmethod
     def refresh(self):
-        raise NotImplementedError('Method `refresh` must be implemented')
+        """ Refresh widget method """
 
-    @abc.abstractmethod
+    # Managers, services methods
+
     def mount(self) -> None:
         """
-        Mount managers, services, etc.
+        Optional method for mounting managers, services, etc.
 
         In `Plugin` class we're using string import, because all
         these managers are generic and don't require any additional setup.
@@ -72,7 +72,7 @@ class Plugin(QObject):
         and do your thing
 
         For example:
-        >>> from yourapp.managers.cool_manager.manager import CoolManager
+        >>> from yourapp.registry.cool_manager.manager import CoolManager
         >>> cool_manager = CoolManager()  # creating instance of our manager
         >>> cool_manager.extra_method()  # extra preparation method
         >>> cool_manager.mount()  # basic `mount` method
@@ -81,21 +81,21 @@ class Plugin(QObject):
         you just need to pass import strings into ManagersRegistry's `mount` method
 
         For example:
-        >>> self.managers_registry.mount(
+        >>> self.registry.mount(
         >>>     'from cloudykit.managers.assets.manager import AssetsManager',
         >>>     'from cloudykit.managers.configs.manager import ConfigsManager',
         >>>     'from cloudykit.managers.locales.manager import LocalesManager'
         >>> )
         """
-        raise NotImplementedError('Method `mount` must be implemented')
 
     def unmount(self) -> None:
-        """ Unmount managers, services, etc. """
-        self.managers_registry.unmount()
+        """ Optional method for mounting managers, services, etc. """
 
-    def reload(self):
-        """ Reload services and refresh widget """
-        self.managers_registry.reload()
+    # Etc. methods
+
+    def reload(self) -> None:
+        """ Predefined method for reloading services and refresh widget """
+        self.registry.reload()
         self.refresh()
 
     def __str__(self) -> str:

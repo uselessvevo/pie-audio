@@ -23,7 +23,10 @@ def setup_system_manager(root: str) -> None:
     managers = read_json(System.root / 'configs/cloudykit.json')
     managers = managers.get('managers')
 
-    System.managers.mount(*managers)
+    if not managers:
+        raise RuntimeError('No managers were found')
+
+    System.registry.mount(*managers)
 
 
 def get_qt_app(*args, **kwargs):
