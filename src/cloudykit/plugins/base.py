@@ -78,7 +78,7 @@ class BasePlugin(QObject):
         >>> cool_manager.mount()  # basic `mount` method
 
         But if you're using generic plugins,
-        you just need to pass import strings into ManagersRegistry's `mount` method
+        you need to pass import strings into ManagersRegistry's `mount` method
 
         For example:
         >>> self.registry.mount(
