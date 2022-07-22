@@ -32,6 +32,3 @@ class AssetsManager(IManager):
         for file in (parent.root / self._assets_folder / 'themes' / self._theme).iterdir():
             if file.is_dir():
                 pass
-
-    def unmount(self, parent=None) -> None:
-        pass
