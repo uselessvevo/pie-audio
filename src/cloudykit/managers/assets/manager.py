@@ -9,8 +9,10 @@ class AssetsManager(IManager):
 
     def __init__(self) -> None:
         self._dictionary = dict()
+        self._theme = System.config.get('user.theme')
+        self._assets_folder = System.config.get('assets.assets_folder', 'assets')
 
-    def _get_assets(self, root: Path) -> None:
+    def mount(self, parent=None) -> None:
         """
         Assets folder structure:
 
@@ -24,10 +26,12 @@ class AssetsManager(IManager):
         ......... theme.template.qss - theme template file
         ......... variables.json - variables for theme.template.qss
         """
-        pass
+        if not self._theme:
+            return
 
-    def mount(self, parent=None) -> None:
-        self._get_assets(parent.root / 'assets')
+        for file in (parent.root / self._assets_folder / 'themes' / self._theme).iterdir():
+            if file.is_dir():
+                pass
 
     def unmount(self, parent=None) -> None:
         pass

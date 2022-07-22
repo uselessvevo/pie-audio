@@ -1,9 +1,15 @@
 {
   "entrypoint": "app.main.main",
+  "required_configs": [
+    "assets.json",
+    "cloudyui.json",
+    "locales.json"
+  ],
   "managers": [
     {"import": "cloudykit.managers.configs.manager.ConfigsManager", "mount": true},
     {"import": "cloudykit.managers.locales.manager.LocalesManager", "mount": true},
     {"import": "cloudykit.managers.assets.manager.AssetsManager", "mount": true},
+    {"import": "cloudykit.managers.userconfig.manager.UserConfigManager", "mount": true},
     {"import": "cloudykit.managers.plugins.manager.PluginsManager", "mount": false}
   ]
 }
