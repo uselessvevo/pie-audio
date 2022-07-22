@@ -46,7 +46,7 @@ def get_qt_app(*args, **kwargs):
 
 def main():
     setup_system_manager(os.path.dirname(__file__))
-    sys.excepthook = except_hook
+    # sys.excepthook = except_hook
     import_by_string(System.config.get('cloudykit.entrypoint'))()
 
 

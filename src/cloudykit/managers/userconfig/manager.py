@@ -36,3 +36,7 @@ class UserConfigManager(IManager):
 
     def get(self, key, default: Any = None) -> Any:
         return self._dictionary.get(key, default)
+
+    @property
+    def root(self):
+        return self._user_folder

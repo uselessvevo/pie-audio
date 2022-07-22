@@ -82,7 +82,16 @@ class CloudyApp(QtWidgets.QMainWindow):
 
 
 def main() -> None:
+    """ Main entrypoint """
+    # Define main Qt Application
     app = QtWidgets.QApplication(sys.argv)
+    if not System.userconfig.root.exists():
+        from .wizard import SetupWizard
+        wizard = SetupWizard()
+        wizard.show()
+        sys.exit(app.exec_())
+
+    # Define splash screen widget
     splash = None
     if not is_debug():
         splash = createSplashScreen(
@@ -93,8 +102,10 @@ def main() -> None:
         )
         splash.show()
 
+    # Define main app instance
     cloudy_app = CloudyApp()
     cloudy_app.show()
+
     if splash:
         splash.close()
     sys.exit(app.exec_())
