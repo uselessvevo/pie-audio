@@ -93,7 +93,7 @@ def main() -> None:
 
     # Define splash screen widget
     splash = None
-    if not is_debug():
+    if not is_debug() and (System.root / 'branding/splash.svg').exists():
         splash = createSplashScreen(
             path=System.root / 'branding/splash.svg',
             width=720,
