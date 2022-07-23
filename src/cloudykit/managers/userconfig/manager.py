@@ -18,8 +18,6 @@ class UserConfigManager(IManager):
         self._user_folder = Path(os.path.expanduser('~'))
 
     def mount(self, parent=None) -> None:
-        if not (self._user_folder / '.crabs').exists():
-            (self._user_folder / '.crabs').mkdir()
         for config in (self._user_folder / '.crabs').rglob('*.json'):
             if not self._dictionary.get(config.name):
                 self._dictionary[config.stem] = {}

@@ -3,14 +3,14 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
-from cloudykit.system.manager import System
+from cloudykit.managers.system.manager import System
 from cloudykit.utils.modules import is_debug
 from cloudyui.base.splashcreen import createSplashScreen
 from cloudykit.managers.components.manager import ComponentsManager
 
 from cloudykit.managers.plugins.manager import PluginsManager
 from cloudykit.utils.logger import DummyLogger
-
+from utils.qt import getQtApp
 
 logger = DummyLogger('CloudyApp')
 
@@ -84,12 +84,7 @@ class CloudyApp(QtWidgets.QMainWindow):
 def main() -> None:
     """ Main entrypoint """
     # Define main Qt Application
-    app = QtWidgets.QApplication(sys.argv)
-    if not System.userconfig.root.exists():
-        from .wizard import SetupWizard
-        wizard = SetupWizard()
-        wizard.show()
-        sys.exit(app.exec_())
+    app = getQtApp(sys.argv)
 
     # Define splash screen widget
     splash = None

@@ -2,7 +2,7 @@ import sys
 from typing import Any
 
 from cloudykit.abstracts.manager import IManager
-from cloudykit.system.manager import System
+from cloudykit.managers.system.manager import System
 from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_path
 from cloudykit.utils.logger import DummyLogger

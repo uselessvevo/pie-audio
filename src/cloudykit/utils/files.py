@@ -25,7 +25,7 @@ def read_json(file: Union[str, Path], hang_on_error: bool = True, default: bool 
             raise err
 
 
-def write_json(file: Path, data: Union[dict, list], mode: str = 'w'):
+def write_json(file: str, data: Union[dict, list], mode: str = 'w'):
     try:
         data = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False)
         with open(file, mode, encoding='utf-8') as output:

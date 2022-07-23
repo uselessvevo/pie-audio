@@ -1,7 +1,7 @@
 from dotty_dict import Dotty
 
 from cloudykit.abstracts.manager import IManager
-from cloudykit.system.manager import System
+from cloudykit.managers.system.manager import System
 from cloudykit.utils.files import read_json
 
 
@@ -10,7 +10,7 @@ class LocalesManager(IManager):
 
     def __init__(self) -> None:
         self._locale = System.config.get(
-            key='user.current_locale',
+            key='user.locale',
             default=System.config.get('locales.default_locale')
         )
         self._dictionary: Dotty = Dotty({})

@@ -9,7 +9,7 @@
     {"import": "cloudykit.managers.configs.manager.ConfigsManager", "mount": true},
     {"import": "cloudykit.managers.locales.manager.LocalesManager", "mount": true},
     {"import": "cloudykit.managers.assets.manager.AssetsManager", "mount": true},
-    {"import": "cloudykit.managers.userconfig.manager.UserConfigManager", "mount": true},
+    {"import": "cloudykit.managers.userconfig.manager.UserConfigManager", "mount": false},
     {"import": "cloudykit.managers.plugins.manager.PluginsManager", "mount": false}
   ]
 }

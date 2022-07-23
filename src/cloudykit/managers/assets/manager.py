@@ -1,7 +1,5 @@
-from pathlib import Path
-
 from cloudykit.abstracts.manager import IManager
-from cloudykit.system.manager import System
+from cloudykit.managers.system.manager import System
 
 
 class AssetsManager(IManager):

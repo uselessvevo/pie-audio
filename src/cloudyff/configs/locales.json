@@ -1,4 +1,7 @@
 {
   "default_locale": "en-US",
-  "locales": ["en-US", "ru-RU"]
+  "locales": {
+    "en-US": "English",
+    "ru-RU": "Русский"
+  }
 }

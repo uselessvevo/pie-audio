@@ -2,10 +2,11 @@ import os
 import sys
 import traceback
 
-from cloudykit.system.manager import System
+from cloudykit.managers.system.manager import System
 from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_string
 from cloudyui.base.errorbox import SystemErrorWindow
+from cloudyui.utils.qt import getQtApp
 
 
 def except_hook(exc_type, exc_value, exc_traceback):
@@ -18,35 +19,34 @@ def except_hook(exc_type, exc_value, exc_traceback):
     SystemErrorWindow(exc_type, exc_value, traceback_collect)
 
 
-def setup_system_manager(root: str) -> None:
+def check_user_crabs() -> bool:
+    if System.user_root.exists():
+        if not all((System.user_root / i).exists() for i in ('assets.json', 'locales.json')):
+            return False
+
+
+def setup_managers(root: str) -> None:
     System.mount(root)
-    managers = read_json(System.root / 'configs/cloudykit.json')
-    managers = managers.get('managers')
+    config = read_json(System.root / 'configs/cloudykit.json')
+    managers = config.get('managers')
 
     if not managers:
         raise RuntimeError('No managers were found')
 
     System.registry.mount(*managers)
 
+    if not check_user_crabs():
+        app = getQtApp()
+        from wizard import SetupWizard
 
-def get_qt_app(*args, **kwargs):
-    from PyQt5 import QtWidgets
-    from PyQt5.QtCore import Qt
-
-    app = QtWidgets.QApplication.instance()
-    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-
-    if app is None:
-        if not args:
-            args = ([''],)
-        app = QtWidgets.QApplication(*args, **kwargs)
-    return app
+        wizard = SetupWizard()
+        wizard.show()
+        sys.exit(app.exec_())
 
 
 def main():
-    setup_system_manager(os.path.dirname(__file__))
-    # sys.excepthook = except_hook
+    setup_managers(os.path.dirname(__file__))
+    sys.excepthook = except_hook
     import_by_string(System.config.get('cloudykit.entrypoint'))()
 
 
