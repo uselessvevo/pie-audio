@@ -53,11 +53,11 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
+        self._parent = parent
         ffmpegPath = System.userconfig.get('ffmpeg.ffmpeg_path')
 
         self.lineEdit = QtWidgets.QLineEdit()
-        if ffmpegPath:
-            self.lineEdit.setText(ffmpegPath)
+        self.lineEdit.setDisabled(True)
         self.lineEdit.setStyleSheet('QLineEdit{font-size: 15pt;}')
 
         self.lineEditButton = QtWidgets.QToolButton()
@@ -69,6 +69,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
             }
         ''')
         self.lineEditButton.setText('>')
+        self.lineEditButton.clicked.connect(self.selectFfmpegPath)
 
         localeLabel = QtWidgets.QLabel('Setup ffmpeg')
         localeLabel.setStyleSheet('QLabel{font-size: 25pt; padding-bottom: 20px;}')
@@ -82,8 +83,21 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
         layout.addLayout(ffmpegHBox)
         self.setLayout(layout)
 
+        parent.button(QtWidgets.QWizard.NextButton).clicked.connect(self.checkFfmpegPath)
+
+    def checkFfmpegPath(self):
+        pass
+
+    def selectFfmpegPath(self):
+        fileDialog = QtWidgets.QFileDialog().getOpenFileName(
+            self._parent,
+            directory=str(System.user_root)
+        )
+        if fileDialog:
+            print(fileDialog)
+
     def getResult(self):
-        return
+        return self.lineEdit.text()
 
 
 class FinishWizardPage(QtWidgets.QWizardPage):
@@ -98,11 +112,16 @@ class SetupWizard(QtWidgets.QWizard):
         super().__init__(parent)
         self.setWindowTitle('Setup wizard')
         self.resize(640, 380)
+        self.setOptions(
+            QtWidgets.QWizard.NoBackButtonOnLastPage
+            | QtWidgets.QWizard.NoCancelButtonOnLastPage
+        )
 
         self.pages = (
             LocaleWizardPage(self),
             ThemeWizardPage(self),
             FfmpegWizardPage(self),
+            FinishWizardPage(self)
         )
 
         for page in self.pages:
@@ -117,4 +136,5 @@ class SetupWizard(QtWidgets.QWizard):
 
     def onFinish(self):
         for page in self.pages:
-            print(page.getResult())
+            if hasattr(page, 'getResult'):
+                print(page.getResult())
