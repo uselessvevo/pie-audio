@@ -8,7 +8,7 @@ from cloudykit.utils.logger import DummyLogger
 logger = DummyLogger('ManagersRegistry')
 
 
-class ManagersRegistry:
+class ManagerRegistry:
 
     def __init__(
         self,
@@ -22,23 +22,23 @@ class ManagersRegistry:
         self._managers_names_set: Set[str] = set(managers or [])
 
     def _mount_from_string(self, parent, manager: str) -> None:
-        manager_inst = import_by_string(manager)()
+        manager_inst = import_by_string(manager)(self._parent)
         logger.log(f'Mounting "{manager_inst.__class__.__name__}" to "{self._parent.__class__.__name__}"')
-        manager_inst.mount(self._parent)
+        manager_inst.mount()
         self._managers_inst_set.add(manager_inst)
         setattr(parent, manager_inst.name, manager_inst)
 
     def _mount_from_class(self, parent, manager_inst: IManager) -> None:
-        manager_inst.mount(self._parent)
+        manager_inst.mount()
         logger.log(f'Mounting "{manager_inst.__class__.__name__}" to "{self._parent.__class__.__name__}"')
         self._managers_inst_set.add(manager_inst)
         setattr(parent, manager_inst.name, manager_inst)
 
     def _mount_from_dict(self, parent, manager: dict) -> None:
-        manager_inst = import_by_string(manager.get('import'))()
+        manager_inst = import_by_string(manager.get('import'))(self._parent)
         logger.log(f'Mounting "{manager_inst.__class__.__name__}" to "{self._parent.__class__.__name__}"')
         if manager.get('mount') is True:
-            manager_inst.mount(self._parent)
+            manager_inst.mount()
 
         self._managers_inst_set.add(manager_inst)
         setattr(parent, manager_inst.name, manager_inst)
@@ -47,8 +47,9 @@ class ManagersRegistry:
         """
         Mount (add) managers by import string or instance of manager
         For example:
-        >>> self.registry.mount('path.to.manager.ManagerClass')
-        >>> self.managers_regsitry.mount(ManagerClass())
+        >>> self.registry = ManagerRegistry()
+        >>> self.registry.mount()
+        >>> self.managers_regsitry.mount()
         """
         parent = self if self._as_mixin else self._parent
 
@@ -68,12 +69,12 @@ class ManagersRegistry:
         managers = set(*managers)
 
         for manager_inst in managers:
-            manager_inst.unmount(self._parent)
+            manager_inst.unmount()
             logger.log(f'Unmounting "{self.__class__.__name__}" to {manager_inst.__class__.__name__}')
             delattr(parent, manager_inst.name)
 
-    def reload(self, *managers: Tuple[IManager]):
-        managers = set(*managers)
+    def reload(self, *managers: Tuple[IManager], full_house: bool = False):
+        managers = self._managers_inst_set if full_house else set(*managers)
 
         for manager_inst in managers:
             logger.log(f'Reloading ""{manager_inst.__class__.__name__}""')
@@ -83,7 +84,7 @@ class ManagersRegistry:
         managers = set(*managers)
 
         for manager_inst in managers:
-            logger.log(f'Reloading ""{manager_inst.__class__.__name__}""')
+            logger.log(f'Reloading "{manager_inst.__class__.__name__}"')
             manager_inst.destroy()
 
     def __getattr__(self, item):

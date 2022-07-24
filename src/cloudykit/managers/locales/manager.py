@@ -8,21 +8,26 @@ from cloudykit.utils.files import read_json
 class LocalesManager(IManager):
     name = 'locales'
 
-    def __init__(self) -> None:
-        self._locale = System.config.get(
-            key='user.locale',
+    def __init__(self, parent=None) -> None:
+        self._parent = parent
+        self._locale = System.userconfig.get(
+            key='locales.locale',
             default=System.config.get('locales.default_locale')
         )
         self._dictionary: Dotty = Dotty({})
 
-    def mount(self, parent=None) -> None:
+    def mount(self) -> None:
         """ Mount object """
-        files = (parent.root / 'locales' / self._locale).rglob('*.json')
+        files = (self._parent.root / 'locales' / self._locale).rglob('*.json')
         for file in files:
             self._dictionary.update(**read_json(file))
 
-    def unmount(self, parent=None) -> None:
-        self._dictionary.pop(parent.name)
+    def unmount(self, *args, **kwargs) -> None:
+        self._dictionary = Dotty({})
+
+    def reload(self, *args, **kwargs) -> None:
+        self.unmount()
+        self.mount()
         
     def get(self, key: str) -> str:
         return self._dictionary.get(key, key)

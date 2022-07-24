@@ -5,12 +5,13 @@ from cloudykit.managers.system.manager import System
 class AssetsManager(IManager):
     name = 'assets'
 
-    def __init__(self) -> None:
+    def __init__(self, parent=None) -> None:
+        self._parent = parent
         self._dictionary = dict()
         self._theme = System.config.get('user.theme')
         self._assets_folder = System.config.get('assets.assets_folder', 'assets')
 
-    def mount(self, parent=None) -> None:
+    def mount(self) -> None:
         """
         Assets folder structure:
 
@@ -27,6 +28,6 @@ class AssetsManager(IManager):
         if not self._theme:
             return
 
-        for file in (parent.root / self._assets_folder / 'themes' / self._theme).iterdir():
+        for file in (self._parent.root / self._assets_folder / 'themes' / self._theme).iterdir():
             if file.is_dir():
                 pass

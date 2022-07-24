@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from dotty_dict import Dotty
 
-from cloudykit.objects.registry import ManagersRegistry
+from cloudykit.objects.registry import ManagerRegistry
 from cloudykit.utils.logger import DummyLogger
 from cloudykit.utils.files import read_json
 
@@ -19,19 +19,16 @@ class SystemManager:
     def __init__(self) -> None:
         # Protected/private attrs
         self._root: Path = None
-        self._user_root = Path(os.path.expanduser('~')) / '.crabs'
         self._config: Dotty = Dotty({})
 
         # Public attrs
-        self.registry = ManagersRegistry(self)
+        self.registry = ManagerRegistry(self)
         self.logger = DummyLogger(self.__class__.__name__)
 
         super().__init__()
 
-    def mount(self, root: str, user_root: str = None) -> None:
+    def mount(self, root: str) -> None:
         self._root = Path(root)
-        if user_root:
-            self._user_root = user_root
 
         # Read configs and check if all required configs are in directory
         config = read_json(str(self._root / 'configs/cloudykit.json'))
@@ -47,10 +44,6 @@ class SystemManager:
     @property
     def root(self):
         return self._root
-
-    @property
-    def user_root(self):
-        return self._user_root
 
 
 System = SystemManager()

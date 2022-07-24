@@ -12,7 +12,7 @@ class ManagersMixin:
     )
 
     def mount(self) -> None:
-        self.registry.mount(*self.managers)
+        self.registry.mount()
 
     def unmount(self) -> None:
         self.registry.unmount()

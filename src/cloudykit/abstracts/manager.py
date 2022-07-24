@@ -6,10 +6,10 @@ class IManager(abc.ABC):
     name: str
 
     @abc.abstractmethod
-    def mount(self, parent=None) -> None:
+    def mount(self) -> None:
         """ Mount managers, services. A good example is `Plugin/GenericPlugin` """
 
-    def unmount(self, parent=None) -> None:
+    def unmount(self, *args, **kwargs) -> None:
         """ Method for object deregistration """
 
     def set(self, key, *args, **kwargs) -> None:

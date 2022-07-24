@@ -1,5 +1,5 @@
 import sys
-from typing import Any
+from typing import Any, Tuple
 
 from cloudykit.abstracts.manager import IManager
 from cloudykit.managers.system.manager import System
@@ -17,10 +17,11 @@ class PluginsManager(IManager):
     """
     name = 'plugins'
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        self._parent = parent
         self._plugins_instances = dict()
 
-    def mount(self, parent=None) -> None:
+    def mount(self) -> None:
         plugins = (System.root / 'plugins')
         for plugin in plugins.iterdir():
             if plugin.is_dir() and plugin.name not in ('__pycache__',):
@@ -35,30 +36,33 @@ class PluginsManager(IManager):
                 sys.modules[plugin_manifest.get('init')] = plugin_inst
 
                 # Initializing class
-                plugin_inst = getattr(plugin_inst, plugin_manifest.get('init'))(parent)
+                plugin_inst = getattr(plugin_inst, plugin_manifest.get('init'))(self._parent)
                 plugin_inst.mount()
 
                 # Hashing plugin instance
                 self._plugins_instances[plugin_inst.name] = plugin_inst
 
-    def unmount(self, parent=None, full_house=False) -> None:
+    def unmount(self, plugin: "Plugin" = None, full_house: bool = False) -> None:
         """
         Unmount managers, services in parent object or all at once
         Args:
-            parent (object): parent object, f.e: `Plugin`
+            plugin (object):
             full_house (bool): reload all managers, services from all instances
         """
-        if parent:
-            parent.unmount()
-        else:
+        if plugin and full_house:
+            raise RuntimeError('Can\'t use `plugin` and `full_house` together')
+
+        if plugin:
+            plugin.unmount()
+        elif full_house:
             for plugin in self._plugins_instances.values():
-                logger.log(f'Unmounting {parent.name} from {self.__class__.__name__}')
+                logger.log(f'Unmounting {plugin.name} from {self.__class__.__name__}')
                 plugin.unmount()
 
-    def reload(self, plugin: str) -> None:
-        plugins = self._plugins_instances.get(plugin, self._plugins_instances)
-        for name, plugin in plugins.items():
-            plugin.reload()
+    def reload(self, *plugins: Tuple[str], full_house: bool = False) -> None:
+        plugins = self._plugins_instances.keys() if full_house else plugins
+        for plugin in plugins:
+            self._plugins_instances.get(plugin)
 
     def get(self, key, default: Any) -> Any:
         return self._plugins_instances.get(key)

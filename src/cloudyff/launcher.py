@@ -7,6 +7,7 @@ from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_string
 from cloudyui.base.errorbox import SystemErrorWindow
 from cloudyui.utils.qt import getQtApp
+from cloudykit.managers.userconfig.utils import check_crabs, restore_crabs
 
 
 def except_hook(exc_type, exc_value, exc_traceback):
@@ -19,12 +20,6 @@ def except_hook(exc_type, exc_value, exc_traceback):
     SystemErrorWindow(exc_type, exc_value, traceback_collect)
 
 
-def check_user_crabs() -> bool:
-    if System.user_root.exists():
-        if not all((System.user_root / i).exists() for i in ('assets.json', 'locales.json')):
-            return False
-
-
 def setup_managers(root: str) -> None:
     System.mount(root)
     config = read_json(System.root / 'configs/cloudykit.json')
@@ -35,7 +30,7 @@ def setup_managers(root: str) -> None:
 
     System.registry.mount(*managers)
 
-    if not check_user_crabs():
+    if not check_crabs(System.userconfig.root):
         app = getQtApp()
         from wizard import SetupWizard
 

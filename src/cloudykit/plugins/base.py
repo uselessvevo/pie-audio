@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from cloudykit.objects.registry import ManagersRegistry
+from cloudykit.objects.registry import ManagerRegistry
 from cloudykit.utils.logger import DummyLogger
 
 
@@ -47,7 +47,7 @@ class BasePlugin(QObject):
 
         # Private, protected attributes
         self.logger = DummyLogger(self.__class__.__name__)
-        self.registry = ManagersRegistry(self, as_mixin=True)
+        self.registry = ManagerRegistry(self, as_mixin=True)
 
     # Ui methods
 
@@ -81,11 +81,7 @@ class BasePlugin(QObject):
         you need to pass import strings into ManagersRegistry's `mount` method
 
         For example:
-        >>> self.registry.mount(
-        >>>     'from cloudykit.managers.assets.manager import AssetsManager',
-        >>>     'from cloudykit.managers.configs.manager import ConfigsManager',
-        >>>     'from cloudykit.managers.locales.manager import LocalesManager'
-        >>> )
+        >>> self.registry.mount()
         """
 
     def unmount(self) -> None:

@@ -77,7 +77,7 @@ class CloudyApp(QtWidgets.QMainWindow):
 
     def preparePlugins(self) -> None:
         """ Prepare all (or selected) plugins """
-        self.pluginsManager.mount(self)
+        self.pluginsManager.mount()
         self.signalPluginsReady.emit()
 
 

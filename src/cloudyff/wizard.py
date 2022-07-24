@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from cloudykit.utils.files import read_json
+
 from cloudykit.managers.system.manager import System
 
 
@@ -7,14 +7,19 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
-        locales = System.config.get('locales.locales')
+        self._parent = parent
+        self._locales = System.config.get('locales.locales')
+        self._cur_locale = System.userconfig.get('locales.locale')
+        self._locales_rev = {v: k for (k, v) in self._locales.items()}
+        self._cur_locale_rev = self._locales.get(self._cur_locale)
 
         self.comboBox = QtWidgets.QComboBox()
         self.comboBox.setStyleSheet('QComboBox{font-size: 12pt;}')
-        self.comboBox.addItems(locales.keys())
+        self.comboBox.insertItem(0, self._locales.pop(self._cur_locale))
+        self.comboBox.addItems([self._locales.get(i) for (i, _) in self._locales.items()])
         self.comboBox.currentIndexChanged.connect(self.getResult)
 
-        localeLabel = QtWidgets.QLabel('Select locale')
+        localeLabel = QtWidgets.QLabel(System.locales('Select locale'))
         localeLabel.setStyleSheet('QLabel{font-size: 25pt; padding-bottom: 20px;}')
 
         layout = QtWidgets.QVBoxLayout()
@@ -23,7 +28,12 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         self.setLayout(layout)
 
     def getResult(self):
-        return self.comboBox.currentText()
+        sel_locale = self._locales_rev.get(self.comboBox.currentText())
+        if self._cur_locale != sel_locale:
+            System.userconfig.save('locales', {'locale': sel_locale})
+            # TODO: App need to be restarted
+            QtWidgets.QApplication.instance().quit()
+        return sel_locale
 
 
 class ThemeWizardPage(QtWidgets.QWizardPage):
@@ -91,7 +101,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
     def selectFfmpegPath(self):
         fileDialog = QtWidgets.QFileDialog().getOpenFileName(
             self._parent,
-            directory=str(System.user_root)
+            directory=str(System.userconfig.root)
         )
         if fileDialog:
             print(fileDialog)

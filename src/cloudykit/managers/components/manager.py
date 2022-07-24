@@ -4,13 +4,14 @@ from cloudykit.abstracts.manager import IManager
 class ComponentsManager(IManager):
     name = 'components'
 
-    def __init__(self) -> None:
+    def __init__(self, parent=None) -> None:
+        self._parent = parent
         self._components: dict = {}
 
-    def mount(self, parent=None) -> None:
+    def mount(self) -> None:
         pass
 
-    def unmount(self, parent=None) -> None:
+    def unmount(self, *args, **kwargs) -> None:
         pass
 
     def reload(self, *args, **kwargs) -> None:

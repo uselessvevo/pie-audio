@@ -21,5 +21,6 @@
     "File not found": "Файл не найден",
     "Menu": "Меню",
     "Error": "Ошибка",
-    "Plugins are ready": "Плагины готовы"
+    "Plugins are ready": "Плагины готовы",
+    "Select locale": "Выберите язык"
 }

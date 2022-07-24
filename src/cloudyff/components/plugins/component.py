@@ -10,7 +10,7 @@ class PluginsComponent(IComponent):
         self._pluginManager = PluginsManager()
 
     def mount(self):
-        self._pluginManager.mount(self._parent)
+        self._pluginManager.mount()
 
     def init(self):
         pass

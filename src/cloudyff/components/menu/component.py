@@ -1,12 +1,12 @@
 from cloudykit.abstracts.component import IComponent
-from cloudykit.objects.registry import ManagersRegistry
+from cloudykit.objects.registry import ManagerRegistry
 
 
 class MenuComponent(IComponent):
     name = 'cloudyff_menu'
 
     def __init__(self, parent=None) -> None:
-        self._managers = ManagersRegistry(self, as_mixin=True)
+        self._managers = ManagerRegistry(self, as_mixin=True)
 
     def mount(self, parent=None) -> None:
         self._managers.mount(
