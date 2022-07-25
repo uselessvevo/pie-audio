@@ -8,6 +8,7 @@ from cloudykit.abstracts.manager import IManager
 from cloudykit.utils.files import read_json, write_json
 from cloudykit.observers.filesystem import FileSystemObserver
 from cloudykit.utils.logger import DummyLogger
+from cloudykit.managers.system.manager import System
 
 
 logger = DummyLogger('UserConfigManager')
@@ -22,6 +23,16 @@ class UserConfigManager(IManager):
         self._observer = FileSystemObserver()
         self._user_folder = Path(os.path.expanduser('~'), '.crabs')
         logger.info(f'User folder is "{self._user_folder}"')
+
+    def restore_crabs(self):
+        if not self._user_folder.exists():
+            self._user_folder.mkdir()
+
+        if self._user_folder.exists():
+            files = tuple(map(self._user_folder.joinpath, System.config.get('cloudykit.userconfig').keys()))
+            files_dict = System.config.get('cloudykit.userconfig')
+            for file in files:
+                write_json(str(file), files_dict.get(file.name))
 
     def mount(self) -> None:
         for config in self._user_folder.rglob('*.json'):

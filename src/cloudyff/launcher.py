@@ -7,7 +7,6 @@ from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_string
 from cloudyui.base.errorbox import SystemErrorWindow
 from cloudyui.utils.qt import getQtApp
-from cloudykit.managers.userconfig.utils import check_crabs, restore_crabs
 
 
 def except_hook(exc_type, exc_value, exc_traceback):
@@ -30,7 +29,7 @@ def setup_managers(root: str) -> None:
 
     System.registry.mount(*managers)
 
-    if not check_crabs(System.userconfig.root):
+    if not System.userconfig.root.exists():
         app = getQtApp()
         from wizard import SetupWizard
 

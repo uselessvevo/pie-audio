@@ -18,8 +18,8 @@ class SystemManager:
 
     def __init__(self) -> None:
         # Protected/private attrs
-        self._root: Path = None
         self._config: Dotty = Dotty({})
+        self._root: Path = None
 
         # Public attrs
         self.registry = ManagerRegistry(self)

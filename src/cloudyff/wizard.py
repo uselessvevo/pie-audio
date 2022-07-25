@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 
 from cloudykit.managers.system.manager import System
 
@@ -9,15 +10,14 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         super().__init__(parent)
         self._parent = parent
         self._locales = System.config.get('locales.locales')
-        self._cur_locale = System.userconfig.get('locales.locale')
-        self._locales_rev = {v: k for (k, v) in self._locales.items()}
-        self._cur_locale_rev = self._locales.get(self._cur_locale)
+        self._curLocale = System.userconfig.get('locales.locale', 'en-US')
+        self._localesRev = {v: k for (k, v) in self._locales.items()}
+        self._curLocalesRev = self._locales.get(self._curLocale)
 
         self.comboBox = QtWidgets.QComboBox()
         self.comboBox.setStyleSheet('QComboBox{font-size: 12pt;}')
-        self.comboBox.insertItem(0, self._locales.pop(self._cur_locale))
+        self.comboBox.insertItem(0, self._locales.pop(self._curLocale))
         self.comboBox.addItems([self._locales.get(i) for (i, _) in self._locales.items()])
-        self.comboBox.currentIndexChanged.connect(self.getResult)
 
         localeLabel = QtWidgets.QLabel(System.locales('Select locale'))
         localeLabel.setStyleSheet('QLabel{font-size: 25pt; padding-bottom: 20px;}')
@@ -28,12 +28,11 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         self.setLayout(layout)
 
     def getResult(self):
-        sel_locale = self._locales_rev.get(self.comboBox.currentText())
-        if self._cur_locale != sel_locale:
-            System.userconfig.save('locales', {'locale': sel_locale})
-            # TODO: App need to be restarted
-            QtWidgets.QApplication.instance().quit()
-        return sel_locale
+        selLocale = self._localesRev.get(self.comboBox.currentText())
+        System.userconfig.restore_crabs()
+        System.userconfig.mount()
+        System.userconfig.save('locales', {'locale': selLocale})
+        return selLocale
 
 
 class ThemeWizardPage(QtWidgets.QWizardPage):
@@ -81,7 +80,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
         self.lineEditButton.setText('>')
         self.lineEditButton.clicked.connect(self.selectFfmpegPath)
 
-        localeLabel = QtWidgets.QLabel('Setup ffmpeg')
+        localeLabel = QtWidgets.QLabel(System.locales('Setup ffmpeg'))
         localeLabel.setStyleSheet('QLabel{font-size: 25pt; padding-bottom: 20px;}')
 
         ffmpegHBox = QtWidgets.QHBoxLayout()
@@ -114,17 +113,25 @@ class FinishWizardPage(QtWidgets.QWizardPage):
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
+        finishLabel = QtWidgets.QLabel(System.locales('Done!'))
+        finishLabel.setStyleSheet('QLabel{font-size: 25pt; padding-bottom: 20px;}')
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(finishLabel)
+        self.setLayout(layout)
 
 
 class SetupWizard(QtWidgets.QWizard):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.setWindowTitle('Setup wizard')
+        self.setWindowTitle(System.locales('Setup wizard'))
         self.resize(640, 380)
+        self.setWindowFlags(Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint)
         self.setOptions(
             QtWidgets.QWizard.NoBackButtonOnLastPage
-            | QtWidgets.QWizard.NoCancelButtonOnLastPage
+            | QtWidgets.QWizard.NoCancelButton
+            | QtWidgets.QWizard.ClassicStyle
         )
 
         self.pages = (
