@@ -1,0 +1,8 @@
+{
+  "title": "",
+  "tags": ["mp3"],
+  "init": "TestPlugin",
+  "requirements": [
+    "requests"
+  ]
+}

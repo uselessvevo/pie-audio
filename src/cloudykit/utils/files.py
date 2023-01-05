@@ -1,98 +1,86 @@
 import os
 import json
-from typing import List, Union, Any
+
 from pathlib import Path
+from typing import Union, Any
+from json import JSONDecodeError
 
 
-def touch(file_name):
+def touch(file_path):
+    """
+    Creates empty file by given path
+    """
     try:
-        os.utime(file_name, None)
+        os.utime(file_path, None)
     except OSError:
-        open(file_name, 'a').close()
+        open(file_path, 'a').close()
 
 
-def read_json(file: Union[str, Path], hang_on_error: bool = True, default: bool = None, create: bool = False) -> Any:
+def read_json(
+    file: Union[str, Path],
+    default: Any = None,
+    create: bool = False,
+    raise_exception: bool = True
+) -> Any:
+    """
+    Read json file by given path
+
+    Args:
+        file (str): file path
+        default (Any): return default value on error
+        create (bool): create file if it doesn't exist
+        raise_exception (bool): raise exception on error
+    """
     try:
         if create and not os.path.exists(file):
             write_json(file, {})
         with open(file, encoding='utf-8') as output:
             return json.load(output)
 
-    except (OSError, FileNotFoundError, json.decoder.JSONDecodeError) as err:
-        if not hang_on_error:
+    except (
+        OSError,
+        FileNotFoundError,
+        JSONDecodeError
+    ) as e:
+        if not raise_exception:
             return default
         else:
-            raise err
+            raise e
 
 
-def write_json(file: str, data: Any, mode: str = 'w'):
+def write_json(file: str, data: Any, mode: str = 'w') -> None:
+    """ Writes data in file by given path """
     try:
         data = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False)
         with open(file, mode, encoding='utf-8') as output:
             output.write(data)
 
-    except (OSError, FileNotFoundError, json.decoder.JSONDecodeError) as err:
+    except (
+        OSError,
+        FileNotFoundError,
+        JSONDecodeError
+    ) as err:
         raise err
 
 
-def update_json(file, data, create=False):
+def update_json(
+    file: Union[str, Path],
+    data: Any,
+    create: bool = False
+) -> None:
+    """
+    Updates file data by given path
+
+    Args:
+        file (str): file full path
+        data (Any): data to update
+        create (bool): creat file if it doesn't exist
+    """
     copy = read_json(file, create=create)
     copy.update(data)
     write_json(file, copy)
 
 
-# Managers
-
-def write_folder_info(folder: Union[str, Path]) -> bool:
-    written_folder_size = current_folder_size = 0
-    info_file = Path(folder, 'info.json')
-
-    # Update file if exists
-    if info_file.exists():
-        written_folder_size = read_json(info_file).get('size')
-    else:
-        # Create folder size entry
-        for file in Path(folder).rglob('*.*'):
-            if file.is_file():
-                current_folder_size += file.stat().st_size
-
-        update_json(info_file, {'size': current_folder_size}, create=True)
-
-    return current_folder_size > written_folder_size
-
-
-def write_assets_file(prefix, root, folder, file_formats=None, path_slice=-2):
-    """
-    Collect files from folder and restore manifest.json files
-    Args:
-        prefix (str): prefix to file (f.e. "shared/icons/icon.svg")
-        folder (str): folder path
-        path_slice (int): path slice
-        file_formats (list|tuple): list of file formats
-    Returns:
-        hash table of formatted file paths (str)
-    """
-    folder = Path(folder)
-    if not folder.exists():
-        raise OSError('Path doesn\'t exit')
-
-    file = folder.joinpath('assets.json')
-
-    if not file_formats:
-        file_formats = []
-
-    collect = {}
-
-    file_formats = set(f'*.{i}' for i in file_formats)
-    for file_format in file_formats:
-        for file in folder.rglob(file_format):
-            key = f'{prefix}/{"/".join(file.parts[path_slice:])}'
-            collect.update({key: str(file)})
-
-    if not file.exists():
-        write_json(file, collect)
-
-    return collect
-
-
 readJson = read_json
+writeJson = write_json
+updateJson = update_json

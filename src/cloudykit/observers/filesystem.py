@@ -3,33 +3,35 @@ import os.path
 from watchdog import events
 from watchdog.observers import Observer
 
-from cloudykit.abstracts.manager import IManager
+from cloudykit.objects.logger import logger
 
 
 class FileSystemEventHandler(events.FileSystemEventHandler):
 
     def __init__(self, name, *args, **kwargs) -> None:
         self._name = name
+        self._logger = logger
 
     def on_created(self, event):
-        print(f'on_created: {event=}')
+        self._logger.info(f'on_created: {event=}')
 
     def on_closed(self, event):
-        print(f'on_closed: {event=}')
+        self._logger.info(f'on_closed: {event=}')
 
     def on_moved(self, event):
-        print(f'on_moved: {event=}')
+        self._logger.info(f'on_moved: {event=}')
 
     def on_deleted(self, event):
-        print(f'on_deleted: {event=}')
+        self._logger.info(f'on_deleted: {event=}')
 
     def on_modified(self, event):
-        print(f'on_modified: {event=}')
+        self._logger.info(f'on_modified: {event=}')
 
 
 class FileSystemObserver:
 
     def __init__(self):
+        self._logger = logger
         self._watchers: dict = {}
         self._handlers: dict = {}
         self._observer: Observer = Observer()
@@ -65,7 +67,9 @@ class FileSystemObserver:
 
     def remove_handler(self, name: str) -> None:
         """ Unschedule handler by watcher name """
-        self._observer.unschedule(self._watchers.get(name))
+        watcher = self._watchers[name]['watcher']
+        self._logger.info(f"Unscheduling handler for {self._watchers[name]['path']} path")
+        self._observer.unschedule(watcher)
         self._watchers.pop(name)
 
     @property

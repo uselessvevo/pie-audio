@@ -4,6 +4,7 @@ import importlib
 import importlib.util
 from pathlib import Path
 
+from cloudykit.system.manager import System
 from cloudykit.utils.files import read_json
 
 
@@ -32,13 +33,14 @@ def parse_stylesheet(path: str, keys: dict = None) -> str:
     return stylesheet
 
 
-def get_theme(root: Path, theme_name: str) -> str:
+def get_theme(theme_name: str) -> str:
     """
     Parse and get stylesheet
     """
-    theme_name = root / 'assets' / 'themes' / theme_name
-    themes_list = os.listdir(root / 'assets' / 'themes')
-    stylesheet = ''
+    themes_root = System.root / 'assets' / 'themes'
+    theme_name = themes_root / theme_name
+    themes_list: list[Path] = list((themes_root / 'assets').glob('themes'))
+    stylesheet: str = ''
 
     # Check if folder exists
     if not theme_name.exists():
@@ -77,7 +79,6 @@ def get_palette(root: str, theme_name: str):
         spec.loader.exec_module(palette)
 
     return palette.getPalette()
-
 
 
 # Qt aliases
