@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["uselessvevo <jcommander13@yandex.ru>"]
 readme = "README.md"
-packages = [{include = "cloudy_project"}]
+packages = [{include = "cloudyff"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
