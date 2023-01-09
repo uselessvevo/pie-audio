@@ -1,4 +1,4 @@
-## CloudyFF - An experimental audio/video converter
+## CloudyFF App - A GUI for an experimental audio/video converter
 
 Before the start:
 * Install poetry and all dependencies
