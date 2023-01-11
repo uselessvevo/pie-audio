@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "cloudy-project"
+name = "cloudyff"
 version = "0.1.0"
-description = ""
+description = "An experimental audio/video converter"
 authors = ["uselessvevo <jcommander13@yandex.ru>"]
 readme = "README.md"
 packages = [{include = "cloudyff"}]
