@@ -5,10 +5,10 @@ from cloudykit.objects.structs import Error
 from cloudykit.system.manager import System
 from cloudykit.system.registry import ManagersRegistry
 
+from cloudykit.objects.logger import logger
 from cloudykit.objects.mixins import MenuMixin
 from cloudykit.objects.mixins import ActionMixin
 from cloudykit.objects.mixins import ComponentMixin
-from cloudykit.objects.logger import logger
 
 
 class BasePlugin(
@@ -17,19 +17,47 @@ class BasePlugin(
     MenuMixin,
     ComponentMixin
 ):
-    icon: str
+    # Base configuration #
+
+    # Plugin codename
     name: str
+
+    # Icon name
+    icon: str = "app.ico"
+
+    # By default, description must be written in English
     description: str
+
+    # Plugin version
     version: tuple[int, int, int] = (0, 1, 0)
 
+    # Required plugins
+    plugins: list[str]
+    
+    # Required components
+    components: list[str]
+
+    # Qt configuration #
+
+    # Mininal window size
     minSize: tuple[int, int] = (355, 205)
+
+    # Maximum window size
     maxSize: tuple[int, int] = (720, 450)
 
+    # Signal when plugin is ready
     signalPluginReady = pyqtSignal(str)
+    
+    # Signal when plugin is loading
     signalPluginLoading = pyqtSignal(str)
+    
+    # Signal when plugin is reloading
     signalPluginReloading = pyqtSignal(str)
 
+    # Signal when main window is closing
     signalOnMainWindowClose = pyqtSignal()
+    
+    # Signal when exception occurred
     signalExceptionOccurred = pyqtSignal(Error)
 
     def __init__(self, parent: QObject = None):
@@ -38,7 +66,7 @@ class BasePlugin(
         self._parent = parent
         self._is_registered: bool = False
         self._logger = logger
-        self._path: "Path" = System.config.BASE_DIR / System.config.APP_ROOT / 'plugins' / self.name
+        self._path: "Path" = System.root / System.config.PLUGINS_FOLDER / self.name
 
     def prepareBaseSignals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
