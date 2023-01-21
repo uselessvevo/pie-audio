@@ -16,7 +16,7 @@ class UserConfigsManager(BaseManager):
 
         self._dictionary: Dotty = Dotty({})
         self._observer = FileSystemObserver()
-        self._user_folder = Path(System.config.USER_CONFIGS_FOLDER)
+        self._user_folder = Path(System.config.USER_CONFIGS_FOLDER_NAME)
         self._logger.info(f'User folder set to "{self._user_folder}"')
 
     def mount(self) -> None:

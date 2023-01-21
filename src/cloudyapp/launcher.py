@@ -41,7 +41,7 @@ def setup_application() -> None:
     QApplication.processEvents()
     System.mount()
 
-    if not check_crabs(System.config.USER_CONFIGS_FOLDER):
+    if not check_crabs(System.config.USER_CONFIGS_FOLDER_NAME):
         if splash:
             splash.close()
 

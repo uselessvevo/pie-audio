@@ -19,7 +19,7 @@ class PluginsManager(BaseManager):
         self._plugins = dict()
 
     def mount(self, parent: MainWindow = None) -> None:
-        self._mount_plugins(System.root / System.config.PLUGINS_FOLDER, parent)
+        self._mount_plugins(System.root / System.config.PLUGINS_FOLDER_NAME, parent)
         self._mount_plugins(System.root / System.config.PLUGINS_USER_FOLDER, parent)
 
     def _mount_plugins(self, folder: "Path", parent: "MainWindow" = None) -> None:

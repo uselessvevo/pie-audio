@@ -20,22 +20,31 @@ class BaseManager(QObject):
         # Is manager mounted
         self._mounted: bool = False
 
-    def mount(self) -> None:
+    def mount(self, *args, **kwargs) -> None:
         raise NotImplementedError("Method `mount` must be implemented")
 
-    def unmount(self):
+    def unmount(self, *args, **kwargs):
         pass
 
-    def set(self, key: Any, data: Any) -> None:
-        """ Set data by key """
+    def set(self, *args, **kwargs) -> None:
+        """
+        Set data by key
+        Arguments example: `key: Any, data: Any`
+        """
         pass
 
-    def get(self, key: Any, default: Any = None) -> Any:
-        """ Get data by key """
+    def get(self, *args, **kwargs) -> Any:
+        """
+        Get data by key
+        Arguments example: `key: Any, default: Any = None`
+        """
         pass
 
-    def delete(self, key: Any) -> None:
-        """ Delete data by key """
+    def delete(self, *args, **kwargs) -> None:
+        """
+        Delete data by key
+        Arguments example: `key: Any`
+        """
         pass
 
     @property

@@ -66,7 +66,7 @@ class BasePlugin(
         self._parent = parent
         self._is_registered: bool = False
         self._logger = logger
-        self._path: "Path" = System.root / System.config.PLUGINS_FOLDER / self.name
+        self._path: "Path" = System.root / System.config.PLUGINS_FOLDER_NAME / self.name
 
     def prepareBaseSignals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")

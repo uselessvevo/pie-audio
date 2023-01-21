@@ -10,7 +10,7 @@ APP_ROOT = BASE_DIR / os.getenv("CLOUDYAPP_ROOT", "cloudyapp")
 
 # List of plugins. By default, it's empty
 # String must be like this: `plugin_name`
-PLUGINS_FOLDER: str = "plugins"
+PLUGINS_FOLDER_NAME: str = "plugins"
 PLUGINS_USER_FOLDER: str = "plugins"  # requires `UserConfigsManager`
 
 
@@ -23,23 +23,24 @@ COMPONENTS: EList = []
 
 # Assets
 ASSETS_EXCLUDED_FORMATS: EList = []
-ASSETS_FOLDER: str = os.getenv("ASSETS_FOLDER", "assets")
-THEMES_FOLDER: str = os.getenv("THEMES_FOLDER", "themes")
+ASSETS_FOLDER_NAME: str = os.getenv("ASSETS_FOLDER", "assets")
+THEMES_FOLDER_NAME: str = os.getenv("THEMES_FOLDER", "themes")
 
 
 # Configurations
-CONFIGS_FOLDER = os.getenv("CONFIGS_FOLDER", "configs")
-USER_CONFIGS_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER") or f"{os.path.expanduser('~')}/.crabs"
+CONFIGS_FOLDER_NAME = os.getenv("CONFIGS_FOLDER", "configs")
+USER_CONFIGS_FOLDER_NAME: str = os.getenv("USER_CONFIGS_FOLDER") or f"{os.path.expanduser('~')}/.crabs"
 USER_FOLDER_FILES: EList = ["locales.json", "assets.json"]
 
 
 # Locales
 DEFAULT_LOCALE = os.getenv("DEFAULT_LOCALE", "en-US")
-LOCALES_FOLDER: str = "locales"
+LOCALES_FOLDER_NAME: str = "locales"
 LOCALES: EDict = {
     "en-US": "English",
     "ru-RU": "Русский"
 }
+SHARED_TYPE: str = "shared"
 
 
 # Managers startup configuration
