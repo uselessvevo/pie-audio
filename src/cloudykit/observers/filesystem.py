@@ -72,6 +72,9 @@ class FileSystemObserver:
         self._observer.unschedule(watcher)
         self._watchers.pop(name)
 
+    def remove_handlers(self, *handlers, full_house: bool = False) -> None:
+        pass
+
     @property
     def watchers(self) -> dict:
         return self._watchers

@@ -7,14 +7,15 @@ from cloudykit.system.types import DirectoryType
 
 
 class AssetsManager(BaseManager):
-    dependencies = ("userconfigs",)
+    name = "assets"
+    dependencies = ("configs",)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self._dictionary = dict()
-        self._theme = System.registry.userconfigs.get("assets.theme")
-        self._assets_folder = System.root / System.config.ASSETS_FOLDER_NAME
+        self._theme = System.registry.configs.get("user", "assets.theme")
+        self._assets_folder = System.root / System.config.ASSETS_FOLDER
         self._themes = []
 
         theme_folders = tuple(i for i in (self._assets_folder / "themes").glob("*") if i.is_dir())
@@ -39,8 +40,8 @@ class AssetsManager(BaseManager):
         ......... theme.template.qss - theme template file
         ......... variables.json - variables for theme.template.qss
         """
-        for file in (System.root / System.config.ASSETS_FOLDER_NAME /
-                     System.config.THEMES_FOLDER_NAME / self._theme).rglob("*"):
+        for file in (System.root / System.config.ASSETS_FOLDER /
+                     System.config.THEMES_FOLDER / self._theme).rglob("*"):
 
             if file.suffix in System.config.ASSETS_EXCLUDED_FORMATS:
                 continue

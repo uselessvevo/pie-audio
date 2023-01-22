@@ -14,9 +14,9 @@ class CloudyApp(MainWindow):
     signalComponentsReady = pyqtSignal()
 
     def mount(self):
-        self.setMinimumSize(self.registry.userconfigs.get("ui.minsize") or 720, 480)
-        if isinstance(self.registry.userconfigs.get("ui.maxsize"), tuple):
-            self.setMaximumSize(self.registry.userconfigs.get("ui.maxsize"))
+        self.setMinimumSize(self.registry.configs.get("ui.minsize") or 720, 480)
+        if isinstance(self.registry.configs.get("ui.maxsize"), tuple):
+            self.setMaximumSize(self.registry.configs.get("ui.maxsize"))
 
         self.setWindowTitle(f"CloudyFF • Audio/Video Converter")
         self.prepareBaseSignals()

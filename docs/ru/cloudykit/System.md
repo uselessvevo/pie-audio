@@ -16,9 +16,9 @@
 Обращение к конфигурации
 
 ```py
->>> from cloudtykit.system.manager import System
->>> str(System.config.USER_CONFIGS_FOLDER / "directory name")
->>> "/path/to/cloudyff/directory/directory name"
+>> > from cloudtykit.system.manager import System
+>> > str(System.config.USER_CONFIG_FOLDER / "directory name")
+>> > "/path/to/cloudyff/directory/directory name"
 ```
 
 Обращение к менеджеру

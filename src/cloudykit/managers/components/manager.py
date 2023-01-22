@@ -9,7 +9,8 @@ from cloudykit.utils.modules import import_by_path
 
 class ComponentsManager(BaseManager):
     # TODO: Make a method to get all plugins
-    dependencies = ("userconfigs",)
+    name = "components"
+    dependencies = ("configs",)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

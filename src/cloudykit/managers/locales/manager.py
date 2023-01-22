@@ -7,25 +7,24 @@ from cloudykit.objects.manager import BaseManager
 
 
 class LocalesManager(BaseManager):
-    dependencies = ("userconfigs",)
+    name = "locales"
+    dependencies = ("configs",)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._locale: str = System.registry.userconfigs.get(
-            key="locales.locale",
+        self._locale: str = System.registry.configs.get(
+            "user", "locales.locale",
             default=System.config.DEFAULT_LOCALE
         )
         self._files: dict = {}
         self._translations: Dotty = Dotty({})
 
-    def mount(self, root: Path = System.root, section: str = System.config.SHARED_TYPE) -> None:
-        files = (root / System.config.LOCALES_FOLDER_NAME / self._locale).rglob("*.json")
-        for file in files:
-            if not self._translations.get(section):
-                self._translations[section] = {}
-
-            self._translations[section].update(**read_json(file))
-            self._files.update({str(file): section})
+    def mount(self, *roots: Path) -> None:
+        for root in roots:
+            files = (root / System.config.LOCALES_FOLDER / self._locale).rglob("*.json")
+            for file in files:
+                self._translations[file.parent].update(**read_json(file))
+                self._files.update({str(file): file.parent})
 
     def unmount(self) -> None:
         self._translations = Dotty({})

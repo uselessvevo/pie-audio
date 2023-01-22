@@ -20,7 +20,7 @@ def except_hook(exc_type, exc_value, exc_traceback):
     if exc_traceback:
         format_exception = traceback.format_tb(exc_traceback)
         for line in format_exception:
-            traceback_collect.append(repr(line).replace('\\n', ''))
+            traceback_collect.append(repr(line).replace("\\n", ""))
 
     ErrorWindow(exc_type, exc_value, traceback_collect)
 
@@ -29,21 +29,25 @@ def setup_application() -> None:
     splash = None
     app = getApplication(sys.argv)
 
-    if not is_debug() and Path('branding/splash.svg').exists():
+    if not is_debug() and Path("branding/splash.svg").exists():
         splash = SplashScreen(
-            path='branding/splash.svg',
+            path="branding/splash.svg",
             width=720,
             height=480,
-            project_name='CloudyFF'
+            project_name="CloudyFF"
         )
         splash.show()
 
     QApplication.processEvents()
     System.mount()
 
-    if not check_crabs(System.config.USER_CONFIGS_FOLDER_NAME):
+    if not check_crabs(System.config.USER_CONFIG_FOLDER):
         if splash:
             splash.close()
+
+        System.registry.configs.save("assets", {"theme": None}, create=True)
+        System.registry.configs.save("locales", {"locale": None}, create=True)
+        System.registry.reload("configs", "locales")
 
         from wizard import SetupWizard
 
@@ -61,5 +65,5 @@ def main():
     import_by_string(os.getenv("CLOUDYAPP_ENTRYPOINT", "main.main"))()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

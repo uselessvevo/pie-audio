@@ -5,6 +5,9 @@ from cloudykit.objects.logger import logger
 
 
 class BaseManager(QObject):
+    # Manager name
+    name: str
+
     # Contains a tuple of required `BaseManager` based objects name
     dependencies: tuple[str] = None
 
