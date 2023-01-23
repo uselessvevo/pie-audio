@@ -6,9 +6,10 @@ from pathlib import Path
 from PyQt5.QtWidgets import QApplication
 
 from cloudykit.system.manager import System
-from cloudykit.utils.system import check_crabs
 from cloudykit.utils.modules import is_debug
 from cloudykit.utils.modules import import_by_string
+from cloudykit.utils.system import check_crabs
+from cloudykit.utils.system import populate_crabs
 
 from cloudyui.utils.core import getApplication
 from cloudyui.widgets.splashcreen import SplashScreen
@@ -45,8 +46,8 @@ def setup_application() -> None:
         if splash:
             splash.close()
 
-        System.registry.configs.save("assets", {"theme": None}, create=True)
-        System.registry.configs.save("locales", {"locale": None}, create=True)
+        # This looks bad...
+        populate_crabs(System.config.USER_CONFIG_FOLDER)
         System.registry.reload("configs", "locales")
 
         from wizard import SetupWizard
