@@ -13,6 +13,9 @@ def check_crabs(user_folder: str) -> bool:
 
 def populate_crabs(user_folder: str) -> None:
     user_folder = Path(user_folder)
+    if not user_folder.exists():
+        user_folder.mkdir()
+        
     req_files = System.config.USER_FOLDER_FILES
     write_json(user_folder / "locales.json", {})
     write_json(user_folder / "assets.json", {})
