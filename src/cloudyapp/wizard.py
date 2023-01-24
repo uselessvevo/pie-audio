@@ -12,6 +12,7 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         super().__init__(parent)
         self._parent = parent
         self._locales = System.config.LOCALES
+        # TODO: Use System.config.DEFAULT_LOCALE
         self._curLocale = locale.getdefaultlocale()[0].replace("_", "-")
         self._localesRev = {v: k for (k, v) in self._locales.items()}
         self._curLocaleRev = self._locales.get(self._curLocale)
