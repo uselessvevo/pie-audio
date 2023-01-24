@@ -8,7 +8,6 @@ from cloudykit.utils.modules import import_by_path
 
 
 class ComponentsManager(BaseManager):
-    # TODO: Make a method to get all plugins
     name = "components"
     dependencies = ("configs",)
 
@@ -36,26 +35,21 @@ class ComponentsManager(BaseManager):
             # Hashing component instance
             self._dictionary[component_inst.name] = component_inst
 
-    def unmount(self, component: "BaseComponent" = None, full_house: bool = False) -> None:
+    def unmount(self, *components: "BaseComponent", full_house: bool = False) -> None:
         """
         Unmount managers, services in parent object or all at once
         Args:
             component (object): BaseComponent based object
             full_house (bool): reload all managers, services from all instances
         """
-        # Get all plugins and reload them
-        # plugins = self._get_all_plugins()
+        # TODO: Get all plugins to unmount them all
+        # >>> plugins = self._get_all_plugins()
+        components = components if not full_house else self._dictionary.values()
+        for component in components:
+            self._logger.info(f"Unmounting {component.name} from {self.__class__.__name__}")
 
-        if component and full_house:
-            raise RuntimeError("Can\"t use `component` and `full_house` together")
-
-        if component:
-            component.unmount()
-
-        elif full_house:
-            for component in self._dictionary.values():
-                self._logger.info(f"Unmounting {component.name} from {self.__class__.__name__}")
-                component.unmount()
+            if component:
+                plugin.unmount()
 
     def reload(self, *components: tuple[str], full_house: bool = False) -> None:
         components = self._dictionary.keys() if full_house else components

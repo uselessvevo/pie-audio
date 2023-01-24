@@ -47,22 +47,18 @@ class PluginsManager(BaseManager):
                 # Hashing plugin instance
                 self._dictionary[plugin_inst.name] = plugin_inst
 
-    def unmount(self, plugin: "BasePlugin" = None, full_house: bool = False) -> None:
+    def unmount(self, *plugins: "BasePlugin", full_house: bool = False) -> None:
         """
         Unmount managers, services in parent object or all at once
         Args:
             plugin (object): BasePlugin based object
             full_house (bool): reload all managers, services from all instances
         """
-        if plugin and full_house:
-            raise RuntimeError("Can\"t use `plugin` and `full_house` together")
+        plugins = plugins if not full_house else self._dictionary.values()
+        for plugin in plugins:
+            self._logger.info(f"Unmounting {plugin.name} from {self.__class__.__name__}")
 
-        if plugin:
-            plugin.unmount()
-
-        elif full_house:
-            for plugin in self._dictionary.values():
-                self._logger.info(f"Unmounting {plugin.name} from {self.__class__.__name__}")
+            if plugin:
                 plugin.unmount()
 
     def reload(self, *plugins: tuple[str], full_house: bool = False) -> None:
