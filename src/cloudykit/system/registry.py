@@ -34,15 +34,15 @@ class ManagersRegistry:
                 # TODO: Add managers order resolver
                 raise ObjectNotMountedError(dependency)
 
-    def _mount_from_object(self, manager: BaseManager, *args, **kwargs) -> None:
+    def _mount_manually(self, manager: BaseManager, *args, **kwargs) -> None:
         """ 
-        Mount manager manualy
+        Mount manager manualy. Pass manager class (not an instance) with args and kwargs
         
         For example:
         >>> from cloudykit.system.manager import System
         >>> from cloudykit.managers.configs.manager import ConfigManager
         >>> System.mount()
-        >>> System.registry.mount()
+        >>> System.registry.mount(ConfigManager, PathConfig(...), ...)
         """
         manager = manager(self._parent)
         self._check_dependencies(manager)
@@ -79,7 +79,7 @@ class ManagersRegistry:
                 self._mount_from_config(manager)
 
             elif issubclass(manager, BaseManager):
-                self._mount_from_object(manager)
+                self._mount_manually(manager)
 
             else:
                 self._logger.info(f"Object {manager} is not a valid object. Skipping...")
