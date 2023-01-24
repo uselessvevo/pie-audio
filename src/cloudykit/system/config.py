@@ -59,11 +59,11 @@ MANAGERS: EList = [
         mount=True
     ),
     ManagerConfig(
-        import_string="cloudykit.managers.plugins.manager.PluginsManager",
-        mount=False
-    ),
-    ManagerConfig(
         import_string="cloudykit.managers.components.manager.ComponentsManager",
         mount=False
     ),
+    ManagerConfig(
+        import_string="cloudykit.managers.plugins.manager.PluginsManager",
+        mount=False
+    )
 ]

@@ -13,11 +13,11 @@ class PluginsManager(BaseManager):
     Plugin manager is the registry of all app plugins
     """
     name = "plugins"
-    dependencies = ("configs", "locales")
+    dependencies = ("configs", "locales", "components")
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._plugins = dict()
+        self._dictionary: dict = {}
 
     def mount(self, parent: MainWindow = None) -> None:
         self._mount_plugins(System.root / System.config.PLUGINS_FOLDER, parent)
@@ -45,7 +45,7 @@ class PluginsManager(BaseManager):
                 plugin_inst.init()
 
                 # Hashing plugin instance
-                self._plugins[plugin_inst.name] = plugin_inst
+                self._dictionary[plugin_inst.name] = plugin_inst
 
     def unmount(self, plugin: "BasePlugin" = None, full_house: bool = False) -> None:
         """
@@ -61,14 +61,14 @@ class PluginsManager(BaseManager):
             plugin.unmount()
 
         elif full_house:
-            for plugin in self._plugins.values():
+            for plugin in self._dictionary.values():
                 self._logger.info(f"Unmounting {plugin.name} from {self.__class__.__name__}")
                 plugin.unmount()
 
     def reload(self, *plugins: tuple[str], full_house: bool = False) -> None:
-        plugins = self._plugins.keys() if full_house else plugins
+        plugins = self._dictionary.keys() if full_house else plugins
         for plugin in plugins:
-            self._plugins.get(plugin)
+            self._dictionary.get(plugin)
 
     def get(self, key, default: Any = None) -> Any:
-        return self._plugins.get(key)
+        return self._dictionary.get(key)

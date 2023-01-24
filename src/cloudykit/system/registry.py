@@ -10,14 +10,15 @@ from cloudykit.system.exceptions import ObjectNotMountedError, DependencyNotFoun
 class ManagersRegistry:
 
     def __init__(self, parent) -> None:
+        # SystemManager
         self._parent = parent
+
+        # Just a logger
+        self._logger = logger
         
         # Set with stored `BaseManager` base classes. Use to reload them
         self._managers_instances: dict[str, BaseManager] = {}
         
-        # Just a logger
-        self._logger = logger
-
     def _check_dependencies(self, obj):
         """
         Checks required objects to be mounted in `System.registry`
@@ -33,7 +34,7 @@ class ManagersRegistry:
                 # TODO: Add managers order resolver
                 raise ObjectNotMountedError(dependency)
 
-    def _mount_from_object(self, manager: BaseManager) -> None:
+    def _mount_from_object(self, manager: BaseManager, *args, **kwargs) -> None:
         """ 
         Mount manager manualy
         
@@ -43,28 +44,15 @@ class ManagersRegistry:
         >>> System.mount()
         >>> System.registry.mount()
         """
-        self._logger.info(f"Mounting `{manager.__class__.__name__}` in `{self._parent.__class__.__name__}`")
-
         manager = manager(self._parent)
         self._check_dependencies(manager)
-        manager.mount()
-        self._managers_instances[manager.name] = manager
-
-        setattr(self, manager.__class__.__name__.lower().replace("manager", ""), manager)
-        setattr(manager, "mounted", True)
-
-    def _mount_from_string(self, manager: str) -> None:
-        """ Mount from import string """
-        manager_instance = import_by_string(manager)(self._parent)
-        manager_name = manager_instance.name
         self._logger.info(f"Mounting `{manager_instance.__class__.__name__}` in `{self._parent.__class__.__name__}`")
 
-        self._check_dependencies(manager_instance)
-        manager_instance.mount()
-        self._managers_instances[manager_instance.name] = manager_instance
+        manager.mount(*args, **kwargs)
+        self._managers_instances[manager.name] = manager
 
-        setattr(self, manager_name, manager_instance)
-        setattr(manager_instance, 'mounted', True)
+        setattr(self, manager.name, manager)
+        setattr(manager, "mounted", mount)
 
     def _mount_from_config(self, config: ManagerConfig) -> None:
         """ Mount manager from dictionary """
@@ -77,10 +65,7 @@ class ManagersRegistry:
 
         self._managers_instances[manager_instance.name] = manager_instance
         setattr(self, manager_instance.name, manager_instance)
-        setattr(manager_instance, "mounted", True)
-
-    def new(self, base: str, name: str, config: ManagerConfig) -> None:
-        pass
+        setattr(manager_instance, "mounted", config.mount)
 
     def mount(self, *managers: Union[tuple[str], tuple[BaseManager]]) -> None:
         """
@@ -90,10 +75,7 @@ class ManagersRegistry:
         >>> self.registry.mount()
         """
         for manager in managers:
-            if isinstance(manager, str):
-                self._mount_from_string(manager)
-
-            elif isinstance(manager, ManagerConfig):
+            if isinstance(manager, ManagerConfig):
                 self._mount_from_config(manager)
 
             elif issubclass(manager, BaseManager):
@@ -108,10 +90,10 @@ class ManagersRegistry:
         managers = self._managers_instances.keys() if full_house else managers
         managers_instances = [self._managers_instances.get(i) for i in managers or self._managers_instances.keys()]
 
-        for managers_instance in managers_instances:
-            self._logger.info(f"Unmounting `{managers_instance.__class__.__name__}` from `{self.__class__.__name__}`")
-            manager_name = managers_instance.name
-            managers_instance.unmount()
+        for manager_instance in manager_instance:
+            self._logger.info(f"Unmounting `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
+            manager_name = manager_instance.name
+            manager_instance.unmount()
             delattr(self, manager_name)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):

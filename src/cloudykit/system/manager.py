@@ -8,14 +8,24 @@ from cloudykit.system.registry import ManagersRegistry
 
 
 class SystemManager(QObject):
-    """ Simple manager that provides access to """
+    """ 
+    Simple manager that provides access
+    to system configuration, managers registry and etc.
+    """
 
     def __init__(self) -> None:
         super().__init__(parent=None)
 
+        # Just a logger
         self._logger = logger
+
+        # System configuration
         self._config = ConfigLoader()
+
+        # Application root link/alias
         self._root = self.config.APP_ROOT
+
+        # Managers registry
         self._registry = ManagersRegistry(self)
 
     def mount(self) -> None:
