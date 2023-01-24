@@ -9,14 +9,14 @@ APP_ROOT = BASE_DIR / os.getenv("CLOUDYAPP_ROOT", "cloudyapp")
 
 # List of plugins. By default, it's empty
 # String must be like this: `plugin_name`
-PLUGINS_FOLDER: str = "plugins"
-PLUGINS_USER_FOLDER: str = "plugins"  # requires `ConfigManager`
+PLUGINS_FOLDER: str = os.getenv("PLUGINS_FOLDER", "plugins")
+PLUGINS_USER_FOLDER: str = os.getenv("USER_PLUGINS_FOLDER", "plugins")  # requires `ConfigManager`
 
 
 # List of components. By default, it's empty
 # String must be like this: `path.to.component.package`
 # For example, `cloudyapp.components.workbench`
-COMPONENTS_FOLDER: str = "components"
+COMPONENTS_FOLDER: str = os.getenv("COMPONENTS_FOLDER", "components")
 COMPONENTS: EList = []
 
 
@@ -28,13 +28,13 @@ THEMES_FOLDER: str = os.getenv("THEMES_FOLDER", "themes")
 
 # Configurations
 CONFIGS_FOLDER = os.getenv("CONFIGS_FOLDER", "configs")
-USER_CONFIG_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER") or f"{os.path.expanduser('~')}/.crabs"
+USER_CONFIG_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER", f"{os.path.expanduser('~')}/.crabs")
 USER_FOLDER_FILES: EList = ["locales.json", "assets.json"]
 
 
 # Locales
 DEFAULT_LOCALE = os.getenv("DEFAULT_LOCALE", "en-US")
-LOCALES_FOLDER: str = "locales"
+LOCALES_FOLDER: str = os.getenv("LOCALES_FOLDER", "locales")
 LOCALES: EDict = {
     "en-US": "English",
     "ru-RU": "Русский"
