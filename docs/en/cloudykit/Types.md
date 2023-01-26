@@ -25,10 +25,10 @@ In result:
 >>> ["cloudykit.components.component.BuiltinComponent", "cloudyapp.components.component.MyComponent"]
 ```
 
-> **Note**: It's important that the variables must be annotated by *expandable* types. Otherwhise the will be overwritten
+> **Note**: It's important that the variables must be annotated by *expandable* types. Otherwhise they will be overwritten.
 
 ## Other data types
 
 ## **DirectoryType**
 
-The data type (flag) indicating the directory. Used in `AssetsManager` to ignore directories in `mount` method
+This type used to mark directories. For example, `AssetsManager` use it to ignore directories in `mount` method.
