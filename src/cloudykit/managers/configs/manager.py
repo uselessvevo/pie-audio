@@ -25,6 +25,8 @@ class ConfigManager(BaseManager):
 
                 if not self._dictionary.get(config.name):
                     self._dictionary[section][config.stem] = {}
+                
+                self._dictionary[section]["__FILE__"] = config
                 self._dictionary[section][config.stem].update(**read_json(str(config)))
     
             self._observer.add_handler(str(root_config.root), str(root_config.root.name))
@@ -34,19 +36,58 @@ class ConfigManager(BaseManager):
         self._observer.remove_handlers(full_house=True)
 
     @lru_cache
-    def get(self, section: str, key: typing.Any, default: typing.Any = None) -> typing.Any:
+    def get(
+        self, 
+        section: str, 
+        key: typing.Any = None, 
+        default: typing.Any = None
+    ) -> typing.Any:
+        """
+        Get value by section-key pair
+        
+        Args:
+            section (str|None): section name
+            key (Any): key to access data or nested data
+            default (Any): default value if key was not found
+        """
         return self._dictionary.get(f"{section}.{key}", default)
 
-    def set(self, section: str, key: typing.Any, data: typing.Any) -> None:
+    def set(
+        self, 
+        section: str,
+        key: typing.Any = None,
+        data: typing.Any = None
+    ) -> None:
+        """
+        Set data by section-key pair
+        
+        Args:
+            section (str|None): section name
+            key (Any): key to access data or nested data
+            data (Any): data to set
+        """
         self._dictionary[section][key] = data
 
-    def delete(self, section: str, key: typing.Any) -> None:
+    def delete(
+        self, 
+        section: str,
+        key: typing.Any = None
+    ) -> None:
+        """
+        Delete value by section-key pair
+        
+        Args:
+            section (str|None): section name
+            key (Any): key to access data or nested data
+        """
         del self._dictionary[section][key]
 
     def save(self, section: str, data: dict, create: bool = False) -> None:
-        folder = self._dictionary.get(section)
-        if not folder and not create:
-            raise FileNotFoundError
+        try:
+            file = self._dictionary[section]["__FILE__"]
+            folder = folder.parent
+        except KeyError:
+            raise FileNotFoundError(f"Folder {section} doesn't exist")
 
         if create:
             if not folder.exists():
@@ -56,5 +97,5 @@ class ConfigManager(BaseManager):
         if not self._dictionary.get(section):
             raise FileNotFoundError(f"File {section} not found")
 
-        write_json(str(folder / f"{section}.json"), data)
+        write_json(str(file), data)
         self._dictionary[section] = data

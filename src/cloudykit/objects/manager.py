@@ -27,6 +27,10 @@ class BaseManager(QObject):
         raise NotImplementedError("Method `mount` must be implemented")
 
     def unmount(self, *args, **kwargs):
+        """
+        This method serves to reset all containers, variables and etc.
+        Don't use it to delete data from memory
+        """
         pass
 
     def set(self, *args, **kwargs) -> None:

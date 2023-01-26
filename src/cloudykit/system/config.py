@@ -1,7 +1,12 @@
+import locale
 import os.path
 from pathlib import Path
 
-from cloudykit.system.types import EList, EDict, ManagerConfig, PathConfig
+from cloudykit.system.types import EList
+from cloudykit.system.types import EDict
+from cloudykit.system.types import PathConfig
+from cloudykit.system.types import ManagerConfig
+
 
 # Base paths
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -33,13 +38,17 @@ USER_FOLDER_FILES: EList = ["locales.json", "assets.json"]
 
 
 # Locales
-DEFAULT_LOCALE = os.getenv("DEFAULT_LOCALE", "en-US")
-LOCALES_FOLDER: str = os.getenv("LOCALES_FOLDER", "locales")
 LOCALES: EDict = {
     "en-US": "English",
     "ru-RU": "Русский"
 }
-SHARED_TYPE: str = "shared"
+
+# Setup default locale
+system_locale = locale.getdefaultlocale()[0].replace("_", "-")
+default_locale = system_locale if system_locale in LOCALES else "en-US"
+
+DEFAULT_LOCALE: str = os.getenv("DEFAULT_LOCALE", default_locale)
+LOCALES_FOLDER: str = os.getenv("LOCALES_FOLDER", "locales")
 
 
 # Managers startup configuration

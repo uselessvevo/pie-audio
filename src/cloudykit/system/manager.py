@@ -10,7 +10,7 @@ from cloudykit.system.registry import ManagersRegistry
 class SystemManager(QObject):
     """ 
     Simple manager that provides access
-    to system configuration, managers registry and etc.
+    to the system configuration, managers registry and etc.
     """
 
     def __init__(self) -> None:
@@ -36,6 +36,9 @@ class SystemManager(QObject):
         self._logger.info("All Systems Nominal")
 
     def unmount(self) -> None:
+        """
+        Unmount all managers
+        """
         self._registry.unmount()
         self._logger.info("Goodbye!")
 
