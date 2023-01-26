@@ -19,14 +19,17 @@ class ConfigManager(BaseManager):
 
     def mount(self, *roots: PathConfig) -> None:
         for root_config in roots:
-            for config in root_config.root.rglob(root_config.pattern):
-                section = root_config.root.name if root_config.section_stem else root_config.section
+            for file in root_config.root.rglob(root_config.pattern):
+                section: str = root_config.root.name if root_config.section_stem else root_config.section
 
-                if not self._dictionary.get(config.name):
-                    self._dictionary[section][config.stem] = {}
+                if not self._dictionary.get(section):
+                    self._dictionary[section] = {}
+
+                if not self._dictionary[section].get(file.name):
+                    self._dictionary[section][file.stem] = {}
                 
-                self._dictionary[section]["__FILE__"] = config
-                self._dictionary[section][config.stem].update(**read_json(str(config)))
+                self._dictionary[section]["__FILE__"] = file
+                self._dictionary[section][file.stem].update(**read_json(str(file)))
     
             self._observer.add_handler(str(root_config.root), str(root_config.root.name))
 
@@ -84,7 +87,7 @@ class ConfigManager(BaseManager):
     def save(self, section: str, data: dict, create: bool = False) -> None:
         try:
             file = self._dictionary[section]["__FILE__"]
-            folder = folder.parent
+            folder = file.parent
         except KeyError:
             raise FileNotFoundError(f"Folder {section} doesn't exist")
 

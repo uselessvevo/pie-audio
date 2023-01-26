@@ -62,5 +62,5 @@ class ConfigLoader:
 
     def __init__(self):
         self.load_module("cloudykit.system.config", False)
-        if os.environ.get("CONFIG_MODULE_NAME"):
-            self.load_module(os.environ.get("CONFIG_MODULE_NAME"), True)
+        if os.environ.get("CONFIG_MODULE_NAME", "cloudyapp.config"):
+            self.load_module(os.environ.get("CONFIG_MODULE_NAME", "cloudyapp.config"), use_handlers=True)

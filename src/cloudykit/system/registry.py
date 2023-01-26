@@ -46,13 +46,13 @@ class ManagersRegistry:
         """
         manager = manager(self._parent)
         self._check_dependencies(manager)
-        self._logger.info(f"Mounting `{manager_instance.__class__.__name__}` in `{self._parent.__class__.__name__}`")
+        self._logger.info(f"Mounting `{manager.__class__.__name__}` in `{self._parent.__class__.__name__}`")
 
         manager.mount(*args, **kwargs)
         self._managers_instances[manager.name] = manager
 
         setattr(self, manager.name, manager)
-        setattr(manager, "mounted", mount)
+        setattr(manager, "mounted", True)
 
     def _mount_from_config(self, config: ManagerConfig) -> None:
         """ Mount manager from dictionary """

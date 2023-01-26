@@ -3,7 +3,7 @@ from typing import Any
 
 from cloudykit.objects.manager import BaseManager
 from cloudykit.system.manager import System
-from cloudykit.system.types import DirectoryType
+from cloudykit.system.types import DirectoryType, PathConfig
 
 
 class AssetsManager(BaseManager):
@@ -26,7 +26,7 @@ class AssetsManager(BaseManager):
 
             self._theme = self._themes[0]
 
-    def mount(self) -> None:
+    def mount(self, *roots: PathConfig) -> None:
         """
         Assets folder structure:
 
@@ -40,18 +40,17 @@ class AssetsManager(BaseManager):
         ......... theme.template.qss - theme template file
         ......... variables.json - variables for theme.template.qss
         """
-        for file in (System.root / System.config.ASSETS_FOLDER /
-                     System.config.THEMES_FOLDER / self._theme).rglob("*"):
+        for root_config in roots:
+            for file in (root_config.root / System.config.THEMES_FOLDER / self._theme).rglob(root_config.pattern):
+                if file.suffix in System.config.ASSETS_EXCLUDED_FORMATS:
+                    continue
 
-            if file.suffix in System.config.ASSETS_EXCLUDED_FORMATS:
-                continue
+                if file.is_dir() and DirectoryType in System.config.ASSETS_EXCLUDED_FORMATS:
+                    continue
 
-            if file.is_dir() and DirectoryType in System.config.ASSETS_EXCLUDED_FORMATS:
-                continue
+                self._dictionary.update({file.name: file.as_posix()})
 
-            self._dictionary.update({file.name: file.as_posix()})
-
-        self._logger.info(self._dictionary)
+            self._logger.info(self._dictionary)
 
     @lru_cache
     def get(self, key: Any, default: Any = None) -> Any:

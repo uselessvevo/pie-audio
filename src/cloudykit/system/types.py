@@ -27,5 +27,5 @@ class ManagerConfig:
 class PathConfig:
     root: Path
     section: str = dt.field(default=None)
-    section_stem: bool = dt.field(default=True)
-    pattern: str = dt.field(default=".json")
+    section_stem: bool = dt.field(default=False)
+    pattern: str = dt.field(default="*.json")

@@ -1,5 +1,6 @@
 from typing import Any
 
+from cloudykit.system.types import PathConfig
 from cloudykit.utils.files import read_json, write_json
 from cloudykit.utils.modules import import_by_path
 
@@ -13,7 +14,7 @@ class PluginsManager(BaseManager):
     Plugin manager is the registry of all app plugins
     """
     name = "plugins"
-    dependencies = ("configs", "locales", "components")
+    dependencies = ("configs", "locales",)  # "components"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -21,7 +22,7 @@ class PluginsManager(BaseManager):
 
     def mount(self, parent: MainWindow = None) -> None:
         self._mount_plugins(System.root / System.config.PLUGINS_FOLDER, parent)
-        self._mount_plugins(System.root / System.config.USER_PLUGINS_FOLDER, parent)
+        self._mount_plugins(System.user_root / System.config.USER_PLUGINS_FOLDER, parent)
 
     def _mount_plugins(self, folder: "Path", parent: "MainWindow" = None) -> None:
         if not (folder / "manifest.json").exists():
@@ -39,13 +40,20 @@ class PluginsManager(BaseManager):
                 plugin_module = import_by_path("plugin", str(plugin_path / "plugin/plugin.py"))
 
                 # Creating plugin instance
-                plugin_inst = getattr(plugin_module, plugin_manifest.get("init"))(parent)
+                plugin_instance = getattr(plugin_module, plugin_manifest.get("init"))(parent)
+
+                # Load locales, configs and components for our plugin
+                System.registry.configs.mount(PathConfig(folder / plugin_instance.name, section=plugin_instance.name))
+                System.registry.locales.mount(PathConfig(folder / plugin_instance.name, section=plugin_instance.name))
+
+                # System.registry.components.mount()
+                # System.registry.assets.mount()
 
                 # Initializing plugin
-                plugin_inst.init()
+                plugin_instance.init()
 
                 # Hashing plugin instance
-                self._dictionary[plugin_inst.name] = plugin_inst
+                self._dictionary[plugin_instance.name] = plugin_instance
 
     def unmount(self, *plugins: "BasePlugin", full_house: bool = False) -> None:
         """
@@ -59,6 +67,8 @@ class PluginsManager(BaseManager):
             self._logger.info(f"Unmounting {plugin.name} from {self.__class__.__name__}")
 
             if plugin:
+                System.registry.configs.delete(plugin.name)
+                System.registry.locales.delete(plugin.name)
                 plugin.unmount()
 
     def reload(self, *plugins: tuple[str], full_house: bool = False) -> None:

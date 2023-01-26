@@ -25,6 +25,8 @@ class SystemManager(QObject):
         # Application root link/alias
         self._root = self.config.APP_ROOT
 
+        self._user_root = self.config.USER_ROOT
+
         # Managers registry
         self._registry = ManagersRegistry(self)
 
@@ -55,8 +57,12 @@ class SystemManager(QObject):
         return self._logger
 
     @property
-    def root(self):
+    def root(self) -> Path:
         return self._root
+
+    @property
+    def user_root(self) -> Path:
+        return self._user_root
 
 
 System = SystemManager()
