@@ -21,7 +21,7 @@ class PluginsManager(BaseManager):
 
     def mount(self, parent: MainWindow = None) -> None:
         self._mount_plugins(System.root / System.config.PLUGINS_FOLDER, parent)
-        self._mount_plugins(System.root / System.config.PLUGINS_USER_FOLDER, parent)
+        self._mount_plugins(System.root / System.config.USER_PLUGINS_FOLDER, parent)
 
     def _mount_plugins(self, folder: "Path", parent: "MainWindow" = None) -> None:
         if not (folder / "manifest.json").exists():

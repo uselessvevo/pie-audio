@@ -15,7 +15,7 @@ APP_ROOT = BASE_DIR / os.getenv("CLOUDYAPP_ROOT", "cloudyapp")
 # List of plugins. By default, it's empty
 # String must be like this: `plugin_name`
 PLUGINS_FOLDER: str = os.getenv("PLUGINS_FOLDER", "plugins")
-PLUGINS_USER_FOLDER: str = os.getenv("USER_PLUGINS_FOLDER", "plugins")  # requires `ConfigManager`
+USER_PLUGINS_FOLDER: str = os.getenv("USER_PLUGINS_FOLDER", "plugins")  # requires `ConfigManager`
 
 
 # List of components. By default, it's empty
