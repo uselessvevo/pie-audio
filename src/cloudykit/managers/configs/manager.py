@@ -1,5 +1,4 @@
 import typing
-from pathlib import Path
 from dotty_dict import Dotty
 from functools import lru_cache
 
@@ -63,7 +62,7 @@ class ConfigManager(BaseManager):
         
         Args:
             section (str|None): section name
-            key (Any): key to access data or nested data
+            key (Any): key to access nested data
             data (Any): data to set
         """
         self._dictionary[section][key] = data
