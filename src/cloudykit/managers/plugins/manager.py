@@ -33,7 +33,7 @@ class PluginsManager(BaseManager):
                 self._logger.info(f"Mounting plugin `{plugin.name}` in `{parent.__class__.__name__}`")
 
                 # Reading data from `plugin/manifest.json`
-                plugin_path = System.root / f"plugins/{plugin.name}"
+                plugin_path = folder / plugin.name
                 plugin_manifest = read_json(str(plugin_path / "manifest.json"))
 
                 # Importing plugin module
@@ -43,8 +43,8 @@ class PluginsManager(BaseManager):
                 plugin_instance = getattr(plugin_module, plugin_manifest.get("init"))(parent)
 
                 # Load locales, configs and components for our plugin
-                System.registry.configs.mount(PathConfig(folder / plugin_instance.name, section=plugin_instance.name))
-                System.registry.locales.mount(PathConfig(folder / plugin_instance.name, section=plugin_instance.name))
+                System.registry.configs.mount(PathConfig(plugin_path, section=plugin_instance.name))
+                System.registry.locales.mount(PathConfig(plugin_path, section=plugin_instance.name))
 
                 # System.registry.components.mount()
                 # System.registry.assets.mount()
