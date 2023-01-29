@@ -8,18 +8,15 @@ class ConfigMixin:
     Config mixin
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, section: str, *args, **kwargs) -> None:
+        self._section = section
         self._config = System.registry.configs
 
-    def get(self, section: str, key: typing.Any, default: typing.Any = None) -> typing.Any:
-        return self._config.get(section, key, default)
+    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        return self._config.get(self._section, key, default)
 
-    def set(self, section: str, key: typing.Any, data: typing.Any) -> None:
-        self._config.set(section, key, data)
+    def set(self, key: typing.Any, data: typing.Any) -> None:
+        self._config.set(self._section, key, data)
 
-    def delete(self, section: str, key: typing.Any) -> None:
-        self._config.delete(section, key)
-
-    @property
-    def config(self) -> "ConfigManager":
-        return self.config
+    def delete(self, key: typing.Any) -> None:
+        self._config.delete(self._section, key)

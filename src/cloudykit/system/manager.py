@@ -25,6 +25,9 @@ class SystemManager(QObject):
         # Application root link/alias
         self._root = self.config.APP_ROOT
 
+        # Cloudykit root
+        self._sys_root = self.config.SYSTEM_ROOT
+
         self._user_root = self.config.USER_ROOT
 
         # Managers registry
@@ -63,6 +66,10 @@ class SystemManager(QObject):
     @property
     def user_root(self) -> Path:
         return self._user_root
+
+    @property
+    def sys_root(self) -> Path:
+        return self._sys_root
 
 
 System = SystemManager()

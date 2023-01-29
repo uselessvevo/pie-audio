@@ -3,7 +3,7 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
-from cloudyui.utils.core import getApplication
+from cloudykit.utils.core import getApplication
 from cloudykit.objects.mainwindow import MainWindow
 
 

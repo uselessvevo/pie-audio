@@ -1,9 +1,10 @@
 from functools import lru_cache
 from typing import Any
 
-from cloudykit.objects.manager import BaseManager
 from cloudykit.system.manager import System
-from cloudykit.system.types import DirectoryType, PathConfig
+from cloudykit.system.types import PathConfig
+from cloudykit.system.types import DirectoryType
+from cloudykit.objects.manager import BaseManager
 
 
 class AssetsManager(BaseManager):
@@ -13,7 +14,8 @@ class AssetsManager(BaseManager):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self._dictionary = dict()
+        self._roots: set[PathConfig] = set()
+        self._dictionary: dict = dict()
         self._theme = System.registry.configs.get("user", "assets.theme")
         self._assets_folder = System.root / System.config.ASSETS_FOLDER
         self._themes = []
@@ -41,16 +43,23 @@ class AssetsManager(BaseManager):
         ......... variables.json - variables for theme.template.qss
         """
         for root_config in roots:
+            self._roots.add(root_config)
             for file in (root_config.root / System.config.THEMES_FOLDER / self._theme).rglob(root_config.pattern):
+                section: str = root_config.section
+
                 if file.suffix in System.config.ASSETS_EXCLUDED_FORMATS:
                     continue
 
                 if file.is_dir() and DirectoryType in System.config.ASSETS_EXCLUDED_FORMATS:
                     continue
 
-                self._dictionary.update({file.name: file.as_posix()})
+                if not self._dictionary.get(section):
+                    self._dictionary[section] = {}
 
-            self._logger.info(self._dictionary)
+                if not self._dictionary.get(file.name):
+                    self._dictionary[section][file.stem] = {}
+
+                self._dictionary.update({file.stem: file.as_posix()})
 
     @lru_cache
     def get(self, key: Any, default: Any = None) -> Any:

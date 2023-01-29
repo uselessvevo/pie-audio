@@ -31,28 +31,29 @@ class BaseManager(QObject):
         This method serves to reset all containers, variables and etc.
         Don't use it to delete data from memory
         """
-        pass
+
+    def reload(self):
+        """
+        This method reload manager
+        """
 
     def set(self, *args, **kwargs) -> None:
         """
         Set data by key
         Arguments example: `key: Any, data: Any`
         """
-        pass
 
     def get(self, *args, **kwargs) -> Any:
         """
         Get data by key
         Arguments example: `key: Any, default: Any = None`
         """
-        pass
 
     def delete(self, *args, **kwargs) -> None:
         """
         Delete data by key
         Arguments example: `key: Any`
         """
-        pass
 
     @property
     def parent(self) -> "SystemManager":

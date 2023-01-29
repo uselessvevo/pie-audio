@@ -10,15 +10,19 @@ from cloudykit.observers.filesystem import FileSystemObserver
 
 class ConfigManager(BaseManager):
     name = "configs"
+    protected_keys = ("__FILE__",)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
+        self._roots: set[PathConfig] = set()
         self._dictionary: Dotty = Dotty({})
         self._observer = FileSystemObserver()
 
     def mount(self, *roots: PathConfig) -> None:
         for root_config in roots:
+            self._roots.add(root_config)
+
             for file in root_config.root.rglob(root_config.pattern):
                 section: str = root_config.root.name if root_config.section_stem else root_config.section
 
@@ -27,7 +31,7 @@ class ConfigManager(BaseManager):
 
                 if not self._dictionary[section].get(file.name):
                     self._dictionary[section][file.stem] = {}
-                
+
                 self._dictionary[section]["__FILE__"] = file
                 self._dictionary[section][file.stem].update(**read_json(str(file)))
     
@@ -36,6 +40,10 @@ class ConfigManager(BaseManager):
     def unmount(self, *args, **kwargs) -> None:
         self._dictionary = Dotty({})
         self._observer.remove_handlers(full_house=True)
+
+    def reload(self) -> None:
+        self.unmount()
+        self.mount(*self._roots)
 
     @lru_cache
     def get(
@@ -52,6 +60,9 @@ class ConfigManager(BaseManager):
             key (Any): key to access data or nested data
             default (Any): default value if key was not found
         """
+        if key in self.protected_keys:
+            raise KeyError(f"Can't use protected key: {key}")
+
         return self._dictionary.get(f"{section}.{key}", default)
 
     def set(
@@ -68,6 +79,9 @@ class ConfigManager(BaseManager):
             key (Any): key to access nested data
             data (Any): data to set
         """
+        if key in self.protected_keys:
+            raise KeyError(f"Can't use protected key: {key}")
+
         self._dictionary[section][key] = data
 
     def delete(
@@ -82,6 +96,9 @@ class ConfigManager(BaseManager):
             section (str|None): section name
             key (Any): key to access data or nested data
         """
+        if key in self.protected_keys:
+            raise KeyError(f"Can't use protected key: {key}")
+
         del self._dictionary[section][key]
 
     def save(self, section: str, data: dict, create: bool = False) -> None:
@@ -89,7 +106,7 @@ class ConfigManager(BaseManager):
             file = self._dictionary[section]["__FILE__"]
             folder = file.parent
         except KeyError:
-            raise FileNotFoundError(f"Folder {section} doesn't exist")
+            raise FileNotFoundError(f"Folder `{section}` doesn't exist")
 
         if create:
             if not folder.exists():

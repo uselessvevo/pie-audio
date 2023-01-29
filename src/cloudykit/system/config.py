@@ -11,7 +11,8 @@ from cloudykit.system.types import ManagerConfig
 # Base paths
 BASE_DIR: Path = Path(__file__).parent.parent.parent
 APP_ROOT: Path = BASE_DIR / os.getenv("CLOUDYAPP_ROOT", "cloudyapp")
-USER_ROOT: Path = os.getenv("USER_ROOT", Path.home())
+USER_ROOT: Path = os.getenv("USER_ROOT", Path.home() / ".crabs")
+SYSTEM_ROOT: Path = BASE_DIR / "cloudykit"
 
 # List of plugins. By default, it's empty
 # String must be like this: `plugin_name`
@@ -34,9 +35,11 @@ THEMES_FOLDER: str = os.getenv("THEMES_FOLDER", "themes")
 
 # Configurations
 CONFIGS_FOLDER = os.getenv("CONFIGS_FOLDER", "configs")
-USER_CONFIG_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER", ".crabs")
+USER_CONFIG_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER", "configs")
 USER_FOLDER_FILES: EList = ["locales.json", "assets.json"]
 
+# Templates
+TEMPLATE_FOLDER: str = "templates"
 
 # Locales
 LOCALES: EDict = {
@@ -58,17 +61,20 @@ MANAGERS: EList = [
     ManagerConfig(
         import_string="cloudykit.managers.configs.manager.ConfigManager",
         mount=True,
-        args=(PathConfig(USER_ROOT / USER_CONFIG_FOLDER, section="user"),)
+        args=(
+            PathConfig(APP_ROOT / USER_CONFIG_FOLDER, section="shared"),
+            PathConfig(USER_ROOT / USER_CONFIG_FOLDER, section="user")
+        )
     ),
     ManagerConfig(
         import_string="cloudykit.managers.locales.manager.LocalesManager",
         mount=True,
-        args=(PathConfig(USER_ROOT / LOCALES_FOLDER, section="user"),)
+        args=(PathConfig(APP_ROOT / LOCALES_FOLDER, section="shared"),)
     ),
     ManagerConfig(
         import_string="cloudykit.managers.assets.manager.AssetsManager",
         mount=True,
-        args=(PathConfig(APP_ROOT / ASSETS_FOLDER, pattern="*"),)
+        args=(PathConfig(APP_ROOT / ASSETS_FOLDER, pattern="*", section="shared"),)
     ),
     ManagerConfig(
         import_string="cloudykit.managers.components.manager.ComponentsManager",

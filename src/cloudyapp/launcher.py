@@ -9,9 +9,8 @@ from cloudykit.system.manager import System
 from cloudykit.utils.modules import is_debug
 from cloudykit.utils.modules import import_by_string
 from cloudykit.utils.system import check_crabs
-from cloudykit.utils.system import populate_crabs
 
-from cloudyui.utils.core import getApplication
+from cloudykit.utils.core import getApplication
 from cloudyui.widgets.splashcreen import SplashScreen
 from cloudyui.widgets.errorwindow import ErrorWindow
 
@@ -42,13 +41,9 @@ def setup_application() -> None:
     QApplication.processEvents()
     System.mount()
 
-    if not check_crabs(System.config.USER_CONFIG_FOLDER):
+    if not check_crabs():
         if splash:
             splash.close()
-
-        # This looks bad...
-        populate_crabs(System.config.USER_CONFIG_FOLDER)
-        System.registry.reload("configs", "locales")
 
         from wizard import SetupWizard
 
@@ -61,7 +56,7 @@ def setup_application() -> None:
 
 
 def main():
-    sys.excepthook = except_hook
+    # sys.excepthook = except_hook
     setup_application()
     import_by_string(os.getenv("CLOUDYAPP_ENTRYPOINT", "main.main"))()
 

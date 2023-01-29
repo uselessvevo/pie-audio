@@ -90,7 +90,7 @@ class ManagersRegistry:
         managers = self._managers_instances.keys() if full_house else managers
         managers_instances = [self._managers_instances.get(i) for i in managers or self._managers_instances.keys()]
 
-        for manager_instance in manager_instance:
+        for manager_instance in managers_instances:
             self._logger.info(f"Unmounting `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
             manager_name = manager_instance.name
             manager_instance.unmount()
@@ -102,8 +102,7 @@ class ManagersRegistry:
 
         for manager_instance in managers_instances:
             self._logger.info(f"Reloading `{manager_instance.__class__.__name__}`")
-            manager_instance.unmount()
-            manager_instance.mount()
+            manager_instance.reload()
 
     def destroy(self, *managers: str, full_house: bool = False):
         managers = self._managers_instances.keys() if full_house else managers

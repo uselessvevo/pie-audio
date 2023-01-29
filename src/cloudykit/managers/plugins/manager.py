@@ -25,6 +25,9 @@ class PluginsManager(BaseManager):
         self._mount_plugins(System.user_root / System.config.USER_PLUGINS_FOLDER, parent)
 
     def _mount_plugins(self, folder: "Path", parent: "MainWindow" = None) -> None:
+        if not folder.exists():
+            folder.mkdir()
+
         if not (folder / "manifest.json").exists():
             write_json(str(folder / "manifest.json"), [])
 

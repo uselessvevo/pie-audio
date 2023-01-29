@@ -2,13 +2,15 @@ import os
 from PyQt5 import QtWidgets
 
 from cloudykit.system.manager import System
-from cloudyui.utils.core import restartApplication
+from cloudykit.utils.core import restartApplication
+from cloudykit.utils.files import writeJson
 
 
 class LocaleWizardPage(QtWidgets.QWizardPage):
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
+
         self._parent = parent
         self._locales = System.config.LOCALES
         self._curLocale = System.config.DEFAULT_LOCALE
@@ -21,7 +23,7 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         self.comboBox.addItems([self._locales.get(i) for (i, _) in self._locales.items()])
         self.comboBox.currentIndexChanged.connect(self.getResult)
 
-        self.localeLabel = QtWidgets.QLabel(System.registry.locales("Select locale"))
+        self.localeLabel = QtWidgets.QLabel(System.registry.locales("shared", "Select locale"))
         self.localeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -31,9 +33,15 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
 
     def getResult(self):
         newLocale = self._localesRev.get(self.comboBox.currentText())
-        System.registry.configs.save("locales", {"locale": newLocale}, create=True)
+        writeJson(
+            file=str(System.user_root / System.config.USER_CONFIG_FOLDER / "locales.json"),
+            data={"locale": newLocale},
+            create=True
+        )
+
         if self._curLocale != newLocale:
             restartApplication()
+
         return newLocale
 
 
@@ -47,9 +55,11 @@ class ThemeWizardPage(QtWidgets.QWizardPage):
         self.comboBox.addItems(System.registry.assets.themes)
         self.comboBox.currentIndexChanged.connect(self.getResult)
 
-        self._curTheme = System.registry.configs("user", "assets.theme")
+        self._curTheme = System.registry.configs.get(
+            "user", "assets.theme", default=System.registry.assets.theme
+        )
 
-        themeLabel = QtWidgets.QLabel(System.registry.locales("Select theme"))
+        themeLabel = QtWidgets.QLabel(System.registry.locales("shared", "Select theme"))
         themeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -59,8 +69,13 @@ class ThemeWizardPage(QtWidgets.QWizardPage):
 
     def getResult(self):
         newTheme = self.comboBox.currentText()
+        writeJson(
+            file=str(System.user_root / System.config.USER_CONFIG_FOLDER / "assets.json"),
+            data={"theme": newTheme},
+            create=True
+        )
+
         if self._curTheme != newTheme:
-            System.registry.configs.save("assets", {"theme": newTheme}, create=True)
             restartApplication()
 
         return self.comboBox.currentText()
@@ -127,6 +142,11 @@ class SetupWizard(QtWidgets.QWizard):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
+        if not System.user_root.exists():
+            System.user_root.mkdir()
+            (System.user_root / System.config.USER_CONFIG_FOLDER).mkdir()
+            (System.user_root / System.config.USER_PLUGINS_FOLDER).mkdir()
+
         self.setWindowTitle("Setup wizard")
         self.resize(640, 380)
         self.setOptions(
@@ -145,13 +165,10 @@ class SetupWizard(QtWidgets.QWizard):
             self.addPage(page)
 
         self.button(QtWidgets.QWizard.FinishButton).clicked.connect(self.onFinish)
-        self.button(QtWidgets.QWizard.NextButton).clicked.connect(self.onNext)
-
-    def onNext(self):
-        if self.currentId() == len(self.pages):
-            print("sex")
 
     def onFinish(self):
         for page in self.pages:
             if hasattr(page, "getResult"):
                 page.getResult()
+
+        restartApplication()
