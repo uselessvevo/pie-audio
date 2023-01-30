@@ -1,7 +1,7 @@
 from typing import Union
 
-from cloudykit.objects.logger import logger
-from cloudykit.objects.manager import BaseManager
+from cloudykit.utils.logger import logger
+from cloudykit.managers.base import BaseManager
 from cloudykit.system.types import ManagerConfig
 from cloudykit.utils.modules import import_by_string
 from cloudykit.system.exceptions import ObjectNotMountedError, DependencyNotFoundError

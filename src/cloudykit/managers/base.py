@@ -1,7 +1,7 @@
 from typing import Any
 from PyQt5.QtCore import QObject
 
-from cloudykit.objects.logger import logger
+from cloudykit.utils.logger import logger
 
 
 class BaseManager(QObject):

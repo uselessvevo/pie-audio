@@ -4,7 +4,7 @@ from typing import Any
 from cloudykit.system.manager import System
 from cloudykit.system.types import PathConfig
 from cloudykit.system.types import DirectoryType
-from cloudykit.objects.manager import BaseManager
+from cloudykit.managers.base import BaseManager
 
 
 class AssetsManager(BaseManager):

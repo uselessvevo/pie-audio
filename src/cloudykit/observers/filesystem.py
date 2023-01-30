@@ -1,9 +1,8 @@
 import os.path
-
 from watchdog import events
 from watchdog.observers import Observer
 
-from cloudykit.objects.logger import logger
+from cloudykit.utils.logger import logger
 
 
 class FileSystemEventHandler(events.FileSystemEventHandler):

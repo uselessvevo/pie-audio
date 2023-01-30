@@ -4,7 +4,7 @@ from dotty_dict import Dotty
 from cloudykit.system.types import PathConfig
 from cloudykit.utils.files import read_json
 from cloudykit.system.manager import System
-from cloudykit.objects.manager import BaseManager
+from cloudykit.managers.base import BaseManager
 
 
 class LocalesManager(BaseManager):

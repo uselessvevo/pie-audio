@@ -3,13 +3,13 @@ import os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
+from cloudykit.system.types import Error
 from cloudykit.system.manager import System
-from cloudykit.objects.structs import Error
+from cloudykit.utils.logger import logger
 from cloudykit.objects.plugin import BasePlugin
-from cloudykit.objects.logger import logger
 
 
-class MainWindow(QMainWindow):
+class AppWindow(QMainWindow):
     signalMoved = pyqtSignal()
     signalResized = pyqtSignal()
     signalExceptionOccurred = pyqtSignal(dict)
@@ -43,20 +43,20 @@ class MainWindow(QMainWindow):
 
     def placeOn(self, child, target: str, **options) -> None:
         if not System.registry.components.get(target):
-            raise ValueError(f"MainWindow doesn't contain component named `{target}`")
+            raise ValueError(f"AppWindow doesn't contain component named `{target}`")
 
         if not isinstance(child, (BasePlugin,)):
-            raise TypeError("MainWindow objects can register only `BasePlugin` based objects")
+            raise TypeError("AppWindow objects can register only `BasePlugin` based objects")
 
         # Register or render object on `BaseComponent` based object
         System.registry.components.get(target).register(child, **options)
 
     def removeFrom(self, child, target: str) -> None:
         if not isinstance(child, (BasePlugin,)):
-            raise TypeError("MainWindow objects can register only `BasePlugin` based objects")
+            raise TypeError("AppWindow objects can register only `BasePlugin` based objects")
 
         if not System.registry.components.get(target):
-            raise ValueError(f"MainWindow doesn't contain {target} object")
+            raise ValueError(f"AppWindow doesn't contain {target} object")
 
     # Event methods
 

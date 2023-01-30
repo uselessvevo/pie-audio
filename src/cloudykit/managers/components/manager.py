@@ -1,8 +1,8 @@
 import typing
 
 from cloudykit.system.manager import System
-from cloudykit.objects.mainwindow import MainWindow
-from cloudykit.objects.manager import BaseManager
+from cloudykit.appwindow.main import AppWindow
+from cloudykit.managers.base import BaseManager
 from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_path
 
@@ -15,7 +15,7 @@ class ComponentsManager(BaseManager):
         super().__init__(*args, **kwargs)
         self._dictionary = {}
 
-    def mount(self, parent: MainWindow = None) -> None:
+    def mount(self, parent: AppWindow = None) -> None:
         for component in (System.root / System.config.COMPONENTS_FOLDER).iterdir():
             self._logger.warning(f"Mounting component `{component.name}` in `{parent.__class__.__name__}`")
 

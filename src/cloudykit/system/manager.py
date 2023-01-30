@@ -2,7 +2,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QObject
 
-from cloudykit.objects.logger import logger
+from cloudykit.utils.logger import logger
 from cloudykit.system.loader import ConfigLoader
 from cloudykit.system.registry import ManagersRegistry
 

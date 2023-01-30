@@ -5,8 +5,8 @@ from cloudykit.utils.files import read_json, write_json
 from cloudykit.utils.modules import import_by_path
 
 from cloudykit.system.manager import System
-from cloudykit.objects.manager import BaseManager
-from cloudykit.objects.mainwindow import MainWindow
+from cloudykit.managers.base import BaseManager
+from cloudykit.appwindow.main import AppWindow
 
 
 class PluginsManager(BaseManager):
@@ -20,11 +20,11 @@ class PluginsManager(BaseManager):
         super().__init__(*args, **kwargs)
         self._dictionary: dict = {}
 
-    def mount(self, parent: MainWindow = None) -> None:
+    def mount(self, parent: AppWindow = None) -> None:
         self._mount_plugins(System.root / System.config.PLUGINS_FOLDER, parent)
         self._mount_plugins(System.user_root / System.config.USER_PLUGINS_FOLDER, parent)
 
-    def _mount_plugins(self, folder: "Path", parent: "MainWindow" = None) -> None:
+    def _mount_plugins(self, folder: "Path", parent: "AppWindow" = None) -> None:
         if not folder.exists():
             folder.mkdir()
 

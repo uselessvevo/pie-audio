@@ -4,10 +4,10 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 from cloudykit.utils.core import getApplication
-from cloudykit.objects.mainwindow import MainWindow
+from cloudykit.appwindow.main import AppWindow
 
 
-class CloudyApp(MainWindow):
+class CloudyApp(AppWindow):
 
     signalComponentsLoading = pyqtSignal()
     signalPluginsReady = pyqtSignal()
