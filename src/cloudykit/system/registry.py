@@ -93,7 +93,7 @@ class ManagersRegistry:
         for manager_instance in managers_instances:
             self._logger.info(f"Unmounting `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
             manager_name = manager_instance.name
-            manager_instance.unmount()
+            manager_instance.unmount(full_house=True)
             delattr(self, manager_name)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):

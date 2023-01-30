@@ -19,6 +19,6 @@ def getApplication(*args, **kwargs):
 
 
 def restartApplication() -> None:
-    System.registry.unmount(full_house=True)
+    System.registry.unmount("plugins", "locales", "assets", "configs")
     QtCore.QCoreApplication.quit()
     QtCore.QProcess.startDetached(sys.executable, sys.argv)

@@ -28,7 +28,7 @@ class BaseManager(QObject):
 
     def unmount(self, *args, **kwargs):
         """
-        This method serves to reset all containers, variables and etc.
+        This method serves to reset all containers, variables etc.
         Don't use it to delete data from memory
         """
 

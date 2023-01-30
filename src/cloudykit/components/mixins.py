@@ -1,4 +1,6 @@
-from PyQt5.QtCore import pyqtSignal
+"""
+Component mixins
+"""
 
 
 class ComponentMixin:
@@ -6,18 +8,6 @@ class ComponentMixin:
     Use this mixin to register your object
     on the `BaseComponent` based objects
     """
-    signalQuitRequested = pyqtSignal()
-    signalRestartRequested = pyqtSignal()
-    signalExceptionOccurred = pyqtSignal(dict)
-
-    signalOnComponentClose = pyqtSignal()
-    signalOnComponentMoved = pyqtSignal("QMoveEvent")
-    signalOnComponentResized = pyqtSignal("QResizeEvent")
-
-    def prepareComponentSignals(self) -> None:
-        self.signalQuitRequested.connect(self._parent)
-        self.signalRestartRequested.connect(self._parent)
-        self.signalExceptionOccurred.connect(self._parent)
 
     def placeOn(self, target: str, **kwargs) -> None:
         """

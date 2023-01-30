@@ -48,9 +48,7 @@ class PluginsManager(BaseManager):
                 # Load locales, configs and components for our plugin
                 System.registry.configs.mount(PathConfig(plugin_path, section=plugin_instance.name))
                 System.registry.locales.mount(PathConfig(plugin_path, section=plugin_instance.name))
-
-                # System.registry.components.mount()
-                # System.registry.assets.mount()
+                System.registry.assets.mount(PathConfig(plugin_path, section=plugin_instance.name))
 
                 # Initializing plugin
                 plugin_instance.init()
@@ -62,12 +60,12 @@ class PluginsManager(BaseManager):
         """
         Unmount managers, services in parent object or all at once
         Args:
-            plugin (object): BasePlugin based object
+            plugins (objects): BasePlugin based object
             full_house (bool): reload all managers, services from all instances
         """
         plugins = plugins if not full_house else self._dictionary.values()
         for plugin in plugins:
-            self._logger.info(f"Unmounting {plugin.name} from {self.__class__.__name__}")
+            self._logger.info(f"Unmounting plugin {plugin.name} from {self.__class__.__name__}")
 
             if plugin:
                 System.registry.configs.delete(plugin.name)

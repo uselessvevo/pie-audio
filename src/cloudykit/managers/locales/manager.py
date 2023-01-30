@@ -35,7 +35,7 @@ class LocalesManager(BaseManager):
 
                 self._dictionary[file.stem].update(**read_json(str(file)))
 
-    def unmount(self) -> None:
+    def unmount(self, *args, **kwargs) -> None:
         self._dictionary = Dotty({})
 
     def reload(self) -> None:

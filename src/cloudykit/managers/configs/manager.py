@@ -99,7 +99,10 @@ class ConfigManager(BaseManager):
         if key in self.protected_keys:
             raise KeyError(f"Can't use protected key: {key}")
 
-        del self._dictionary[section][key]
+        if not key:
+            del self._dictionary[section]
+        else:
+            del self._dictionary[section][key]
 
     def save(self, section: str, data: dict, create: bool = False) -> None:
         try:

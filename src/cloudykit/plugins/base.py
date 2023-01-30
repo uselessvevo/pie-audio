@@ -26,10 +26,10 @@ class BasePlugin(
     icon: str = "app.ico"
 
     # By default, description must be written in English
-    description: str = f"{name} description"
+    description: str
 
     # Plugin version
-    version: tuple[int, int, int] = (0, 1, 0)
+    version: tuple[int] = (0, 1, 0)
 
     # Required builtin plugins
     plugins: list[str]
@@ -139,7 +139,7 @@ class BasePlugin(
     def getDescription(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    def getVersion(self) -> tuple[int, int, int]:
+    def getVersion(self) -> tuple[int]:
         return self.version
 
     def getIcon(self) -> str:

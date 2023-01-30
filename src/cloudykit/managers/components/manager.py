@@ -49,7 +49,7 @@ class ComponentsManager(BaseManager):
             self._logger.info(f"Unmounting {component.name} from {self.__class__.__name__}")
 
             if component:
-                plugin.unmount()
+                component.unmount()
 
     def reload(self, *components: tuple[str], full_house: bool = False) -> None:
         components = self._dictionary.keys() if full_house else components

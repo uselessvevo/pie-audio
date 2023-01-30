@@ -13,9 +13,8 @@ class BaseComponent(QObject):
     # Component codename
     name: str
 
-    # Component description
-    description: str = f"{name} description"
-    
+    version: tuple[int] = (0, 1, 0)
+
     # Array of managers
     dependencies: tuple[str]
 
@@ -36,7 +35,9 @@ class BaseComponent(QObject):
     # Signal when exception occurred
     signalExceptionOccurred = pyqtSignal(Error)
 
-    def __init__(self, parent : QObject = None, *args, **kwargs) -> None:
+    def __init__(self, parent: QObject = None, *args, **kwargs) -> None:
+        super().__init__(parent)
+
         self._parent = parent
         self._is_registered: bool = False
         self._logger = logger
@@ -83,12 +84,6 @@ class BaseComponent(QObject):
     def onCloseEvent(self) -> None:
         self.logger.info("Closing. Goodbye!..")
 
-    # Render methods
-
-    def prepareSizes(self) -> None:
-        self.setMinimumSize(*self.minSize)
-        self.setMaximumSize(*self.maxSize)
-
     def updateStyle(self) -> None:
         pass
 
@@ -104,14 +99,8 @@ class BaseComponent(QObject):
     def getName(self) -> str:
         return self.name or self.__class__.__name__
 
-    def getDescription(self) -> str:
-        return self.description or f"{self.__class__.__class__}'s description"
-
-    def getVersion(self) -> tuple[int, int, int]:
+    def getVersion(self) -> tuple[int]:
         return self.version
-
-    def getIcon(self) -> str:
-        return System.registry.assets.get(self.icon)
 
     # Signals
 

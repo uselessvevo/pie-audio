@@ -3,13 +3,16 @@ import os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
+from cloudykit.managers.assets.mixins import AssetsMixin
+from cloudykit.managers.configs.mixins import ConfigMixin
+from cloudykit.managers.locales.mixins import LocalesMixin
 from cloudykit.system.types import Error
 from cloudykit.system.manager import System
 from cloudykit.utils.logger import logger
-from cloudykit.objects.plugin import BasePlugin
+from cloudykit.plugins.base import BasePlugin
 
 
-class AppWindow(QMainWindow):
+class AppWindow(QMainWindow, ConfigMixin, LocalesMixin, AssetsMixin):
     signalMoved = pyqtSignal()
     signalResized = pyqtSignal()
     signalExceptionOccurred = pyqtSignal(dict)
@@ -19,7 +22,10 @@ class AppWindow(QMainWindow):
     signalPluginReloading = pyqtSignal(str)
 
     def __init__(self):
-        super().__init__()
+        super().__init__(section="shared")
+
+        # Just a logger
+        self._logger = logger
 
         # Set windows taskbar icon
         if os.name == "nt":
@@ -27,9 +33,6 @@ class AppWindow(QMainWindow):
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
                 "mycompany.myproduct.subproduct.version"
             )
-
-        self._logger = logger
-        self.__actions: dict = {}
 
     # Main methods
 
@@ -61,7 +64,7 @@ class AppWindow(QMainWindow):
     # Event methods
 
     def closeEvent(self, event) -> None:
-        System.registry.unmount()
+        System.registry.unmount("plugins", "locales", "assets", "configs")
         for window in QApplication.topLevelWindows():
             window.close()
 

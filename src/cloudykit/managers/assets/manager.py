@@ -59,10 +59,10 @@ class AssetsManager(BaseManager):
                 if not self._dictionary.get(file.name):
                     self._dictionary[section][file.stem] = {}
 
-                self._dictionary.update({file.stem: file.as_posix()})
+                self._dictionary[section].update({file.stem: file.as_posix()})
 
     @lru_cache
-    def get(self, key: Any, default: Any = None) -> Any:
+    def get(self, section: str, key: Any, default: Any = None) -> Any:
         return self._dictionary.get(key, default)
 
     @property

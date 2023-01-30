@@ -14,9 +14,8 @@ class CloudyApp(AppWindow):
     signalComponentsReady = pyqtSignal()
 
     def mount(self):
-        self.setMinimumSize(self.registry.configs.get("ui.minsize") or 720, 480)
-        if isinstance(self.registry.configs.get("ui.maxsize"), tuple):
-            self.setMaximumSize(self.registry.configs.get("ui.maxsize"))
+        self.setMinimumSize(720, 480)
+        self.resize(*self.config.get("user", "ui.winsize", (720, 480)))
 
         self.setWindowTitle(f"CloudyFF • Audio/Video Converter")
         self.prepareBaseSignals()
@@ -73,21 +72,21 @@ class CloudyApp(AppWindow):
 
     @pyqtSlot(str)
     def pluginLoading(self, name: str) -> None:
-        self.statusBar.showMessage(self.registry.locales("Plugin {} is loading".format(name)))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugin {} is loading".format(name)))
 
     @pyqtSlot(str)
     def pluginReady(self, name: str) -> None:
-        self.statusBar.showMessage(self.registry.locales("Plugin {} is ready".format(name)))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugin {} is ready".format(name)))
 
     @pyqtSlot(str)
     def pluginReloading(self, name: str) -> None:
-        self.statusBar.showMessage(self.registry.locales("Plugin {} reloading".format(name)))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugin {} reloading".format(name)))
 
     def notifyPluginsReady(self):
-        self.statusBar.showMessage(self.registry.locales("Plugins are ready"))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugins are ready"))
 
     def notifyComponentsReady(self):
-        self.statusBar.showMessage(self.registry.locales("Components are ready"))
+        self.statusBar.showMessage(self.registry.locales("shared", "Components are ready"))
 
 
 def main() -> None:
