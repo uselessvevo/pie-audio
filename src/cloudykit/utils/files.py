@@ -48,9 +48,12 @@ def read_json(
             raise e
 
 
-def write_json(file: str, data: Any, mode: str = 'w') -> None:
+def write_json(file: str, data: Any, mode: str = "w", create: bool = False) -> None:
     """ Writes data in file by given path """
     try:
+        if create and not os.path.exists(file):
+            touch(file)
+
         data = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False)
         with open(file, mode, encoding='utf-8') as output:
             output.write(data)

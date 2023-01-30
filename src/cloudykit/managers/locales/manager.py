@@ -1,52 +1,52 @@
 from pathlib import Path
 from dotty_dict import Dotty
 
+from cloudykit.system.types import PathConfig
 from cloudykit.utils.files import read_json
 from cloudykit.system.manager import System
-from cloudykit.objects.manager import BaseManager
+from cloudykit.managers.base import BaseManager
 
 
 class LocalesManager(BaseManager):
-    dependencies = ("userconfigs",)
+    name = "locales"
+    dependencies = ("configs",)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._locale: str = System.registry.userconfigs.get(
-            key="locales.locale",
+        self._locale: str = System.registry.configs.get(
+            "user", "locales.locale",
             default=System.config.DEFAULT_LOCALE
         )
-        self._files: dict = {}
-        self._translations: Dotty = Dotty({})
+        self._roots: set[PathConfig] = set()
+        self._dictionary: Dotty = Dotty({})
 
-    def mount(self, root: Path = System.root, section: str = System.config.SHARED_TYPE) -> None:
-        files = (root / System.config.LOCALES_FOLDER_NAME / self._locale).rglob("*.json")
-        for file in files:
-            if not self._translations.get(section):
-                self._translations[section] = {}
+    def mount(self, *roots: PathConfig) -> None:
+        for root_config in roots:
+            self._roots.add(root_config)
+            files = (root_config.root / self._locale).rglob(root_config.pattern)
+            for file in files:
+                section: str = root_config.section
 
-            self._translations[section].update(**read_json(file))
-            self._files.update({str(file): section})
+                if not self._dictionary.get(section):
+                    self._dictionary[section] = {}
 
-    def unmount(self) -> None:
-        self._translations = Dotty({})
+                if not self._dictionary.get(file.name):
+                    self._dictionary[section][file.stem] = {}
+
+                self._dictionary[file.stem].update(**read_json(str(file)))
+
+    def unmount(self, *args, **kwargs) -> None:
+        self._dictionary = Dotty({})
 
     def reload(self) -> None:
         self.unmount()
-        self.reload_files(full_house=True)
-        self.mount()
+        self.mount(*self._roots)
 
-    def reload_files(self, *files: tuple[str], full_house: bool = False) -> None:
-        files: tuple = self._files.keys() if full_house else files
-        files_data = {k: v for (k, v) in self._files.items() if k in files}
-        for file, section in files_data.items():
-            self._translations[section].update(**read_json(file))
-            self._logger.info(f"Reading {file} file for {section} section")
-        
-    def get(self, key: str, section: str = "shared") -> str:
-        try:
-            return self._translations[section][key]
-        except KeyError:
+    def get(self, section: str, key: str) -> str:
+        value = self._dictionary.get(f"{section}.{key}")
+        if not value:
             return key
+        return value
 
     @property
     def locale(self):

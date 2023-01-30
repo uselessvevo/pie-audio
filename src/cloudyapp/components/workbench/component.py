@@ -3,7 +3,7 @@ from PyQt5 import QtGui
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
-from cloudykit.objects.component import BaseComponent
+from cloudykit.components.base import BaseComponent
 
 
 class Workbench(QtWidgets.QToolBar, BaseComponent):
@@ -22,22 +22,22 @@ class Workbench(QtWidgets.QToolBar, BaseComponent):
         ))
 
         openFolder = QtWidgets.QToolButton()
-        openFolder.setToolTip(self.registry.locales("Shared.OpenFolder"))
-        openFolder.setIcon(QtGui.QIcon(self.registry.assets("shared/icons/folder-open.svg")))
+        openFolder.setToolTip(self.registry.locales("shared", "Open folder"))
+        openFolder.setIcon(QtGui.QIcon(self.registry.assets("shared", "folder-open.svg")))
         openFolder.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         search = QtWidgets.QToolButton()
         search.setToolTip(self.registry.locales("Shared.Search"))
-        search.setIcon(QtGui.QIcon(self.registry.assets("shared/icons/search.svg")))
+        search.setIcon(QtGui.QIcon(self.registry.assets("shared", "search.svg")))
         search.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         settings = QtWidgets.QToolButton()
-        settings.setToolTip(self.registry.locales("Shared.Settings"))
-        settings.setIcon(QtGui.QIcon(self.registry.assets("shared/icons/settings.svg")))
+        settings.setToolTip(self.registry.locales("shared", "Settings"))
+        settings.setIcon(QtGui.QIcon(self.registry.assets("shared", "settings.svg")))
         settings.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         runProcess = QtWidgets.QToolButton()
-        runProcess.setToolTip(self.registry.locales("Shared.RunProcess"))
+        runProcess.setToolTip(self.registry.locales("shared", "Run"))
         runProcess.setIcon(QtGui.QIcon(self.registry.assets("shared/icons/start.svg")))
         runProcess.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
@@ -48,19 +48,7 @@ class Workbench(QtWidgets.QToolBar, BaseComponent):
             QtWidgets.QSizePolicy.Expanding
         )
 
-        self.runConsole = QtWidgets.QToolButton()
-        self.runConsole.setToolTip(self.registry.locales("Shared.runConsole"))
-        self.runConsole.setIcon(QtGui.QIcon(self.registry.assets("shared/icons/bug.svg")))
-        self.runConsole.setToolButtonStyle(Qt.ToolButtonIconOnly)
-
-        # Pack all default actions
         self.addWidget(openFolder)
         self.addWidget(search)
         self.addWidget(spacer)
         self.addWidget(settings)
-
-    def register(self, toolButton: QtWidgets.QToolButton) -> None:
-        raise NotImplementedError("Method `register` must be implemented")
-
-    def unregister(self):
-        raise NotImplementedError("Method `unregister` must be implemented")

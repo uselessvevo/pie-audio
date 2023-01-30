@@ -1,9 +1,8 @@
 import os.path
-
 from watchdog import events
 from watchdog.observers import Observer
 
-from cloudykit.objects.logger import logger
+from cloudykit.utils.logger import logger
 
 
 class FileSystemEventHandler(events.FileSystemEventHandler):
@@ -71,6 +70,9 @@ class FileSystemObserver:
         self._logger.info(f"Unscheduling handler for {self._watchers[name]['path']} path")
         self._observer.unschedule(watcher)
         self._watchers.pop(name)
+
+    def remove_handlers(self, *handlers, full_house: bool = False) -> None:
+        pass
 
     @property
     def watchers(self) -> dict:

@@ -3,6 +3,8 @@ import sys
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 
+from cloudykit.system.manager import System
+
 
 def getApplication(*args, **kwargs):
     app = QtWidgets.QApplication.instance()
@@ -17,5 +19,6 @@ def getApplication(*args, **kwargs):
 
 
 def restartApplication() -> None:
+    System.registry.unmount("plugins", "locales", "assets", "configs")
     QtCore.QCoreApplication.quit()
     QtCore.QProcess.startDetached(sys.executable, sys.argv)

@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
-from cloudykit.objects.structs import Error
+from cloudykit.system.types import Error
 from cloudykit.system.manager import System
 from cloudykit.system.registry import ManagersRegistry
 
-from cloudykit.objects.logger import logger
-from cloudykit.objects.mixins import MenuMixin
-from cloudykit.objects.mixins import ActionMixin
-from cloudykit.objects.mixins import ComponentMixin
+from cloudykit.utils.logger import logger
+from cloudykit.plugins.mixins import MenuMixin
+from cloudykit.plugins.mixins import ActionMixin
+from cloudykit.components.mixins import ComponentMixin
 
 
 class BasePlugin(
@@ -17,7 +17,7 @@ class BasePlugin(
     MenuMixin,
     ComponentMixin
 ):
-    # Base configuration #
+    # Main attributes #
 
     # Plugin codename
     name: str
@@ -29,9 +29,9 @@ class BasePlugin(
     description: str
 
     # Plugin version
-    version: tuple[int, int, int] = (0, 1, 0)
+    version: tuple[int] = (0, 1, 0)
 
-    # Required plugins
+    # Required builtin plugins
     plugins: list[str]
     
     # Required components
@@ -66,7 +66,7 @@ class BasePlugin(
         self._parent = parent
         self._is_registered: bool = False
         self._logger = logger
-        self._path: "Path" = System.root / System.config.PLUGINS_FOLDER_NAME / self.name
+        self._path: "Path" = System.root / System.config.PLUGINS_FOLDER / self.name
 
     def prepareBaseSignals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
@@ -96,7 +96,7 @@ class BasePlugin(
     def mount(self) -> None:
         """
         Mount plugin.
-        For example, you can use `placeOn` method to render it on `MainWindow` components
+        For example, you can use `placeOn` method to render it on `AppWindow` components
         """
         raise NotImplementedError("Method `mount` must be implemented")
 
@@ -139,7 +139,7 @@ class BasePlugin(
     def getDescription(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    def getVersion(self) -> tuple[int, int, int]:
+    def getVersion(self) -> tuple[int]:
         return self.version
 
     def getIcon(self) -> str:

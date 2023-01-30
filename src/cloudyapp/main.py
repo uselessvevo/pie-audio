@@ -3,20 +3,19 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
-from cloudyui.utils.core import getApplication
-from cloudykit.objects.mainwindow import MainWindow
+from cloudykit.utils.core import getApplication
+from cloudykit.appwindow.main import AppWindow
 
 
-class CloudyApp(MainWindow):
+class CloudyApp(AppWindow):
 
     signalComponentsLoading = pyqtSignal()
     signalPluginsReady = pyqtSignal()
     signalComponentsReady = pyqtSignal()
 
     def mount(self):
-        self.setMinimumSize(self.registry.userconfigs.get("ui.minsize") or 720, 480)
-        if isinstance(self.registry.userconfigs.get("ui.maxsize"), tuple):
-            self.setMaximumSize(self.registry.userconfigs.get("ui.maxsize"))
+        self.setMinimumSize(720, 480)
+        self.resize(*self.config.get("user", "ui.winsize", (720, 480)))
 
         self.setWindowTitle(f"CloudyFF • Audio/Video Converter")
         self.prepareBaseSignals()
@@ -73,21 +72,21 @@ class CloudyApp(MainWindow):
 
     @pyqtSlot(str)
     def pluginLoading(self, name: str) -> None:
-        self.statusBar.showMessage(self.registry.locales("Plugin {} is loading".format(name)))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugin {} is loading".format(name)))
 
     @pyqtSlot(str)
     def pluginReady(self, name: str) -> None:
-        self.statusBar.showMessage(self.registry.locales("Plugin {} is ready".format(name)))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugin {} is ready".format(name)))
 
     @pyqtSlot(str)
     def pluginReloading(self, name: str) -> None:
-        self.statusBar.showMessage(self.registry.locales("Plugin {} reloading".format(name)))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugin {} reloading".format(name)))
 
     def notifyPluginsReady(self):
-        self.statusBar.showMessage(self.registry.locales("Plugins are ready"))
+        self.statusBar.showMessage(self.registry.locales("shared", "Plugins are ready"))
 
     def notifyComponentsReady(self):
-        self.statusBar.showMessage(self.registry.locales("Components are ready"))
+        self.statusBar.showMessage(self.registry.locales("shared", "Components are ready"))
 
 
 def main() -> None:

@@ -1,21 +1,21 @@
 import typing
 
 from cloudykit.system.manager import System
-from cloudykit.objects.mainwindow import MainWindow
-from cloudykit.objects.manager import BaseManager
+from cloudykit.appwindow.main import AppWindow
+from cloudykit.managers.base import BaseManager
 from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_path
 
 
 class ComponentsManager(BaseManager):
-    # TODO: Make a method to get all plugins
-    dependencies = ("userconfigs",)
+    name = "components"
+    dependencies = ("configs",)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._components = {}
+        self._dictionary = {}
 
-    def mount(self, parent: MainWindow = None) -> None:
+    def mount(self, parent: AppWindow = None) -> None:
         for component in (System.root / System.config.COMPONENTS_FOLDER).iterdir():
             self._logger.warning(f"Mounting component `{component.name}` in `{parent.__class__.__name__}`")
 
@@ -33,33 +33,28 @@ class ComponentsManager(BaseManager):
             component_inst.init()
 
             # Hashing component instance
-            self._components[component_inst.name] = component_inst
+            self._dictionary[component_inst.name] = component_inst
 
-    def unmount(self, component: "BaseComponent" = None, full_house: bool = False) -> None:
+    def unmount(self, *components: "BaseComponent", full_house: bool = False) -> None:
         """
         Unmount managers, services in parent object or all at once
         Args:
             component (object): BaseComponent based object
             full_house (bool): reload all managers, services from all instances
         """
-        # Get all plugins and reload them
-        # plugins = self._get_all_plugins()
+        # TODO: Get all plugins to unmount them all
+        # >>> plugins = self._get_all_plugins()
+        components = components if not full_house else self._dictionary.values()
+        for component in components:
+            self._logger.info(f"Unmounting {component.name} from {self.__class__.__name__}")
 
-        if component and full_house:
-            raise RuntimeError("Can\"t use `component` and `full_house` together")
-
-        if component:
-            component.unmount()
-
-        elif full_house:
-            for component in self._components.values():
-                self._logger.info(f"Unmounting {component.name} from {self.__class__.__name__}")
+            if component:
                 component.unmount()
 
     def reload(self, *components: tuple[str], full_house: bool = False) -> None:
-        components = self._components.keys() if full_house else components
+        components = self._dictionary.keys() if full_house else components
         for component in components:
-            self._components.get(component)
+            self._dictionary.get(component)
 
     def get(self, key, default: typing.Any = None) -> typing.Any:
-        return self._components.get(key)
+        return self._dictionary.get(key)

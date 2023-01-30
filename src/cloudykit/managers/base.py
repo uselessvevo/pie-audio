@@ -1,10 +1,13 @@
 from typing import Any
 from PyQt5.QtCore import QObject
 
-from cloudykit.objects.logger import logger
+from cloudykit.utils.logger import logger
 
 
 class BaseManager(QObject):
+    # Manager name
+    name: str
+
     # Contains a tuple of required `BaseManager` based objects name
     dependencies: tuple[str] = None
 
@@ -24,28 +27,33 @@ class BaseManager(QObject):
         raise NotImplementedError("Method `mount` must be implemented")
 
     def unmount(self, *args, **kwargs):
-        pass
+        """
+        This method serves to reset all containers, variables etc.
+        Don't use it to delete data from memory
+        """
+
+    def reload(self):
+        """
+        This method reload manager
+        """
 
     def set(self, *args, **kwargs) -> None:
         """
         Set data by key
         Arguments example: `key: Any, data: Any`
         """
-        pass
 
     def get(self, *args, **kwargs) -> Any:
         """
         Get data by key
         Arguments example: `key: Any, default: Any = None`
         """
-        pass
 
     def delete(self, *args, **kwargs) -> None:
         """
         Delete data by key
         Arguments example: `key: Any`
         """
-        pass
 
     @property
     def parent(self) -> "SystemManager":

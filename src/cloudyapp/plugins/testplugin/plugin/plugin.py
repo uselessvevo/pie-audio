@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 
-from cloudykit.objects.plugin import BasePlugin
+from cloudykit.plugins.base import BasePlugin
 
 
 class TestPlugin(BasePlugin):
