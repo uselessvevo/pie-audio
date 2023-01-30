@@ -11,8 +11,8 @@ from cloudykit.utils.modules import import_by_string
 from cloudykit.utils.system import check_crabs
 
 from cloudykit.utils.core import getApplication
-from cloudyui.widgets.splashcreen import SplashScreen
-from cloudyui.widgets.errorwindow import ErrorWindow
+from cloudykit.widgets.splashcreen import SplashScreen
+from cloudykit.widgets.errorwindow import ErrorWindow
 
 
 def except_hook(exc_type, exc_value, exc_traceback):
