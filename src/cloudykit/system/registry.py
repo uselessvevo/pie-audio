@@ -87,7 +87,7 @@ class ManagersRegistry:
 
     def unmount(self, *managers: str, full_house: bool = False) -> None:
         self._logger.info("Preparing to unmount all managers")
-        managers = self._managers_instances.keys() if full_house else managers
+        managers = reversed(self._managers_instances.keys()) if full_house else managers
         managers_instances = [self._managers_instances.get(i) for i in managers or self._managers_instances.keys()]
 
         for manager_instance in managers_instances:
@@ -97,7 +97,7 @@ class ManagersRegistry:
             delattr(self, manager_name)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
-        managers = self._managers_instances.keys() if full_house else managers
+        managers = reversed(self._managers_instances.keys()) if full_house else managers
         managers_instances = [self._managers_instances.get(i) for i in managers]
 
         for manager_instance in managers_instances:
