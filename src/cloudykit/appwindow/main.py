@@ -64,7 +64,7 @@ class AppWindow(QMainWindow, ConfigMixin, LocalesMixin, AssetsMixin):
     # Event methods
 
     def closeEvent(self, event) -> None:
-        System.registry.unmount("plugins", "locales", "assets", "configs")
+        System.registry.unmount(full_house=True)
         for window in QApplication.topLevelWindows():
             window.close()
 

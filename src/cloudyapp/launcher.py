@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication
 from cloudykit.system.manager import System
 from cloudykit.utils.modules import is_debug
 from cloudykit.utils.modules import import_by_string
-from cloudykit.utils.system import check_crabs
+from cloudykit.utils.core import check_crabs
 
 from cloudykit.utils.core import getApplication
 from cloudykit.widgets.splashcreen import SplashScreen
@@ -56,9 +56,9 @@ def setup_application() -> None:
 
 
 def main():
-    # sys.excepthook = except_hook
+    sys.excepthook = except_hook
     setup_application()
-    import_by_string(os.getenv("CLOUDYAPP_ENTRYPOINT", "main.main"))()
+    import_by_string(System.config.CLOUDYAPP_ENTRYPOINT)()
 
 
 if __name__ == "__main__":

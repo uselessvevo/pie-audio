@@ -67,7 +67,7 @@ class ManagersRegistry:
         setattr(self, manager_instance.name, manager_instance)
         setattr(manager_instance, "mounted", config.mount)
 
-    def mount(self, *managers: Union[tuple[str], tuple[BaseManager]]) -> None:
+    def mount(self, *managers: Union[ManagerConfig, BaseManager]) -> None:
         """
         Mount (add) managers by import string or instance of manager
         For example:
