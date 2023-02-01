@@ -105,7 +105,7 @@ class ManagersRegistry:
             manager_instance.reload()
 
     def destroy(self, *managers: str, full_house: bool = False):
-        managers = self._managers_instances.keys() if full_house else managers
+        managers = reversed(self._managers_instances.keys()) if full_house else managers
 
         for manager in managers:
             self._logger.info(f"Destroying `{manager.__class__.__name__}`")
