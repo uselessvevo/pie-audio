@@ -122,7 +122,7 @@ class BasePlugin(
     def prepareShortcuts(self) -> None:
         pass
 
-    def prepareConfiguratinPage(self) -> None:
+    def prepareConfigurationPage(self) -> None:
         pass
 
     # Render methods
