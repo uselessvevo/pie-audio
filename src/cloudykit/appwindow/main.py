@@ -61,6 +61,7 @@ class MainWindow(
             raise TypeError("MainWindow objects can register only `BasePlugin` based objects")
 
         # Register or render object on `BaseComponent` based object
+        # TODO: Add `ComponentsAccessor` and reimplement `mount/unmount` method
         System.registry.components.get(target).register(child, **options)
 
     def removeFrom(self, child, target: str) -> None:
@@ -97,7 +98,7 @@ class MainWindow(
         messageBox.setIcon(QMessageBox.Critical)
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
-        messageBox.setWindowTitle("Error")
+        messageBox.setWindowTitle(self.getTranslation("Error"))
         messageBox.exec_()
 
     # Properties

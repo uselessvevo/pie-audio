@@ -72,21 +72,21 @@ class CloudyApp(MainWindow):
 
     @pyqtSlot(str)
     def pluginLoading(self, name: str) -> None:
-        self.statusBar.showMessage(self.locales.get("shared", "Plugin {} is loading".format(name)))
+        self.statusBar.showMessage(self.getTranslation("Plugin {} is loading".format(name)))
 
     @pyqtSlot(str)
     def pluginReady(self, name: str) -> None:
-        self.statusBar.showMessage(self.locales.get("shared", "Plugin {} is ready".format(name)))
+        self.statusBar.showMessage(self.getTranslation("Plugin {} is ready".format(name)))
 
     @pyqtSlot(str)
     def pluginReloading(self, name: str) -> None:
-        self.statusBar.showMessage(self.locales.get("shared", "Plugin {} reloading".format(name)))
+        self.statusBar.showMessage(self.getTranslation("Plugin {} reloading".format(name)))
 
     def notifyPluginsReady(self):
-        self.statusBar.showMessage(self.locales.get("shared", "Plugins are ready"))
+        self.statusBar.showMessage(self.getTranslation("Plugins are ready"))
 
     def notifyComponentsReady(self):
-        self.statusBar.showMessage(self.locales.get("shared", "Components are ready"))
+        self.statusBar.showMessage(self.getTranslation("Components are ready"))
 
 
 def main() -> None:
