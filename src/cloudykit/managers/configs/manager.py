@@ -3,7 +3,7 @@ from dotty_dict import Dotty
 from functools import lru_cache
 
 from cloudykit.managers.base import BaseManager
-from cloudykit.system.types import PathConfig
+from cloudykit.system.types import PathConfig, SharedSection
 from cloudykit.utils.files import read_json, write_json
 from cloudykit.observers.filesystem import FileSystemObserver
 
@@ -48,7 +48,7 @@ class ConfigManager(BaseManager):
     @lru_cache
     def get(
         self, 
-        section: str, 
+        section: typing.Union[str, SharedSection],
         key: typing.Any = None, 
         default: typing.Any = None
     ) -> typing.Any:

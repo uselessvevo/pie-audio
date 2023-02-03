@@ -21,7 +21,7 @@ class ManagersRegistry:
         
     def _check_dependencies(self, obj):
         """
-        Checks required objects to be mounted in `System.registry`
+        Checks required managers to be mounted in `System.registry`
         """
         for dependency in getattr(obj, "dependencies") or tuple():
             self._logger.info(f"Checking {obj.__class__.__name__} manager dependencies")
@@ -82,12 +82,12 @@ class ManagersRegistry:
                 self._mount_manually(manager)
 
             else:
-                self._logger.info(f"Object {manager} is not a valid object. Skipping...")
+                self._logger.info(f"Manager {manager} has incorrect `{type(manager)}` type. Skipping.")
                 continue
 
     def unmount(self, *managers: str, full_house: bool = False) -> None:
         self._logger.info("Preparing to unmount all managers")
-        managers = self._managers_instances.keys() if full_house else managers
+        managers = reversed(self._managers_instances.keys()) if full_house else managers
         managers_instances = [self._managers_instances.get(i) for i in managers or self._managers_instances.keys()]
 
         for manager_instance in managers_instances:
@@ -97,7 +97,7 @@ class ManagersRegistry:
             delattr(self, manager_name)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
-        managers = self._managers_instances.keys() if full_house else managers
+        managers = reversed(self._managers_instances.keys()) if full_house else managers
         managers_instances = [self._managers_instances.get(i) for i in managers]
 
         for manager_instance in managers_instances:
@@ -105,7 +105,7 @@ class ManagersRegistry:
             manager_instance.reload()
 
     def destroy(self, *managers: str, full_house: bool = False):
-        managers = self._managers_instances.keys() if full_house else managers
+        managers = reversed(self._managers_instances.keys()) if full_house else managers
 
         for manager in managers:
             self._logger.info(f"Destroying `{manager.__class__.__name__}`")

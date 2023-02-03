@@ -14,7 +14,7 @@ APP_ROOT: Path = BASE_DIR / os.getenv("CLOUDYAPP_ROOT", "cloudyapp")
 USER_ROOT: Path = os.getenv("USER_ROOT", Path.home() / ".crabs")
 SYSTEM_ROOT: Path = BASE_DIR / "cloudykit"
 
-CLOUDYAPP_ENTRYPOINT = os.getenv("CLOUDYAPP_ENTRYPOINT", "main.main")
+CLOUDYAPP_ENTRYPOINT = os.getenv("CLOUDYAPP_ENTRYPOINT", "app.main.main")
 
 # List of plugins. By default, it's empty
 # String must be like this: `plugin_name`

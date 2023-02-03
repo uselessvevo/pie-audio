@@ -27,7 +27,7 @@ class Workbench(QtWidgets.QToolBar, BaseComponent):
         openFolder.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         search = QtWidgets.QToolButton()
-        search.setToolTip(self.registry.locales("Shared.Search"))
+        search.setToolTip(self.registry.locales("shared", "Search"))
         search.setIcon(QtGui.QIcon(self.registry.assets("shared", "search.svg")))
         search.setToolButtonStyle(Qt.ToolButtonIconOnly)
 

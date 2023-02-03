@@ -4,7 +4,7 @@ from cloudykit.system.manager import System
 from cloudykit.managers.locales.manager import LocalesManager
 
 
-class LocalesMixin:
+class LocalesAccessor:
     """
     Config mixin
     """
@@ -13,14 +13,10 @@ class LocalesMixin:
         self._section = section
         self._locales: LocalesManager = System.registry.locales
 
-    def get(self, key: typing.Any) -> typing.Any:
+    def get_translation(self, key: typing.Any) -> typing.Any:
         return self._locales.get(self._section, key)
 
-    def set(self, key: typing.Any, data: typing.Any) -> None:
-        self._locales.set(self._section, key, data)
-
-    def delete(self, key: typing.Any) -> None:
-        self._locales.delete(self._section, key)
+    getTranslation = get_translation
 
     @property
     def locales(self) -> LocalesManager:

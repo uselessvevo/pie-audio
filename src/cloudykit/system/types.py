@@ -14,6 +14,9 @@ EDict = typing.TypeVar("EDict")
 # Use it in `AssetsManager`
 DirectoryType = type("DirectoryType", (), {})
 
+# Manager's types and constants
+SharedSection = "shared"
+
 
 @dt.dataclass(frozen=True, eq=False)
 class ManagerConfig:
