@@ -82,14 +82,14 @@ class BasePlugin(
 
     def mount(self) -> None:
         """ Mount managers """
-        System.registry.configs.mount(PathConfig(self._path, section=self._name))
-        System.registry.locales.mount(PathConfig(self._path, section=self._name))
-        System.registry.assets.mount(PathConfig(self._path, section=self._name))
+        System.registry.configs.mount(PathConfig(self._path, section=self.name))
+        System.registry.locales.mount(PathConfig(self._path, section=self.name))
+        System.registry.assets.mount(PathConfig(self._path, section=self.name))
 
     def unmount(self) -> None:
-        System.registry.configs.delete(self._name)
-        System.registry.locales.delete(self._name)
-        System.registry.assets.delete(self._name)
+        System.registry.configs.delete(self.name)
+        System.registry.locales.delete(self.name)
+        System.registry.assets.delete(self.name)
 
     def init(self) -> None:
         # First, we need to initialize base signals
@@ -110,7 +110,7 @@ class BasePlugin(
         # Inform about that
         self.logger.info(f"Plugin {self.name} is ready!")
 
-    # Signals, shortcuts and etc. methods
+    # Signals, shortcuts etc. methods
 
     def prepareBaseSignals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
@@ -129,9 +129,9 @@ class BasePlugin(
 
     def renderOnWindow(self) -> None:
         """ Render plugin on AppWindow's components """
-        raise NotImplementedError("Method `render` must be implemented")
+        pass
 
-    def render(self) -> None:
+    def renderWindow(self) -> None:
         """ Render plugin's window """
         pass
 

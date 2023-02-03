@@ -8,7 +8,7 @@ from cloudykit.plugins.base import BasePlugin
 class TestPlugin(BasePlugin):
     name = "testplugin"
 
-    def render(self) -> None:
+    def renderWindow(self) -> None:
         self.prepareLayout()
         self.setWindowTitle(self.getTitle())
 
