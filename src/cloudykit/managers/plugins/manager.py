@@ -63,8 +63,6 @@ class PluginsManager(BaseManager):
             self._logger.info(f"Unmounting plugin {plugin.name} from {self.__class__.__name__}")
 
             if plugin:
-                System.registry.configs.delete(plugin.name)
-                System.registry.locales.delete(plugin.name)
                 plugin.unmount()
 
     def reload(self, *plugins: tuple[str], full_house: bool = False) -> None:
