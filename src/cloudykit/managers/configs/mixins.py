@@ -20,7 +20,7 @@ class ConfigAccessor:
         default: Any = None,
         section: Union[str, SharedSection] = SharedSection
     ) -> Any:
-        return self._config.get(self._section, key, default)
+        return self._config.get(self._section or section, key, default)
 
     def set_config(self, key: Any, data: Any) -> None:
         self._config.set(self._section, key, data)
