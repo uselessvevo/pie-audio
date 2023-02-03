@@ -102,7 +102,7 @@ class BasePlugin(
         self.mount()
 
         # Render on AppWindow's components
-        self.renderOnWindow()
+        self.renderOnParent()
 
         # Plugin is ready
         self.signalPluginReady.emit(self.__class__.__name__)
@@ -127,8 +127,8 @@ class BasePlugin(
 
     # Render methods
 
-    def renderOnWindow(self) -> None:
-        """ Render plugin on AppWindow's components """
+    def renderOnParent(self) -> None:
+        """ Render plugin on parent's window components """
         pass
 
     def renderWindow(self) -> None:
