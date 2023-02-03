@@ -1,7 +1,7 @@
 import typing
 
 from cloudykit.system.manager import System
-from cloudykit.appwindow.main import MainWindow
+from cloudykit.mainwindow.main import MainWindow
 from cloudykit.managers.base import BaseManager
 from cloudykit.components.base import BaseComponent
 from cloudykit.system.types import PathConfig

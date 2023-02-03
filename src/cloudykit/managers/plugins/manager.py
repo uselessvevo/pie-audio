@@ -5,7 +5,7 @@ from cloudykit.utils.files import read_json, write_json
 
 from cloudykit.system.manager import System
 from cloudykit.managers.base import BaseManager
-from cloudykit.appwindow.main import MainWindow
+from cloudykit.mainwindow.main import MainWindow
 
 
 class PluginsManager(BaseManager):

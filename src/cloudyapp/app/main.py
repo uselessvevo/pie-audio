@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 from cloudykit.utils.core import getApplication
-from cloudykit.appwindow.main import MainWindow
+from cloudykit.mainwindow.main import MainWindow
 
 
 class CloudyApp(MainWindow):
