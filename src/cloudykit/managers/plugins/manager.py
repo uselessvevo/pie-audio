@@ -6,7 +6,7 @@ from cloudykit.utils.modules import import_by_path
 
 from cloudykit.system.manager import System
 from cloudykit.managers.base import BaseManager
-from cloudykit.appwindow.main import AppWindow
+from cloudykit.appwindow.main import MainWindow
 
 
 class PluginsManager(BaseManager):
@@ -20,11 +20,11 @@ class PluginsManager(BaseManager):
         super().__init__(*args, **kwargs)
         self._dictionary: dict = {}
 
-    def mount(self, parent: AppWindow = None) -> None:
+    def mount(self, parent: MainWindow = None) -> None:
         self._mount_plugins(System.root / System.config.PLUGINS_FOLDER, parent)
         self._mount_plugins(System.user_root / System.config.USER_PLUGINS_FOLDER, parent)
 
-    def _mount_plugins(self, folder: "Path", parent: "AppWindow" = None) -> None:
+    def _mount_plugins(self, folder: "Path", parent: "MainWindow" = None) -> None:
         if not folder.exists():
             folder.mkdir()
 

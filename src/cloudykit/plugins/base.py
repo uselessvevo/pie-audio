@@ -96,7 +96,7 @@ class BasePlugin(
     def mount(self) -> None:
         """
         Mount plugin.
-        For example, you can use `placeOn` method to render it on `AppWindow` components
+        For example, you can use `placeOn` method to render it on `MainWindow` components
         """
         raise NotImplementedError("Method `mount` must be implemented")
 

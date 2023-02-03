@@ -12,7 +12,7 @@ class ComponentMixin:
     def placeOn(self, target: str, **kwargs) -> None:
         """
         Register/render widget on one
-        of the listed components of `AppWindow`
+        of the listed components of `MainWindow`
 
         Args:
             target (str): registered component name
@@ -22,7 +22,7 @@ class ComponentMixin:
 
     def removeFrom(self, target: str) -> None:
         """
-        Remover/de-render widget from `AppWindow` component(-s)
+        Remover/de-render widget from `MainWindow` component(-s)
 
         Args:
             target (str): registered component name

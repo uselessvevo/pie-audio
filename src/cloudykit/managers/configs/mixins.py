@@ -1,10 +1,11 @@
-import typing
+from typing import Any, Union
 
 from cloudykit.system.manager import System
 from cloudykit.managers.configs.manager import ConfigManager
+from cloudykit.system.types import SharedSection
 
 
-class ConfigMixin:
+class ConfigAccessor:
     """
     Config mixin
     """
@@ -13,14 +14,23 @@ class ConfigMixin:
         self._section = section
         self._config: ConfigManager = System.registry.configs
 
-    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+    def get_config(
+        self,
+        key: Any,
+        default: Any = None,
+        section: Union[str, SharedSection] = SharedSection
+    ) -> Any:
         return self._config.get(self._section, key, default)
 
-    def set(self, key: typing.Any, data: typing.Any) -> None:
+    def set_config(self, key: Any, data: Any) -> None:
         self._config.set(self._section, key, data)
 
-    def delete(self, key: typing.Any) -> None:
+    def delete_config(self, key: Any) -> None:
         self._config.delete(self._section, key)
+
+    getConfig = get_config
+    setConfig = set_config
+    deleteConfig = delete_config
 
     @property
     def config(self) -> ConfigManager:

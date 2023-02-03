@@ -21,7 +21,7 @@ class ManagersRegistry:
         
     def _check_dependencies(self, obj):
         """
-        Checks required objects to be mounted in `System.registry`
+        Checks required managers to be mounted in `System.registry`
         """
         for dependency in getattr(obj, "dependencies") or tuple():
             self._logger.info(f"Checking {obj.__class__.__name__} manager dependencies")
@@ -67,7 +67,7 @@ class ManagersRegistry:
         setattr(self, manager_instance.name, manager_instance)
         setattr(manager_instance, "mounted", config.mount)
 
-    def mount(self, *managers: Union[ManagerConfig, BaseManager], *args, **kwargs) -> None:
+    def mount(self, *managers: Union[ManagerConfig, BaseManager]) -> None:
         """
         Mount (add) managers by import string or instance of manager
         For example:
@@ -79,10 +79,10 @@ class ManagersRegistry:
                 self._mount_from_config(manager)
 
             elif issubclass(manager, BaseManager):
-                self._mount_manually(manager, *args, **kwargs)
+                self._mount_manually(manager)
 
             else:
-                self._logger.info(f"Object {manager} is not a valid object. Skipping...")
+                self._logger.info(f"Manager {manager} has incorrect `{type(manager)}` type. Skipping.")
                 continue
 
     def unmount(self, *managers: str, full_house: bool = False) -> None:
