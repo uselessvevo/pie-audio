@@ -1,8 +1,7 @@
 from typing import Any
 
-from cloudykit.system.types import PathConfig
-from cloudykit.utils.files import read_json, write_json
 from cloudykit.utils.modules import import_by_path
+from cloudykit.utils.files import read_json, write_json
 
 from cloudykit.system.manager import System
 from cloudykit.managers.base import BaseManager
@@ -43,12 +42,8 @@ class PluginsManager(BaseManager):
                 plugin_module = import_by_path("plugin", str(plugin_path / "plugin/plugin.py"))
 
                 # Creating plugin instance
-                plugin_instance = getattr(plugin_module, plugin_manifest.get("init"))(parent)
-
-                # Load locales, configs and components for our plugin
-                System.registry.configs.mount(PathConfig(plugin_path, section=plugin_instance.name))
-                System.registry.locales.mount(PathConfig(plugin_path, section=plugin_instance.name))
-                System.registry.assets.mount(PathConfig(plugin_path, section=plugin_instance.name))
+                # System.root / System.config.PLUGINS_FOLDER / self.name
+                plugin_instance = getattr(plugin_module, plugin_manifest.get("init"))(parent, plugin_path)
 
                 # Initializing plugin
                 plugin_instance.init()
