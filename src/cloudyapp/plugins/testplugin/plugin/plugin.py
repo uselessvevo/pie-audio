@@ -8,11 +8,11 @@ from cloudykit.plugins.base import BasePlugin
 class TestPlugin(BasePlugin):
     name = "testplugin"
 
-    def mount(self) -> None:
-        self.prepareButton()
+    def renderWindow(self) -> None:
+        self.prepareLayout()
         self.setWindowTitle(self.getTitle())
 
-    def prepareButton(self):
+    def prepareLayout(self):
         layout = QVBoxLayout()
         self.label = QLabel("Another Window")
         layout.addWidget(self.label)

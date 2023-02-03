@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
@@ -6,6 +8,7 @@ from cloudykit.system.manager import System
 from cloudykit.system.registry import ManagersRegistry
 
 from cloudykit.utils.logger import logger
+from cloudykit.system.types import PathConfig
 from cloudykit.plugins.mixins import MenuMixin
 from cloudykit.plugins.mixins import ActionMixin
 from cloudykit.components.mixins import ComponentMixin
@@ -60,13 +63,54 @@ class BasePlugin(
     # Signal when exception occurred
     signalExceptionOccurred = pyqtSignal(Error)
 
-    def __init__(self, parent: QObject = None):
+    def __init__(self, parent: QObject = None, path: Path = None):
         super().__init__()
 
-        self._parent = parent
-        self._is_registered: bool = False
+        # Just a logger
         self._logger = logger
-        self._path: "Path" = System.root / System.config.PLUGINS_FOLDER / self.name
+
+        # Parent object/window
+        self._parent = parent
+
+        # Plugin path
+        self._path: Path = path
+
+        # Flag: is plugin registered
+        self._is_registered: bool = False
+
+    # Main methods
+
+    def mount(self) -> None:
+        """ Mount managers """
+        System.registry.configs.mount(PathConfig(self._path, section=self.name))
+        System.registry.locales.mount(PathConfig(self._path, section=self.name))
+        System.registry.assets.mount(PathConfig(self._path, section=self.name))
+
+    def unmount(self) -> None:
+        System.registry.configs.delete(self.name)
+        System.registry.locales.delete(self.name)
+        System.registry.assets.delete(self.name)
+
+    def init(self) -> None:
+        # First, we need to initialize base signals
+        self.prepareBaseSignals()
+
+        # Plugin is loading
+        self.signalPluginLoading.emit(self.__class__.__name__)
+
+        # Preparing managers
+        self.mount()
+
+        # Render on AppWindow's components
+        self.renderOnParent()
+
+        # Plugin is ready
+        self.signalPluginReady.emit(self.__class__.__name__)
+
+        # Inform about that
+        self.logger.info(f"Plugin {self.name} is ready!")
+
+    # Signals, shortcuts etc. methods
 
     def prepareBaseSignals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
@@ -75,33 +119,31 @@ class BasePlugin(
         self.signalPluginReloading.connect(self._parent.signalPluginReloading)
         self.signalExceptionOccurred.connect(self.errorHandler)
 
-    # Main methods
+    def prepareShortcuts(self) -> None:
+        pass
 
-    def init(self) -> None:
-        # First, we need to init all base signals
-        self.prepareBaseSignals()
+    def prepareConfiguratinPage(self) -> None:
+        pass
 
-        # Emit that our plugin is loading
-        self.signalPluginLoading.emit(self.__class__.__name__)
+    # Render methods
 
-        # Call `mount` method
-        self.mount()
+    def renderOnParent(self) -> None:
+        """ Render plugin on parent's window components """
+        pass
 
-        # Emit that we're ready
-        self.signalPluginReady.emit(self.__class__.__name__)
+    def renderWindow(self) -> None:
+        """ Render plugin's window """
+        pass
 
-        # Inform about that
-        self.logger.info(f"Plugin {self.name} is ready!")
+    def prepareSizes(self) -> None:
+        self.setMinimumSize(*self.minSize)
+        self.setMaximumSize(*self.maxSize)
 
-    def mount(self) -> None:
-        """
-        Mount plugin.
-        For example, you can use `placeOn` method to render it on `MainWindow` components
-        """
-        raise NotImplementedError("Method `mount` must be implemented")
+    def updateStyle(self) -> None:
+        pass
 
-    def unmount(self) -> None:
-        self.logger.info("Unmounting. Goodbye!..")
+    def refresh(self) -> None:
+        pass
 
     # Event methods
 
@@ -114,18 +156,6 @@ class BasePlugin(
 
     def onCloseEvent(self) -> None:
         self.logger.info("Closing. Goodbye!..")
-
-    # Render methods
-
-    def prepareSizes(self) -> None:
-        self.setMinimumSize(*self.minSize)
-        self.setMaximumSize(*self.maxSize)
-
-    def updateStyle(self) -> None:
-        pass
-
-    def refresh(self) -> None:
-        pass
 
     # Getter methods
 
@@ -153,7 +183,7 @@ class BasePlugin(
         messageBox.setIcon(QMessageBox.Critical)
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
-        messageBox.setWindowTitle("Error")
+        messageBox.setWindowTitle(System.registry.locales("shared", "Error"))
         messageBox.exec_()
 
     # Properties
