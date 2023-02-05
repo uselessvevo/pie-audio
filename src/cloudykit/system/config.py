@@ -2,11 +2,9 @@ import locale
 import os.path
 from pathlib import Path
 
-from cloudykit.system.types import EList
-from cloudykit.system.types import EDict
-from cloudykit.system.types import PathConfig
-from cloudykit.system.types import ManagerConfig
-
+from cloudykit.system import EList
+from cloudykit.system import EDict
+from cloudykit.system import ManagerConfig, PathConfig
 
 # Base paths
 BASE_DIR: Path = Path(__file__).parent.parent.parent
@@ -16,11 +14,14 @@ SYSTEM_ROOT: Path = BASE_DIR / "cloudykit"
 
 CLOUDYAPP_ENTRYPOINT = os.getenv("CLOUDYAPP_ENTRYPOINT", "app.main.main")
 
-# List of plugins. By default, it's empty
-# String must be like this: `plugin_name`
+# Built-in plugins folder
 PLUGINS_FOLDER: str = os.getenv("PLUGINS_FOLDER", "plugins")
+
+# User plugins folder
 USER_PLUGINS_FOLDER: str = os.getenv("USER_PLUGINS_FOLDER", "plugins")  # requires `ConfigManager`
 
+# List of built-in plugins
+PLUGINS_LOADING_ORDER: EList = []
 
 # List of components. By default, it's empty
 # String must be like this: `path.to.component.package`

@@ -1,9 +1,9 @@
 from functools import lru_cache
 from typing import Any
 
-from cloudykit.system.manager import System
-from cloudykit.system.types import PathConfig
-from cloudykit.system.types import DirectoryType
+from cloudykit.system import System
+from cloudykit.system import PathConfig
+from cloudykit.system import DirectoryType
 from cloudykit.managers.base import BaseManager
 
 
@@ -57,13 +57,17 @@ class AssetsManager(BaseManager):
                     self._dictionary[section] = {}
 
                 if not self._dictionary.get(file.name):
-                    self._dictionary[section][file.stem] = {}
+                    self._dictionary[section][file.name] = {}
 
-                self._dictionary[section].update({file.stem: file.as_posix()})
+                self._dictionary[section].update({file.name: file.as_posix()})
 
     @lru_cache
     def get(self, section: str, key: Any, default: Any = None) -> Any:
-        return self._dictionary.get(key, default)
+        try:
+            return self._dictionary[section][key]
+        except KeyError:
+            self._logger.info(f"File {key} not found")
+            return default
 
     @property
     def root(self):

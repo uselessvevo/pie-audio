@@ -1,10 +1,13 @@
 import sys
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 
+from cloudykit.system import System
 from cloudykit.utils.core import getApplication
 from cloudykit.mainwindow.main import MainWindow
+from cloudyapp.components.workbench.component import Workbench
+from cloudykit.managers.assets.utils import getTheme, getPalette
 
 
 class CloudyApp(MainWindow):
@@ -23,6 +26,7 @@ class CloudyApp(MainWindow):
         self.prepareStatusBar()
         self.prepareMainLayout()
         self.preparePlugins()
+        self.prepareWorkbench()
 
     def prepareSignals(self):
         self.signalComponentsLoading.connect(self.prepareComponents)
@@ -49,6 +53,11 @@ class CloudyApp(MainWindow):
         self.setCentralWidget(widget)
 
         self.signalComponentsLoading.emit()
+
+    def prepareWorkbench(self) -> None:
+        self.workbench = Workbench(self)
+        self.workbench.call()
+        self.addToolBar(Qt.TopToolBarArea, self.workbench)
 
     def prepareStatusBar(self):
         self.statusBar = QtWidgets.QStatusBar()
@@ -92,6 +101,10 @@ class CloudyApp(MainWindow):
 def main() -> None:
     """ Main entrypoint """
     app = getApplication(sys.argv)
+    theme = System.registry.assets.theme
+    if theme:
+        app.setStyleSheet(getTheme(theme))
+        app.setPalette(getPalette(theme))
 
     cloudy_app = CloudyApp()
     cloudy_app.mount()

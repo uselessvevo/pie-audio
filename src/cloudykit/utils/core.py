@@ -3,7 +3,7 @@ import sys
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 
 
 def get_application(*args, **kwargs):

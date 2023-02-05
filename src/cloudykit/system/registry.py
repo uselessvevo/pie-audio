@@ -2,7 +2,7 @@ from typing import Union
 
 from cloudykit.utils.logger import logger
 from cloudykit.managers.base import BaseManager
-from cloudykit.system.types import ManagerConfig
+from cloudykit.system import ManagerConfig
 from cloudykit.utils.modules import import_by_string
 from cloudykit.system.exceptions import ObjectNotMountedError, DependencyNotFoundError
 
@@ -39,7 +39,7 @@ class ManagersRegistry:
         Mount manager manualy. Pass manager class (not an instance) with args and kwargs
         
         For example:
-        >>> from cloudykit.system.manager import System
+        >>> from cloudykit.system import System
         >>> from cloudykit.managers.configs.manager import ConfigManager
         >>> System.mount()
         >>> System.registry.mount(ConfigManager, PathConfig(...), ...)
@@ -115,8 +115,11 @@ class ManagersRegistry:
         manager = getattr(self, name)
         return manager.mounted
 
-    def __getattr__(self, item):
+    def get(self, manager: str) -> BaseManager:
         try:
-            return self.__getattribute__(item)
+            return self.__getattribute__(manager)
         except AttributeError:
-            raise ObjectNotMountedError(item)
+            raise ObjectNotMountedError(manager)
+
+    def __getattr__(self, manager: str) -> BaseManager:
+        return self.get(manager)

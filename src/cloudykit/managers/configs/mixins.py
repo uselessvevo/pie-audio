@@ -1,8 +1,8 @@
 from typing import Any, Union
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.managers.configs.manager import ConfigManager
-from cloudykit.system.types import SharedSection
+from cloudykit.system import SharedSection
 
 
 class ConfigAccessor:

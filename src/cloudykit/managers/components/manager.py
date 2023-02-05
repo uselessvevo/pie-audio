@@ -1,10 +1,10 @@
 import typing
 
-from cloudykit.system.manager import System
-from cloudykit.mainwindow.main import MainWindow
+from cloudykit.system import System
 from cloudykit.managers.base import BaseManager
+from cloudykit.mainwindow.main import MainWindow
 from cloudykit.components.base import BaseComponent
-from cloudykit.system.types import PathConfig
+
 from cloudykit.utils.files import read_json
 from cloudykit.utils.modules import import_by_path
 
@@ -30,10 +30,6 @@ class ComponentsManager(BaseManager):
 
             # Creating component instance
             component_inst = getattr(component_module, component_manifest.get("init"))(parent)
-
-            System.registry.configs.mount(PathConfig(component_path, section=component_inst.name))
-            System.registry.locales.mount(PathConfig(component_path, section=component_inst.name))
-            System.registry.assets.mount(PathConfig(component_path, section=component_inst.name))
 
             # Initializing component
             component_inst.init()

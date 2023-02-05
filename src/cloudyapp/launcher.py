@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PyQt5.QtWidgets import QApplication
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.utils.modules import is_debug
 from cloudykit.utils.modules import import_by_string
 from cloudykit.utils.core import check_crabs

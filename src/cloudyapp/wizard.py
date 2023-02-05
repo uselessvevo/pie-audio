@@ -1,7 +1,7 @@
 import os
 from PyQt5 import QtWidgets
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.utils.core import restartApplication
 from cloudykit.utils.files import writeJson
 

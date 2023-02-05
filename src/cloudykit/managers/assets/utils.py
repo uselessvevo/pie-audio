@@ -4,7 +4,7 @@ import importlib
 import importlib.util
 from pathlib import Path
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.utils.files import read_json
 
 
@@ -37,9 +37,9 @@ def get_theme(theme_name: str) -> str:
     """
     Parse and get stylesheet
     """
-    themes_root = System.root / 'assets' / 'themes'
+    themes_root = System.root / System.config.ASSETS_FOLDER / 'themes'
     theme_name = themes_root / theme_name
-    themes_list: list[Path] = list((themes_root / 'assets').glob('themes'))
+    themes_list: list[Path] = list(i for i in themes_root.glob('*') if i.is_dir())
     stylesheet: str = ''
 
     # Check if folder exists
@@ -58,22 +58,21 @@ def get_theme(theme_name: str) -> str:
     return stylesheet
 
 
-def get_palette(root: str, theme_name: str):
+def get_palette(theme_name: str):
     """
     Get palette module from theme folder
     Args:
-        root (str):
-        theme_name (str):
+        theme_name (str): theme name
     Returns:
         palette (module): app.setPalette(palette.getPalette())
     """
-    theme_name = f'{root}/assets/themes/{theme_name}'
+    theme_folder = System.root / System.config.ASSETS_FOLDER / 'themes' / theme_name
     palette = None
 
-    if os.path.exists(f'{theme_name}/palette.py'):
+    if theme_folder.exists():
         spec = importlib.util.spec_from_file_location(
             name='palette',
-            location=f'{theme_name}/palette.py'
+            location=str(theme_folder / 'palette.py')
         )
         palette = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(palette)

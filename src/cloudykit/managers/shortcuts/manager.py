@@ -1,4 +1,4 @@
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.managers.base import BaseManager
 
 from PyQt5.QtGui import QKeySequence

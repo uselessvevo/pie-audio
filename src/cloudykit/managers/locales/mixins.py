@@ -1,6 +1,6 @@
 import typing
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.managers.locales.manager import LocalesManager
 
 

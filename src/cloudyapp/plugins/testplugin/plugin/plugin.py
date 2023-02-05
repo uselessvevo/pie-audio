@@ -1,14 +1,16 @@
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLabel, QWidget
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 
 from cloudykit.plugins.base import BasePlugin
+from cloudykit.managers.plugins.decorators import onPluginAvailable
 
 
-class TestPlugin(BasePlugin):
+class TestPlugin(BasePlugin, QWidget):
     name = "testplugin"
+    requires = ["preferences"]
 
-    def renderWindow(self) -> None:
+    def call(self) -> None:
         self.prepareLayout()
         self.setWindowTitle(self.getTitle())
 
@@ -19,6 +21,7 @@ class TestPlugin(BasePlugin):
         self.setLayout(layout)
 
         self.button = QPushButton("Click me!")
+        self.button.setEnabled(False)
         self.button.clicked.connect(self.testFunction)
         layout.addWidget(self.button)
 
@@ -26,3 +29,7 @@ class TestPlugin(BasePlugin):
 
     def testFunction(self, event):
         self.logger.info("Button pressed")
+
+    @onPluginAvailable(plugin="preferences")
+    def onPreferencesAvailable(self) -> None:
+        self.logger.info("Preferences plugin is available")

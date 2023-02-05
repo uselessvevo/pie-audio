@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 
-from cloudykit.system.manager import System
+from cloudykit.system import System
 
 
 class MessageBox(QMessageBox):

@@ -4,18 +4,19 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from cloudykit.utils.logger import logger
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.plugins.base import BasePlugin
-from cloudykit.system.types import Error, SharedSection
+from cloudykit.system import SharedSection
+from cloudykit.system import Error
 
-from cloudykit.managers.assets.mixins import AssetsMixin
+from cloudykit.managers.assets.mixins import AssetsAccessor
 from cloudykit.managers.configs.mixins import ConfigAccessor
 from cloudykit.managers.locales.mixins import LocalesAccessor
 
 
 class MainWindow(
     ConfigAccessor,
-    AssetsMixin,
+    AssetsAccessor,
     LocalesAccessor,
     QMainWindow,
 ):
@@ -30,7 +31,7 @@ class MainWindow(
     def __init__(self, parent=None):
         ConfigAccessor.__init__(self, SharedSection)
         LocalesAccessor.__init__(self, SharedSection)
-        AssetsMixin.__init__(self, SharedSection)
+        AssetsAccessor.__init__(self, SharedSection)
         QMainWindow.__init__(self, parent=parent)
 
         # Just a logger

@@ -1,9 +1,9 @@
 from pathlib import Path
 from dotty_dict import Dotty
 
-from cloudykit.system.types import PathConfig
+from cloudykit.system import PathConfig
 from cloudykit.utils.files import read_json
-from cloudykit.system.manager import System
+from cloudykit.system import System
 from cloudykit.managers.base import BaseManager
 
 

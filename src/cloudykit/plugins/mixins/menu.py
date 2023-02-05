@@ -1,13 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QAction, QMenu, QMenuBar
-
-
-class ActionMixin:
-
-    def registerAction(self, text: str, icon: QIcon, func: callable, *funcargs, **funckwargs) -> None:
-        action = QAction(text, icon, self)
-        action.triggered.connect(func(*funcargs, **funckwargs))
+from PyQt5.QtWidgets import QMenuBar, QMenu
 
 
 class MenuMixin:
