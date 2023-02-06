@@ -1,7 +1,5 @@
-from pathlib import Path
 from typing import Any
-
-from PyQt5.QtCore import pyqtSignal
+from pathlib import Path
 
 from cloudykit.plugins.base import BasePlugin
 from cloudykit.utils.modules import import_by_path
@@ -40,7 +38,10 @@ class PluginsManager(BaseManager):
 
     def unmount(self, *plugins: "BasePlugin", full_house: bool = False) -> None:
         """
+        TODO: Notify all plugins to unmount all dependencies
+
         Unmount managers, services in parent object or all at once
+        
         Args:
             plugins (objects): BasePlugin based object
             full_house (bool): reload all managers, services from all instances
@@ -59,18 +60,18 @@ class PluginsManager(BaseManager):
         if not (folder / "manifest.json").exists():
             write_json(str(folder / "manifest.json"), [])
 
-        plugins_loading_order = System.config.PLUGINS_LOADING_ORDER
         plugins_folders = (
             i.name for i in list(folder.iterdir())
             if not i.is_file()
             and i.is_dir()
             and i.name not in ("__pycache__", "__init__.py")
         )
+        plugins_loading_order = System.config.PLUGINS_LOADING_ORDER
+        if plugins_loading_order:
+            plugins_folders = (i for _, i in sorted(zip(plugins_folders, plugins_loading_order)))
+            plugins_folders = (Path(folder, i) for i in plugins_folders)
 
-        ordered_folders = (i for _, i in sorted(zip(plugins_folders, plugins_loading_order)))
-        ordered_folders = (Path(folder, i) for i in ordered_folders)
-
-        for plugin in ordered_folders:
+        for plugin in plugins_folders:
             if plugin.is_dir() and plugin.name not in ("__pycache__",) and parent:
                 self._logger.info(f"Mounting plugin `{plugin.name}` in `{parent.__class__.__name__}`")
 
@@ -85,7 +86,7 @@ class PluginsManager(BaseManager):
                 # System.root / System.config.PLUGINS_FOLDER / self.name
                 plugin_instance = getattr(plugin_module, plugin_manifest.get("init"))(parent, plugin_path)
 
-                self.update_plugin_info(
+                self._update_plugin_info(
                     plugin_instance.name, 
                     plugin_instance.requires, 
                     plugin_instance.optional
@@ -95,19 +96,19 @@ class PluginsManager(BaseManager):
                 self._plugins_registry[plugin_instance.name] = plugin_instance
 
                 plugin_instance.signalPluginReady.connect(
-                    lambda: self.notify_plugin_availability(
+                    lambda: self._notify_plugin_availability(
                         plugin_instance.name,
                         plugin_instance.requires,
                         plugin_instance.optional,
                     )
                 )
 
-                self.notify_plugin_dependencies(plugin_instance.name)
+                self._notify_plugin_dependencies(plugin_instance.name)
 
-                # Initializing plugin
-                plugin_instance.init()
+                # Prepare plugin
+                plugin_instance.prepare()
 
-    def notify_plugin_availability(
+    def _notify_plugin_availability(
         self,
         name: str,
         requires: list[str] = None,
@@ -131,7 +132,8 @@ class PluginsManager(BaseManager):
                 plugin_instance = self._plugins_registry[plugin]
                 plugin_instance.on_plugin_available(name)
                 
-    def notify_plugin_dependencies(self, name: str) -> None:
+    def _notify_plugin_dependencies(self, name: str) -> None:
+        """ Notify plugin dependencies """
         plugin_instance = self._plugins_registry[name]
         plugin_dependencies = self._plugin_dependencies.get(name, {})
         required_plugins = plugin_dependencies.get("requires", [])
@@ -143,35 +145,61 @@ class PluginsManager(BaseManager):
                     self._logger.debug(f"Plugin {plugin} has already loaded")
                     plugin_instance.on_plugin_available(plugin)
                     
-    def update_plugin_info(
+    def _update_plugin_info(
         self, 
         name: str, 
         required_plugins: list[str], 
         optional_plugins: list[str]
     ) -> None:
-        """Update the dependencies and dependents of `plugin_name`."""
+        """
+        Update the plugin dependencies and dependents
+        """
         for plugin in required_plugins:
-            self.update_dependencies(name, plugin, "requires")
-            self.update_dependents(plugin, name, "requires")
+            self._update_dependencies(name, plugin, "requires")
+            self._update_dependents(plugin, name, "requires")
 
         for plugin in optional_plugins:
-            self.update_dependencies(name, plugin, "optional")
-            self.update_dependents(plugin, name, "optional")
+            self._update_dependencies(name, plugin, "optional")
+            self._update_dependents(plugin, name, "optional")
 
-    def update_dependents(self, plugin: str, dependent_plugin: str, key: str) -> None:
-        """ Add `dependent_plugin` to the list of dependents of `plugin` """
+    def _update_dependents(
+        self, 
+        plugin: str, 
+        dependent_plugin: str, 
+        category: str
+    ) -> None:
+        """ 
+        Add dependent plugin to the plugin's list of dependents
+
+        Args:
+            plugin (str): plugin name
+            dependent_plugin (str): dependent plugin
+            category (str): required or optional category of plugins
+        """
         plugin_dependents = self._plugin_dependents.get(plugin, {})
-        plugin_strict_dependents = plugin_dependents.get(key, [])
+        plugin_strict_dependents = plugin_dependents.get(category, [])
         plugin_strict_dependents.append(dependent_plugin)
-        plugin_dependents[key] = plugin_strict_dependents
+        plugin_dependents[category] = plugin_strict_dependents
         self._plugin_dependents[plugin] = plugin_dependents
 
-    def update_dependencies(self, plugin: str, required_plugin: str, key: str) -> None:
-        """ Add `required_plugin` to the list of dependencies of `plugin` """
+    def _update_dependencies(
+        self,
+        plugin: str,
+        required_plugin: str, 
+        category: str
+    ) -> None:
+        """ 
+        Add required plugin to the plugin's list of dependencies
+
+        Args:
+            plugin (str): plugin name
+            required_plugin (str): required plugin
+            category (str): required or optional category of plugins
+        """
         plugin_dependencies = self._plugin_dependencies.get(plugin, {})
-        plugin_strict_dependencies = plugin_dependencies.get(key, [])
+        plugin_strict_dependencies = plugin_dependencies.get(category, [])
         plugin_strict_dependencies.append(required_plugin)
-        plugin_dependencies[key] = plugin_strict_dependencies
+        plugin_dependencies[category] = plugin_strict_dependencies
         self._plugin_dependencies[plugin] = plugin_dependencies
 
     def is_plugin_available(self, name: str) -> bool:
@@ -180,7 +208,8 @@ class PluginsManager(BaseManager):
     def reload(self, *plugins: tuple[str], full_house: bool = False) -> None:
         plugins = self._plugins_registry.keys() if full_house else plugins
         for plugin in plugins:
-            self._plugins_registry.get(plugin)
+            plugin_instance = self._plugins_registry.get(plugin)
+            plugin_instance.realod()
 
-    def get(self, key, default: Any = None) -> Any:
+    def get(self, key) -> Any:
         return self._plugins_registry.get(key)

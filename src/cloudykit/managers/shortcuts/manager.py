@@ -12,7 +12,7 @@ class ShortcutsManager(BaseManager):
 
         self._shortcuts: dict[key, QShortcut] = {}
 
-    def mount(self, shortcut: str, parent: "AppWindow" = None) -> None:
+    def mount(self, shortcut: str, parent: "MainWindow" = None) -> None:
         pass
 
     

@@ -112,17 +112,17 @@ class BasePlugin(
             if manager_inst:
                 manager_inst.delete(self.name)
 
-    def init(self) -> None:
+    def prepare(self) -> None:
         # First, we need to initialize base signals
         self.prepareBaseSignals()
 
         # Plugin is loading
         self.signalPluginLoading.emit(self.__class__.__name__)
 
-        # Preparing managers
+        # Prepare managers
         self.mount()
 
-        # Render on AppWindow's components
+        # Render on MainWindow's or other plugin components
         self.renderOnParent()
 
         # Plugin is ready
@@ -154,8 +154,8 @@ class BasePlugin(
         """ Render plugin on parent's component """
         pass
 
-    def call(self, *args, **kwargs) -> None:
-        """ Call/render plugin with given arguments """
+    def init(self) -> None:
+        """ Render object window """
         raise NotImplementedError("Method `call` must be implemented")
 
     # Update methods

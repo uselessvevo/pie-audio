@@ -6,5 +6,5 @@ from cloudykit.plugins.base import BasePlugin
 class Preferences(BasePlugin, QWidget):
     name = "preferences"
 
-    def call(self) -> None:
+    def init(self) -> None:
         pass

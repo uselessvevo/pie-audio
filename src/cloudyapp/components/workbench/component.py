@@ -14,7 +14,7 @@ class Workbench(QToolBar, BaseComponent):
     def __init__(self, parent: "MainWindow") -> None:
         super().__init__(parent)
 
-    def call(self) -> None:
+    def init(self) -> None:
         self.setMovable(False)
         self.setIconSize(QtCore.QSize(30, 30))
         self.setContextMenuPolicy(Qt.PreventContextMenu)

@@ -72,7 +72,7 @@ class BaseComponent(
     def unmount(self) -> None:
         pass
 
-    def init(self) -> None:
+    def prepare(self) -> None:
         # First, we need to init all base signals
         self.prepareBaseSignals()
 

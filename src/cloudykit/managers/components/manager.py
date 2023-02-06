@@ -32,7 +32,7 @@ class ComponentsManager(BaseManager):
             component_inst = getattr(component_module, component_manifest.get("init"))(parent)
 
             # Initializing component
-            component_inst.init()
+            component_inst.prepare()
 
             # Hashing component instance
             self._dictionary[component_inst.name] = component_inst

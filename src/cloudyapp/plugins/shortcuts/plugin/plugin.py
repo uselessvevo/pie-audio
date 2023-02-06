@@ -6,5 +6,5 @@ from cloudykit.plugins.base import BasePlugin
 class Shortcuts(BasePlugin, QWidget):
     name = "shorcuts"
 
-    def call(self) -> None:
+    def init(self) -> None:
         pass

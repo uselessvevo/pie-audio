@@ -10,7 +10,7 @@ class TestPlugin(BasePlugin, QWidget):
     name = "testplugin"
     requires = ["preferences"]
 
-    def call(self) -> None:
+    def init(self) -> None:
         self.prepareLayout()
         self.setWindowTitle(self.getTitle())
 
