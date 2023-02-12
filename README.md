@@ -4,7 +4,7 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-[English docs](https://github.com/uselessvevo/pieaudio/tree/docs/docs/en/piekit) • [Русский docs](https://github.com/uselessvevo/pieaudio/tree/docs/docs/ru/cloudykit)
+[English docs](https://github.com/uselessvevo/pie-audio/tree/docs/docs/en/cloudykit) • [Русский docs](https://github.com/uselessvevo/pie-audio/tree/docs/docs/ru/cloudykit)
 
 ## Application pre-configuration
 > *Notice*: At this moment, this application still in deep development and there is no reason to create installation package. First you need to download/clone the application:
