@@ -17,8 +17,8 @@
 
 ## Assets/resources configuration constants
 * `ASSETS_EXCLUDED_FORMATS <EList>` - exnpandable list of excluded file formats
-* `ASSETS_FOLDER <str>` - resources directory name (by default - "CLOUDYFF_ASSETS_FOLDER")
-* `THEMES_FOLDER <str>` - themes directory name (by default - "CLOUDYFF_THEMES_FOLDER")
+* `ASSETS_FOLDER <str>` - resources directory name (by default - "PIEAPP_ASSETS_FOLDER")
+* `THEMES_FOLDER <str>` - themes directory name (by default - "PIEAPP_THEMES_FOLDER")
 
 
 ## Configuration

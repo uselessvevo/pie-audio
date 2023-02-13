@@ -2,11 +2,11 @@
 
 На данный момент оно находится в стадии глубокой разработки и смысла в создании пакета для установки нет. Для начала нужно скачать и настроить само приложение:
 
-1. Скачиваем через git - `git clone https://github.com/uselessvevo/cloudyff.git`
+1. Скачиваем через git - `git clone https://github.com/uselessvevo/pie-audio`
 2. Устанавливаем зависимости - `poetry init`. 
 > **Note**: Если `poetry` не установлен - `pip install poetry`
 4. Настроим переменные окружения:
-   * `CLOUDYAPP_ROOT` - наименование приложения
+   * `PIEAPP_ROOT` - наименование приложения
    * `CONFIGS_FOLDER` - директория конфигураций; по-умолчанию - configs
    * `USER_CONFIGS_FOLDER` - директория плагинов; по-умолчанию - os.path.expanduser("~")
    * `PLUGINS_FOLDER` - директория плагинов; по-умолчанию - plugins
@@ -15,4 +15,4 @@
    * `ASSETS_FOLDER` - директория ресурсов; по-умолчанию - assets
    * `THEMES_FOLDER` - директория тем; по-умолчанию - themes
 
-Теперь вам нужно настроить среду разработки и запустить файл `cloudyapp/launcher.py`
+Теперь вам нужно настроить среду разработки и запустить файл `pieapp/launcher.py`

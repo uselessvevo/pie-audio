@@ -18,8 +18,8 @@
 Данный метод предпочтителен, чтобы самостоятельно проконтролировать запуск объекта и дальнейшего добавления в реестр. Пример использования:
 
 ```py
-from cloudykit.system.manager import System
-from cloudyapp.managers.mymanager.manager import MyManager
+from piekit.system.manager import System
+from pieapp.managers.mymanager.manager import MyManager
 
 if <condition>: ...
     args = ...
@@ -31,18 +31,18 @@ System.registry.mount(my_manager, <args>, <kwargs>)
 ```
 
 # Автоматическое добавление
-Данный метод используется по-умолчанию и использует список менеджеров из системного конфигурационного модуля (`cloudykit/system/config.py`). 
+Данный метод используется по-умолчанию и использует список менеджеров из системного конфигурационного модуля (`piekit/system/config.py`). 
 Вы так же можете обновить данный список, чтобы загрузить свои менеджеры. 
 
 ```py
-# cloudyapp/config.py
-from cloudykit.system.types import EList
-from cloudykit.system.types import ManagerConfig
+# pieapp/config.py
+from piekit.system.types import EList
+from piekit.system.types import ManagerConfig
 
 
 MANAGERS: EList = [
     ManagerConfig(
-        import_string="cloudyapp.managers.mymanager.manager.MyManager",
+        import_string="pieapp.managers.mymanager.manager.MyManager",
         mount=True,
         args=(...),
         kwargs={...}
@@ -50,8 +50,8 @@ MANAGERS: EList = [
 ]
 
 
-# cloudyapp/launcher.py
-from cloudykit.system.manager import System
+# pieapp/launcher.py
+from piekit.system.manager import System
 
 System.mount()
 ```
@@ -61,7 +61,7 @@ System.mount()
 наименований менеджеров или передать аргумент `full_house=True`, дабы перезагрузить всех менеджеров сразу. Пример использования:
 
 ```py
-from cloudykit.system.manager import System
+from piekit.system.manager import System
 
 System.registry.unmount("configs", "locales", ...)
 

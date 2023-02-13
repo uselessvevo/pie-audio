@@ -4,7 +4,7 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-[English readme](https://github.com/uselessvevo/cloudyff/tree/docs/docs/en/cloudykit) • [Русский readme](https://github.com/uselessvevo/cloudyff/tree/docs/docs/ru/cloudykit)
+[English readme](https://github.com/uselessvevo/cloudyff/tree/docs/docs/en/piekit) • [Русский readme](https://github.com/uselessvevo/cloudyff/tree/docs/docs/ru/piekit)
 
 ## Application pre-configuraion
 > *Notice*: At this moment, this application still in deep development and there is no reason to create installation package. First you need to download/clone the application:
@@ -22,4 +22,4 @@
 * `ASSETS_FOLDER` - resource directory; default - assets
 * `THEMES_FOLDER` - directory of themes; by default - themes
 
-Now you need to set up the dev environment and run the file `cloudyapp/launcher.py `
+Now you need to set up the dev environment and run the file `pieapp/launcher.py `

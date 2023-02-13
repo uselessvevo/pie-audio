@@ -10,18 +10,18 @@
 ```py
 # Система
 # system/config.py
-COMPONENTS: EList = ["cloudykit.components.component.BuiltinComponent"]
+COMPONENTS: EList = ["piekit.components.component.BuiltinComponent"]
 ```
 
 ```py
 # Приложение
-# %cloudyapp%/config.py
-COMPONENTS: EList = ["cloudyapp.components.component.MyComponent"]
+# %pieapp%/config.py
+COMPONENTS: EList = ["pieapp.components.component.MyComponent"]
 ```
 
 В результате мы получаем:
 ```py
->>> ["cloudykit.components.component.BuiltinComponent", "cloudyapp.components.component.MyComponent"]
+>>> ["piekit.components.component.BuiltinComponent", "pieapp.components.component.MyComponent"]
 ```
 
 > **Note**: Важно, чтобы аннотации переменных конфигураций были помечены как `EList`, `EDict` и т.д. Иначе они будут перезаписаны

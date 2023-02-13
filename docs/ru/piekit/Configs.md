@@ -17,8 +17,8 @@
 
 ## Настройки ресурсов
 * `ASSETS_EXCLUDED_FORMATS <EList>` - расширяемый список исключённых форматов файлов
-* `ASSETS_FOLDER <str>` - наименование директории ресурсов (по-умолчанию - "CLOUDYFF_ASSETS_FOLDER")
-* `THEMES_FOLDER <str>` - наименование директории ресурсов (по-умолчанию - "CLOUDYFF_THEMES_FOLDER")
+* `ASSETS_FOLDER <str>` - наименование директории ресурсов (по-умолчанию - "PIEAPP_ASSETS_FOLDER")
+* `THEMES_FOLDER <str>` - наименование директории ресурсов (по-умолчанию - "PIEAPP_THEMES_FOLDER")
 
 
 ## Настройка директорий конфигураций
