@@ -8,7 +8,7 @@ from piekit.utils.logger import logger
 from piekit.plugins.base import BasePlugin
 from piekit.managers.registry import Managers
 
-from piekit.structs.etc import Error
+from piekit.structs.etc import Error, SharedSection
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
@@ -22,7 +22,7 @@ class MainWindow(
     PluginsAccessor
 ):
     # Accessors section
-    section: str = "shared"
+    section: str = SharedSection
 
     signalMoved = pyqtSignal()
     signalResized = pyqtSignal()
@@ -53,7 +53,7 @@ class MainWindow(
         self.signalPluginReloading.connect(self.pluginReloading)
         self.signalExceptionOccurred.connect(self.errorHandler)
 
-    # `ComponentsManager` interface methods
+    # Component interfaces
 
     def placeOn(self, child, target: str, **options) -> None:
         if not Managers.components.get(target):
@@ -80,7 +80,7 @@ class MainWindow(
         for window in QApplication.topLevelWindows():
             window.close()
 
-    # Signals
+    # Slots
 
     @pyqtSlot(str)
     def pluginLoading(self, name: str) -> None:
