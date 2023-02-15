@@ -1,6 +1,3 @@
-from piekit.mainwindow.main import MainWindow
-
-
 class BaseContainer:
     pass
 

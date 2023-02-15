@@ -37,7 +37,6 @@ class PluginManager(BaseManager):
     def mount(self, parent: "MainWindow" = None) -> None:
         """ Mount all built-in plugins, components and user plugins """
         self._mount_plugins(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
-        self._mount_plugins(Config.APP_ROOT / Config.COMPONENTS_FOLDER, parent)
         self._mount_plugins(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
         self._mount_plugins(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
 

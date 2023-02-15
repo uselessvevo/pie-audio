@@ -1,2 +1,2 @@
-from piekit.plugins.mixins.action import ActionMixin
-from piekit.plugins.mixins.menu import MenuMixin
+from piekit.plugins.mixins.actions import ActionMixin
+from piekit.plugins.mixins.menus import MenuMixin
