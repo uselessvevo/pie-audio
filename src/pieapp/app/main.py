@@ -5,6 +5,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon
 
 from piekit.managers.registry import Managers
+from piekit.structs.etc import SharedSection
 from piekit.structs.managers import SysManagersEnum
 from piekit.utils.core import getApplication
 from piekit.mainwindow.main import MainWindow
@@ -12,8 +13,8 @@ from piekit.managers.assets.utils import getTheme, getPalette
 
 
 class PieAudioApp(MainWindow):
-    section = "shared"
     version = (0, 1, 0)
+    section = SharedSection
 
     signalPluginsReady = pyqtSignal()
     signalComponentsReady = pyqtSignal()

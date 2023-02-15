@@ -1,5 +1,4 @@
 import typing
-from dotty_dict import Dotty
 from functools import lru_cache
 
 from piekit.structs.etc import SharedSection
@@ -17,7 +16,7 @@ class ConfigManager(BaseManager):
         super().__init__()
 
         self._roots: set[PathConfig] = set()
-        self._dictionary: Dotty = Dotty({})
+        self._configuration: dict[str, dict[str, typing.Any]] = {}
         self._observer = FileSystemObserver()
 
     def mount(self, *roots: PathConfig) -> None:
@@ -27,19 +26,19 @@ class ConfigManager(BaseManager):
             for file in root_config.root.rglob(root_config.pattern):
                 section: str = root_config.root.name if root_config.section_stem else root_config.section
 
-                if not self._dictionary.get(section):
-                    self._dictionary[section] = {}
+                if not self._configuration.get(section):
+                    self._configuration[section] = {}
 
-                if not self._dictionary[section].get(file.name):
-                    self._dictionary[section][file.stem] = {}
+                if not self._configuration[section].get(file.name):
+                    self._configuration[section][file.stem] = {}
 
-                self._dictionary[section]["__FILE__"] = file
-                self._dictionary[section][file.stem].update(**read_json(str(file)))
+                self._configuration[section]["__FILE__"] = file
+                self._configuration[section][file.stem].update(**read_json(str(file)))
 
             self._observer.add_handler(str(root_config.root), str(root_config.root.name))
 
     def unmount(self, *args, **kwargs) -> None:
-        self._dictionary = Dotty({})
+        self._configuration = {}
         self._observer.remove_handlers(full_house=True)
 
     def reload(self) -> None:
@@ -64,7 +63,7 @@ class ConfigManager(BaseManager):
         if key in self.protected_keys:
             raise KeyError(f"Can't use protected key: {key}")
 
-        return self._dictionary.get(f"{section}.{key}", default)
+        return self._configuration.get(f"{section}.{key}", default)
 
     def set(
         self,
@@ -83,7 +82,7 @@ class ConfigManager(BaseManager):
         if key in self.protected_keys:
             raise KeyError(f"Can't use protected key: {key}")
 
-        self._dictionary[section][key] = data
+        self._configuration[section][key] = data
 
     def delete(
         self,
@@ -101,13 +100,13 @@ class ConfigManager(BaseManager):
             raise KeyError(f"Can't use protected key: {key}")
 
         if not key:
-            del self._dictionary[section]
+            del self._configuration[section]
         else:
-            del self._dictionary[section][key]
+            del self._configuration[section][key]
 
     def save(self, section: str, data: dict, create: bool = False) -> None:
         try:
-            file = self._dictionary[section]["__FILE__"]
+            file = self._configuration[section]["__FILE__"]
             folder = file.parent
         except KeyError:
             raise FileNotFoundError(f"Folder `{section}` doesn't exist")
@@ -115,10 +114,10 @@ class ConfigManager(BaseManager):
         if create:
             if not folder.exists():
                 folder.mkdir()
-            self._dictionary.update({section: data})
+            self._configuration.update({section: data})
 
-        if not self._dictionary.get(section):
+        if not self._configuration.get(section):
             raise FileNotFoundError(f"File {section} not found")
 
         write_json(str(file), data)
-        self._dictionary[section] = data
+        self._configuration[section] = data

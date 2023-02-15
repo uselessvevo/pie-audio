@@ -1,11 +1,8 @@
-from pathlib import Path
-from dotty_dict import Dotty
-
-from piekit.managers.registry import Managers
-from piekit.system.loader import Config
 from piekit.utils.files import read_json
+from piekit.system.loader import Config
 from piekit.managers.base import BaseManager
 from piekit.structs.configs import PathConfig
+from piekit.managers.registry import Managers
 
 
 class LocaleManager(BaseManager):
@@ -20,7 +17,7 @@ class LocaleManager(BaseManager):
             default=Config.DEFAULT_LOCALE
         )
         self._roots: set[PathConfig] = set()
-        self._dictionary: Dotty = Dotty({})
+        self._translations: dict[str, dict[str, str]] = {}
 
     def mount(self, *roots: PathConfig) -> None:
         for root_config in roots:
@@ -29,26 +26,27 @@ class LocaleManager(BaseManager):
             for file in files:
                 section: str = root_config.section
 
-                if not self._dictionary.get(section):
-                    self._dictionary[section] = {}
+                if not self._translations.get(section):
+                    self._translations[section] = {}
 
-                if not self._dictionary.get(file.name):
-                    self._dictionary[section][file.stem] = {}
+                if not self._translations.get(file.name):
+                    self._translations[section][file.stem] = {}
 
-                self._dictionary[file.stem].update(**read_json(str(file)))
+                self._translations[file.stem].update(**read_json(str(file)))
 
     def unmount(self, *args, **kwargs) -> None:
-        self._dictionary = Dotty({})
+        self._translations = {}
 
     def reload(self) -> None:
         self.unmount()
         self.mount(*self._roots)
 
     def get(self, section: str, key: str) -> str:
-        value = self._dictionary.get(f"{section}.{key}")
-        if not value:
+        if section not in self._translations:
             return key
-        return value
+
+        value = self._translations[section].get(section)
+        return value or key
 
     @property
     def locale(self):

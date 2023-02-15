@@ -5,7 +5,7 @@ from piekit.managers.base import BaseManager
 from piekit.structs.configs import ManagerConfig
 from piekit.system.loader import Config
 from piekit.utils.modules import import_by_string
-from piekit.system.exceptions import ObjectNotMountedError, DependencyNotFoundError
+from piekit.managers.exceptions import ObjectNotMountedError, DependencyNotFoundError
 
 
 class ManagersRegistry:
