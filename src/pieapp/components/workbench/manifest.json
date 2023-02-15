@@ -1,8 +1,0 @@
-{
-  "title": "",
-  "tags": ["mp3"],
-  "init": "Workbench",
-  "requirements": [
-    "requests"
-  ]
-}

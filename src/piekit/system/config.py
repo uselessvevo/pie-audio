@@ -14,21 +14,18 @@ SYSTEM_ROOT: Path = BASE_DIR / "piekit"
 
 PIEAPP_ENTRYPOINT = os.getenv("PIEAPP_ENTRYPOINT", "app.main.main")
 
+# Plugins configuration
 # Built-in plugins folder
 PLUGINS_FOLDER: str = os.getenv("PLUGINS_FOLDER", "plugins")
 
-# User plugins folder
-USER_PLUGINS_FOLDER: str = os.getenv("USER_PLUGINS_FOLDER", "plugins")  # requires `ConfigManager`
+# User/site plugins folder
+USER_PLUGINS_FOLDER: str = os.getenv("USER_PLUGINS_FOLDER", "plugins")
 
-# List of built-in plugins
-PLUGINS_LOADING_ORDER: EList = []
-
-# List of components. By default, it's empty
-# String must be like this: `path.to.component.package`
-# For example, `PIEAPP.components.workbench`
+# Components folder
 COMPONENTS_FOLDER: str = os.getenv("COMPONENTS_FOLDER", "components")
-COMPONENTS: EList = []
 
+# Containers folder
+CONTAINERS_FOLDER: str = os.getenv("CONTAINERS_FOLDER", "containers")
 
 # Assets
 ASSETS_EXCLUDED_FORMATS: EList = []

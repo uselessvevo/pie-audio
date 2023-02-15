@@ -1,1 +1,5 @@
-from piekit.system import System
+from piekit.managers.registry import Managers
+
+
+class BaseConfigurationPage:
+    pass

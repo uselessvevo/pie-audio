@@ -1,0 +1,4 @@
+{
+  "title": "Test plugin",
+  "init": "TestPlugin"
+}

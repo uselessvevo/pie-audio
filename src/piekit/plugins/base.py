@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 
-from PyQt5.QtWidgets import QMessageBox, QWidget
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
 from piekit.utils.logger import logger
@@ -16,6 +16,7 @@ from piekit.plugins.observers import PluginObserverMixin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
+from src.piekit.containers.containers import BaseContainer
 
 
 class BasePlugin(
@@ -36,7 +37,7 @@ class BasePlugin(
     section: str = SharedSection
 
     # Icon name
-    icon: str = "app.ico"
+    icon: Union[None, str] = "app.svg"
 
     # By default, description must be written in English
     description: str
@@ -50,7 +51,7 @@ class BasePlugin(
     # List of optional built-in plugins
     optional: list[str] = []
 
-    container: Union[None, QWidget] = None
+    container: Union[None, BaseContainer] = None
 
     # Qt configuration #
 
@@ -85,10 +86,7 @@ class BasePlugin(
         # BasePlugin path
         self._path: Path = path
 
-        self._managers: list["BaseMager"] = []
-
-        # Flag: is plugin registered
-        self._is_registered: bool = False
+        self._managers: list["BaseManager"] = []
 
     # Main methods
 
@@ -126,12 +124,8 @@ class BasePlugin(
 
     # Render methods
 
-    def renderOnParent(self) -> None:
-        """ Render plugin on parent's component """
-        pass
-
-    def init(self, *args, **kwargs) -> None:
-        """ Call/render plugin with given arguments """
+    def init(self) -> None:
+        """ Initialize a plugin. For example, render it """
         raise NotImplementedError("Method `call` must be implemented")
 
     # Update methods
@@ -161,10 +155,10 @@ class BasePlugin(
         return self.version
 
     def getIcon(self) -> str:
-        return self.getAsset("app.ico") \
+        return self.getAsset(self.icon) \
                or self.getAsset("debug.svg", section=SharedSection)
 
-    # Signals
+    # Slots
 
     @pyqtSlot(Error)
     def errorHandler(self, error: Error) -> None:
