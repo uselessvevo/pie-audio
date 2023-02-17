@@ -1,6 +1,11 @@
-import os
-from PyQt5 import QtWidgets
+from pathlib import Path
 
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QFileDialog
+
+from piekit.structs.etc import SharedSection
 from piekit.structs.managers import SysManagersEnum
 from piekit.utils.files import writeJson
 from piekit.utils.core import restartApplication
@@ -16,7 +21,7 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
 
         self._parent = parent
         self._locales = Config.LOCALES
-        self._curLocale = Config.DEFAULT_LOCALE
+        self._curLocale = Managers.configs.get("user", "locales.locale", Config.DEFAULT_LOCALE)
         self._localesRev = {v: k for (k, v) in self._locales.items()}
         self._curLocaleRev = self._locales.get(self._curLocale)
 
@@ -89,7 +94,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self._parent = parent
-        ffmpegPath = Managers.configs.get("ffmpeg.ffmpeg_path")
+        self.ffmpegPath = None
 
         self.lineEdit = QtWidgets.QLineEdit()
         self.lineEdit.setDisabled(True)
@@ -97,39 +102,49 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
 
         self.lineEditButton = QtWidgets.QToolButton()
         self.lineEditButton.setStyleSheet("""
-            QPushButton{
-            font-size: 15pt;
+            QPushButton {
+                font-size: 15pt;
                 width: 300px;
                 border-radius: 50px;
             }
         """)
-        self.lineEditButton.setText(">")
+        self.lineEditButton.setIcon(QIcon(
+            Managers.get(SysManagersEnum.Assets).getSvg(SharedSection, "folder-open.svg")
+        ))
         self.lineEditButton.clicked.connect(self.selectFfmpegPath)
 
-        localeLabel = QtWidgets.QLabel("Setup ffmpeg")
-        localeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
+        pageTitle = QtWidgets.QLabel("Setup ffmpeg")
+        pageTitle.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         ffmpegHBox = QtWidgets.QHBoxLayout()
         ffmpegHBox.addWidget(self.lineEditButton)
         ffmpegHBox.addWidget(self.lineEdit)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(localeLabel)
+        layout.addWidget(pageTitle)
         layout.addLayout(ffmpegHBox)
         self.setLayout(layout)
 
-        parent.button(QtWidgets.QWizard.NextButton).clicked.connect(self.checkFfmpegPath)
+    def isComplete(self) -> bool:
+        return bool(Path(self.ffmpegPath).exists() if self.ffmpegPath else False) and super().isComplete()
 
-    def checkFfmpegPath(self):
-        pass
-
+    @pyqtSlot()
     def selectFfmpegPath(self):
-        fileDialog = QtWidgets.QFileDialog().getOpenFileName(
-            self._parent,
-            directory=os.path.expanduser("~")
-        )
-        if fileDialog:
-            print(fileDialog)
+        directory = QFileDialog(self, Managers.locales(SharedSection, "Select ffmpeg directory"))
+        directory.setFileMode(QFileDialog.DirectoryOnly)
+        directory.setOption(QFileDialog.ShowDirsOnly, False)
+        directory.getExistingDirectory(directory=str(Config.USER_ROOT))
+        directoryPath = directory.directory().path()
+
+        if directoryPath:
+            writeJson(
+                file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "ffmpeg.json"),
+                data={"root": directoryPath},
+                create=True
+            )
+            self.ffmpegPath = directoryPath
+            self.lineEdit.setText(directoryPath)
+            self.completeChanged.emit()
 
     def getResult(self):
         return self.lineEdit.text()
@@ -145,11 +160,6 @@ class SetupWizard(QtWidgets.QWizard):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        if not Config.USER_ROOT.exists():
-            Config.USER_ROOT.mkdir()
-            (Config.USER_ROOT / Config.USER_CONFIG_FOLDER).mkdir()
-            (Config.USER_ROOT / Config.USER_PLUGINS_FOLDER).mkdir()
-
         self.setWindowTitle("Setup wizard")
         self.resize(640, 380)
         self.setOptions(

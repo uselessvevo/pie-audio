@@ -25,5 +25,6 @@
     "Select locale": "Select locale",
     "Select theme": "Select theme",
     "Plugin {} is ready": "Plugin {} is ready",
-    "Plugin {} is loading": "Plugin {} is loading"
+    "Plugin {} is loading": "Plugin {} is loading",
+    "Select ffmpeg directory": "Select ffmpeg bin directory"
 }
