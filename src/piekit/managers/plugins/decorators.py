@@ -75,5 +75,5 @@ def on_plugin_unmount(func: Callable = None,
     return func
 
 
-on_plugin_available = on_plugin_available
-on_plugin_unmount = on_plugin_unmount
+onPluginAvailable = on_plugin_available
+onPluginUnmount = on_plugin_unmount

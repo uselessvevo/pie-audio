@@ -118,8 +118,11 @@ class ManagersRegistry:
         except AttributeError:
             raise ObjectNotMountedError(manager)
 
-    def __getattr__(self, manager: str) -> BaseManager:
-        return self.get(manager)
+    def __call__(self, *args, **kwargs):
+        return self.get(*args, **kwargs)
+
+    def __getattr__(self, *args, **kwargs) -> BaseManager:
+        return self.get(*args, **kwargs)
 
 
 Managers = ManagersRegistry()

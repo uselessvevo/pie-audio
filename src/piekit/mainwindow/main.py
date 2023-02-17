@@ -48,9 +48,6 @@ class MainWindow(
     # Main methods
 
     def prepareBaseSignals(self) -> None:
-        self.signalPluginReady.connect(self.pluginReady)
-        self.signalPluginLoading.connect(self.pluginLoading)
-        self.signalPluginReloading.connect(self.pluginReloading)
         self.signalExceptionOccurred.connect(self.errorHandler)
 
     # Component interfaces
@@ -79,20 +76,6 @@ class MainWindow(
         Managers.unmount(full_house=True)
         for window in QApplication.topLevelWindows():
             window.close()
-
-    # Slots
-
-    @pyqtSlot(str)
-    def pluginLoading(self, name: str) -> None:
-        pass
-
-    @pyqtSlot(str)
-    def pluginReady(self, name: str) -> None:
-        pass
-
-    @pyqtSlot(str)
-    def pluginReloading(self, name: str) -> None:
-        pass
 
     @pyqtSlot(Error)
     def errorHandler(self, error: Error) -> None:

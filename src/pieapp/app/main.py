@@ -1,15 +1,11 @@
-import sys
-
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSignal
 
 from piekit.managers.registry import Managers
 from piekit.structs.etc import SharedSection
 from piekit.structs.managers import SysManagersEnum
-from piekit.utils.core import getApplication
 from piekit.mainwindow.main import MainWindow
-from piekit.managers.assets.utils import getTheme, getPalette
 
 
 class PieAudioApp(MainWindow):
@@ -28,9 +24,12 @@ class PieAudioApp(MainWindow):
         self.resize(*self.getConfig("ui.winsize", (720, 480)))
         self.setWindowIcon(QIcon(self.getAsset("bug.svg")))
 
+    def prepareSignals(self) -> None:
+        self.signalPluginsReady.connect(self.notifyPluginsReady)
+
     def prepare(self):
         self.prepareBaseSignals()
-        self.prepareStatusBar()
+        self.prepareSignals()
         self.prepareMainLayout()
         self.preparePlugins()
 
@@ -55,11 +54,6 @@ class PieAudioApp(MainWindow):
 
         self.signalComponentsLoading.emit()
 
-    def prepareStatusBar(self):
-        self.statusBar = QtWidgets.QStatusBar()
-        self.statusBar.insertPermanentWidget(0, QtWidgets.QWidget())
-        self.setStatusBar(self.statusBar)
-
     # Plugin method and signals
 
     def preparePlugins(self) -> None:
@@ -67,17 +61,5 @@ class PieAudioApp(MainWindow):
         Managers.get(SysManagersEnum.Plugins).mount(self)
         self.signalPluginsReady.emit()
 
-    @pyqtSlot(str)
-    def pluginLoading(self, name: str) -> None:
-        self.statusBar.showMessage(self.getTranslation("Plugin {} is loading".format(name)))
-
-    @pyqtSlot(str)
-    def pluginReady(self, name: str) -> None:
-        self.statusBar.showMessage(self.getTranslation("Plugin {} is ready".format(name)))
-
-    @pyqtSlot(str)
-    def pluginReloading(self, name: str) -> None:
-        self.statusBar.showMessage(self.getTranslation("Plugin {} reloading".format(name)))
-
     def notifyPluginsReady(self):
-        self.statusBar.showMessage(self.getTranslation("Plugins are ready"))
+        self.getPlugin("status-bar").showMessage(self.getTranslation("Plugins are ready"))

@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QStatusBar, QWidget
+
 from piekit.plugins.base import BasePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -10,7 +12,12 @@ class StatusBar(
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = "statusbar"
+    name = "status-bar"
+
+    def showMessage(self, message: str) -> None:
+        self.statusBar.showMessage(message)
 
     def init(self) -> None:
-        pass
+        self.statusBar = QStatusBar(self._parent)
+        self.statusBar.insertPermanentWidget(0, QWidget())
+        self._parent.setStatusBar(self.statusBar)
