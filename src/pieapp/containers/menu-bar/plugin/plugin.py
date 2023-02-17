@@ -1,15 +1,15 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QToolBar, QMenuBar, QMenu, QAction
+from PyQt5.QtWidgets import QMenuBar, QMenu, QAction
 
-from piekit.plugins.base import BasePlugin
+from piekit.containers.containers import BaseContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
 class MenuBar(
-    BasePlugin,
+    BaseContainer,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,

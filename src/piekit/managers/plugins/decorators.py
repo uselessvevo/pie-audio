@@ -1,12 +1,12 @@
 import functools
 from typing import Callable, Optional
 
-from piekit.structs.etc import AllPlugins
+from piekit.structs.etc import AllPieObjects
 
 
-def on_plugin_available(
+def on_object_available(
     func: Callable = None,
-    plugin: Optional[str] = None
+    target: Optional[str] = None
 ) -> Callable:
     """
     Method decorator used to handle plugin availability
@@ -20,7 +20,7 @@ def on_plugin_available(
     ----------
     func: Callable
         Method to decorate. Given by default when applying the decorator.
-    plugin: Optional[str]
+    target: Optional[str]
         Name of the requested plugin whose availability triggers the method.
 
     Returns
@@ -29,19 +29,18 @@ def on_plugin_available(
         The same method that was given as input.
     """
     if func is None:
-        return functools.partial(on_plugin_available, plugin=plugin)
+        return functools.partial(on_object_available, target=target)
 
-    if plugin is None:
-        # Use special `AllPlugins` identifier to signal that the function
+    if target is None:
+        # Use special `AllPieObjects` identifier to signal that the function
         # observes all plugins listed as dependencies.
-        plugin = AllPlugins
+        target = AllPieObjects
 
-    func._plugin_listen = plugin
+    func._object_listen = target
     return func
 
 
-def on_plugin_unmount(func: Callable = None,
-                       plugin: Optional[str] = None):
+def on_object_unmount(func: Callable = None, target: Optional[str] = None):
     """
     Method decorator used to handle plugin unmount on Spyder.
 
@@ -55,7 +54,7 @@ def on_plugin_unmount(func: Callable = None,
     ----------
     func: Callable
         Method to decorate. Given by default when applying the decorator.
-    plugin: str
+    target: str
         Name of the requested plugin whose unmount triggers the method.
 
     Returns
@@ -64,16 +63,16 @@ def on_plugin_unmount(func: Callable = None,
         The same method that was given as input.
     """
     if func is None:
-        return functools.partial(on_plugin_unmount, plugin=plugin)
+        return functools.partial(on_object_unmount, plugin=target)
 
-    if plugin is None:
-        raise ValueError("on_plugin_unmount must have a well defined "
+    if target is None:
+        raise ValueError("on_object_unmount must have a well defined "
                          "plugin keyword argument value, "
                          "e.g., plugin=Plugins.Editor")
 
-    func._plugin_unmount = plugin
+    func._object_unmount = target
     return func
 
 
-onPluginAvailable = on_plugin_available
-onPluginUnmount = on_plugin_unmount
+onObjectAvailable = on_object_available
+onPieObjectUnmount = on_object_unmount

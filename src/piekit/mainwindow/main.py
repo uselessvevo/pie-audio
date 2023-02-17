@@ -28,9 +28,9 @@ class MainWindow(
     signalResized = pyqtSignal()
     signalExceptionOccurred = pyqtSignal(dict)
 
-    signalPluginReady = pyqtSignal(str)
-    signalPluginLoading = pyqtSignal(str)
-    signalPluginReloading = pyqtSignal(str)
+    signalObjectReady = pyqtSignal(str)
+    signalObjectLoading = pyqtSignal(str)
+    signalObjectReloading = pyqtSignal(str)
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent=parent)

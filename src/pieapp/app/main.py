@@ -12,7 +12,7 @@ class PieAudioApp(MainWindow):
     version = (0, 1, 0)
     section = SharedSection
 
-    signalPluginsReady = pyqtSignal()
+    signalObjectsReady = pyqtSignal()
     signalComponentsReady = pyqtSignal()
     signalComponentsLoading = pyqtSignal()
 
@@ -25,7 +25,7 @@ class PieAudioApp(MainWindow):
         self.setWindowIcon(QIcon(self.getAsset("bug.svg")))
 
     def prepareSignals(self) -> None:
-        self.signalPluginsReady.connect(self.notifyPluginsReady)
+        self.signalObjectsReady.connect(self.notifyObjectReady)
 
     def prepare(self):
         self.prepareBaseSignals()
@@ -59,7 +59,7 @@ class PieAudioApp(MainWindow):
     def preparePlugins(self) -> None:
         """ Prepare all (or selected) plugins """
         Managers.get(SysManagersEnum.Plugins).mount(self)
-        self.signalPluginsReady.emit()
+        self.signalObjectsReady.emit()
 
-    def notifyPluginsReady(self):
+    def notifyObjectReady(self):
         self.getPlugin("status-bar").showMessage(self.getTranslation("Plugins are ready"))

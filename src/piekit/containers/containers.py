@@ -1,10 +1,14 @@
-class BaseContainer:
-    pass
+from piekit.objects.base import PieObject
 
 
-class MainWindowContainer(BaseContainer):
-    pass
+class BaseContainer(PieObject):
+
+    def addOn(self, container: str) -> None:
+        pass
+
+    def removeFrom(self, container: str) -> None:
+        pass
 
 
-class MainWindowDockableContainer(MainWindowContainer):
+class DockableContainer(BaseContainer):
     pass

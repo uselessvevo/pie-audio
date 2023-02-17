@@ -1,6 +1,8 @@
 import sys
 from typing import Union
 
+from piekit.utils.logger import logger
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QErrorMessage
 
@@ -32,4 +34,6 @@ def ErrorWindow(err_type: Union[Exception, str], err_value: str, err_traceback: 
     window.setWindowTitle(f'{err_type} {err_value}')
     window.showMessage(err_traceback)
 
-    # sys.exit(app.exec_())
+    logger.error(err_type, err_value)
+
+    sys.exit(app.exec_())

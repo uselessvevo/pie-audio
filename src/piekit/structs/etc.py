@@ -3,7 +3,7 @@ import dataclasses as dt
 
 SharedSection = "shared"
 
-AllPlugins = "__ALL__"
+AllPieObjects = "__ALL__"
 
 # Use it in `AssetsManager`
 DirectoryType = type("DirectoryType", (), {})

@@ -1,15 +1,14 @@
 from PyQt5.QtWidgets import QTableWidget
 
-from piekit.plugins.base import BasePlugin
-
+from piekit.containers.containers import BaseContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
-from piekit.managers.plugins.decorators import onPluginAvailable
+from piekit.managers.plugins.decorators import onObjectAvailable
 
 
 class ContentTable(
-    BasePlugin,
+    BaseContainer,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
@@ -22,7 +21,6 @@ class ContentTable(
         self.table = QTableWidget()
         # self._parent.addCentralWidget()
 
-    @onPluginAvailable(plugin="workbench")
+    @onObjectAvailable(target="workbench")
     def test(self):
         self.logger.info("##########################Test")
-        self._parent.addWidget(self.table)

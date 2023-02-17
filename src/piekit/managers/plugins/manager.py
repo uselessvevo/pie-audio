@@ -21,16 +21,18 @@ class PluginManager(BaseManager):
         super().__init__()
 
         # List of plugins that depend on it
-        self._plugin_dependents: dict[str, dict[str, list[str]]] = {}
+        self._object_dependents: dict[str, dict[str, list[str]]] = {}
 
         # List of the plugins that the plugin depends on
-        self._plugin_dependencies: dict[str, dict[str, list[str]]] = {}
+        self._object_dependencies: dict[str, dict[str, list[str]]] = {}
 
         # BasePlugin dictionary
-        self._plugins_registry: dict[str, BasePlugin] = {}
+        self._objects_registry: dict[str, BasePlugin] = {}
 
         # BasePlugin dictionary with availability boolean status
-        self._plugin_availability: dict[str, bool] = {}
+        self._object_availability: dict[str, bool] = {}
+
+        self._object_ready: set[str] = set()
 
     # BaseManager methods
 
@@ -51,25 +53,25 @@ class PluginManager(BaseManager):
             plugins (objects): BasePlugin based object
             full_house (bool): reload all managers, services from all instances
         """
-        plugins = plugins if not full_house else self._plugins_registry.keys()
+        plugins = plugins if not full_house else self._objects_registry.keys()
         for plugin in plugins:
             self._logger.info(f"Unmounting plugin {plugin} from {self.__class__.__name__}")
 
-            if plugin in self._plugins_registry:
+            if plugin in self._objects_registry:
                 self._unmount_plugin(plugin)
             
     def reload(self, *plugins: str, full_house: bool = False) -> None:
         """ Reload listed or all plugins and components """
-        plugins = self._plugins_registry.keys() if full_house else plugins
+        plugins = self._objects_registry.keys() if full_house else plugins
         for plugin in plugins:
             self._logger.info(f"Reloading plugin {plugin} from {self.__class__.__name__}")
 
-            if plugin in self._plugins_registry:
+            if plugin in self._objects_registry:
                 self._reload_plugin(plugin)
 
     def get(self, key) -> Any:
         """ Get plugin instance by its name """
-        return self._plugins_registry.get(key)
+        return self._objects_registry.get(key)
 
     # PluginManager protected methods
 
@@ -85,44 +87,61 @@ class PluginManager(BaseManager):
                 self._logger.info(f"Mounting plugin `{plugin.name}` in `{parent.__class__.__name__}`")
 
                 # Reading data from `plugin/manifest.json`
-                plugin_path = folder / plugin.name
-                plugin_manifest = read_json(str(plugin_path / "manifest.json"))
+                object_path = folder / plugin.name
+                object_manifest = read_json(str(object_path / "manifest.json"))
 
                 # Importing plugin module
-                plugin_module = import_by_path("plugin", str(plugin_path / "plugin/plugin.py"))
+                object_module = import_by_path("plugin", str(object_path / "plugin/plugin.py"))
 
                 # Creating plugin instance
                 # System.root / System.config.PLUGINS_FOLDER / self.name
-                plugin_instance: BasePlugin = getattr(plugin_module, plugin_manifest.get("init"))(parent, plugin_path)
+                object_instance: BasePlugin = getattr(object_module, object_manifest.get("init"))(parent, object_path)
 
-                self._update_plugin_info(
-                    plugin_instance.name,
-                    plugin_instance.requires,
-                    plugin_instance.optional
+                self._update_object_info(
+                    object_instance.name,
+                    object_instance.requires,
+                    object_instance.optional
                 )
 
                 # Hashing plugin instance
-                self._plugins_registry[plugin_instance.name] = plugin_instance
+                self._objects_registry[object_instance.name] = object_instance
 
-                plugin_instance.signalPluginReady.connect(
+                object_instance.signalObjectReady.connect(
                     lambda: (
-                        self._notify_plugin_availability(
-                            plugin_instance.name,
-                            plugin_instance.requires,
-                            plugin_instance.optional,
+                        self._notify_object_availability(
+                            object_instance.name,
+                            object_instance.requires,
+                            object_instance.optional,
                         ),
-                        self._notify_plugin_availability_on_main(
-                            plugin_instance.name
+                        self._notify_object_availability_on_main(
+                            object_instance.name
                         )
                     )
                 )
 
                 # Initializing plugin
-                plugin_instance.prepare()
+                object_instance.prepare()
 
-                self._notify_plugin_dependencies(plugin_instance.name)
+        self._set_objects_ready()
 
-    def _notify_plugin_availability(
+    def _set_objects_ready(self) -> None:
+        for pie_object in self._objects_registry:
+            if pie_object in self._object_ready:
+                continue
+
+            object_instance = self._objects_registry.get(pie_object)
+
+            # BasePlugin is ready
+            object_instance.signalObjectReady.emit()
+
+            self._notify_object_dependencies(object_instance.name)
+
+            # Inform about that
+            self._logger.info(f"Object {pie_object} is ready!")
+
+            self._object_ready.add(pie_object)
+
+    def _notify_object_availability(
         self,
         name: str,
         requires: list[str] = None,
@@ -139,32 +158,32 @@ class PluginManager(BaseManager):
         requires = requires or []
         optional = optional or []
 
-        self._plugin_availability[name] = True
+        self._object_availability[name] = True
 
         for plugin in requires + optional:
-            if plugin in self._plugins_registry:
-                plugin_instance = self._plugins_registry[plugin]
-                plugin_instance.on_plugin_available(name)
+            if plugin in self._objects_registry:
+                object_instance = self._objects_registry[plugin]
+                object_instance.on_object_available(name)
 
-    def _notify_plugin_availability_on_main(self, name: str) -> None:
-        plugin_instance = self._plugins_registry.get(name)
-        if plugin_instance:
-            plugin_instance.parent().signalPluginReady.emit(name)
+    def _notify_object_availability_on_main(self, name: str) -> None:
+        object_instance = self._objects_registry.get(name)
+        if object_instance:
+            object_instance.parent().signalObjectReady.emit(name)
 
-    def _notify_plugin_dependencies(self, name: str) -> None:
+    def _notify_object_dependencies(self, name: str) -> None:
         """ Notify plugin dependencies """
-        plugin_instance = self._plugins_registry[name]
-        plugin_dependencies = self._plugin_dependencies.get(name, {})
-        required_plugins = plugin_dependencies.get("requires", [])
-        optional_plugins = plugin_dependencies.get("optional", [])
+        object_instance = self._objects_registry[name]
+        object_dependencies = self._object_dependencies.get(name, {})
+        required_plugins = object_dependencies.get("requires", [])
+        optional_plugins = object_dependencies.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
-                if self._plugin_availability.get(plugin, False):
+            if plugin in self._objects_registry:
+                if self._object_availability.get(plugin, False):
                     self._logger.debug(f"BasePlugin {plugin} has already loaded")
-                    plugin_instance.on_plugin_available(plugin)
+                    object_instance.on_object_available(plugin)
 
-    def _update_plugin_info(
+    def _update_object_info(
         self,
         name: str,
         required_plugins: list[str],
@@ -195,11 +214,11 @@ class PluginManager(BaseManager):
             dependent_plugin (str): dependent plugin
             category (str): required or optional category of plugins
         """
-        plugin_dependents = self._plugin_dependents.get(plugin, {})
-        plugin_strict_dependents = plugin_dependents.get(category, [])
-        plugin_strict_dependents.append(dependent_plugin)
-        plugin_dependents[category] = plugin_strict_dependents
-        self._plugin_dependents[plugin] = plugin_dependents
+        object_dependents = self._object_dependents.get(plugin, {})
+        object_strict_dependents = object_dependents.get(category, [])
+        object_strict_dependents.append(dependent_plugin)
+        object_dependents[category] = object_strict_dependents
+        self._object_dependents[plugin] = object_dependents
 
     def _update_dependencies(
         self,
@@ -215,43 +234,43 @@ class PluginManager(BaseManager):
             required_plugin (str): required plugin
             category (str): required or optional category of plugins
         """
-        plugin_dependencies = self._plugin_dependencies.get(plugin, {})
-        plugin_strict_dependencies = plugin_dependencies.get(category, [])
-        plugin_strict_dependencies.append(required_plugin)
-        plugin_dependencies[category] = plugin_strict_dependencies
-        self._plugin_dependencies[plugin] = plugin_dependencies
+        object_dependencies = self._object_dependencies.get(plugin, {})
+        object_strict_dependencies = object_dependencies.get(category, [])
+        object_strict_dependencies.append(required_plugin)
+        object_dependencies[category] = object_strict_dependencies
+        self._object_dependencies[plugin] = object_dependencies
 
-    def _notify_plugin_unmount(self, plugin_name: str):
+    def _notify_object_unmount(self, object_name: str):
         """Notify dependents of a plugin that is going to be unavailable."""
-        plugin_dependents = self._plugin_dependents.get(plugin_name, {})
-        required_plugins = plugin_dependents.get("requires", [])
-        optional_plugins = plugin_dependents.get("optional", [])
+        object_dependents = self._object_dependents.get(object_name, {})
+        required_plugins = object_dependents.get("requires", [])
+        optional_plugins = object_dependents.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
-                if self._plugin_availability.get(plugin, False):
+            if plugin in self._objects_registry:
+                if self._object_availability.get(plugin, False):
                     self._logger.debug(
-                        f"Notifying plugin {plugin} that {plugin_name} is going to be turned off"
+                        f"Notifying plugin {plugin} that {object_name} is going to be turned off"
                     )
-                    plugin_instance: BasePlugin = self._plugins_registry[plugin]
-                    plugin_instance.on_plugin_unmount(plugin_name)
+                    object_instance: BasePlugin = self._objects_registry[plugin]
+                    object_instance.on_object_unmount(object_name)
 
-    def _unmount_plugin(self, plugin_name: str):
+    def _unmount_plugin(self, object_name: str):
         """ Unmount a plugin from its dependencies """
-        plugin_instance: BasePlugin = self._plugins_registry[plugin_name]
-        plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
-        required_plugins = plugin_dependencies.get("requires", [])
-        optional_plugins = plugin_dependencies.get("optional", [])
+        object_instance: BasePlugin = self._objects_registry[object_name]
+        object_dependencies = self._object_dependencies.get(object_name, {})
+        required_plugins = object_dependencies.get("requires", [])
+        optional_plugins = object_dependencies.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
-                if self._plugin_availability.get(plugin, False):
-                    self._logger.info(f"Unmounting {plugin_name} from {plugin}")
-                    plugin_instance.on_plugin_unmount(plugin)
+            if plugin in self._objects_registry:
+                if self._object_availability.get(plugin, False):
+                    self._logger.info(f"Unmounting {object_name} from {plugin}")
+                    object_instance.on_object_unmount(plugin)
 
     # PluginManager public methods
 
-    def is_plugin_available(self, name: str) -> bool:
-        return self._plugin_availability.get(name, False)
+    def is_object_available(self, name: str) -> bool:
+        return self._object_availability.get(name, False)
 
-    isPluginAvailable = is_plugin_available
+    isPluginAvailable = is_object_available
