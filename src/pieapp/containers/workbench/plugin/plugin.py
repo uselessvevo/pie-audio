@@ -17,14 +17,13 @@ class Workbench(
     AssetsAccessor,
 ):
     name = "workbench"
-    container = QToolBar
 
     def init(self) -> None:
         self.toolBar = QToolBar(self._parent)
         self.toolBar.setMovable(False)
         self.toolBar.setIconSize(QtCore.QSize(30, 30))
         self.toolBar.setContextMenuPolicy(Qt.PreventContextMenu)
-        self.toolBar.setOrientation(Qt.Horizontal)
+        self.toolBar.setOrientation(Qt.Vertical)
         self.toolBar.setSizePolicy(QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Minimum,
             QtWidgets.QSizePolicy.Minimum
@@ -44,4 +43,4 @@ class Workbench(
 
         self.toolBar.addWidget(spacer)
         self.toolBar.addWidget(settings)
-        self._parent.addToolBar(Qt.TopToolBarArea, self.toolBar)
+        self._parent.addToolBar(Qt.LeftToolBarArea, self.toolBar)
