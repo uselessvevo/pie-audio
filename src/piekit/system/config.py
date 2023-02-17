@@ -12,8 +12,6 @@ APP_ROOT: Path = BASE_DIR / os.getenv("PIEADUIO_ROOT", "pieapp")
 USER_ROOT: Path = os.getenv("USER_ROOT", Path.home() / ".crabs")
 SYSTEM_ROOT: Path = BASE_DIR / "piekit"
 
-PIEAPP_ENTRYPOINT = os.getenv("PIEAPP_ENTRYPOINT", "app.main.main")
-
 # Plugins configuration
 # Built-in plugins folder
 PLUGINS_FOLDER: str = os.getenv("PLUGINS_FOLDER", "plugins")
@@ -31,15 +29,12 @@ CONTAINERS_FOLDER: str = os.getenv("CONTAINERS_FOLDER", "containers")
 ASSETS_EXCLUDED_FORMATS: EList = []
 ASSETS_FOLDER: str = os.getenv("ASSETS_FOLDER", "assets")
 THEMES_FOLDER: str = os.getenv("THEMES_FOLDER", "themes")
-
+DEFAULT_THEME = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())[0]
 
 # Configurations
 CONFIGS_FOLDER = os.getenv("CONFIGS_FOLDER", "configs")
 USER_CONFIG_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER", "configs")
 USER_FOLDER_FILES: EList = ["locales.json", "assets.json"]
-
-# Templates
-TEMPLATE_FOLDER: str = "templates"
 
 # Locales
 LOCALES: EDict = {
@@ -53,6 +48,14 @@ default_locale = system_locale if system_locale in LOCALES else "en-US"
 
 DEFAULT_LOCALE: str = os.getenv("DEFAULT_LOCALE", default_locale)
 LOCALES_FOLDER: str = os.getenv("LOCALES_FOLDER", "locales")
+
+
+# Templates
+TEMPLATE_FILES: EList = [
+    "locales.json",
+    "assets.json",
+    "ffmpeg.json",
+]
 
 
 # Managers startup configuration

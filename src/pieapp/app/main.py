@@ -81,21 +81,3 @@ class PieAudioApp(MainWindow):
 
     def notifyPluginsReady(self):
         self.statusBar.showMessage(self.getTranslation("Plugins are ready"))
-
-
-def main() -> None:
-    """ Main entrypoint """
-    app = getApplication(sys.argv)
-    theme = Managers.get(SysManagersEnum.Assets).theme
-    if theme:
-        app.setStyleSheet(getTheme(theme))
-        palette = getPalette(theme)
-        if palette:
-            app.setPalette(palette)
-
-    cloudy_app = PieAudioApp()
-    cloudy_app.prepare()
-    cloudy_app.init()
-    cloudy_app.show()
-
-    sys.exit(app.exec_())

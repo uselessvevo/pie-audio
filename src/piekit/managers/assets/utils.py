@@ -4,6 +4,8 @@ import importlib
 import importlib.util
 from pathlib import Path
 
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QIcon
+
 from piekit.utils.files import read_json
 from piekit.system.loader import Config
 
@@ -83,3 +85,13 @@ def get_palette(theme_name: str):
 getTheme = get_theme
 getPalette = get_palette
 parseStylesheet = parse_stylesheet
+
+
+def _setSvgColor(file: str, color: str = "#7cd162"):
+    pixmap = QPixmap(file)
+    painter = QPainter(pixmap)
+    painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+    painter.fillRect(pixmap.rect(), QColor(color))
+    painter.end()
+
+    return QIcon(pixmap)
