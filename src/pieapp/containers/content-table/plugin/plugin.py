@@ -15,7 +15,6 @@ class ContentTable(
     AssetsAccessor,
 ):
     name = "content-table"
-    container = QWidget
     requires = ["workbench"]
 
     def init(self) -> None:
