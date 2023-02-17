@@ -29,9 +29,6 @@ class LocaleManager(BaseManager):
                 if not self._translations.get(section):
                     self._translations[section] = {}
 
-                if not self._translations.get(file.name):
-                    self._translations[section][file.stem] = {}
-
                 self._translations[file.stem].update(**read_json(str(file)))
 
     def unmount(self, *args, **kwargs) -> None:
@@ -45,8 +42,7 @@ class LocaleManager(BaseManager):
         if section not in self._translations:
             return key
 
-        value = self._translations[section].get(section)
-        return value or key
+        return self._translations[section].get(key, key)
 
     @property
     def locale(self):

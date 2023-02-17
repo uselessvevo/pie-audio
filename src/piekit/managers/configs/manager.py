@@ -1,5 +1,6 @@
 import typing
 from functools import lru_cache
+from dotty_dict import Dotty
 
 from piekit.structs.etc import SharedSection
 from piekit.structs.configs import PathConfig
@@ -16,7 +17,7 @@ class ConfigManager(BaseManager):
         super().__init__()
 
         self._roots: set[PathConfig] = set()
-        self._configuration: dict[str, dict[str, typing.Any]] = {}
+        self._configuration: Dotty[str, dict[str, typing.Any]] = Dotty({})
         self._observer = FileSystemObserver()
 
     def mount(self, *roots: PathConfig) -> None:
@@ -38,7 +39,7 @@ class ConfigManager(BaseManager):
             self._observer.add_handler(str(root_config.root), str(root_config.root.name))
 
     def unmount(self, *args, **kwargs) -> None:
-        self._configuration = {}
+        self._configuration = Dotty({})
         self._observer.remove_handlers(full_house=True)
 
     def reload(self) -> None:
@@ -57,7 +58,7 @@ class ConfigManager(BaseManager):
 
         Args:
             section (str|None): section name
-            key (Any): key to access data or nested data
+            key (Any): key for the nested data
             default (Any): default value if key was not found
         """
         if key in self.protected_keys:
@@ -67,7 +68,7 @@ class ConfigManager(BaseManager):
 
     def set(
         self,
-        section: str,
+        section: typing.Union[str, SharedSection],
         key: typing.Any = None,
         data: typing.Any = None
     ) -> None:
@@ -76,7 +77,7 @@ class ConfigManager(BaseManager):
 
         Args:
             section (str|None): section name
-            key (Any): key to access nested data
+            key (Any): key for the nested data
             data (Any): data to set
         """
         if key in self.protected_keys:

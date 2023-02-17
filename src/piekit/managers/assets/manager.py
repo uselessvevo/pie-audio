@@ -1,6 +1,9 @@
 from functools import lru_cache
 from typing import Any
 
+from PyQt5.QtGui import QIcon
+
+from piekit.managers.assets.utils import _setSvgColor
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.structs.etc import DirectoryType
@@ -70,6 +73,10 @@ class AssetsManager(BaseManager):
         except KeyError:
             self._logger.info(f"File {key} not found")
             return default
+
+    @lru_cache
+    def getSvg(self, *args, color: str = "#7cd162") -> QIcon:
+        return _setSvgColor(self.get(*args), color)
 
     @property
     def root(self):
