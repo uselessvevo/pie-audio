@@ -9,19 +9,19 @@ def on_object_available(
     target: Optional[str] = None
 ) -> Callable:
     """
-    Method decorator used to handle plugin availability
+    Method decorator used to handle PieObject availability
 
     The methods that use this decorator must have the following signature:
-    `def method(self)` when observing a single plugin or
-    `def method(self, plugin): ...` when observing multiple plugins or
-    all plugins that were listed as dependencies.
+    `def method(self)` when observing a single pie_object or
+    `def method(self, target): ...` when observing multiple pie_objects or
+    all PieObjects that were listed as dependencies.
 
     Parameters
     ----------
     func: Callable
         Method to decorate. Given by default when applying the decorator.
     target: Optional[str]
-        Name of the requested plugin whose availability triggers the method.
+        Name of the requested PieObjects whose availability triggers the method.
 
     Returns
     -------
@@ -33,7 +33,7 @@ def on_object_available(
 
     if target is None:
         # Use special `AllPieObjects` identifier to signal that the function
-        # observes all plugins listed as dependencies.
+        # observes all PieObjects listed as dependencies.
         target = AllPieObjects
 
     func._object_listen = target
@@ -42,10 +42,10 @@ def on_object_available(
 
 def on_object_unmount(func: Callable = None, target: Optional[str] = None):
     """
-    Method decorator used to handle plugin unmount on Spyder.
+    Method decorator used to handle PieObjects unmount on Spyder.
 
-    This decorator will be called **before** the specified plugin is deleted
-    and also **before** the plugin that uses the decorator is destroyed.
+    This decorator will be called **before** the specified PieObjects is deleted
+    and also **before** the PieObjects that uses the decorator is destroyed.
 
     The methods that use this decorator must have the following signature:
     `def method(self)`.
@@ -55,7 +55,7 @@ def on_object_unmount(func: Callable = None, target: Optional[str] = None):
     func: Callable
         Method to decorate. Given by default when applying the decorator.
     target: str
-        Name of the requested plugin whose unmount triggers the method.
+        Name of the requested PieObjects whose unmount triggers the method.
 
     Returns
     -------
@@ -67,8 +67,8 @@ def on_object_unmount(func: Callable = None, target: Optional[str] = None):
 
     if target is None:
         raise ValueError("on_object_unmount must have a well defined "
-                         "plugin keyword argument value, "
-                         "e.g., plugin=Plugins.Editor")
+                         "PieObjects keyword argument value, "
+                         "e.g., target=Objects.Editor")
 
     func._object_unmount = target
     return func

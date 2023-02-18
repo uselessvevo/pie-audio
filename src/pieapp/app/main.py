@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal
 
 from piekit.managers.registry import Managers
 from piekit.structs.etc import SharedSection
-from piekit.structs.managers import SysManagersEnum
+from piekit.managers.types import SysManagers
 from piekit.mainwindow.main import MainWindow
 
 
@@ -31,7 +31,7 @@ class PieAudioApp(MainWindow):
         self.prepareBaseSignals()
         self.prepareSignals()
         self.prepareMainLayout()
-        self.preparePlugins()
+        self.preparePieObjects()
 
     def prepareMainLayout(self):
         self.mainHBox = QtWidgets.QHBoxLayout()
@@ -56,10 +56,10 @@ class PieAudioApp(MainWindow):
 
     # Plugin method and signals
 
-    def preparePlugins(self) -> None:
-        """ Prepare all (or selected) plugins """
-        Managers.get(SysManagersEnum.Plugins).mount(self)
+    def preparePieObjects(self) -> None:
+        """ Prepare all (or selected) PieObjects """
+        Managers.get(SysManagers.Objects).mount(self)
         self.signalObjectsReady.emit()
 
     def notifyObjectReady(self):
-        self.getPlugin("status-bar").showMessage(self.getTranslation("Plugins are ready"))
+        self.getObject("status-bar").showMessage(self.getTranslation("Objects are ready"))

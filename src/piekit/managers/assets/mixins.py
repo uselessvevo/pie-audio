@@ -3,7 +3,7 @@ from typing import Union
 
 from piekit.managers.registry import Managers
 from piekit.structs.etc import SharedSection
-from piekit.structs.managers import SysManagersEnum
+from piekit.managers.types import SysManagers
 
 
 class AssetsAccessor:
@@ -17,6 +17,6 @@ class AssetsAccessor:
         default: typing.Any = None,
         section: Union[str, SharedSection] = SharedSection
     ) -> typing.Any:
-        return Managers.get(SysManagersEnum.Assets).get(self.section or section, key, default)
+        return Managers.get(SysManagers.Assets).get(self.section or section, key, default)
 
     getAsset = get_asset

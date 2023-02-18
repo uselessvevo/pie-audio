@@ -8,7 +8,7 @@ from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.structs.etc import DirectoryType
 from piekit.structs.configs import PathConfig
-from piekit.structs.managers import SysManagersEnum
+from piekit.managers.types import SysManagers
 from piekit.system.loader import Config
 
 
@@ -21,7 +21,7 @@ class AssetsManager(BaseManager):
 
         self._roots: set[PathConfig] = set()
         self._dictionary: dict = dict()
-        self._theme = Managers.get(SysManagersEnum.Configs).get("user", "assets.theme")
+        self._theme = Managers.get(SysManagers.Configs).get("user", "assets.theme")
         self._assets_folder = Config.APP_ROOT / Config.ASSETS_FOLDER
         self._themes = []
 

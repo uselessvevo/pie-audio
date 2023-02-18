@@ -3,7 +3,7 @@ import os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
-from piekit.managers.plugins.mixins import PluginsAccessor
+from piekit.managers.objects.mixins import PluginsAccessor
 from piekit.utils.logger import logger
 from piekit.plugins.base import BasePlugin
 from piekit.managers.registry import Managers
@@ -61,13 +61,13 @@ class MainWindow(
 
         # Register or render object on `BaseComponent` based object
         # TODO: Add `ComponentsAccessor` and reimplement `mount/unmount` method
-        Managers.plugins.get(target).register(child, **options)
+        Managers.objects.get(target).register(child, **options)
 
     def removeFrom(self, child, target: str) -> None:
         if not isinstance(child, (BasePlugin,)):
             raise TypeError("MainWindow objects can register only `BasePlugin` based objects")
 
-        if not Managers.plugins.get(target):
+        if not Managers.objects.get(target):
             raise ValueError(f"MainWindow doesn't contain {target} object")
 
     # Event methods

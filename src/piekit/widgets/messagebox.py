@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 
 from piekit.managers.registry import Managers
-from piekit.structs.managers import SysManagersEnum
+from piekit.managers.types import SysManagers
 
 
 class MessageBox(QMessageBox):
@@ -10,7 +10,7 @@ class MessageBox(QMessageBox):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
 
-        self.trans = Managers.get(SysManagersEnum.Locales)
+        self.trans = Managers.get(SysManagers.Locales)
 
         self.setStyleSheet("QLabel{min-width: 300px; min-height: 50}")
         self.setWindowTitle(self.trans('Exit'))

@@ -3,9 +3,10 @@ from pathlib import Path
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
+from piekit.objects.types import ObjectTypes
 from piekit.utils.logger import logger
 from piekit.managers.registry import Managers
-from piekit.structs.managers import SysManagersEnum
+from piekit.managers.types import SysManagers
 
 from piekit.structs.etc import Error
 from piekit.structs.etc import SharedSection
@@ -18,8 +19,10 @@ class PieObject(
 ):
     # Main attributes #
 
-    # BasePlugin codename
+    # PieObject codename
     name: str
+
+    type: str = ObjectTypes.Pie
 
     # Accessors section
     section: str = SharedSection
@@ -27,21 +30,21 @@ class PieObject(
     # BasePlugin version
     version: tuple[int] = (0, 1, 0)
 
-    # List of required built-in plugins
+    # List of required built-in pie_objects
     requires: list[str] = []
 
-    # List of optional built-in plugins
+    # List of optional built-in pie_objects
     optional: list[str] = []
 
     # Qt configuration #
 
-    # Signal when plugin is ready
+    # Signal when pie_object is ready
     signalObjectReady = pyqtSignal()
 
-    # Signal when plugin is loading
+    # Signal when pie_object is loading
     signalObjectLoading = pyqtSignal(str)
 
-    # Signal when plugin is reloading
+    # Signal when pie_object is reloading
     signalObjectReloading = pyqtSignal(str)
 
     # Signal when main window is closing
@@ -77,7 +80,7 @@ class PieObject(
         # BasePlugin is loading
         self.signalObjectLoading.emit(self.__class__.__name__)
 
-        # Initializing plugin
+        # Initializing pie_object
         self.init()
 
         # # BasePlugin is ready
@@ -95,7 +98,7 @@ class PieObject(
         self.signalExceptionOccurred.connect(self.errorHandler)
 
     def prepareShortcuts(self) -> None:
-        """ Prepare plugin's shortcuts and register them in `ShortcutsManager` """
+        """ Prepare object's shortcuts and register them in `ShortcutsManager` """
         pass
 
     def prepareConfigurationPage(self) -> None:
@@ -105,7 +108,7 @@ class PieObject(
     # Render methods
 
     def init(self) -> None:
-        """ Initialize a plugin. For example, render it """
+        """ Initialize an object. For example, render it """
         raise NotImplementedError("Method `call` must be implemented")
 
     # Update methods
@@ -132,7 +135,7 @@ class PieObject(
         messageBox.setIcon(QMessageBox.Critical)
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
-        messageBox.setWindowTitle(Managers(SysManagersEnum.Locales)("Error", section="shared"))
+        messageBox.setWindowTitle(Managers(SysManagers.Locales)("Error", section="shared"))
         messageBox.exec_()
 
     # Properties

@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QFileDialog
 
 from piekit.structs.etc import SharedSection
-from piekit.structs.managers import SysManagersEnum
+from piekit.managers.types import SysManagers
 from piekit.utils.files import writeJson
 from piekit.utils.core import restartApplication
 
@@ -109,7 +109,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
             }
         """)
         self.lineEditButton.setIcon(QIcon(
-            Managers.get(SysManagersEnum.Assets).getSvg(SharedSection, "folder-open.svg")
+            Managers.get(SysManagers.Assets).getSvg(SharedSection, "folder-open.svg")
         ))
         self.lineEditButton.clicked.connect(self.selectFfmpegPath)
 

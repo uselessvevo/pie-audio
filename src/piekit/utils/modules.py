@@ -26,7 +26,7 @@ def import_by_string(string: str, both: bool = False):
         object
     """
     if not is_import_string(string):
-        raise TypeError('string is not a valid "import string"')
+        raise TypeError("Invalid import string")
 
     string = string.split('.')
     path, name = '.'.join(string[:-1]), string[-1]
