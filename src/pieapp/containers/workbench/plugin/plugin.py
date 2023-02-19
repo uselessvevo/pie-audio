@@ -31,7 +31,7 @@ class Workbench(
 
         settings = QtWidgets.QToolButton()
         settings.setToolTip(self.getTranslation("Settings"))
-        settings.setIcon(QtGui.QIcon(self.getAsset("settings.svg")))
+        settings.setIcon(QtGui.QIcon(self.getAsset("settings.png")))
         settings.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         spacer = QtWidgets.QWidget()

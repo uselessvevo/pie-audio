@@ -2,7 +2,7 @@ from typing import Union
 
 from piekit.utils.logger import logger
 from piekit.managers.base import BaseManager
-from piekit.structs.configs import ManagerConfig
+from piekit.managers.types import ManagerConfig
 from piekit.system.loader import Config
 from piekit.utils.modules import import_by_string
 from piekit.managers.exceptions import ObjectNotMountedError, DependencyNotFoundError

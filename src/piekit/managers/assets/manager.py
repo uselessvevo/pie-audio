@@ -6,9 +6,8 @@ from PyQt5.QtGui import QIcon
 from piekit.managers.assets.utils import _setSvgColor
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
-from piekit.structs.etc import DirectoryType
-from piekit.structs.configs import PathConfig
-from piekit.managers.types import SysManagers
+from piekit.managers.types import PathConfig
+from piekit.managers.types import SysManagers, DirectoryType
 from piekit.system.loader import Config
 
 

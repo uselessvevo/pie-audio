@@ -1,5 +1,5 @@
 """ This observer serves """
-from piekit.structs.etc import AllPieObjects
+from piekit.managers.types import AllPieObjects
 
 
 class PieObjectObserverMixin:

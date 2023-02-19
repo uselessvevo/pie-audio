@@ -8,7 +8,8 @@ from piekit.utils.logger import logger
 from piekit.plugins.base import BasePlugin
 from piekit.managers.registry import Managers
 
-from piekit.structs.etc import Error, SharedSection
+from piekit.objects.types import Error
+from piekit.managers.types import SharedSection
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor

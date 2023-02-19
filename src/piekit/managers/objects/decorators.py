@@ -1,7 +1,7 @@
 import functools
 from typing import Callable, Optional
 
-from piekit.structs.etc import AllPieObjects
+from piekit.managers.types import AllPieObjects
 
 
 def on_object_available(

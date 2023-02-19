@@ -19,7 +19,7 @@ class BasePlugin(
     AssetsAccessor,
 ):
     # Icon name
-    icon: Union[None, str] = "app.svg"
+    icon: Union[None, str] = "app.png"
 
     # By default, description must be written in English
     description: str

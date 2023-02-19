@@ -2,9 +2,9 @@ import locale
 import os.path
 from pathlib import Path
 
-from piekit.structs.etypes import EList
-from piekit.structs.etypes import EDict
-from piekit.structs.configs import ManagerConfig, PathConfig
+from piekit.system.types import EList
+from piekit.system.types import EDict
+from piekit.managers.types import ManagerConfig, PathConfig
 
 # Base paths
 BASE_DIR: Path = Path(__file__).parent.parent.parent

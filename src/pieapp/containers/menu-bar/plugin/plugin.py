@@ -27,7 +27,7 @@ class MenuBar(
 
         # File menu
         self.addMenu(name="file", text=self.getTranslation("File"))
-        self.addMenuItem(menu="file", name="open", text=self.getTranslation("Open file"), icon="bug.svg")
+        self.addMenuItem(menu="file", name="open", text=self.getTranslation("Open file"), icon="open-file.png")
 
         self._parent.setMenuBar(self.menuBar)
 

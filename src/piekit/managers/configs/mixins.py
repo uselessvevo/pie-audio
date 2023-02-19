@@ -1,8 +1,7 @@
 from typing import Any, Union
 
-from piekit.structs.etc import SharedSection
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers
+from piekit.managers.types import SysManagers, SharedSection
 
 
 class ConfigAccessor:

@@ -7,7 +7,7 @@ import types
 import typing
 import importlib
 
-from piekit.structs import etypes as ext_types
+from piekit.system import types as ext_types
 
 _HANDLERS_MAPPING: dict = {
     "EList": "handle_elist",

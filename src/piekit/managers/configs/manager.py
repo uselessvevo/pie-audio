@@ -2,8 +2,8 @@ import typing
 from functools import lru_cache
 from dotty_dict import Dotty
 
-from piekit.structs.etc import SharedSection
-from piekit.structs.configs import PathConfig
+from piekit.managers.types import SharedSection
+from piekit.managers.types import PathConfig
 from piekit.managers.base import BaseManager
 from piekit.utils.files import read_json, write_json
 from piekit.observers.filesystem import FileSystemObserver

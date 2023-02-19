@@ -3,13 +3,11 @@ from pathlib import Path
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
-from piekit.objects.types import ObjectTypes
+from piekit.objects.types import ObjectTypes, Error
 from piekit.utils.logger import logger
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers
+from piekit.managers.types import SysManagers, SharedSection
 
-from piekit.structs.etc import Error
-from piekit.structs.etc import SharedSection
 from piekit.objects.observer import PieObjectObserverMixin
 
 

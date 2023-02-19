@@ -1,7 +1,7 @@
 from piekit.utils.files import read_json
 from piekit.system.loader import Config
 from piekit.managers.base import BaseManager
-from piekit.structs.configs import PathConfig
+from piekit.managers.types import PathConfig
 from piekit.managers.registry import Managers
 
 
