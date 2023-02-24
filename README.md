@@ -10,8 +10,8 @@
 > *Notice*: At this moment, this application still in deep development and there is no reason to create installation package. First you need to download/clone the application:
 
 1. Download via git - `git clone https://github.com/uselessvevo/pie-audio.git `
-2. Create virtual environment
-3. Install dependencies - `pip install -r requirements/<your platform>.txt`.
+2. Install poetry - `pip install poetry`
+3. Initialize poetry - `poetry init`
 4. Configure the environment variables (optional):
 * `CONFIGS_FOLDER` - configuration directory; by default - config
 * `USER_CONFIGS_FOLDER` - plugins directory; by default - os.path.expanduser("~")
