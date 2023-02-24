@@ -9,7 +9,7 @@ class ObjectTypes:
     Pie: str = "pie"
 
     # Plugin
-    Plugin: str = "pie_object"
+    Plugin: str = "plugin"
 
     # Container
     Container: str = "container"
