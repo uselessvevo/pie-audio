@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QTableWidget
 
-from piekit.containers.containers import BaseContainer
+from piekit.containers.containers import PieContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
@@ -8,7 +8,7 @@ from piekit.managers.objects.decorators import onObjectAvailable
 
 
 class ContentTable(
-    BaseContainer,
+    PieContainer,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,

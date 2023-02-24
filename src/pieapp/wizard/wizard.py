@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QFileDialog
 
-from piekit.managers.types import SysManagers, SharedSection
+from piekit.managers.types import SysManagers, Sections
 from piekit.utils.files import writeJson
 from piekit.utils.core import restartApplication
 
@@ -108,7 +108,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
             }
         """)
         self.lineEditButton.setIcon(QIcon(
-            Managers(SysManagers.Assets)(SharedSection, "open-folder.png")
+            Managers(SysManagers.Assets)(Sections.Shared, "open-folder.png")
         ))
         self.lineEditButton.clicked.connect(self.selectFfmpegPath)
 
@@ -129,7 +129,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
 
     @pyqtSlot()
     def selectFfmpegPath(self):
-        directory = QFileDialog(self, Managers.locales(SharedSection, "Select ffmpeg directory"))
+        directory = QFileDialog(self, Managers.locales(Sections.Shared, "Select ffmpeg directory"))
         directory.setFileMode(QFileDialog.DirectoryOnly)
         directory.setOption(QFileDialog.ShowDirsOnly, False)
         directory.getExistingDirectory(directory=str(Config.USER_ROOT))

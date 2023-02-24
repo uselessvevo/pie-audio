@@ -21,6 +21,17 @@ class SysManagers:
 
     # ObjectManager
     Objects = "objects"
+    
+    # MenuManager
+    Menus = "menus"
+    
+
+class Sections:
+    # User/site access section
+    User = "user"
+    
+    # Shared/root access section
+    Shared = "shared"
 
 
 @dt.dataclass(frozen=True, eq=False)
@@ -39,6 +50,5 @@ class PathConfig:
     pattern: str = dt.field(default="*.json")
 
 
-SharedSection = "shared"
 AllPieObjects = "__ALL__"
 DirectoryType = type("DirectoryType", (), {})

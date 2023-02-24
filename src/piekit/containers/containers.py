@@ -2,7 +2,7 @@ from piekit.objects.base import PieObject
 from piekit.objects.types import ObjectTypes
 
 
-class BaseContainer(PieObject):
+class PieContainer(PieObject):
     type = ObjectTypes.Container
 
     def addOn(self, container: str) -> None:
@@ -12,5 +12,5 @@ class BaseContainer(PieObject):
         pass
 
 
-class DockableContainer(BaseContainer):
+class DockablePieContainer(PieContainer):
     pass

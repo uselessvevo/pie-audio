@@ -6,7 +6,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from piekit.objects.types import ObjectTypes, Error
 from piekit.utils.logger import logger
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, SharedSection
+from piekit.managers.types import SysManagers, Sections
 
 from piekit.objects.observer import PieObjectObserverMixin
 
@@ -23,9 +23,9 @@ class PieObject(
     type: str = ObjectTypes.Pie
 
     # Accessors section
-    section: str = SharedSection
+    section: str = Sections.Shared
 
-    # BasePlugin version
+    # PiePlugin version
     version: tuple[int] = (0, 1, 0)
 
     # List of required built-in pie_objects
@@ -64,7 +64,7 @@ class PieObject(
         # Parent object/window
         self._parent = parent
 
-        # BasePlugin path
+        # PiePlugin path
         self._path: Path = path
 
         self._managers: list["BaseManager"] = []
@@ -75,13 +75,13 @@ class PieObject(
         # First, we need to initialize base signals
         self.prepareBaseSignals()
 
-        # BasePlugin is loading
+        # PiePlugin is loading
         self.signalObjectLoading.emit(self.__class__.__name__)
 
         # Initializing pie_object
         self.init()
 
-        # # BasePlugin is ready
+        # # PiePlugin is ready
         # self.signalObjectReady.emit()
         #
         # # Inform about that

@@ -3,13 +3,13 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, SharedSection
+from piekit.managers.types import SysManagers, Sections
 from piekit.mainwindow.main import MainWindow
+from piekit.system.loader import Config
 
 
 class PieAudioApp(MainWindow):
-    version = (0, 1, 0)
-    section = SharedSection
+    section = Sections.Shared
 
     signalObjectsReady = pyqtSignal()
     signalComponentsReady = pyqtSignal()
@@ -17,10 +17,10 @@ class PieAudioApp(MainWindow):
 
     def init(self) -> None:
         self.setWindowTitle("Pie Audio • Audio Converter ({})".format(
-            ".".join(str(i) for i in self.version)
+            Config.PIEAPP_VERSION
         ))
         self.setMinimumSize(720, 480)
-        self.resize(*self.getConfig("ui.winsize", (720, 480)))
+        self.resize(*Managers(SysManagers.Configs)(Sections.User, "ui.winsize", (720, 480)))
         self.setWindowIcon(QIcon(self.getAsset("cloud.png")))
 
     def prepareSignals(self) -> None:
@@ -57,7 +57,8 @@ class PieAudioApp(MainWindow):
 
     def preparePieObjects(self) -> None:
         """ Prepare all (or selected) PieObjects """
-        Managers.get(SysManagers.Objects).mount(self)
+        Managers(SysManagers.Menus).mount()
+        Managers(SysManagers.Objects).mount(self)
         self.signalObjectsReady.emit()
 
     def notifyObjectReady(self):

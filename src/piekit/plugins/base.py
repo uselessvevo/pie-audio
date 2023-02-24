@@ -4,13 +4,14 @@ from piekit.objects.base import PieObject
 from piekit.objects.mixins import MenuMixin
 from piekit.objects.mixins import ActionMixin
 
+from piekit.objects.types import ObjectTypes
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
-from src.piekit.containers.containers import BaseContainer
+from src.piekit.containers.containers import PieContainer
 
 
-class BasePlugin(
+class PiePlugin(
     PieObject,
     ActionMixin,
     MenuMixin,
@@ -18,6 +19,8 @@ class BasePlugin(
     LocalesAccessor,
     AssetsAccessor,
 ):
+    type = ObjectTypes.Plugin
+
     # Icon name
     icon: Union[None, str] = "app.png"
 
@@ -25,7 +28,7 @@ class BasePlugin(
     description: str
 
     # Container to register on
-    container: Union[None, BaseContainer] = None
+    container: Union[None, PieContainer] = None
 
     def prepareConfigurationPage(self) -> None:
         """ Prepare configuration page widget """

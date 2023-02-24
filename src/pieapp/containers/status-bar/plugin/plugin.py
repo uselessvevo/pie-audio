@@ -1,13 +1,13 @@
 from PyQt5.QtWidgets import QStatusBar, QWidget
 
-from piekit.containers.containers import BaseContainer
+from piekit.containers.containers import PieContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
 class StatusBar(
-    BaseContainer,
+    PieContainer,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,

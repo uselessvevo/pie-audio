@@ -2,6 +2,7 @@ from typing import Any
 from pathlib import Path
 
 from piekit.mainwindow.main import MainWindow
+from piekit.managers.types import SysManagers
 from piekit.objects.base import PieObject
 from piekit.managers.base import BaseManager
 from piekit.system.loader import Config
@@ -14,8 +15,8 @@ class ObjectManager(BaseManager):
     This manager is the PieObjects registry.
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
-    name = "objects"
-    dependencies = ("configs", "locales",)
+    name = SysManagers.Objects
+    dependencies = (SysManagers.Configs, SysManagers.Locales)
 
     def __init__(self) -> None:
         super().__init__()
@@ -58,15 +59,27 @@ class ObjectManager(BaseManager):
 
             if pie_object in self._objects_registry:
                 self._unmount_object(pie_object)
+
+        # List of PieObjects that depend on it
+        self._object_dependents: dict[str, dict[str, list[str]]] = {}
+
+        # List of the PieObjects that the PieObjects depends on
+        self._object_dependencies: dict[str, dict[str, list[str]]] = {}
+
+        # PieObject dictionary
+        self._objects_registry: dict[str, PieObject] = {}
+
+        # PieObjects dictionary with availability boolean status
+        self._object_availability: dict[str, bool] = {}
+
+        self._object_ready: set[str] = set()
             
     def reload(self, *pie_objects: str, full_house: bool = False) -> None:
         """ Reload listed or all objects and components """
-        pie_objects = self._objects_registry.keys() if full_house else pie_objects
-        for pie_object in pie_objects:
-            self._logger.info(f"Reloading {pie_object} from {self.__class__.__name__}")
-
-            if pie_object in self._objects_registry:
-                self._reload_object(pie_object)
+        self.unmount(*pie_objects, full_house=full_house)
+        for pie_object in self._objects_registry:
+            object_instance = self._objects_registry.get(pie_object)
+            self._initialize_object(object_instance)
 
     def get(self, key) -> Any:
         """ Get PieObject instance by its name """
@@ -92,51 +105,43 @@ class ObjectManager(BaseManager):
                 # Creating PieObject instance
                 object_instance: PieObject = getattr(object_module, object_manifest.get("init"))(parent, object_path)
 
-                self._logger.info(f"Preparing {object_instance.type} {object_instance.name}")
+                self._initialize_object(object_instance)
 
-                self._update_object_info(
+    def _initialize_object(self, object_instance: PieObject) -> None:
+        self._logger.info(f"Preparing {object_instance.type} {object_instance.name}")
+
+        self._update_object_info(
+            object_instance.name,
+            object_instance.requires,
+            object_instance.optional
+        )
+
+        # Hashing PieObject instance
+        self._objects_registry[object_instance.name] = object_instance
+
+        object_instance.signalObjectReady.connect(
+            lambda: (
+                self._notify_object_availability(
                     object_instance.name,
                     object_instance.requires,
-                    object_instance.optional
+                    object_instance.optional,
+                ),
+                self._notify_object_availability_on_main(
+                    object_instance.name
                 )
+            )
+        )
 
-                # Hashing PieObject instance
-                self._objects_registry[object_instance.name] = object_instance
+        # Preparing `PieObject` instance
+        object_instance.prepare()
 
-                object_instance.signalObjectReady.connect(
-                    lambda: (
-                        self._notify_object_availability(
-                            object_instance.name,
-                            object_instance.requires,
-                            object_instance.optional,
-                        ),
-                        self._notify_object_availability_on_main(
-                            object_instance.name
-                        )
-                    )
-                )
+        # PieObject is ready
+        object_instance.signalObjectReady.emit()
 
-                # Preparing `PieObject` instance
-                object_instance.prepare()
+        self._notify_object_dependencies(object_instance.name)
 
-        self._set_objects_ready()
-
-    def _set_objects_ready(self) -> None:
-        for pie_object in self._objects_registry:
-            if pie_object in self._object_ready:
-                continue
-
-            object_instance = self._objects_registry.get(pie_object)
-
-            # PieObject is ready
-            object_instance.signalObjectReady.emit()
-
-            self._notify_object_dependencies(object_instance.name)
-
-            # Inform about that
-            self._logger.info(f"{object_instance.type.capitalize()} {object_instance.name} is ready!")
-
-            self._object_ready.add(pie_object)
+        # Inform about that
+        self._logger.info(f"{object_instance.type.capitalize()} {object_instance.name} is ready!")
 
     def _notify_object_availability(
         self,

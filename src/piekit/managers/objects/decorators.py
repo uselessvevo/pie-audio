@@ -2,6 +2,7 @@ import functools
 from typing import Callable, Optional
 
 from piekit.managers.types import AllPieObjects
+from piekit.system.exceptions import PieException
 
 
 def on_object_available(
@@ -66,9 +67,9 @@ def on_object_unmount(func: Callable = None, target: Optional[str] = None):
         return functools.partial(on_object_unmount, plugin=target)
 
     if target is None:
-        raise ValueError("on_object_unmount must have a well defined "
-                         "PieObjects keyword argument value, "
-                         "e.g., target=Objects.Editor")
+        raise PieException("on_object_unmount must have a well defined "
+                           "PieObjects keyword argument value, "
+                           "e.g., target=Objects.Editor")
 
     func._object_unmount = target
     return func

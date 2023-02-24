@@ -12,8 +12,8 @@ from piekit.system.loader import Config
 
 
 class AssetsManager(BaseManager):
-    name = "assets"
-    dependencies = ("configs",)
+    name = SysManagers.Assets
+    dependencies = (SysManagers.Configs,)
 
     def __init__(self) -> None:
         super().__init__()
@@ -74,8 +74,12 @@ class AssetsManager(BaseManager):
             return default
 
     @lru_cache
-    def getSvg(self, *args, color: str = "#7cd162") -> QIcon:
+    def get_svg(self, *args, color: str = "#7cd162") -> QIcon:
         return _setSvgColor(self.get(*args), color)
+
+    @lru_cache
+    def get_icon(self, section: str, key: Any, default: Any = None) -> QIcon:
+        return QIcon(self.get(section, key, default))
 
     @property
     def root(self):
@@ -88,3 +92,6 @@ class AssetsManager(BaseManager):
     @property
     def themes(self):
         return self._themes
+
+    getSvg = get_svg
+    getIcon = get_icon

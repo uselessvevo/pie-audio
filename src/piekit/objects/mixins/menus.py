@@ -1,23 +1,29 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenuBar, QMenu
+from PyQt5.QtWidgets import QMenuBar, QAction
+
+from piekit.widgets.menus import Menu
+from piekit.managers.registry import Managers
+from piekit.managers.types import SysManagers
 
 
 class MenuMixin:
 
-    def __init__(self) -> None:
-        self.__menus: dict = {}
-        self.__menuBars: dict = {}
-        self.menuBar = QMenuBar(self)
+    def addMenu(
+        self,
+        section: str = None,
+        parent: QMenuBar = None,
+        name: str = None,
+        text: str = None,
+        icon: QIcon = None,
+    ):
+        return Managers(SysManagers.Menus).addMenu(self.name or section, parent, name, text, icon)
 
-    def createMenu(self, name: str, menu: str, text: str, icon: QIcon) -> QMenu:
-        if self.__menus.get(name):
-            raise AttributeError(f"Menu named {menu} is already registered")
-
-        menu = QMenu(self, text, icon)
-        self.menuBar.addMenu(menu)
-        self.__menus.update({name: menu})
-        return menu
-
-    @property
-    def menus(self) -> dict:
-        return self.__menus
+    def addMenuItem(
+        self,
+        section: str = None,
+        menu: Menu = None,
+        name: str = None,
+        text: str = None,
+        icon: QIcon = None,
+    ) -> QAction:
+        return Managers(SysManagers.Menus).addMenuItem(self.name or section, menu, name, text, icon)

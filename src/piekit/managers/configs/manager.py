@@ -2,15 +2,16 @@ import typing
 from functools import lru_cache
 from dotty_dict import Dotty
 
-from piekit.managers.types import SharedSection
+from piekit.managers.types import Sections, SysManagers
 from piekit.managers.types import PathConfig
 from piekit.managers.base import BaseManager
+from piekit.system.exceptions import PieException
 from piekit.utils.files import read_json, write_json
 from piekit.observers.filesystem import FileSystemObserver
 
 
 class ConfigManager(BaseManager):
-    name = "configs"
+    name = SysManagers.Configs
     protected_keys = ("__FILE__",)
 
     def __init__(self) -> None:
@@ -49,7 +50,7 @@ class ConfigManager(BaseManager):
     @lru_cache
     def get(
         self,
-        section: typing.Union[str, SharedSection],
+        section: typing.Union[str, Sections.Shared],
         key: typing.Any = None,
         default: typing.Any = None
     ) -> typing.Any:
@@ -62,13 +63,13 @@ class ConfigManager(BaseManager):
             default (Any): default value if key was not found
         """
         if key in self.protected_keys:
-            raise KeyError(f"Can't use protected key: {key}")
+            raise PieException(f"Can't use protected key: {key}")
 
         return self._configuration.get(f"{section}.{key}", default)
 
     def set(
         self,
-        section: typing.Union[str, SharedSection],
+        section: typing.Union[str, Sections.Shared],
         key: typing.Any = None,
         data: typing.Any = None
     ) -> None:
@@ -81,7 +82,7 @@ class ConfigManager(BaseManager):
             data (Any): data to set
         """
         if key in self.protected_keys:
-            raise KeyError(f"Can't use protected key: {key}")
+            raise PieException(f"Can't use protected key: {key}")
 
         self._configuration[section][key] = data
 
@@ -98,7 +99,7 @@ class ConfigManager(BaseManager):
             key (Any): key to access data or nested data
         """
         if key in self.protected_keys:
-            raise KeyError(f"Can't use protected key: {key}")
+            raise PieException(f"Can't use protected key: {key}")
 
         if not key:
             del self._configuration[section]
@@ -110,7 +111,7 @@ class ConfigManager(BaseManager):
             file = self._configuration[section]["__FILE__"]
             folder = file.parent
         except KeyError:
-            raise FileNotFoundError(f"Folder `{section}` doesn't exist")
+            raise PieException(f"Folder `{section}` doesn't exist")
 
         if create:
             if not folder.exists():
@@ -118,7 +119,7 @@ class ConfigManager(BaseManager):
             self._configuration.update({section: data})
 
         if not self._configuration.get(section):
-            raise FileNotFoundError(f"File {section} not found")
+            raise PieException(f"File {section} not found")
 
         write_json(str(file), data)
         self._configuration[section] = data

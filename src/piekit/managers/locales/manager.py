@@ -1,13 +1,13 @@
 from piekit.utils.files import read_json
 from piekit.system.loader import Config
 from piekit.managers.base import BaseManager
-from piekit.managers.types import PathConfig
+from piekit.managers.types import PathConfig, SysManagers
 from piekit.managers.registry import Managers
 
 
 class LocaleManager(BaseManager):
-    name = "locales"
-    dependencies = ("configs",)
+    name = SysManagers.Locales
+    dependencies = (SysManagers.Configs,)
 
     def __init__(self) -> None:
         super().__init__()

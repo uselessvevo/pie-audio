@@ -2,76 +2,55 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMenuBar, QMenu, QAction
 
-from piekit.containers.containers import BaseContainer
+from piekit.containers.containers import PieContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.types import SysManagers
+from piekit.objects.mixins import MenuMixin
 
 
 class MenuBar(
-    BaseContainer,
+    PieContainer,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
+    MenuMixin,
 ):
-    name = "menubar"
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.__menus: dict[str, QMenu] = {}
-        self.__menusItems: dict[str, QMenu] = {}
+    name = SysManagers.Menus
 
     def init(self) -> None:
-        self.menuBar = QMenuBar(self._parent)
+        menuBar = QMenuBar()
 
-        # File menu
-        self.addMenu(name="file", text=self.getTranslation("File"))
-        self.addMenuItem(menu="file", name="open", text=self.getTranslation("Open file"), icon="open-file.png")
+        fileMenu = self.addMenu(
+            parent=menuBar,
+            name="file",
+            text=self.getTranslation("File"),
+            # icon=self.getAssetIcon("open-file.png")
+        )
 
-        self._parent.setMenuBar(self.menuBar)
+        self.addMenuItem(
+            menu=fileMenu.name,
+            name="openFiles",
+            text=self.getTranslation("Open file"),
+            icon=self.getAssetIcon("open-file.png")
+        )
 
-    def addMenu(
-        self,
-        *,
-        name: str = None,
-        text: str = None
-    ) -> None:
-        if name in self.__menus:
-            # raise PieException to handle and show error window
-            pass
+        self.addMenuItem(
+            menu=fileMenu.name,
+            name="settings",
+            text=self.getTranslation("Settings"),
+            icon=self.getAssetIcon("settings.png")
+        )
 
-        menu = QMenu(text, self.menuBar)
-        self.__menus[name] = menu
-        self.__menusItems[name] = {}
-        self.menuBar.addMenu(menu)
+        exitAction = self.addMenuItem(
+            menu=fileMenu.name,
+            name="exit",
+            text=self.getTranslation("Exit"),
+            icon=self.getAssetIcon("exit.png")
+        )
+        exitAction.triggered.connect(self.parent().close)
 
-    def addMenuItem(
-        self,
-        *,
-        menu: str = None,
-        name: str = None,
-        text: str = None,
-        icon: str = None,
-        signal: pyqtSignal = None,
-    ) -> None:
-        if menu not in self.__menus:
-            # raise PieException to handle and show error window
-            pass
+        menuBar.addMenu(fileMenu)
 
-        if name in self.__menusItems:
-            # raise PieException to handle and show error window
-            pass
-
-        parent = self.__menus.get(menu)
-
-        menuItemAction = QAction(parent=parent, text=text, icon=QIcon(self.getAsset(icon)))
-        menuItemAction.setObjectName(name)
-        parent.addAction(menuItemAction)
-
-        if signal:
-            menuItemAction.triggered.connect(signal)
-
-        setattr(self, menuItemAction.objectName(), menuItemAction)
-
-        self.__menusItems[menu].update({name: menuItemAction})
+        self.parent().setMenuBar(menuBar)

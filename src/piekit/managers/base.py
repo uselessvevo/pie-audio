@@ -18,7 +18,9 @@ class BaseManager:
         self._mounted: bool = False
 
     def mount(self, *args, **kwargs) -> None:
-        raise NotImplementedError("Method `mount` must be implemented")
+        """
+        Main and optional entrypoint
+        """
 
     def unmount(self, *args, **kwargs):
         """

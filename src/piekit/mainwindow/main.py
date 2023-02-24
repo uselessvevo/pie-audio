@@ -4,12 +4,14 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from piekit.managers.objects.mixins import PluginsAccessor
+from piekit.system.exceptions import PieException
 from piekit.utils.logger import logger
-from piekit.plugins.base import BasePlugin
+from piekit.plugins.base import PiePlugin
 from piekit.managers.registry import Managers
 
 from piekit.objects.types import Error
-from piekit.managers.types import SharedSection
+from piekit.widgets.messagebox import MessageBox
+from piekit.managers.types import Sections, SysManagers
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
@@ -23,7 +25,7 @@ class MainWindow(
     PluginsAccessor
 ):
     # Accessors section
-    section: str = SharedSection
+    section: str = Sections.Shared
 
     signalMoved = pyqtSignal()
     signalResized = pyqtSignal()
@@ -55,28 +57,40 @@ class MainWindow(
 
     def placeOn(self, child, target: str, **options) -> None:
         if not Managers.components.get(target):
-            raise ValueError(f"MainWindow doesn't contain component named `{target}`")
+            raise PieException(f"MainWindow doesn't contain component named `{target}`")
 
-        if not isinstance(child, (BasePlugin,)):
-            raise TypeError("MainWindow objects can register only `BasePlugin` based objects")
+        if not isinstance(child, (PiePlugin,)):
+            raise PieException("MainWindow objects can register only `PiePlugin` based objects")
 
         # Register or render object on `BaseComponent` based object
         # TODO: Add `ComponentsAccessor` and reimplement `mount/unmount` method
         Managers.objects.get(target).register(child, **options)
 
     def removeFrom(self, child, target: str) -> None:
-        if not isinstance(child, (BasePlugin,)):
-            raise TypeError("MainWindow objects can register only `BasePlugin` based objects")
+        if not isinstance(child, (PiePlugin,)):
+            raise PieException("MainWindow objects can register only `PiePlugin` based objects")
 
         if not Managers.objects.get(target):
-            raise ValueError(f"MainWindow doesn't contain {target} object")
+            raise PieException(f"MainWindow doesn't contain {target} object")
 
     # Event methods
 
     def closeEvent(self, event) -> None:
+        if self.closeHandler(True):
+            event.accept()
+        else:
+            event.ignore()
+
+    def closeHandler(self, cancellable: bool = True) -> bool:
+        if cancellable and Managers(SysManagers.Configs)("ui.show_exit_dialog", Sections.User, True):
+            messageBox = MessageBox(self)
+            if messageBox.clickedButton() == messageBox.noButton:
+                return False
+
+        QApplication.processEvents()
         Managers.unmount(full_house=True)
-        for window in QApplication.topLevelWindows():
-            window.close()
+
+        return True
 
     @pyqtSlot(Error)
     def errorHandler(self, error: Error) -> None:
