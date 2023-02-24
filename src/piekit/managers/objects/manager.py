@@ -93,7 +93,7 @@ class ObjectManager(BaseManager):
 
         for package in folder.iterdir():
             if package.is_dir() and package.name not in ("__pycache__",) and parent:
-                self._logger.info(f"Reading a package {package.name}")
+                self._logger.info(f"Reading package data from {package.name}")
 
                 # Reading data from `<object>/manifest.json`
                 object_path = folder / package.name
@@ -106,6 +106,25 @@ class ObjectManager(BaseManager):
                 object_instance: PieObject = getattr(object_module, object_manifest.get("init"))(parent, object_path)
 
                 self._initialize_object(object_instance)
+
+        self._set_objects_ready()
+
+    def _set_objects_ready(self) -> None:
+        for pie_object in self._objects_registry:
+            if pie_object in self._object_ready:
+                continue
+
+            object_instance = self._objects_registry.get(pie_object)
+
+            # PieObject is ready
+            object_instance.signalObjectReady.emit()
+
+            self._notify_object_dependencies(object_instance.name)
+
+            # Inform about that
+            self._logger.info(f"{object_instance.type.capitalize()} {object_instance.name} is ready!")
+
+            self._object_ready.add(pie_object)
 
     def _initialize_object(self, object_instance: PieObject) -> None:
         self._logger.info(f"Preparing {object_instance.type} {object_instance.name}")
@@ -134,14 +153,6 @@ class ObjectManager(BaseManager):
 
         # Preparing `PieObject` instance
         object_instance.prepare()
-
-        # PieObject is ready
-        object_instance.signalObjectReady.emit()
-
-        self._notify_object_dependencies(object_instance.name)
-
-        # Inform about that
-        self._logger.info(f"{object_instance.type.capitalize()} {object_instance.name} is ready!")
 
     def _notify_object_availability(
         self,

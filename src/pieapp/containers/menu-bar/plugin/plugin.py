@@ -1,12 +1,14 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QMenuBar, QMenu, QAction
+from functools import partial
+
+from PyQt5.QtWidgets import QMenuBar
 
 from piekit.containers.containers import PieContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.objects.decorators import onObjectAvailable
 from piekit.managers.types import SysManagers
+from piekit.managers.registry import Managers
 from piekit.objects.mixins import MenuMixin
 
 
@@ -17,16 +19,16 @@ class MenuBar(
     AssetsAccessor,
     MenuMixin,
 ):
-    name = SysManagers.Menus
+    name = "menu-bar"
+    requires = ["about-app"]
 
     def init(self) -> None:
-        menuBar = QMenuBar()
+        self._menuBar = QMenuBar()
 
         fileMenu = self.addMenu(
-            parent=menuBar,
+            parent=self._menuBar,
             name="file",
             text=self.getTranslation("File"),
-            # icon=self.getAssetIcon("open-file.png")
         )
 
         self.addMenuItem(
@@ -51,6 +53,31 @@ class MenuBar(
         )
         exitAction.triggered.connect(self.parent().close)
 
-        menuBar.addMenu(fileMenu)
+        # About menu
+        etcMenu = self.addMenu(
+            parent=self._menuBar,
+            name="etc",
+            text=self.getTranslation("Etc")
+        )
 
-        self.parent().setMenuBar(menuBar)
+        self._aboutAction = self.addMenuItem(
+            menu=etcMenu.name,
+            name="about",
+            text=self.getTranslation("About"),
+            icon=self.getAssetIcon("help.png")
+        )
+        self._aboutAction.setDisabled(True)
+        self._aboutAction.triggered.connect(self._showAboutApp)
+
+        self._menuBar.addMenu(fileMenu)
+        self._menuBar.addMenu(etcMenu)
+
+        self.parent().setMenuBar(self._menuBar)
+
+    @onObjectAvailable(target="about-app")
+    def onAboutAppAvailable(self) -> None:
+        self._aboutAction.setDisabled(False)
+
+    @staticmethod
+    def _showAboutApp() -> None:
+        Managers(SysManagers.Objects)("about-app").render()

@@ -34,6 +34,13 @@ class PiePlugin(
         """ Prepare configuration page widget """
         pass
 
+    def render(self) -> None:
+        """
+        Optional render method.
+        A good example is `about-app` plugin
+        """
+        pass
+
     # Update methods
 
     def updateStyle(self) -> None:

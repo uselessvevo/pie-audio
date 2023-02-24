@@ -1,16 +1,16 @@
-from piekit.plugins.base import PiePlugin
+from piekit.containers.containers import PieContainer
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
-class TestPlugin(
-    PiePlugin,
+class Settings(
+    PieContainer,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = "test-plugin"
+    name = "settings"
 
     def init(self) -> None:
         pass

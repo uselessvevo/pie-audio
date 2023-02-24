@@ -2,13 +2,14 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 
+from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.registry import Managers
 from piekit.managers.types import SysManagers, Sections
 from piekit.mainwindow.main import MainWindow
 from piekit.system.loader import Config
 
 
-class PieAudioApp(MainWindow):
+class PieAudioApp(MainWindow, ConfigAccessor):
     section = Sections.Shared
 
     signalObjectsReady = pyqtSignal()
@@ -20,7 +21,7 @@ class PieAudioApp(MainWindow):
             Config.PIEAPP_VERSION
         ))
         self.setMinimumSize(720, 480)
-        self.resize(*Managers(SysManagers.Configs)(Sections.User, "ui.winsize", (720, 480)))
+        self.resize(*self.getConfig("ui.winsize", (720, 480), Sections.User))
         self.setWindowIcon(QIcon(self.getAsset("cloud.png")))
 
     def prepareSignals(self) -> None:
