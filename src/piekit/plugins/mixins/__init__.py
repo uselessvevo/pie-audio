@@ -1,1 +1,1 @@
-from piekit.plugins.mixins.menus import MenuMixin
+from piekit.plugins.mixins.menus import MenuAccessor

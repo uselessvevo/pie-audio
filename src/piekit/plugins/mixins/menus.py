@@ -6,7 +6,7 @@ from piekit.managers.registry import Managers
 from piekit.managers.types import SysManagers
 
 
-class MenuMixin:
+class MenuAccessor:
 
     def addMenu(
         self,

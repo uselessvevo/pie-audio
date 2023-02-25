@@ -3,8 +3,9 @@ import typing
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
 
+from pieapp.types import Containers
 from piekit.plugins.base import PiePlugin
-from piekit.plugins.mixins import MenuMixin
+from piekit.plugins.mixins import MenuAccessor
 
 from piekit.managers.types import Sections
 from piekit.managers.assets.mixins import AssetsAccessor
@@ -14,7 +15,7 @@ from piekit.managers.plugins.decorators import onPluginAvailable
 
 class About(
     PiePlugin,
-    MenuMixin,
+    MenuAccessor,
     LocalesAccessor,
     AssetsAccessor,
 ):
@@ -34,18 +35,13 @@ class About(
         self.widget.setWindowIcon(self.getAssetIcon("plugin.png"))
         self.widget.resize(400, 300)
 
-    @onPluginAvailable(target="menu-bar")
+    @onPluginAvailable(target=Containers.MenuBar)
     def onMenuBarAvailable(self) -> None:
-        menu = self.getMenu(Sections.Shared, "help")
-        menu.addMenuItem(
+        self.getMenu(Sections.Shared, "help").addMenuItem(
             name="about",
             text=self.getTranslation("About"),
             icon=self.getAssetIcon("help.png")
-        )
-        menu.triggered.connect(self.render)
-
-    def render(self) -> None:
-        self.widget.show()
+        ).triggered.connect(self.widget.show)
 
 
 def main(*args, **kwargs) -> typing.Any:

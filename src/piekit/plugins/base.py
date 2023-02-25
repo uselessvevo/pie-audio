@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Union
 
-from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 from piekit.utils.logger import logger
 from piekit.managers.registry import Managers
@@ -119,12 +119,6 @@ class PiePlugin(
 
     def updateLocalization(self) -> None:
         pass
-
-    def render(self) -> None:
-        """
-        Optional render method.
-        A good example is `about-app` plugin
-        """
 
     # Getter methods
 

@@ -2,11 +2,12 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 
-from piekit.managers.configs.mixins import ConfigAccessor
+from pieapp.types import Containers
+from piekit.system.loader import Config
+from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers
 from piekit.managers.types import SysManagers, Sections
-from piekit.mainwindow.main import MainWindow
-from piekit.system.loader import Config
+from piekit.managers.configs.mixins import ConfigAccessor
 
 
 class PieAudioApp(MainWindow, ConfigAccessor):
@@ -63,4 +64,4 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.signalPluginsReady.emit()
 
     def notifyPluginReady(self):
-        self.getPlugin("status-bar").showMessage(self.getTranslation("Plugins are ready"))
+        self.getPlugin(Containers.StatusBar).showMessage(self.getTranslation("Plugins are ready"))
