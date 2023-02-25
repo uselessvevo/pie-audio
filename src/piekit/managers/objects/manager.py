@@ -80,6 +80,7 @@ class ObjectManager(BaseManager):
         for pie_object in self._objects_registry:
             object_instance = self._objects_registry.get(pie_object)
             self._initialize_object(object_instance)
+            self._post_initialize_object()
 
     def get(self, key) -> Any:
         """ Get PieObject instance by its name """
@@ -107,24 +108,7 @@ class ObjectManager(BaseManager):
 
                 self._initialize_object(object_instance)
 
-        self._set_objects_ready()
-
-    def _set_objects_ready(self) -> None:
-        for pie_object in self._objects_registry:
-            if pie_object in self._object_ready:
-                continue
-
-            object_instance = self._objects_registry.get(pie_object)
-
-            # PieObject is ready
-            object_instance.signalObjectReady.emit()
-
-            self._notify_object_dependencies(object_instance.name)
-
-            # Inform about that
-            self._logger.info(f"{object_instance.type.capitalize()} {object_instance.name} is ready!")
-
-            self._object_ready.add(pie_object)
+        self._post_initialize_object()
 
     def _initialize_object(self, object_instance: PieObject) -> None:
         self._logger.info(f"Preparing {object_instance.type} {object_instance.name}")
@@ -153,6 +137,23 @@ class ObjectManager(BaseManager):
 
         # Preparing `PieObject` instance
         object_instance.prepare()
+
+    def _post_initialize_object(self) -> None:
+        for pie_object in self._objects_registry:
+            if pie_object in self._object_ready:
+                continue
+
+            object_instance = self._objects_registry.get(pie_object)
+
+            # PieObject is ready
+            object_instance.signalObjectReady.emit()
+
+            self._notify_object_dependencies(object_instance.name)
+
+            # Inform about that
+            self._logger.info(f"{object_instance.type.capitalize()} {object_instance.name} is ready!")
+
+            self._object_ready.add(pie_object)
 
     def _notify_object_availability(
         self,

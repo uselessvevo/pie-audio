@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenuBar, QAction
+from PyQt5.QtWidgets import QMenuBar, QAction, QMenu
 
 from piekit.managers.types import SysManagers
 from piekit.widgets.menus import Menu
@@ -65,5 +65,11 @@ class MenuManager(BaseManager):
 
         return action
 
-    def get_item(self, section: str, name: str) -> QAction:
+    def get_menu(self, section: str, name: str) -> QMenu:
+        return self._menus[section][name]
+
+    def get_menu_item(self, section: str, name: str) -> QAction:
         return self._items[section][name]
+
+    getMenu = get_menu
+    getMenuItem = get_menu_item

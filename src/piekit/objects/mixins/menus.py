@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenuBar, QAction
+from PyQt5.QtWidgets import QMenuBar, QAction, QMenu
 
 from piekit.widgets.menus import Menu
 from piekit.managers.registry import Managers
@@ -16,7 +16,7 @@ class MenuMixin:
         text: str = None,
         icon: QIcon = None,
     ):
-        return Managers(SysManagers.Menus).addMenu(self.name or section, parent, name, text, icon)
+        return Managers(SysManagers.Menus).addMenu(section, parent, name, text, icon)
 
     def addMenuItem(
         self,
@@ -26,4 +26,10 @@ class MenuMixin:
         text: str = None,
         icon: QIcon = None,
     ) -> QAction:
-        return Managers(SysManagers.Menus).addMenuItem(self.name or section, menu, name, text, icon)
+        return Managers(SysManagers.Menus).addMenuItem(section, menu, name, text, icon)
+
+    def getMenu(self, section: str, name: str) -> Menu:
+        return Managers(SysManagers.Menus).getMenu(section, name)
+
+    def getMenuItem(self, section: str, menu: str, name: str) -> QMenu:
+        return Managers(SysManagers.Menus).getMenuItem(section, menu, name)
