@@ -1,45 +1,116 @@
+from pathlib import Path
 from typing import Union
 
-from piekit.objects.base import PieObject
-from piekit.objects.mixins import MenuMixin
-from piekit.objects.mixins import ActionMixin
+from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
+from PyQt5.QtWidgets import QMessageBox
 
-from piekit.objects.types import ObjectTypes
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
-from src.piekit.containers.containers import PieContainer
+from piekit.utils.logger import logger
+from piekit.managers.registry import Managers
+from piekit.managers.types import Sections, SysManagers
+
+from piekit.plugins.types import PluginTypes, Error
+from piekit.plugins.observer import PluginsObserverMixin
 
 
 class PiePlugin(
-    PieObject,
-    ActionMixin,
-    MenuMixin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+    QObject,
+    PluginsObserverMixin,
 ):
-    type = ObjectTypes.Plugin
+    type = PluginTypes.Plugin
 
     # Icon name
     icon: Union[None, str] = "app.png"
 
     # By default, description must be written in English
-    description: str
+    description: str = None
 
-    # Container to register on
-    container: Union[None, PieContainer] = None
+    # Main attributes #
+
+    # Plugin codename
+    name: str
+
+    type: str = PluginTypes.Plugin
+
+    # Accessors section
+    section: str = Sections.Shared
+
+    # PiePlugin version
+    version: tuple[int] = (0, 1, 0)
+
+    # List of required built-in plugins
+    requires: list[str] = []
+
+    # List of optional built-in plugins
+    optional: list[str] = []
+
+    # Qt configuration #
+
+    # Signal when plugin is ready
+    signalPluginReady = pyqtSignal()
+
+    # Signal when plugin is loading
+    signalPluginLoading = pyqtSignal(str)
+
+    # Signal when plugin is reloading
+    signalPluginReloading = pyqtSignal(str)
+
+    # Signal when main window is closing
+    signalOnMainWindowClose = pyqtSignal()
+
+    # Signal when exception occurred
+    signalExceptionOccurred = pyqtSignal(Error)
+
+    def __init__(
+        self,
+        parent: QObject = None,
+        path: Path = None,
+    ) -> None:
+        super().__init__(parent)
+
+        # Just a logger
+        self._logger = logger
+
+        # Parent object/window
+        self._parent = parent
+
+        # PiePlugin path
+        self._path: Path = path
+
+        self._managers: list["BaseManager"] = []
+
+    # Main methods
+
+    def prepare(self) -> None:
+        # First, we need to initialize base signals
+        self.prepareBaseSignals()
+
+        # PiePlugin is loading
+        self.signalPluginLoading.emit(self.__class__.__name__)
+
+        # Initializing plugin
+        self.init()
+
+    # Signals, shortcuts etc. methods
+
+    def prepareBaseSignals(self):
+        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
+        self.signalPluginLoading.connect(self._parent.signalPluginLoading)
+        self.signalPluginReloading.connect(self._parent.signalPluginReloading)
+        self.signalExceptionOccurred.connect(self.errorHandler)
+
+    def prepareShortcuts(self) -> None:
+        """ Prepare plugin shortcuts and register them in `ShortcutsManager` """
+        pass
 
     def prepareConfigurationPage(self) -> None:
         """ Prepare configuration page widget """
         pass
 
-    def render(self) -> None:
-        """
-        Optional render method.
-        A good example is `about-app` plugin
-        """
-        pass
+    # Render methods
+
+    def init(self) -> None:
+        """ Initialize an object. For example, render it """
+        raise NotImplementedError("Method `init` must be implemented")
 
     # Update methods
 
@@ -49,8 +120,41 @@ class PiePlugin(
     def updateLocalization(self) -> None:
         pass
 
-    def onCloseEvent(self) -> None:
-        self.logger.info("Closing. Goodbye!..")
+    def render(self) -> None:
+        """
+        Optional render method.
+        A good example is `about-app` plugin
+        """
+
+    # Getter methods
 
     def getDescription(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
+
+    def getName(self) -> str:
+        return self.name or self.__class__.__name__
+
+    def getVersion(self) -> tuple[int]:
+        return self.version
+
+    # Event methods
+
+    def onCloseEvent(self) -> None:
+        self.logger.info("Closing. Goodbye!..")
+
+    # Slots
+
+    @pyqtSlot(Error)
+    def errorHandler(self, error: Error) -> None:
+        messageBox = QMessageBox()
+        messageBox.setIcon(QMessageBox.Critical)
+        messageBox.setText(error.title)
+        messageBox.setInformativeText(error.description)
+        messageBox.setWindowTitle(Managers(SysManagers.Locales)("Error", section="shared"))
+        messageBox.exec_()
+
+    # Properties
+
+    @property
+    def logger(self):
+        return self._logger

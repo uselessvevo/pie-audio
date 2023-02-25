@@ -1,17 +1,19 @@
+import typing
+
 from PyQt5.Qt import Qt
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QToolBar
 
-from piekit.containers.containers import PieContainer
+from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
 class Workbench(
-    PieContainer,
+    PiePlugin,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
@@ -44,3 +46,7 @@ class Workbench(
         self.toolBar.addWidget(spacer)
         self.toolBar.addWidget(settings)
         self._parent.addToolBar(Qt.LeftToolBarArea, self.toolBar)
+
+
+def main(*args, **kwargs) -> typing.Any:
+    return Workbench(*args, **kwargs)

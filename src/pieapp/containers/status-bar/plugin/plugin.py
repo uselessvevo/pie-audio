@@ -1,13 +1,15 @@
+import typing
+
 from PyQt5.QtWidgets import QStatusBar, QWidget
 
-from piekit.containers.containers import PieContainer
+from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
 class StatusBar(
-    PieContainer,
+    PiePlugin,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
@@ -21,3 +23,7 @@ class StatusBar(
         self.statusBar = QStatusBar(self._parent)
         self.statusBar.insertPermanentWidget(0, QWidget())
         self._parent.setStatusBar(self.statusBar)
+
+
+def main(*args, **kwargs) -> typing.Any:
+    return StatusBar(*args, **kwargs)

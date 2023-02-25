@@ -81,7 +81,7 @@ MANAGERS: EList = [
         args=(PathConfig(APP_ROOT / ASSETS_FOLDER, pattern="*", section="shared"),)
     ),
     ManagerConfig(
-        import_string="piekit.managers.objects.manager.ObjectManager",
+        import_string="piekit.managers.plugins.manager.PluginManager",
         mount=False
     ),
     ManagerConfig(

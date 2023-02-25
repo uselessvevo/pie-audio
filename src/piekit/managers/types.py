@@ -19,8 +19,8 @@ class SysManagers:
     # ShortcutsManager
     Shortcuts = "shortcuts"
 
-    # ObjectManager
-    Objects = "objects"
+    # PluginManager
+    Plugins = "plugins"
     
     # MenuManager
     Menus = "menus"
@@ -50,5 +50,5 @@ class PathConfig:
     pattern: str = dt.field(default="*.json")
 
 
-AllPieObjects = "__ALL__"
+AllPlugins = "__ALL__"
 DirectoryType = type("DirectoryType", (), {})

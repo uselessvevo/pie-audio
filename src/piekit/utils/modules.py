@@ -23,7 +23,7 @@ def import_by_string(string: str, both: bool = False):
         string (str): <module path>.<ClassName>
         both (bool): if true - get import string and module, else - only module
     Returns:
-        object
+        module (callable):
     """
     if not is_import_string(string):
         raise TypeError("Invalid import string")

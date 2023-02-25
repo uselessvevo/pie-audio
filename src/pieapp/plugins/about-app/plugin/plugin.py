@@ -1,20 +1,20 @@
+import typing
+
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel
 
-from piekit.managers.objects.decorators import onObjectAvailable
-from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, Sections
-from piekit.objects.mixins import MenuMixin
 from piekit.plugins.base import PiePlugin
+from piekit.plugins.mixins import MenuMixin
+
+from piekit.managers.types import Sections
 from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.plugins.decorators import onPluginAvailable
 
 
-class AboutApp(
+class About(
     PiePlugin,
     MenuMixin,
-    ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
 ):
@@ -34,7 +34,7 @@ class AboutApp(
         self.widget.setWindowIcon(self.getAssetIcon("plugin.png"))
         self.widget.resize(400, 300)
 
-    @onObjectAvailable(target="menu-bar")
+    @onPluginAvailable(target="menu-bar")
     def onMenuBarAvailable(self) -> None:
         menu = self.getMenu(Sections.Shared, "help")
         menu.addMenuItem(
@@ -46,3 +46,7 @@ class AboutApp(
 
     def render(self) -> None:
         self.widget.show()
+
+
+def main(*args, **kwargs) -> typing.Any:
+    return About(*args, **kwargs)

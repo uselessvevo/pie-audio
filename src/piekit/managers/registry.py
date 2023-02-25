@@ -5,7 +5,7 @@ from piekit.managers.base import BaseManager
 from piekit.managers.types import ManagerConfig
 from piekit.system.loader import Config
 from piekit.utils.modules import import_by_string
-from piekit.managers.exceptions import ObjectNotMountedError, DependencyNotFoundError
+from piekit.managers.exceptions import ManagerNotMountedError, DependencyNotFoundError
 
 
 class ManagersRegistry:
@@ -30,7 +30,7 @@ class ManagersRegistry:
 
             if dependency in managers and not self._is_mounted(dependency):
                 # TODO: Add managers order resolver
-                raise ObjectNotMountedError(dependency)
+                raise ManagerNotMountedError(dependency)
 
     def _mount_manually(self, manager: BaseManager, *args, **kwargs) -> None:
         """ 
@@ -116,7 +116,7 @@ class ManagersRegistry:
         try:
             return self.__getattribute__(manager)
         except AttributeError:
-            raise ObjectNotMountedError(manager)
+            raise ManagerNotMountedError(manager)
 
     def __call__(self, *args, **kwargs):
         return self.get(*args, **kwargs)

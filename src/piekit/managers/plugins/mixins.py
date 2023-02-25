@@ -9,7 +9,7 @@ class PluginsAccessor:
     Config mixin
     """
 
-    def get_object(self, key: typing.Any) -> typing.Any:
-        return Managers.get(SysManagers.Objects).get(key)
+    def get_plugin(self, key: typing.Any) -> typing.Any:
+        return Managers.get(SysManagers.Plugins).get(key)
 
-    getObject = get_object
+    getPlugin = get_plugin

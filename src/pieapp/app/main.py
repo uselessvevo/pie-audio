@@ -12,7 +12,7 @@ from piekit.system.loader import Config
 class PieAudioApp(MainWindow, ConfigAccessor):
     section = Sections.Shared
 
-    signalObjectsReady = pyqtSignal()
+    signalPluginsReady = pyqtSignal()
     signalComponentsReady = pyqtSignal()
     signalComponentsLoading = pyqtSignal()
 
@@ -25,13 +25,13 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.setWindowIcon(QIcon(self.getAsset("cloud.png")))
 
     def prepareSignals(self) -> None:
-        self.signalObjectsReady.connect(self.notifyObjectReady)
+        self.signalPluginsReady.connect(self.notifyPluginReady)
 
     def prepare(self):
         self.prepareBaseSignals()
         self.prepareSignals()
         self.prepareMainLayout()
-        self.preparePieObjects()
+        self.preparePlugins()
 
     def prepareMainLayout(self):
         self.mainHBox = QtWidgets.QHBoxLayout()
@@ -56,11 +56,11 @@ class PieAudioApp(MainWindow, ConfigAccessor):
 
     # Plugin method and signals
 
-    def preparePieObjects(self) -> None:
-        """ Prepare all (or selected) PieObjects """
+    def preparePlugins(self) -> None:
+        """ Prepare all (or selected) Plugins """
         Managers(SysManagers.Menus).mount()
-        Managers(SysManagers.Objects).mount(self)
-        self.signalObjectsReady.emit()
+        Managers(SysManagers.Plugins).mount(self)
+        self.signalPluginsReady.emit()
 
-    def notifyObjectReady(self):
-        self.getObject("status-bar").showMessage(self.getTranslation("Objects are ready"))
+    def notifyPluginReady(self):
+        self.getPlugin("status-bar").showMessage(self.getTranslation("Plugins are ready"))

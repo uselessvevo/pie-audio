@@ -1,17 +1,18 @@
+import typing
+
 from PyQt5.QtWidgets import QMenuBar
 
-from piekit.containers.containers import PieContainer
-from piekit.objects.mixins import MenuMixin
-from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, Sections
+from piekit.plugins.mixins import MenuMixin
+from piekit.plugins.base import PiePlugin
 
+from piekit.managers.types import Sections
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
 class MenuBar(
-    PieContainer,
+    PiePlugin,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
@@ -67,3 +68,7 @@ class MenuBar(
         self._menuBar.addMenu(self.helpMenu)
 
         self.parent().setMenuBar(self._menuBar)
+
+
+def main(*args, **kwargs) -> typing.Any:
+    return MenuBar(*args, **kwargs)

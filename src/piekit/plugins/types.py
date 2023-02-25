@@ -1,21 +1,12 @@
-"""
-Objec types
-"""
 import dataclasses as dt
 
 
-class ObjectTypes:
-    # Default type
-    Pie: str = "pie"
-
+class PluginTypes:
     # Plugin
     Plugin: str = "plugin"
 
     # Container
     Container: str = "container"
-
-    # Controller
-    Controller: str = "controller"
 
 
 @dt.dataclass
