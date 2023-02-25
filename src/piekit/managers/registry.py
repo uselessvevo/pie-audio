@@ -67,9 +67,7 @@ class ManagersRegistry:
     def mount(self, *managers: Union[ManagerConfig, BaseManager]) -> None:
         """
         Mount (add) managers by import string or instance of manager
-        For example:
-        >>> self.registry = ManagersRegistry()
-        >>> self.registry.mount()
+        >>> Managers.mount(*Config.MANAGERS)
         """
         for manager in managers:
             if isinstance(manager, ManagerConfig):

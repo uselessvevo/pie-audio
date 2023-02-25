@@ -22,7 +22,7 @@ class MainWindow(
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
-    PluginsAccessor
+    PluginsAccessor,
 ):
     # Accessors section
     section: str = Sections.Shared
@@ -53,23 +53,6 @@ class MainWindow(
     def prepareBaseSignals(self) -> None:
         self.signalExceptionOccurred.connect(self.errorHandler)
 
-    # Component interfaces
-
-    def placeOn(self, child, target: str, **options) -> None:
-        if not isinstance(child, (PiePlugin,)):
-            raise PieException("MainWindow can register only `PiePlugin` based objects")
-
-        # Register or render object on `BaseComponent` based object
-        # TODO: Add `ComponentsAccessor` and reimplement `mount/unmount` method
-        Managers(SysManagers.Plugins)(target).register(child, **options)
-
-    def removeFrom(self, child, target: str) -> None:
-        if not isinstance(child, (PiePlugin,)):
-            raise PieException("MainWindow can register only `PiePlugin` based objects")
-
-        if not Managers(SysManagers.Plugins)(target):
-            raise PieException(f"MainWindow doesn't contain {target} plugin")
-
     # Event methods
 
     def closeEvent(self, event) -> None:
@@ -79,7 +62,7 @@ class MainWindow(
             event.ignore()
 
     def closeHandler(self, cancellable: bool = True) -> bool:
-        if cancellable and Managers(SysManagers.Configs)("ui.show_exit_dialog", Sections.User, True):
+        if cancellable and self.getConfig("ui.show_exit_dialog", Sections.User, True):
             messageBox = MessageBox(self)
             if messageBox.clickedButton() == messageBox.noButton:
                 return False
