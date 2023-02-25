@@ -36,7 +36,7 @@ class AboutApp(
 
     @onObjectAvailable(target="menu-bar")
     def onMenuBarAvailable(self) -> None:
-        menu = self.getMenu(Sections.Shared, "etc")
+        menu = self.getMenu(Sections.Shared, "help")
         menu.addMenuItem(
             name="about",
             text=self.getTranslation("About"),

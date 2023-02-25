@@ -56,14 +56,14 @@ class MenuBar(
         exitAction.triggered.connect(self.parent().close)
 
         # About menu
-        self.etcMenu = self.addMenu(
+        self.helpMenu = self.addMenu(
             section=Sections.Shared,
             parent=self._menuBar,
-            name="etc",
-            text=self.getTranslation("Etc")
+            name="help",
+            text=self.getTranslation("Help")
         )
 
         self._menuBar.addMenu(self.fileMenu)
-        self._menuBar.addMenu(self.etcMenu)
+        self._menuBar.addMenu(self.helpMenu)
 
         self.parent().setMenuBar(self._menuBar)
