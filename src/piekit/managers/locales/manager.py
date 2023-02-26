@@ -34,7 +34,7 @@ class LocaleManager(BaseManager):
     def _read_root_translations(self, folder: Path, section: Union[str, Sections] = None) -> None:
         self._roots.add(folder)
 
-        for file in (folder / Config.LOCALES_FOLDER).rglob("*.json"):
+        for file in (folder / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
             section = section if section else file.parent.name
             if not self._translations.get(section):
                 self._translations[section] = {}
@@ -45,7 +45,7 @@ class LocaleManager(BaseManager):
         for package in folder.iterdir():
             self._roots.add(package)
 
-            for file in (package / Config.LOCALES_FOLDER).rglob("*.json"):
+            for file in (package / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
                 if not self._translations.get(file.name):
                     self._translations[file.stem] = {}
 
