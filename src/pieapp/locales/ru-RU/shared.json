@@ -26,5 +26,6 @@
     "Select theme": "Выберите тему",
     "Plugin {} is ready": "Плагин {} готов к работе",
     "Plugin {} is loading": "Плагин {} загружается",
-    "Select ffmpeg directory": "Выберите директорию с ffmpeg (bin)"
+    "Select ffmpeg directory": "Выберите директорию с ffmpeg (bin)",
+    "About": "О программе"
 }
