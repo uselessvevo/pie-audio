@@ -13,9 +13,12 @@ class TestPlugin(
     AssetsAccessor,
 ):
     name = "test-plugin"
+    section = "test-plugin"
 
     def init(self) -> None:
-        pass
+        self.logger.info(self.getConfig("config.key"))
+        self.logger.info(self.getTranslation("Test String"))
+        self.logger.info(self.getAsset("cancel.png"))
 
 
 def main(*args, **kwargs) -> typing.Any:

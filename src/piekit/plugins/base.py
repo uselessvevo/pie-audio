@@ -1,12 +1,14 @@
 from pathlib import Path
 from typing import Union
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QApplication
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 from piekit.utils.logger import logger
+from piekit.widgets.messagebox import MessageBox
+
 from piekit.managers.registry import Managers
-from piekit.managers.types import Sections, SysManagers
+from piekit.managers.types import SysManagers
 
 from piekit.plugins.types import PluginTypes, Error
 from piekit.plugins.observer import PluginsObserverMixin
@@ -32,7 +34,7 @@ class PiePlugin(
     type: str = PluginTypes.Plugin
 
     # Accessors section
-    section: str = Sections.Shared
+    section: str = None
 
     # PiePlugin version
     version: tuple[int] = (0, 1, 0)
@@ -133,8 +135,22 @@ class PiePlugin(
 
     # Event methods
 
-    def onCloseEvent(self) -> None:
-        self.logger.info("Closing. Goodbye!..")
+    def close(self, event) -> None:
+        if self.closeHandler(True):
+            event.accept()
+        else:
+            event.ignore()
+
+    def closeHandler(self, cancellable: bool = True) -> bool:
+        if cancellable and Managers(SysManagers.Configs)("ui.show_exit_dialog", self.name, True):
+            messageBox = MessageBox(self)
+            if messageBox.clickedButton() == messageBox.noButton:
+                return False
+
+        QApplication.processEvents()
+        Managers.unmount(full_house=True)
+
+        return True
 
     # Slots
 
@@ -152,3 +168,7 @@ class PiePlugin(
     @property
     def logger(self):
         return self._logger
+
+    @property
+    def path(self) -> Path:
+        return self._path

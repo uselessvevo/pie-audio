@@ -4,7 +4,7 @@ from pathlib import Path
 
 from piekit.system.types import EList
 from piekit.system.types import EDict
-from piekit.managers.types import ManagerConfig, PathConfig
+from piekit.managers.types import ManagerConfig
 
 # Base paths
 BASE_DIR: Path = Path(__file__).parent.parent.parent
@@ -64,21 +64,15 @@ TEMPLATE_FILES: EList = [
 MANAGERS: EList = [
     ManagerConfig(
         import_string="piekit.managers.configs.manager.ConfigManager",
-        mount=True,
-        args=(
-            PathConfig(APP_ROOT / USER_CONFIG_FOLDER, section="shared"),
-            PathConfig(USER_ROOT / USER_CONFIG_FOLDER, section="user")
-        )
+        mount=True
     ),
     ManagerConfig(
         import_string="piekit.managers.locales.manager.LocaleManager",
-        mount=True,
-        args=(PathConfig(APP_ROOT / LOCALES_FOLDER, section="shared"),)
+        mount=True
     ),
     ManagerConfig(
         import_string="piekit.managers.assets.manager.AssetsManager",
-        mount=True,
-        args=(PathConfig(APP_ROOT / ASSETS_FOLDER, pattern="*", section="shared"),)
+        mount=True
     ),
     ManagerConfig(
         import_string="piekit.managers.plugins.manager.PluginManager",

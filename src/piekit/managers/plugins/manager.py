@@ -39,9 +39,9 @@ class PluginManager(BaseManager):
 
     def mount(self, parent: "MainWindow" = None) -> None:
         """ Mount all built-in or site PiePlugins, components and user plugins """
-        self._mount_plugins_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
-        self._mount_plugins_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
-        self._mount_plugins_from_packages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
+        self._mount_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
+        self._mount_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
+        self._mount_from_packages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
 
     def unmount(self, *plugins: str, full_house: bool = False) -> None:
         """
@@ -88,7 +88,7 @@ class PluginManager(BaseManager):
 
     # PluginManager protected methods
 
-    def _mount_plugins_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
+    def _mount_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
         if not folder.exists():
             folder.mkdir()
 

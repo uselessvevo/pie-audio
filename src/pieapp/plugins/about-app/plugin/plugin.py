@@ -2,7 +2,7 @@ import typing
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget, QGridLayout, QPushButton, QDialog
+from PyQt5.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
 
 from pieapp.structs import Containers, Plugins
 from piekit.plugins.base import PiePlugin
