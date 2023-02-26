@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 
-from pieapp.types import Containers
+from pieapp.structs import Containers
 from piekit.system.loader import Config
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers

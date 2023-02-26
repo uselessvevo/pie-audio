@@ -3,15 +3,13 @@ import os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
-from piekit.managers.plugins.mixins import PluginsAccessor
-from piekit.system.exceptions import PieException
 from piekit.utils.logger import logger
-from piekit.plugins.base import PiePlugin
-from piekit.managers.registry import Managers
-
 from piekit.plugins.types import Error
 from piekit.widgets.messagebox import MessageBox
-from piekit.managers.types import Sections, SysManagers
+
+from piekit.managers.types import Sections
+from piekit.managers.registry import Managers
+from piekit.managers.plugins.mixins import PluginsAccessor
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor

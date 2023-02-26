@@ -1,12 +1,13 @@
 from typing import Any
 from pathlib import Path
 
+from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
-from piekit.managers.types import SysManagers
+
+from piekit.system.loader import Config
 from piekit.plugins.base import PiePlugin
 from piekit.managers.base import BaseManager
-from piekit.system.loader import Config
-from piekit.utils.modules import import_by_path
+from piekit.managers.types import SysManagers
 
 
 class PluginManager(BaseManager):
