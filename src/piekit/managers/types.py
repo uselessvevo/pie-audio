@@ -42,13 +42,5 @@ class ManagerConfig:
     kwargs: dict = dt.field(default_factory=dict)
 
 
-@dt.dataclass(frozen=True, eq=False)
-class PathConfig:
-    root: Path
-    section: str = dt.field(default=None)
-    section_stem: bool = dt.field(default=False)
-    pattern: str = dt.field(default="*.json")
-
-
 AllPlugins = "__ALL__"
 DirectoryType = type("DirectoryType", (), {})

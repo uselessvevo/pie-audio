@@ -6,7 +6,6 @@ from typing import Union
 from dotty_dict import Dotty
 
 from piekit.managers.types import Sections, SysManagers
-from piekit.managers.types import PathConfig
 from piekit.managers.base import BaseManager
 from piekit.system.exceptions import PieException
 from piekit.system.loader import Config
