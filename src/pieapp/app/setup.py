@@ -21,10 +21,10 @@ def setup_application() -> None:
         splash.show()
 
     QApplication.processEvents()
-    Managers.mount(*Config.MANAGERS)
 
     if not check_crabs():
         restore_crabs()
+        Managers.mount(*Config.MANAGERS)
 
         if splash:
             splash.close()
@@ -32,6 +32,8 @@ def setup_application() -> None:
         wizard = SetupWizard()
         wizard.show()
         sys.exit(app.exec_())
+
+    Managers.mount(*Config.MANAGERS)
 
     if splash:
         splash.close()
