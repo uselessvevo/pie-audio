@@ -13,21 +13,15 @@ def on_plugin_available(
     Method decorator used to handle plugin availability
 
     The methods that use this decorator must have the following signature:
-    `def method(self)` when observing a single plugin or
-    `def method(self, target): ...` when observing multiple plugins or
-    all plugins that were listed as dependencies.
+    * `def method(self)` when observing a single plugin
+    * `def method(self, target): ...` when observing multiple plugins or all plugins that were listed as dependencies
 
-    Parameters
-    ----------
-    func: Callable
-        Method to decorate. Given by default when applying the decorator.
-    target: Optional[str]
-        Name of the requested plugins whose availability triggers the method.
+    Args
+        func (callable): Method to decorate. Given by default when applying the decorator
+        target(Optional[str]): Name of the requested plugins whose availability triggers the method
 
     Returns
-    -------
-    func: Callable
-        The same method that was given as input.
+        func(callable): The same method that was given as input.
     """
     if func is None:
         return functools.partial(on_plugin_available, target=target)
@@ -49,27 +43,24 @@ def on_plugin_unmount(func: Callable = None, target: Optional[str] = None):
     and also **before** the plugins that uses the decorator is destroyed.
 
     The methods that use this decorator must have the following signature:
-    `def method(self)`.
+    * `def method(self)` when observing a single plugin
 
-    Parameters
-    ----------
-    func: Callable
-        Method to decorate. Given by default when applying the decorator.
-    target: str
-        Name of the requested plugins whose unmount triggers the method.
+    Args
+        func (callable): Method to decorate. Given by default when applying the decorator
+        target(Optional[str]): Name of the requested plugins whose availability triggers the method
 
     Returns
-    -------
-    func: Callable
-        The same method that was given as input.
+        func(callable): The same method that was given as input.
     """
     if func is None:
         return functools.partial(on_plugin_unmount, plugin=target)
 
     if target is None:
-        raise PieException("on_plugin_unmount must have a well defined "
-                           "plugins keyword argument value, "
-                           "e.g., target=Plugins.Editor")
+        raise PieException(
+            "A method `on_plugin_unmount` must have a well "
+            "defined plugins keyword argument value. "
+            "For example - target=Container.Workbench"
+        )
 
     func._object_unmount = target
     return func

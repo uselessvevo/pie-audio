@@ -1,5 +1,6 @@
 """ This observer serves """
 from piekit.managers.types import AllPlugins
+from src.piekit.system.exceptions import PieException
 
 
 class PluginsObserverMixin:
@@ -14,10 +15,10 @@ class PluginsObserverMixin:
                 plugin_listen = method._plugin_listen
 
                 if plugin_listen not in self.requires + self.optional:
-                    raise Exception(
+                    raise PieException(
                         f"Method {method_name} of {self} is trying to watch "
-                        f"Plugin {plugin_listen}, but that plugin is not "
-                        f"listed in REQUIRES nor OPTIONAL."
+                        f"plugin {plugin_listen}, but that plugin is not "
+                        f"listed in `requires` nor `optional`."
                     )
 
                 self._plugin_availability_listeners[plugin_listen] = method_name
@@ -26,9 +27,9 @@ class PluginsObserverMixin:
                 object_unmount = method._object_unmount
 
                 if object_unmount not in self.requires + self.optional:
-                    raise Exception(
+                    raise PieException(
                         f"Method {method_name} of {self} is trying to watch "
-                        f"Plugin {object_unmount}, but that plugin is not "
+                        f"plugin {object_unmount}, but that plugin is not "
                         f"listed in `requires` nor `optional`."
                     )
 
