@@ -18,10 +18,12 @@ class ToolButtonAccessor:
         text: str = None,
         tooltip: str = None,
         icon: QIcon = None,
-        onlyIcon: bool = False
+        triggered: callable = None,
+        onlyIcon: bool = False,
     ) -> QToolButton:
         return Managers(SysManagers.ToolButton).addToolButton(
-            parent, section or Sections.Shared, name, text, tooltip, icon, onlyIcon
+            parent, section or Sections.Shared,
+            name, text, tooltip, icon, triggered, onlyIcon
         )
 
     def getToolButtons(self, section: str, *names: str) -> list[QObject]:

@@ -29,6 +29,7 @@ class ToolButtonManager(BaseManager):
         text: str = None,
         tooltip: str = None,
         icon: QIcon = None,
+        triggered: callable = None,
         only_icon: bool = False,
     ) -> QToolButton:
         if section not in self._buttons:
@@ -46,6 +47,9 @@ class ToolButtonManager(BaseManager):
 
         if text:
             button.setText(text)
+
+        if triggered:
+            button.clicked.connect(triggered)
 
         if only_icon:
             button.setToolButtonStyle(Qt.ToolButtonIconOnly)
