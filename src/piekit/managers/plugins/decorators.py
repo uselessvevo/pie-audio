@@ -1,7 +1,7 @@
 import functools
 from typing import Callable, Optional
 
-from piekit.managers.types import AllPlugins
+from piekit.managers.structs import AllPlugins
 from piekit.system.exceptions import PieException
 
 

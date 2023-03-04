@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QShortcut
 
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.base import BaseManager
-from piekit.managers.types import SysManagers
+from piekit.managers.structs import SysManagers
 
 
 class ShortcutsManager(BaseManager):

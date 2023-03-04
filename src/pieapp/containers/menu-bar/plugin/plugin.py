@@ -2,10 +2,11 @@ import typing
 
 from PyQt5.QtWidgets import QMenuBar
 
-from piekit.plugins.mixins import MenuAccessor
+from pieapp.structs.containers import Containers
+from piekit.managers.menus.mixins import MenuAccessor
 from piekit.plugins.base import PiePlugin
 
-from piekit.managers.types import Sections
+from piekit.managers.structs import Sections
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
@@ -18,8 +19,7 @@ class MenuBar(
     AssetsAccessor,
     MenuAccessor,
 ):
-    name = "menu-bar"
-    requires = ["about-app"]
+    name = Containers.MenuBar
 
     def init(self) -> None:
         self._menuBar = QMenuBar()

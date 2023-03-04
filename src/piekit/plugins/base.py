@@ -8,7 +8,7 @@ from piekit.utils.logger import logger
 from piekit.widgets.messagebox import MessageBox
 
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers
+from piekit.managers.structs import SysManagers
 
 from piekit.plugins.types import PluginTypes, Error
 from piekit.plugins.observer import PluginsObserverMixin

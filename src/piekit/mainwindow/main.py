@@ -7,7 +7,7 @@ from piekit.utils.logger import logger
 from piekit.plugins.types import Error
 from piekit.widgets.messagebox import MessageBox
 
-from piekit.managers.types import Sections
+from piekit.managers.structs import Sections
 from piekit.managers.registry import Managers
 from piekit.managers.plugins.mixins import PluginsAccessor
 from piekit.managers.assets.mixins import AssetsAccessor

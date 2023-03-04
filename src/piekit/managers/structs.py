@@ -24,6 +24,12 @@ class SysManagers:
     
     # MenuManager
     Menus = "menus"
+
+    # ToolButtonManager
+    ToolButton = "toolbuttons"
+
+    # ToolBarManager
+    ToolBars = "toolbar"
     
 
 class Sections:
@@ -32,6 +38,12 @@ class Sections:
     
     # Shared/root access section
     Shared = "shared"
+
+
+class WorkbenchItems:
+    Settings = "settings"
+    Spacer = "spacer"
+    Exit = "exit"
 
 
 @dt.dataclass(frozen=True, eq=False)

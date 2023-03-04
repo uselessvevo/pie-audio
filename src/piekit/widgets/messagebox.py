@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 
-from piekit.managers.types import Sections
+from piekit.managers.structs import Sections
 from piekit.managers.locales.mixins import LocalesAccessor
 
 

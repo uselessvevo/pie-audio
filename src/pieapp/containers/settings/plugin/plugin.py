@@ -1,5 +1,6 @@
 import typing
 
+from pieapp.structs.containers import Containers
 from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -12,7 +13,7 @@ class Settings(
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = "settings"
+    name = Containers.Settings
 
     def init(self) -> None:
         pass

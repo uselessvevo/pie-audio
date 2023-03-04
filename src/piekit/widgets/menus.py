@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QMenuBar, QMenu, QAction
 from piekit.system.exceptions import PieException
 
 
-class Menu(QMenu):
+class PieMenu(QMenu):
 
     def __init__(
         self,

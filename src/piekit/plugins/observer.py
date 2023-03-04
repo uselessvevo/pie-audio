@@ -1,5 +1,5 @@
 """ This observer serves """
-from piekit.managers.types import AllPlugins
+from piekit.managers.structs import AllPlugins
 
 
 class PluginsObserverMixin:

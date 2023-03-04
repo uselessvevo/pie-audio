@@ -5,7 +5,7 @@ from piekit.utils.files import read_json
 from piekit.system.loader import Config
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, Sections
+from piekit.managers.structs import SysManagers, Sections
 
 
 class LocaleManager(BaseManager):
