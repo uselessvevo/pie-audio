@@ -47,6 +47,16 @@ class Workbench(
             icon=self.getAssetIcon("settings.png")
         )
 
+        self.addToolButton(
+            parent=self.toolBar,
+            section=self.name,
+            name=WorkbenchItems.Exit,
+            text=self.getTranslation("Exit"),
+            tooltip=self.getTranslation("Exit"),
+            icon=self.getAssetIcon("exit.png"),
+            triggered=self.parent().close
+        )
+
         spacer = QtWidgets.QWidget()
         spacer.setObjectName(WorkbenchItems.Spacer)
         spacer.setSizePolicy(
@@ -64,6 +74,12 @@ class Workbench(
             section=self.name,
             name=WorkbenchItems.Settings,
             item=self.getToolButton(self.name, WorkbenchItems.Settings)
+        )
+
+        self.addToolBarItem(
+            section=self.name,
+            name=WorkbenchItems.Exit,
+            item=self.getToolButton(self.name, WorkbenchItems.Exit)
         )
 
         self._parent.addToolBar(Qt.LeftToolBarArea, self.toolBar)
