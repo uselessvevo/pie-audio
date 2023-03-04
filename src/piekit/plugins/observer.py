@@ -2,6 +2,7 @@
 Plugin notification observer 
 """
 from piekit.managers.structs import AllPlugins
+from piekit.system.exceptions import PieException
 
 
 class PluginsObserverMixin:
