@@ -2,6 +2,7 @@ import typing
 
 from PyQt5.QtWidgets import QTableWidget
 
+from pieapp.structs.containers import Containers
 from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -15,8 +16,8 @@ class ContentTable(
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = "content-table"
-    requires = ["workbench"]
+    name = Containers.ContentTable
+    requires = [Containers.Workbench]
 
     def init(self) -> None:
         self.logger.info("Initializing")

@@ -5,7 +5,7 @@ from typing import Union
 
 from dotty_dict import Dotty
 
-from piekit.managers.types import Sections, SysManagers
+from piekit.managers.structs import Sections, SysManagers
 from piekit.managers.base import BaseManager
 from piekit.system.exceptions import PieException
 from piekit.system.loader import Config
@@ -77,7 +77,7 @@ class ConfigManager(BaseManager):
     @lru_cache
     def get(
         self,
-        section: typing.Union[str, Sections.Shared],
+        section: typing.Union[str, Sections],
         key: typing.Any = None,
         default: typing.Any = None
     ) -> typing.Any:
@@ -96,7 +96,7 @@ class ConfigManager(BaseManager):
 
     def set(
         self,
-        section: typing.Union[str, Sections.Shared],
+        section: typing.Union[str, Sections],
         key: typing.Any = None,
         data: typing.Any = None
     ) -> None:

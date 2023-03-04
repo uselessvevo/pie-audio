@@ -4,9 +4,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
 
-from pieapp.structs import Containers, Plugins
 from piekit.plugins.base import PiePlugin
-from piekit.plugins.mixins import MenuAccessor
+from pieapp.structs.plugins import Plugins
+from pieapp.structs.containers import Containers
+from piekit.managers.menus.mixins import MenuAccessor
 
 from piekit.system.loader import Config
 from piekit.managers.assets.mixins import AssetsAccessor

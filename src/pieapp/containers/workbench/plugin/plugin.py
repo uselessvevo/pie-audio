@@ -4,8 +4,12 @@ from PyQt5.Qt import Qt
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QToolBar
+from PyQt5.QtWidgets import QToolBar, QWidget
 
+from pieapp.structs.containers import Containers
+from piekit.managers.toolbars.mixins import ToolBarAccessor
+from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
+from piekit.managers.structs import WorkbenchItems
 from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -17,11 +21,14 @@ class Workbench(
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
+    ToolBarAccessor,
+    ToolButtonAccessor,
 ):
-    name = "workbench"
+    name = Containers.Workbench
 
     def init(self) -> None:
-        self.toolBar = QToolBar(self._parent)
+        widget = QWidget()
+        self.toolBar = self.addToolBar(widget, self.name)
         self.toolBar.setMovable(False)
         self.toolBar.setIconSize(QtCore.QSize(27, 27))
         self.toolBar.setContextMenuPolicy(Qt.PreventContextMenu)
@@ -31,20 +38,34 @@ class Workbench(
             QtWidgets.QSizePolicy.Minimum
         ))
 
-        settings = QtWidgets.QToolButton()
-        settings.setToolTip(self.getTranslation("Settings"))
-        settings.setIcon(QtGui.QIcon(self.getAsset("settings.png")))
-        settings.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.addToolButton(
+            parent=self.toolBar,
+            section=self.name,
+            name=WorkbenchItems.Settings,
+            text=self.getTranslation("Settings"),
+            tooltip=self.getTranslation("Settings"),
+            icon=self.getAssetIcon("settings.png")
+        )
 
         spacer = QtWidgets.QWidget()
-        spacer.setObjectName("spacer")
+        spacer.setObjectName(WorkbenchItems.Spacer)
         spacer.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding
         )
 
-        self.toolBar.addWidget(spacer)
-        self.toolBar.addWidget(settings)
+        self.addToolBarItem(
+            section=self.name,
+            name=WorkbenchItems.Spacer,
+            item=spacer
+        )
+
+        self.addToolBarItem(
+            section=self.name,
+            name=WorkbenchItems.Settings,
+            item=self.getToolButton(self.name, WorkbenchItems.Settings)
+        )
+
         self._parent.addToolBar(Qt.LeftToolBarArea, self.toolBar)
 
 

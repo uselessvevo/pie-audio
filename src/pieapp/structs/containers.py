@@ -1,5 +1,5 @@
 """
-Application managers, plugins and containers
+Built-in app containers
 """
 
 
@@ -9,8 +9,3 @@ class Containers:
     Workbench = "workbench"
     StatusBar = "status-bar"
     ContentTable = "content-table"
-
-
-class Plugins:
-    About = "about"
-    TestPlugin = "test-plugin"

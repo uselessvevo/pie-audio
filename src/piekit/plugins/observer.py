@@ -1,6 +1,7 @@
-""" This observer serves """
-from piekit.managers.types import AllPlugins
-from src.piekit.system.exceptions import PieException
+""" 
+Plugin notification observer 
+"""
+from piekit.managers.structs import AllPlugins
 
 
 class PluginsObserverMixin:

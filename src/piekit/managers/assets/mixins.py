@@ -3,7 +3,7 @@ from typing import Union
 
 
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, Sections
+from piekit.managers.structs import SysManagers, Sections
 
 
 class AssetsAccessor:
@@ -15,7 +15,7 @@ class AssetsAccessor:
         self,
         key: typing.Any,
         default: typing.Any = None,
-        section: Union[str, Sections.Shared] = Sections.Shared
+        section: Union[str, Sections] = Sections.Shared
     ) -> typing.Any:
         return Managers(SysManagers.Assets)(self.section or section, key, default)
 
@@ -23,7 +23,7 @@ class AssetsAccessor:
         self,
         key: typing.Any,
         default: typing.Any = None,
-        section: Union[str, Sections.Shared] = Sections.Shared
+        section: Union[str, Sections] = Sections.Shared
     ):
         return Managers(SysManagers.Assets).get_icon(self.section or section, key, default)
 

@@ -1,5 +1,7 @@
 import typing
 
+from pieapp.structs.plugins import Plugins
+
 from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -12,8 +14,8 @@ class TestPlugin(
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = "test-plugin"
-    section = "test-plugin"
+    name = Plugins.TestPlugin
+    section = Plugins.TestPlugin
 
     def init(self) -> None:
         self.logger.info(self.getConfig("config.key"))

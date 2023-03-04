@@ -1,7 +1,7 @@
 import typing
 
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers
+from piekit.managers.structs import SysManagers
 
 
 class PluginsAccessor:

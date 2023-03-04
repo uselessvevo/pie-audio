@@ -4,7 +4,7 @@ from pathlib import Path
 
 from piekit.system.types import EList
 from piekit.system.types import EDict
-from piekit.managers.types import ManagerConfig
+from piekit.managers.structs import ManagerConfig
 
 # Base paths
 BASE_DIR: Path = Path(__file__).parent.parent.parent
@@ -80,6 +80,14 @@ MANAGERS: EList = [
     ),
     ManagerConfig(
         import_string="piekit.managers.menus.manager.MenuManager",
+        mount=False
+    ),
+    ManagerConfig(
+        import_string="piekit.managers.toolbars.manager.ToolBarManager",
+        mount=False
+    ),
+    ManagerConfig(
+        import_string="piekit.managers.toolbuttons.manager.ToolButtonManager",
         mount=False
     )
 ]

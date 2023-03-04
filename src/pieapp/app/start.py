@@ -2,7 +2,7 @@ import sys
 
 from piekit.managers.assets.utils import get_theme, get_palette
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers
+from piekit.managers.structs import SysManagers
 from piekit.utils.core import getApplication
 
 

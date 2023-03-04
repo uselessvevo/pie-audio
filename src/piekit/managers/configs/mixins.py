@@ -1,7 +1,7 @@
 from typing import Any, Union
 
 from piekit.managers.registry import Managers
-from piekit.managers.types import SysManagers, Sections
+from piekit.managers.structs import SysManagers, Sections
 
 
 class ConfigAccessor:
@@ -13,7 +13,7 @@ class ConfigAccessor:
         self,
         key: Any,
         default: Any = None,
-        section: Union[str, Sections.Shared] = Sections.Shared
+        section: Union[str, Sections] = Sections.Shared
     ) -> Any:
         return Managers.get(SysManagers.Configs).get(self.section or section, key, default)
 
