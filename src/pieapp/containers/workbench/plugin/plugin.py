@@ -1,19 +1,18 @@
 import typing
 
 from PyQt5.Qt import Qt
-from PyQt5 import QtGui
-from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QToolBar, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from pieapp.structs.containers import Containers
-from piekit.managers.toolbars.mixins import ToolBarAccessor
-from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
-from piekit.managers.structs import WorkbenchItems
 from piekit.plugins.base import PiePlugin
+
+from piekit.managers.structs import WorkbenchItems
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.toolbars.mixins import ToolBarAccessor
+from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
 
 
 class Workbench(
@@ -28,18 +27,32 @@ class Workbench(
 
     def init(self) -> None:
         widget = QWidget()
-        self.toolBar = self.addToolBar(widget, self.name)
-        self.toolBar.setMovable(False)
-        self.toolBar.setIconSize(QtCore.QSize(27, 27))
-        self.toolBar.setContextMenuPolicy(Qt.PreventContextMenu)
-        self.toolBar.setOrientation(Qt.Vertical)
-        self.toolBar.setSizePolicy(QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum,
-            QtWidgets.QSizePolicy.Minimum
-        ))
+        self.workbench = self.addToolBar(widget, self.name)
+
+        self.workbench.setMovable(False)
+        self.workbench.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.workbench.setToolButtonStyle(Qt.ToolButtonTextBesideIcon | Qt.AlignLeading)
 
         self.addToolButton(
-            parent=self.toolBar,
+            parent=self.workbench,
+            section=self.name,
+            name=WorkbenchItems.OpenFiles,
+            text=self.getTranslation("Open file"),
+            tooltip=self.getTranslation("Open file"),
+            icon=self.getAssetIcon("open-folder.png")
+        )
+
+        self.addToolButton(
+            parent=self.workbench,
+            section=self.name,
+            name=WorkbenchItems.Clear,
+            text=self.getTranslation("Clear"),
+            tooltip=self.getTranslation("Clear"),
+            icon=self.getAssetIcon("recycle-bin.png")
+        ).setEnabled(False)
+
+        self.addToolButton(
+            parent=self.workbench,
             section=self.name,
             name=WorkbenchItems.Settings,
             text=self.getTranslation("Settings"),
@@ -48,7 +61,7 @@ class Workbench(
         )
 
         self.addToolButton(
-            parent=self.toolBar,
+            parent=self.workbench,
             section=self.name,
             name=WorkbenchItems.Exit,
             text=self.getTranslation("Exit"),
@@ -66,8 +79,14 @@ class Workbench(
 
         self.addToolBarItem(
             section=self.name,
-            name=WorkbenchItems.Spacer,
-            item=spacer
+            name=WorkbenchItems.OpenFiles,
+            item=self.getToolButton(self.name, WorkbenchItems.OpenFiles)
+        )
+
+        self.addToolBarItem(
+            section=self.name,
+            name=WorkbenchItems.Clear,
+            item=self.getToolButton(self.name, WorkbenchItems.Clear)
         )
 
         self.addToolBarItem(
@@ -78,11 +97,17 @@ class Workbench(
 
         self.addToolBarItem(
             section=self.name,
+            name=WorkbenchItems.Spacer,
+            item=spacer
+        )
+
+        self.addToolBarItem(
+            section=self.name,
             name=WorkbenchItems.Exit,
             item=self.getToolButton(self.name, WorkbenchItems.Exit)
         )
 
-        self._parent.addToolBar(Qt.LeftToolBarArea, self.toolBar)
+        self._parent.addToolBar(Qt.TopToolBarArea, self.workbench)
 
 
 def main(*args, **kwargs) -> typing.Any:

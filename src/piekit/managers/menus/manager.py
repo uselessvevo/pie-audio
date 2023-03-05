@@ -50,6 +50,7 @@ class MenuManager(BaseManager):
         menu: str,
         name: str,
         text: str,
+        triggered: callable,
         icon: QIcon,
     ) -> QAction:
         if section not in self._items:
@@ -59,7 +60,7 @@ class MenuManager(BaseManager):
             raise PieException(f"Menu {section}.{menu} not found")
 
         menu_instance = self._menus[section][menu]
-        action = menu_instance.addMenuItem(name, text, icon)
+        action = menu_instance.addMenuItem(name, text, triggered, icon)
 
         self._items[section][name] = action
 

@@ -39,14 +39,6 @@ class MenuBar(
             icon=self.getAssetIcon("open-file.png")
         )
 
-        self.addMenuItem(
-            section=Sections.Shared,
-            menu=self.fileMenu.name,
-            name="settings",
-            text=self.getTranslation("Settings"),
-            icon=self.getAssetIcon("settings.png")
-        )
-
         exitAction = self.addMenuItem(
             section=Sections.Shared,
             menu=self.fileMenu.name,

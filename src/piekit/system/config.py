@@ -80,14 +80,14 @@ MANAGERS: EList = [
     ),
     ManagerConfig(
         import_string="piekit.managers.menus.manager.MenuManager",
-        mount=False
+        mount=True
     ),
     ManagerConfig(
         import_string="piekit.managers.toolbars.manager.ToolBarManager",
-        mount=False
+        mount=True
     ),
     ManagerConfig(
         import_string="piekit.managers.toolbuttons.manager.ToolButtonManager",
-        mount=False
+        mount=True
     )
 ]

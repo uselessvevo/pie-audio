@@ -13,8 +13,8 @@ class PluginsObserverMixin:
 
         for method_name in dir(self):
             method = getattr(self, method_name, None)
-            if hasattr(method, "_plugin_listen"):
-                plugin_listen = method._plugin_listen
+            if hasattr(method, "plugin_listen"):
+                plugin_listen = method.plugin_listen
 
                 if plugin_listen not in self.requires + self.optional:
                     raise PieException(
@@ -25,8 +25,8 @@ class PluginsObserverMixin:
 
                 self._plugin_availability_listeners[plugin_listen] = method_name
 
-            if hasattr(method, "_object_unmount"):
-                object_unmount = method._object_unmount
+            if hasattr(method, "plugin_unmount"):
+                object_unmount = method.plugin_unmount
 
                 if object_unmount not in self.requires + self.optional:
                     raise PieException(

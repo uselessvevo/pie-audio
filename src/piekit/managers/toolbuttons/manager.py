@@ -46,6 +46,7 @@ class ToolButtonManager(BaseManager):
             button.setToolTip(tooltip)
 
         if text:
+            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
             button.setText(text)
 
         if triggered:

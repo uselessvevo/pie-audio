@@ -28,12 +28,16 @@ class PieMenu(QMenu):
         self,
         name: str,
         text: str,
+        triggered: callable = None,
         icon: QIcon = None
     ) -> QAction:
         if name in self._items:
             raise PieException(f"Menu item {name} already exist")
 
         action = QAction(parent=self, text=text, icon=icon)
+        if triggered:
+            action.triggered.connect(triggered)
+
         self.addAction(action)
         self._items[name] = action
 

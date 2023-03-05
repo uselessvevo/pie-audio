@@ -1,6 +1,11 @@
 import typing
 
+from PyQt5.QtWidgets import QDialog
+
 from pieapp.structs.containers import Containers
+from piekit.managers.menus.mixins import MenuAccessor
+from piekit.managers.plugins.decorators import onPluginAvailable
+from piekit.managers.structs import Sections
 from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -12,11 +17,27 @@ class Settings(
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
+    MenuAccessor
 ):
     name = Containers.Settings
+    requires = [Containers.MenuBar]
 
     def init(self) -> None:
-        pass
+        self.dialog = QDialog(self.parent())
+        self.dialog.setWindowTitle(self.getTranslation("Settings"))
+        self.dialog.setWindowIcon(self.getAssetIcon("settings.png"))
+        self.dialog.resize(500, 320)
+
+    @onPluginAvailable(target=Containers.MenuBar)
+    def onMenuBarAvailable(self) -> None:
+        self.addMenuItem(
+            section=Sections.Shared,
+            menu="file",
+            name="settings",
+            text=self.getTranslation("Settings"),
+            triggered=self.dialog.show,
+            icon=self.getAssetIcon("settings.png")
+        )
 
 
 def main(*args, **kwargs) -> typing.Any:

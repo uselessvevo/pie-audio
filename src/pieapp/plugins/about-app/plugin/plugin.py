@@ -25,11 +25,11 @@ class About(
     requires = [Containers.MenuBar]
 
     def init(self) -> None:
-        self.widget = QDialog(self.parent())
-        self.widget.setWindowTitle(self.getTranslation("About"))
+        self.dialog = QDialog(self.parent())
+        self.dialog.setWindowTitle(self.getTranslation("About"))
 
         okButton = QPushButton(self.getTranslation("Ok"))
-        okButton.clicked.connect(self.widget.close)
+        okButton.clicked.connect(self.dialog.close)
 
         pixmap = QPixmap()
         pixmap.load(self.getAsset("cloud.png"))
@@ -52,9 +52,9 @@ class About(
         gridLayout.addWidget(githubLinkLabel, 2, 0, alignment=Qt.AlignHCenter)
         gridLayout.addWidget(okButton, 3, 0, alignment=Qt.AlignRight)
 
-        self.widget.setLayout(gridLayout)
-        self.widget.setWindowIcon(self.getAssetIcon("help.png"))
-        self.widget.resize(400, 300)
+        self.dialog.setLayout(gridLayout)
+        self.dialog.setWindowIcon(self.getAssetIcon("help.png"))
+        self.dialog.resize(400, 300)
 
     @onPluginAvailable(target=Containers.MenuBar)
     def onMenuBarAvailable(self) -> None:
@@ -62,8 +62,9 @@ class About(
             menu="help",
             name="about",
             text=self.getTranslation("About"),
+            triggered=self.dialog.show,
             icon=self.getAssetIcon("help.png")
-        ).triggered.connect(self.widget.show)
+        )
 
 
 def main(*args, **kwargs) -> typing.Any:

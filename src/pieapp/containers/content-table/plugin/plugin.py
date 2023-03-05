@@ -1,13 +1,13 @@
 import typing
 
-from PyQt5.QtWidgets import QTableWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QAbstractScrollArea, QDockWidget, QHeaderView
 
 from pieapp.structs.containers import Containers
 from piekit.plugins.base import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
-from piekit.managers.plugins.decorators import onPluginAvailable
 
 
 class ContentTable(
@@ -17,16 +17,39 @@ class ContentTable(
     AssetsAccessor,
 ):
     name = Containers.ContentTable
-    requires = [Containers.Workbench]
 
     def init(self) -> None:
-        self.logger.info("Initializing")
-        self.table = QTableWidget()
-        # self._parent.addCentralWidget()
+        employees = [
+            {'First Name': 'John', 'Last Name': 'Doe', 'Age': 25},
+            {'First Name': 'Jane', 'Last Name': 'Doe', 'Age': 22},
+            {'First Name': 'Alice', 'Last Name': 'Doe', 'Age': 22},
+        ]
 
-    @onPluginAvailable(target="workbench")
-    def test(self):
-        self.logger.info("##########################Test")
+        self.table = QTableWidget()
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(employees[0].keys())
+        self.table.setRowCount(len(employees))
+
+        self.table.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding
+        )
+
+        self.table.horizontalHeaderItem(0).setTextAlignment(Qt.AlignCenter)
+        self.table.horizontalHeaderItem(1).setTextAlignment(Qt.AlignCenter)
+        self.table.horizontalHeaderItem(2).setTextAlignment(Qt.AlignCenter)
+
+        headers = self.table.horizontalHeader()
+        headers.setSectionResizeMode(0, QHeaderView.Stretch)
+        headers.setSectionResizeMode(1, QHeaderView.Stretch)
+        headers.setSectionResizeMode(2, QHeaderView.Stretch)
+
+        for row, e in enumerate(employees):
+            self.table.setItem(row, 0, QTableWidgetItem(e['First Name']))
+            self.table.setItem(row, 1, QTableWidgetItem(e['Last Name']))
+            self.table.setItem(row, 2, QTableWidgetItem(str(e['Age'])))
+
+        self.parent().setCentralWidget(self.table)
 
 
 def main(*args, **kwargs) -> typing.Any:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from typing import Union
+from collections import OrderedDict
 
-from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QToolBar, QWidget
 
 from piekit.managers.structs import Sections
@@ -21,11 +21,11 @@ class ToolBarManager(BaseManager):
         self._toolbars: dict[str, QToolBar] = {}
 
         # ToolBar items
-        self._items: dict[str, dict[str, QObject]] = {}
+        self._items: dict[str, OrderedDict[str, QWidget]] = {}
 
     def add_toolbar(
         self,
-        parent: QObject,
+        parent: QWidget,
         name: Union[str, Sections]
     ) -> QToolBar:
         if name in self._toolbars:
@@ -40,16 +40,20 @@ class ToolBarManager(BaseManager):
         self,
         section: Union[str, Sections],
         name: str,
-        item: QWidget
+        item: QWidget,
+        before: QWidget = None,
     ) -> QToolBar:
         if section not in self._items:
-            self._items[section] = {}
+            self._items[section] = OrderedDict({})
 
-        if not isinstance(item, QObject):
-            raise PieException(f"ToolBar item must be QObject based instance!")
+        if not isinstance(item, QWidget):
+            raise PieException(f"ToolBar item must be QWidget based instance!")
 
         toolbar = self.get_toolbar(section)
-        toolbar.addWidget(item)
+        if before:
+            toolbar.addWidget(item)
+        else:
+            toolbar.addWidget(item)
 
         self._items[section][name] = item
         return toolbar
@@ -58,7 +62,7 @@ class ToolBarManager(BaseManager):
         self,
         section: Union[str, Sections],
         name: str
-    ) -> QObject:
+    ) -> QWidget:
         if section not in self._items:
             raise PieException(f"Section {section} not found")
 
@@ -71,10 +75,10 @@ class ToolBarManager(BaseManager):
         self,
         section: Union[str, Sections],
         *names: str
-    ) -> list[QObject]:
+    ) -> list[QWidget]:
         return [self.get_item(section, n) for n in names]
 
-    def get_toolbar(self, name: Union[str, Sections]) -> QToolBar:
+    def get_toolbar(self,  name: Union[str, Sections]) -> QToolBar:
         if name not in self._toolbars:
             raise PieException(f"ToolBar {name} not found")
 

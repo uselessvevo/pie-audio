@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSignal
 
 from pieapp.structs.containers import Containers
@@ -12,10 +12,7 @@ from piekit.managers.configs.mixins import ConfigAccessor
 
 class PieAudioApp(MainWindow, ConfigAccessor):
     section = Sections.Shared
-
     signalPluginsReady = pyqtSignal()
-    signalComponentsReady = pyqtSignal()
-    signalComponentsLoading = pyqtSignal()
 
     def init(self) -> None:
         self.setWindowTitle("Pie Audio • Audio Converter ({})".format(
@@ -36,33 +33,25 @@ class PieAudioApp(MainWindow, ConfigAccessor):
 
     def prepareMainLayout(self):
         self.mainHBox = QtWidgets.QHBoxLayout()
-        self.toolBarHBox = QtWidgets.QHBoxLayout()
-        self.workbenchVBox = QtWidgets.QVBoxLayout()
-        self.treeViewVBox = QtWidgets.QVBoxLayout()
-        self.editorHBox = QtWidgets.QHBoxLayout()
-
-        self.mainHBox.addLayout(self.workbenchVBox)
-        self.mainHBox.addLayout(self.treeViewVBox)
-        self.mainHBox.addLayout(self.editorHBox)
         self.setLayout(self.mainHBox)
 
         self.mainHBox.setContentsMargins(0, 0, 0, 0)
         self.mainHBox.setSpacing(20)
 
-        widget = QtWidgets.QWidget()
+        pixmap = QPixmap()
+        pixmap.load(self.getAsset("empty-box.png"))
+
+        widget = QtWidgets.QLabel()
+        widget.setPixmap(pixmap)
+
         widget.setLayout(self.mainHBox)
         self.setCentralWidget(widget)
-
-        self.signalComponentsLoading.emit()
 
     # Plugin method and signals
 
     def preparePlugins(self) -> None:
         """ Prepare all (or selected) Plugins """
         Managers(SysManagers.Plugins).mount(self)
-        Managers(SysManagers.Menus).mount()
-        Managers(SysManagers.ToolBars).mount()
-        Managers(SysManagers.ToolButton).mount()
         self.signalPluginsReady.emit()
 
     def notifyPluginReady(self):

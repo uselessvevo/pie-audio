@@ -24,9 +24,10 @@ class MenuAccessor:
         menu: str = None,
         name: str = None,
         text: str = None,
+        triggered: callable = None,
         icon: QIcon = None,
     ) -> QAction:
-        return Managers(SysManagers.Menus).addMenuItem(section or Sections.Shared, menu, name, text, icon)
+        return Managers(SysManagers.Menus).addMenuItem(section or Sections.Shared, menu, name, text, triggered, icon)
 
     def getMenu(self, section: str, name: str) -> PieMenu:
         return Managers(SysManagers.Menus).getMenu(section or Sections.Shared, name)

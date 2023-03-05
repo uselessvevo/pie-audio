@@ -31,7 +31,7 @@ def on_plugin_available(
         # observes all plugins listed as dependencies.
         target = AllPlugins
 
-    func._plugin_listen = target
+    func.plugin_listen = target
     return func
 
 
@@ -62,7 +62,7 @@ def on_plugin_unmount(func: Callable = None, target: Optional[str] = None):
             "For example - target=Container.Workbench"
         )
 
-    func._object_unmount = target
+    func.plugin_unmount = target
     return func
 
 

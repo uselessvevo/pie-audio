@@ -33,8 +33,6 @@ class PluginManager(BaseManager):
         # PiePlugins dictionary with availability boolean status
         self._plugin_availability: dict[str, bool] = {}
 
-        self._plugin_ready: set[str] = set()
-
     # BaseManager methods
 
     def mount(self, parent: "MainWindow" = None) -> None:
@@ -72,15 +70,12 @@ class PluginManager(BaseManager):
         # PiePlugins dictionary with availability boolean status
         self._plugin_availability: dict[str, bool] = {}
 
-        self._plugin_ready: set[str] = set()
-            
     def reload(self, *plugins: str, full_house: bool = False) -> None:
         """ Reload listed or all objects and components """
         self.unmount(*plugins, full_house=full_house)
         for plugin in self._plugins_registry:
             plugin_instance = self._plugins_registry.get(plugin)
             self._initialize_plugin(plugin_instance)
-            self._post_initialize_plugin()
 
     def get(self, key) -> Any:
         """ Get PiePlugin instance by its name """
@@ -107,8 +102,6 @@ class PluginManager(BaseManager):
 
                 self._initialize_plugin(plugin_instance)
 
-        self._post_initialize_plugin()
-
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
         self._logger.info(f"Preparing {plugin_instance.type} {plugin_instance.name}")
 
@@ -123,57 +116,40 @@ class PluginManager(BaseManager):
 
         plugin_instance.signalPluginReady.connect(
             lambda: (
-                self._notify_plugin_availability(
-                    plugin_instance.name,
-                    plugin_instance.requires,
-                    plugin_instance.optional,
-                ),
-                self._notify_plugin_availability_on_main(
-                    plugin_instance.name
-                )
+                self._notify_plugin_availability(plugin_instance.name),
+                self._notify_plugin_availability_on_main(plugin_instance.name)
             )
         )
 
         # Preparing `PiePlugin` instance
         plugin_instance.prepare()
 
-    def _post_initialize_plugin(self) -> None:
-        for plugin in self._plugins_registry:
-            if plugin in self._plugin_ready:
-                continue
+        # PiePlugin is ready
+        plugin_instance.signalPluginReady.emit()
 
-            plugin_instance = self._plugins_registry.get(plugin)
+        self._notify_plugin_dependencies(plugin_instance.name)
 
-            # PiePlugin is ready
-            plugin_instance.signalPluginReady.emit()
-
-            self._notify_plugin_dependencies(plugin_instance.name)
-
-            # Inform about that
-            self._logger.info(f"{plugin_instance.type.capitalize()} {plugin_instance.name} is ready!")
-
-            self._plugin_ready.add(plugin)
+        # Inform about that
+        self._logger.info(f"{plugin_instance.type.capitalize()} {plugin_instance.name} is ready!")
 
     def _notify_plugin_availability(
         self,
         name: str,
-        requires: list[str] = None,
-        optional: list[str] = None,
     ) -> None:
         """
         Notify dependent PiePlugins that our PiePlugin is available
 
         Args:
             name (str): PiePlugin name
-            requires (list[str]): list of required PiePlugins
-            optional (list[str]): list of optional PiePlugins
         """
-        requires = requires or []
-        optional = optional or []
-
         self._plugin_availability[name] = True
 
-        for plugin in requires + optional:
+        # Notify plugin dependents
+        plugin_dependents = self._plugin_dependents.get(name, {})
+        required_plugins = plugin_dependents.get('requires', [])
+        optional_plugins = plugin_dependents.get('optional', [])
+
+        for plugin in required_plugins + optional_plugins:
             if plugin in self._plugins_registry:
                 plugin_instance = self._plugins_registry[plugin]
                 plugin_instance.on_plugin_available(name)
