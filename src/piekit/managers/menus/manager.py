@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenuBar, QAction, QMenu
+from PyQt5.QtWidgets import QAction, QMenu
 
-from piekit.managers.structs import SysManagers
 from piekit.widgets.menus import PieMenu
 from piekit.managers.base import BaseManager
+from piekit.managers.structs import SysManagers
 from piekit.system.exceptions import PieException
 
 
@@ -23,22 +22,15 @@ class MenuManager(BaseManager):
 
     def add_menu(
         self,
-        parent: QMenuBar,
         section: str,
         name: str,
-        text: str,
-        icon: QIcon = None
+        menu: PieMenu
     ) -> PieMenu:
         if section not in self._menus:
             self._menus[section] = {}
 
         if name in self._menus:
             raise PieException(f"Menu {section}.{name} already registered")
-
-        menu = PieMenu(parent=parent, name=name, text=text)
-        if icon:
-            menu.menuAction().setIconVisibleInMenu(True)
-            menu.setIcon(icon)
 
         self._menus[section][name] = menu
 
@@ -49,9 +41,7 @@ class MenuManager(BaseManager):
         section: str,
         menu: str,
         name: str,
-        text: str,
-        triggered: callable,
-        icon: QIcon,
+        item: QAction
     ) -> QAction:
         if section not in self._items:
             self._items[section] = {}
@@ -59,12 +49,9 @@ class MenuManager(BaseManager):
         if menu not in self._menus[section]:
             raise PieException(f"Menu {section}.{menu} not found")
 
-        menu_instance = self._menus[section][menu]
-        action = menu_instance.addMenuItem(name, text, triggered, icon)
+        self._items[section][name] = item
 
-        self._items[section][name] = action
-
-        return action
+        return item
 
     def get_menu(self, section: str, name: str) -> QMenu:
         if section not in self._menus:

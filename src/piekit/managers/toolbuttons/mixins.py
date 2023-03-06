@@ -1,7 +1,7 @@
 from typing import Union
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import Qt, QObject
 from PyQt5.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
@@ -21,10 +21,24 @@ class ToolButtonAccessor:
         triggered: callable = None,
         onlyIcon: bool = False,
     ) -> QToolButton:
-        return Managers(SysManagers.ToolButton).addToolButton(
-            parent, section or Sections.Shared,
-            name, text, tooltip, icon, triggered, onlyIcon
-        )
+        toolButton = QToolButton(parent=parent)
+        if icon:
+            toolButton.setIcon(icon)
+
+        if tooltip:
+            toolButton.setToolTip(tooltip)
+
+        if text:
+            toolButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            toolButton.setText(text)
+
+        if triggered:
+            toolButton.clicked.connect(triggered)
+
+        if onlyIcon:
+            toolButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            
+        return Managers(SysManagers.ToolButton).addToolButton(section or Sections.Shared, name, toolButton)
 
     def getToolButtons(self, section: str, *names: str) -> list[QObject]:
         return Managers(SysManagers.ToolButton).getToolButtons(section, *names)

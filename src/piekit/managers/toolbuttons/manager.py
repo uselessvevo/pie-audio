@@ -23,37 +23,15 @@ class ToolButtonManager(BaseManager):
 
     def add_tool_button(
         self,
-        parent: QObject,
         section: Union[str, Sections],
         name: str,
-        text: str = None,
-        tooltip: str = None,
-        icon: QIcon = None,
-        triggered: callable = None,
-        only_icon: bool = False,
+        button: QToolButton
     ) -> QToolButton:
         if section not in self._buttons:
             self._buttons[section] = {}
 
         if name in self._buttons[section]:
             raise PieException(f"ToolButton {name} already registered in {section}")
-
-        button = QToolButton(parent=parent)
-        if icon:
-            button.setIcon(icon)
-
-        if tooltip:
-            button.setToolTip(tooltip)
-
-        if text:
-            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-            button.setText(text)
-
-        if triggered:
-            button.clicked.connect(triggered)
-
-        if only_icon:
-            button.setToolButtonStyle(Qt.ToolButtonIconOnly)
 
         self._buttons[section][name] = button
 

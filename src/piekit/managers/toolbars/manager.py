@@ -25,13 +25,12 @@ class ToolBarManager(BaseManager):
 
     def add_toolbar(
         self,
-        parent: QWidget,
-        name: Union[str, Sections]
+        name: Union[str, Sections],
+        toolbar: QToolBar
     ) -> QToolBar:
         if name in self._toolbars:
             raise PieException(f"ToolBar {name} already registered")
 
-        toolbar = QToolBar(parent=parent)
         self._toolbars[name] = toolbar
 
         return toolbar
@@ -40,23 +39,16 @@ class ToolBarManager(BaseManager):
         self,
         section: Union[str, Sections],
         name: str,
-        item: QWidget,
-        before: QWidget = None,
-    ) -> QToolBar:
+        item: QWidget
+    ) -> QWidget:
         if section not in self._items:
             self._items[section] = OrderedDict({})
 
         if not isinstance(item, QWidget):
             raise PieException(f"ToolBar item must be QWidget based instance!")
 
-        toolbar = self.get_toolbar(section)
-        if before:
-            toolbar.addWidget(item)
-        else:
-            toolbar.addWidget(item)
-
         self._items[section][name] = item
-        return toolbar
+        return item
 
     def get_item(
         self,
@@ -95,4 +87,3 @@ class ToolBarManager(BaseManager):
     getItem = get_item
     getToolBar = get_toolbar
     getToolBars = get_toolbars
-

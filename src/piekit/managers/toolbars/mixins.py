@@ -11,7 +11,9 @@ from piekit.managers.structs import SysManagers, Sections
 class ToolBarAccessor:
 
     def addToolBar(self, parent: QObject, name: str = None) -> QToolBar:
-        return Managers(SysManagers.ToolBars).addToolBar(parent, name or Sections.Shared)
+        # TODO: Add `PieToolBar` support
+        toolbar = QToolBar(parent=parent)
+        return Managers(SysManagers.ToolBars).addToolBar(name or Sections.Shared, toolbar)
 
     def addToolBarItem(
         self,
@@ -20,7 +22,9 @@ class ToolBarAccessor:
         item: QWidget = None,
         before: QWidget = None
     ) -> QToolBar:
-        return Managers(SysManagers.ToolBars).addItem(section or Sections.Shared, name, item, before)
+        toolbar = self.get_toolbar(section)
+        toolbar.addWidget(item)
+        return Managers(SysManagers.ToolBars).addItem(section or Sections.Shared, name, item)
 
     def getToolBarItem(self, section: str, name: str) -> QWidget:
         return Managers(SysManagers.ToolBars).getItem(section, name)
