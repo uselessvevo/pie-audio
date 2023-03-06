@@ -1,4 +1,4 @@
-## Pie Audio - An experimental audio converter
+## Pie Audio - An expandable audio converter
 [![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-360/)
@@ -6,7 +6,10 @@
 
 [English docs](https://github.com/uselessvevo/pie-audio/tree/docs/docs/en/piekit) • [Русский docs](https://github.com/uselessvevo/pie-audio/tree/docs/docs/ru/piekit)
 
-## Application pre-configuration
+## Special thanks
+I want to say thanks to spyder-ide - part of the code is based on this project.
+
+## Before the start
 > *Notice*: At this moment, this application still in deep development and there is no reason to create installation package. First you need to download/clone the application:
 
 1. Download via git - `git clone https://github.com/uselessvevo/pie-audio.git `
