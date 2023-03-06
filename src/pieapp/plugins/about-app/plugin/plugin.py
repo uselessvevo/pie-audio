@@ -66,7 +66,7 @@ class About(
             name="about",
             text=self.getTranslation("About"),
             triggered=self.dialog.show,
-            icon=self.getAssetIcon("help.png")
+            icon=self.getAssetIcon("help.png"),
         )
 
 

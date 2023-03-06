@@ -40,16 +40,16 @@ class MenuBar(
             icon=self.getAssetIcon("open-file.png")
         )
 
-        exitAction = self.addMenuItem(
+        self.addMenuItem(
             section=Sections.Shared,
             menu=self.fileMenu.name,
             name="exit",
             text=self.getTranslation("Exit"),
-            icon=self.getAssetIcon("exit.png")
+            icon=self.getAssetIcon("exit.png"),
+            triggered=self.parent().close
         )
-        exitAction.triggered.connect(self.parent().close)
 
-        # About menu
+        # Help menu
         self.helpMenu = self.addMenu(
             section=Sections.Shared,
             parent=self._menuBar,

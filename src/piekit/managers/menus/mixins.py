@@ -31,14 +31,15 @@ class MenuAccessor:
         text: str = None,
         triggered: callable = None,
         icon: QIcon = None,
+        before: QAction = None
     ) -> QAction:
         manager = Managers(SysManagers.Menus)
-        menu_instance = manager.get_menu(section, menu)
-        menu_instance.addMenuItem(name, text, triggered, icon)
-        return manager.addMenuItem(section or Sections.Shared, menu, name, menu_instance)
+        menuInstance = manager.get_menu(section, menu)
+        menuInstance.addMenuItem(name, text, triggered, icon, before)
+        return manager.addMenuItem(section or Sections.Shared, menu, name, menuInstance)
 
     def getMenu(self, section: str, name: str) -> PieMenu:
         return Managers(SysManagers.Menus).getMenu(section or Sections.Shared, name)
 
-    def getMenuItem(self, section: str, menu: str, name: str) -> PieMenu:
+    def getMenuItem(self, section: str, menu: str, name: str) -> QAction:
         return Managers(SysManagers.Menus).getMenuItem(section, menu, name)

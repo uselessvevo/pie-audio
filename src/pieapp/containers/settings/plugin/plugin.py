@@ -3,6 +3,7 @@ import typing
 from PyQt5.QtWidgets import QDialog
 
 from pieapp.structs.containers import Containers
+from pieapp.structs.menus import Menus
 from piekit.managers.menus.mixins import MenuAccessor
 from piekit.managers.plugins.decorators import onPluginAvailable
 from piekit.managers.structs import Sections
@@ -32,7 +33,7 @@ class Settings(
     def onMenuBarAvailable(self) -> None:
         self.addMenuItem(
             section=Sections.Shared,
-            menu="file",
+            menu=Menus.File,
             name="settings",
             text=self.getTranslation("Settings"),
             triggered=self.dialog.show,
