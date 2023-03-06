@@ -3,6 +3,7 @@ import typing
 from PyQt5.QtWidgets import QMenuBar
 
 from pieapp.structs.containers import Containers
+from pieapp.structs.menus import Menus
 from piekit.managers.menus.mixins import MenuAccessor
 from piekit.plugins.base import PiePlugin
 
@@ -27,7 +28,7 @@ class MenuBar(
         self.fileMenu = self.addMenu(
             section=Sections.Shared,
             parent=self._menuBar,
-            name="file",
+            name=Menus.File,
             text=self.getTranslation("File"),
         )
 
@@ -52,7 +53,7 @@ class MenuBar(
         self.helpMenu = self.addMenu(
             section=Sections.Shared,
             parent=self._menuBar,
-            name="help",
+            name=Menus.Help,
             text=self.getTranslation("Help")
         )
 

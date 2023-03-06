@@ -5,9 +5,9 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget
 
 from pieapp.structs.containers import Containers
+from pieapp.structs.workbench import WorkbenchItems
 from piekit.plugins.base import PiePlugin
 
-from piekit.managers.structs import WorkbenchItems
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor

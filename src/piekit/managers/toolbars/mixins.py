@@ -22,9 +22,10 @@ class ToolBarAccessor:
         item: QWidget = None,
         before: QWidget = None
     ) -> QToolBar:
-        toolbar = self.get_toolbar(section)
+        manager = Managers(SysManagers.ToolBars)
+        toolbar = manager.get_toolbar(section)
         toolbar.addWidget(item)
-        return Managers(SysManagers.ToolBars).addItem(section or Sections.Shared, name, item)
+        return manager.addItem(section or Sections.Shared, name, item)
 
     def getToolBarItem(self, section: str, name: str) -> QWidget:
         return Managers(SysManagers.ToolBars).getItem(section, name)

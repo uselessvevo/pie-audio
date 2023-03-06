@@ -21,7 +21,7 @@ class MenuAccessor:
             menu.menuAction().setIconVisibleInMenu(True)
             menu.setIcon(icon)
 
-        return Managers(SysManagers.Menus).addMenu(section or Sections.Shared, menu)
+        return Managers(SysManagers.Menus).addMenu(section or Sections.Shared, name, menu)
 
     def addMenuItem(
         self,
@@ -33,7 +33,7 @@ class MenuAccessor:
         icon: QIcon = None,
     ) -> QAction:
         manager = Managers(SysManagers.Menus)
-        menu_instance = manager.get_menu(menu)
+        menu_instance = manager.get_menu(section, menu)
         menu_instance.addMenuItem(name, text, triggered, icon)
         return manager.addMenuItem(section or Sections.Shared, menu, name, menu_instance)
 
