@@ -40,15 +40,6 @@ class Sections:
     Shared = "shared"
 
 
-class WorkbenchItems:
-    OpenFiles = "openFiles"
-    Clear = "clear"
-    Convert = "convert"
-    Settings = "settings"
-    Spacer = "spacer"
-    Exit = "exit"
-
-
 @dt.dataclass(frozen=True, eq=False)
 class ManagerConfig:
     import_string: typing.Optional[str]

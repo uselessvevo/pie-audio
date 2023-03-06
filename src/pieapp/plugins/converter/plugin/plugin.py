@@ -7,7 +7,7 @@ from pieapp.structs.plugins import Plugins
 from pieapp.structs.containers import Containers
 from piekit.managers.menus.mixins import MenuAccessor
 
-from piekit.managers.structs import WorkbenchItems
+from pieapp.structs.workbench import WorkbenchItems
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.managers.toolbars.mixins import ToolBarAccessor
