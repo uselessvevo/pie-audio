@@ -1,7 +1,7 @@
 import typing
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QAbstractScrollArea, QDockWidget, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QHeaderView
 
 from pieapp.structs.containers import Containers
 from piekit.plugins.base import PiePlugin
