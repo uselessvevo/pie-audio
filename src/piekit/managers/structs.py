@@ -30,6 +30,9 @@ class SysManagers:
 
     # ToolBarManager
     ToolBars = "toolbar"
+
+    # ActionManager
+    Actions = "actions"
     
 
 class Sections:

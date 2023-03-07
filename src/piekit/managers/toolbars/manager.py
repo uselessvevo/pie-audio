@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Union
-from collections import OrderedDict
 
 from PyQt5.QtWidgets import QToolBar, QWidget
 
@@ -21,7 +20,7 @@ class ToolBarManager(BaseManager):
         self._toolbars: dict[str, QToolBar] = {}
 
         # ToolBar items
-        self._items: dict[str, OrderedDict[str, QWidget]] = {}
+        self._items: dict[str, dict[str, QWidget]] = {}
 
     def add_toolbar(
         self,
@@ -42,7 +41,7 @@ class ToolBarManager(BaseManager):
         item: QWidget
     ) -> QWidget:
         if section not in self._items:
-            self._items[section] = OrderedDict({})
+            self._items[section] = {}
 
         if not isinstance(item, QWidget):
             raise PieException(f"ToolBar item must be QWidget based instance!")

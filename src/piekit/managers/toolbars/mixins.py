@@ -1,9 +1,8 @@
 from typing import Union
 
 from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QToolBar, QWidget
+from PyQt5.QtWidgets import QToolBar, QWidget, QAction
 
-from piekit.widgets.menus import PieMenu
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
 
@@ -19,12 +18,17 @@ class ToolBarAccessor:
         self,
         section: str = None,
         name: str = None,
-        item: QWidget = None,
-        before: QWidget = None
+        item: Union[QWidget, QAction] = None,
+        before: QAction = None
     ) -> QToolBar:
         manager = Managers(SysManagers.ToolBars)
         toolbar = manager.get_toolbar(section)
-        toolbar.addWidget(item)
+        
+        if isinstance(before, QAction):
+            toolbar.insertAction(before, item)
+        else:
+            toolbar.addWidget(item)
+        
         return manager.addItem(section or Sections.Shared, name, item)
 
     def getToolBarItem(self, section: str, name: str) -> QWidget:
