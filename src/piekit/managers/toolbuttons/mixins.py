@@ -1,11 +1,12 @@
 from typing import Union
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QObject
+from PyQt5.QtCore import Qt, QObject, QSize
 from PyQt5.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
+from piekit.system.loader import Config
 
 
 class ToolButtonAccessor:
@@ -37,7 +38,9 @@ class ToolButtonAccessor:
 
         if onlyIcon:
             toolButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
-            
+
+        toolButton.setIconSize(QSize(*Config.TOOL_BUTTON_ICON_SIZE))
+
         return Managers(SysManagers.ToolButton).addToolButton(section or Sections.Shared, name, toolButton)
 
     def getToolButtons(self, section: str, *names: str) -> list[QObject]:
