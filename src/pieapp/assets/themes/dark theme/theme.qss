@@ -90,27 +90,7 @@ QMenu::indicator, QToolButton-item {
    height:18px;
 }
 
-/* QToolBar */
-
-QToolBar::top {
-   background-color: #494949;
-   border-bottom: 1px solid #494949;
-}
-
-QToolBar::bottom {
-   background-color: #494949;
-   border-top: 1px solid #494949;
-}
-
-QToolBar::left {
-   background-color: #494949;
-   border-right: 1px solid #494949;
-}
-
-QToolBar::right {
-   background-color: #494949;
-   border-left: 1px solid #494949;
-}
+/* QLineEdit */
 
 QLineEdit {
    border:1px solid rgb(53,53,53);;
@@ -550,7 +530,7 @@ QSizeGrip {
 /* QToolBar */
 
 #spacer {
-   background-color: #494949;
+   background-color: transparent;
 }
 
 /* QToolButton */

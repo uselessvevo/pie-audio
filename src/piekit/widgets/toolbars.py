@@ -1,19 +1,15 @@
 from __future__ import annotations
 
-from typing import Union
 from collections import OrderedDict
+from typing import Union, Any
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QToolBar, QWidget
+from PyQt5.QtCore import QObject, Qt
+from PyQt5.QtWidgets import QAction, QHBoxLayout, QWidget, QSizePolicy
 
-from piekit.managers.structs import Sections
-from piekit.managers.structs import SysManagers
-from piekit.managers.base import BaseManager
 from piekit.system.exceptions import PieException
 
 
-
-class PieToolbar(QToolBar):
+class PieToolBar(QWidget):
 
     def __init__(self, parent: QObject = None, name: str = None) -> None:
         super().__init__(parent)
@@ -24,16 +20,32 @@ class PieToolbar(QToolBar):
         # Toolbar's items
         self._items: OrderedDict[str, QObject] = OrderedDict({})
 
+        self._keys: list[Any] = list(self._items.keys())
+
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setFixedHeight(50)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        self._layout = QHBoxLayout()
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setAlignment(Qt.AlignLeft)
+        self.setLayout(self._layout)
+
     def addToolBarItem(
         self,
         name: str,
-        item: QObject,
-        before: str = None,
+        item: Union[QWidget, QAction],
+        before: str = None
     ) -> QObject:
         if name in self._items:
             raise PieException(f"ToolBar {name} already exist")
 
-        self.addWidget(item)
-        self._items
+        if before:
+            self._layout.insertWidget(self._keys.index(before), item, Qt.AlignLeft)
+        else:
+            self._layout.addWidget(item, Qt.AlignLeft)
+
+        self._items[name] = item
+        self._keys.append(name)
 
         return item

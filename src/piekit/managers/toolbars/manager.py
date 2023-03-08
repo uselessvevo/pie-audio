@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import Union
 
-from PyQt5.QtWidgets import QToolBar, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers
 from piekit.managers.base import BaseManager
 from piekit.system.exceptions import PieException
+from piekit.widgets.toolbars import PieToolBar
 
 
 class ToolBarManager(BaseManager):
@@ -17,7 +18,7 @@ class ToolBarManager(BaseManager):
         super().__init__()
 
         # ToolBar mapping
-        self._toolbars: dict[str, QToolBar] = {}
+        self._toolbars: dict[str, PieToolBar] = {}
 
         # ToolBar items
         self._items: dict[str, dict[str, QWidget]] = {}
@@ -25,8 +26,8 @@ class ToolBarManager(BaseManager):
     def add_toolbar(
         self,
         name: Union[str, Sections],
-        toolbar: QToolBar
-    ) -> QToolBar:
+        toolbar: PieToolBar
+    ) -> PieToolBar:
         if name in self._toolbars:
             raise PieException(f"ToolBar {name} already registered")
 
@@ -69,7 +70,7 @@ class ToolBarManager(BaseManager):
     ) -> list[QWidget]:
         return [self.get_item(section, n) for n in names]
 
-    def get_toolbar(self,  name: Union[str, Sections]) -> QToolBar:
+    def get_toolbar(self,  name: Union[str, Sections]) -> PieToolBar:
         if name not in self._toolbars:
             raise PieException(f"ToolBar {name} not found")
 
@@ -78,7 +79,7 @@ class ToolBarManager(BaseManager):
     def get_toolbars(
         self,
         *names: Union[str, Sections],
-    ) -> list[QToolBar]:
+    ) -> list[PieToolBar]:
         return [self.get_toolbar(n) for n in names]
 
     addToolBar = add_toolbar

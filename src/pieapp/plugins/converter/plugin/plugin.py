@@ -47,7 +47,7 @@ class Converter(
             section=Containers.Workbench,
             name=WorkbenchItems.Convert,
             item=self.getToolButton(self.name, WorkbenchItems.Convert),
-            before=self.getToolBarItem(Containers.Workbench, WorkbenchItems.Settings)
+            before=WorkbenchItems.Settings
         )
 
 

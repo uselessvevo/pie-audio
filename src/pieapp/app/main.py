@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout
 
 from pieapp.structs.containers import Containers
 from piekit.system.loader import Config
@@ -28,23 +29,27 @@ class PieAudioApp(MainWindow, ConfigAccessor):
     def prepare(self):
         self.prepareBaseSignals()
         self.prepareSignals()
+        self.prepareToolBarLayout()
+        self.prepareContentLayout()
         self.prepareMainLayout()
+        self.prepareCentralDefaultWidget()
         self.preparePlugins()
 
-    def prepareMainLayout(self):
-        self.mainHBox = QtWidgets.QHBoxLayout()
-        self.setLayout(self.mainHBox)
+    def prepareToolBarLayout(self) -> None:
+        self.toolbarLayout = QHBoxLayout()
 
-        self.mainHBox.setContentsMargins(0, 0, 0, 0)
-        self.mainHBox.setSpacing(20)
+    def prepareContentLayout(self) -> None:
+        self.contentLayout = QHBoxLayout()
 
-        pixmap = QPixmap()
-        pixmap.load(self.getAsset("empty-box.png"))
+    def prepareMainLayout(self) -> None:
+        self.mainLayout = QVBoxLayout()
+        self.mainLayout.addLayout(self.toolbarLayout)
+        self.mainLayout.addLayout(self.contentLayout)
+        self.setLayout(self.mainLayout)
 
+    def prepareCentralDefaultWidget(self):
         widget = QtWidgets.QLabel()
-        widget.setPixmap(pixmap)
-
-        widget.setLayout(self.mainHBox)
+        widget.setLayout(self.mainLayout)
         self.setCentralWidget(widget)
 
     # Plugin method and signals

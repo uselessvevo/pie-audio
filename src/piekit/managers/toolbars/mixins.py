@@ -5,13 +5,13 @@ from PyQt5.QtWidgets import QToolBar, QWidget, QAction
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
+from piekit.widgets.toolbars import PieToolBar
 
 
 class ToolBarAccessor:
 
     def addToolBar(self, parent: QObject, name: str = None) -> QToolBar:
-        # TODO: Add `PieToolBar` support
-        toolbar = QToolBar(parent=parent)
+        toolbar = PieToolBar(parent=parent)
         return Managers(SysManagers.ToolBars).addToolBar(name or Sections.Shared, toolbar)
 
     def addToolBarItem(
@@ -22,13 +22,8 @@ class ToolBarAccessor:
         before: QAction = None
     ) -> QToolBar:
         manager = Managers(SysManagers.ToolBars)
-        toolbar = manager.get_toolbar(section)
-        
-        if isinstance(before, QAction):
-            toolbar.insertAction(before, item)
-        else:
-            toolbar.addWidget(item)
-        
+        toolbar: PieToolBar = manager.getToolBar(section)
+        toolbar.addToolBarItem(name, item, before)
         return manager.addItem(section or Sections.Shared, name, item)
 
     def getToolBarItem(self, section: str, name: str) -> QWidget:

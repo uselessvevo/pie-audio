@@ -29,10 +29,6 @@ class Workbench(
         widget = QWidget()
         self.workbench = self.addToolBar(widget, self.name)
 
-        self.workbench.setMovable(False)
-        self.workbench.setContextMenuPolicy(Qt.PreventContextMenu)
-        self.workbench.setToolButtonStyle(Qt.ToolButtonTextBesideIcon | Qt.AlignLeading)
-
         self.addToolButton(
             parent=self.workbench,
             section=self.name,
@@ -107,7 +103,7 @@ class Workbench(
             item=self.getToolButton(self.name, WorkbenchItems.Exit)
         )
 
-        self._parent.addToolBar(Qt.TopToolBarArea, self.workbench)
+        self.parent().toolbarLayout.addWidget(self.workbench)
 
 
 def main(*args, **kwargs) -> typing.Any:
