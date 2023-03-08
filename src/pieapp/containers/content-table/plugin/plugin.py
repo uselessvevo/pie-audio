@@ -49,7 +49,7 @@ class ContentTable(
             self.table.setItem(row, 1, QTableWidgetItem(e['Last Name']))
             self.table.setItem(row, 2, QTableWidgetItem(str(e['Age'])))
 
-        self.parent().setCentralWidget(self.table)
+        self.parent().contentLayout.addWidget(self.table)
 
 
 def main(*args, **kwargs) -> typing.Any:
