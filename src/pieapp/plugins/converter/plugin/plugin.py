@@ -1,6 +1,6 @@
 import typing
 
-from PyQt5.QtWidgets import QGridLayout, QPushButton, QDialog
+from PyQt5.QtWidgets import QDialog
 
 from piekit.plugins.base import PiePlugin
 from pieapp.structs.plugins import Plugins
@@ -37,17 +37,49 @@ class Converter(
         self.addToolButton(
             parent=self.getToolBar(Containers.Workbench),
             section=self.name,
+            name=WorkbenchItems.OpenFiles,
+            text=self.getTranslation("Open file"),
+            tooltip=self.getTranslation("Open file"),
+            icon=self.getAssetIcon("open-folder.png")
+        )
+
+        self.addToolButton(
+            parent=self.getToolBar(Containers.Workbench),
+            section=self.name,
             name=WorkbenchItems.Convert,
             text=self.getTranslation("Convert"),
             tooltip=self.getTranslation("Convert"),
             icon=self.getAssetIcon("go.png")
         ).setEnabled(False)
 
+        self.addToolButton(
+            parent=self.getToolBar(Containers.Workbench),
+            section=self.name,
+            name=WorkbenchItems.Clear,
+            text=self.getTranslation("Clear"),
+            tooltip=self.getTranslation("Clear"),
+            icon=self.getAssetIcon("recycle-bin.png")
+        ).setEnabled(False)
+
+        self.addToolBarItem(
+            section=Containers.Workbench,
+            name=WorkbenchItems.Clear,
+            item=self.getToolButton(self.name, WorkbenchItems.Clear),
+            before=WorkbenchItems.Spacer
+        )
+
         self.addToolBarItem(
             section=Containers.Workbench,
             name=WorkbenchItems.Convert,
             item=self.getToolButton(self.name, WorkbenchItems.Convert),
-            before=WorkbenchItems.Settings
+            before=WorkbenchItems.Spacer
+        )
+
+        self.addToolBarItem(
+            section=Containers.Workbench,
+            name=WorkbenchItems.OpenFiles,
+            item=self.getToolButton(self.name, WorkbenchItems.OpenFiles),
+            before=WorkbenchItems.Spacer
         )
 
 

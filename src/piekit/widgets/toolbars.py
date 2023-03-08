@@ -35,12 +35,17 @@ class PieToolBar(QWidget):
         self,
         name: str,
         item: Union[QWidget, QAction],
+        after: str = None,
         before: str = None
     ) -> QObject:
         if name in self._items:
             raise PieException(f"ToolBar {name} already exist")
 
-        if before:
+        if after:
+            index = self._keys.index(after) + 1
+            self._layout.insertWidget(index, item, Qt.AlignLeft)
+
+        elif before:
             self._layout.insertWidget(self._keys.index(before), item, Qt.AlignLeft)
         else:
             self._layout.addWidget(item, Qt.AlignLeft)

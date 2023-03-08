@@ -19,11 +19,12 @@ class ToolBarAccessor:
         section: str = None,
         name: str = None,
         item: Union[QWidget, QAction] = None,
-        before: QAction = None
+        after: str = None,
+        before: str = None
     ) -> QToolBar:
         manager = Managers(SysManagers.ToolBars)
         toolbar: PieToolBar = manager.getToolBar(section)
-        toolbar.addToolBarItem(name, item, before)
+        toolbar.addToolBarItem(name, item, after, before)
         return manager.addItem(section or Sections.Shared, name, item)
 
     def getToolBarItem(self, section: str, name: str) -> QWidget:

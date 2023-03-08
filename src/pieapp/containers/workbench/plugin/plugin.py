@@ -32,33 +32,6 @@ class Workbench(
         self.addToolButton(
             parent=self.workbench,
             section=self.name,
-            name=WorkbenchItems.OpenFiles,
-            text=self.getTranslation("Open file"),
-            tooltip=self.getTranslation("Open file"),
-            icon=self.getAssetIcon("open-folder.png")
-        )
-
-        self.addToolButton(
-            parent=self.workbench,
-            section=self.name,
-            name=WorkbenchItems.Clear,
-            text=self.getTranslation("Clear"),
-            tooltip=self.getTranslation("Clear"),
-            icon=self.getAssetIcon("recycle-bin.png")
-        ).setEnabled(False)
-
-        self.addToolButton(
-            parent=self.workbench,
-            section=self.name,
-            name=WorkbenchItems.Settings,
-            text=self.getTranslation("Settings"),
-            tooltip=self.getTranslation("Settings"),
-            icon=self.getAssetIcon("settings.png")
-        )
-
-        self.addToolButton(
-            parent=self.workbench,
-            section=self.name,
             name=WorkbenchItems.Exit,
             text=self.getTranslation("Exit"),
             tooltip=self.getTranslation("Exit"),
@@ -71,24 +44,6 @@ class Workbench(
         spacer.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding
-        )
-
-        self.addToolBarItem(
-            section=self.name,
-            name=WorkbenchItems.OpenFiles,
-            item=self.getToolButton(self.name, WorkbenchItems.OpenFiles)
-        )
-
-        self.addToolBarItem(
-            section=self.name,
-            name=WorkbenchItems.Clear,
-            item=self.getToolButton(self.name, WorkbenchItems.Clear)
-        )
-
-        self.addToolBarItem(
-            section=self.name,
-            name=WorkbenchItems.Settings,
-            item=self.getToolButton(self.name, WorkbenchItems.Settings)
         )
 
         self.addToolBarItem(
