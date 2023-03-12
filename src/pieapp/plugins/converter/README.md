@@ -1,1 +1,0 @@
-![img.png](data-transfer-scheme.png)
