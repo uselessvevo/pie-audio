@@ -23,5 +23,4 @@ I want to say thanks to spyder-ide - part of the code is based on this project.
 * `COMPONENTS_FOLDER` - directory of components; by default - components
 * `ASSETS_FOLDER` - resource directory; default - assets
 * `THEMES_FOLDER` - directory of themes; by default - themes
-
-Now you need to set up the dev environment and run the file `pieapp/launcher.py `
+5. Run program - `poetry shell` and `python ./pie-audio.py'
