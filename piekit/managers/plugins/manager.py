@@ -268,4 +268,4 @@ class PluginManager(BaseManager):
     def is_plugin_available(self, name: str) -> bool:
         return self._plugin_availability.get(name, False)
 
-    isObjectAvailable = is_plugin_available
+    isPluginAvailable = is_plugin_available

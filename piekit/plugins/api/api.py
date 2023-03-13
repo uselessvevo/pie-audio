@@ -1,6 +1,3 @@
-"""
-API mixins
-"""
 from typing import Any, Union
 
 from piekit.plugins.plugins import PiePlugin
