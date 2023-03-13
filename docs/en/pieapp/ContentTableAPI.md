@@ -1,6 +1,14 @@
 # ContentTable API
 
 
+## Method `mount`
+Description:
+    Sets file structure, columns count, titles, default alignment and stretch
+
+Returns:
+    NoneType
+
+
 ## Method `set_structure/setStructure`
 Description:
     Receive overrides default structure
@@ -19,25 +27,11 @@ Raises:
 Description:
     Receive data from the source (for example, list of files) and parse it into dataclass structure
 
-Usage example:
-```py
-getPlugin(Containers.ContentTable).api("receive", files=files)
-```
-
-Or via `getAPI`:
-```py
-getAPI(Containers.ContentTable, "receive", files=files)
-```
-
 Args:
-    data (Any): raw data
-    struct (dataclass): by default - `pieapp/config.py -> ContentTableStruct`
+    files (list[str]): list of input files
 
 Returns:
     NoneType
-
-Raises:
-    InvalidStructSignature - if data has different structure than `struct`
 
 
 ## Method `transform`
