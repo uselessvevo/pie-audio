@@ -21,7 +21,7 @@ class PieAudioApp(MainWindow, ConfigAccessor):
             Config.PIEAPP_VERSION
         ))
         self.setMinimumSize(720, 480)
-        self.resize(*self.getConfig("ui.winsize", (720, 480), Sections.User))
+        self.resize(*self.getConfig("ui.winsize", (900, 560), Sections.User))
         self.setWindowIcon(QIcon(self.getAsset("cloud.png")))
 
     def prepareSignals(self) -> None:

@@ -1,12 +1,25 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenuBar, QAction
+from typing import Union
 
-from piekit.widgets.menus import PieMenu
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMenuBar, QAction, QWidget
+
+from piekit.widgets.menus import PieMenu, INDEX_END, INDEX_START
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
 
 
 class MenuAccessor:
+
+    def addMenuBar(
+        self,
+        parent: QWidget = None,
+        name: str = None
+    ) -> QMenuBar:
+        menuBar = QMenuBar(parent)
+        return Managers(SysManagers.Menus).addMenuBar(name or Sections.Shared, menuBar)
+
+    def getMenuBar(self, name: str) -> QMenuBar:
+        return Managers(SysManagers.Menus).getMenuBar(name or Sections.Shared)
 
     def addMenu(
         self,
@@ -31,11 +44,12 @@ class MenuAccessor:
         text: str = None,
         triggered: callable = None,
         icon: QIcon = None,
-        before: QAction = None
+        before: str = None,
+        index: Union[int, INDEX_START, INDEX_END] = None
     ) -> QAction:
         manager = Managers(SysManagers.Menus)
-        menuInstance = manager.get_menu(section, menu)
-        menuInstance.addMenuItem(name, text, triggered, icon, before)
+        menuInstance = manager.getMenu(section, menu)
+        menuInstance.addMenuItem(name, text, triggered, icon, before, index)
         return manager.addMenuItem(section or Sections.Shared, menu, name, menuInstance)
 
     def getMenu(self, section: str, name: str) -> PieMenu:

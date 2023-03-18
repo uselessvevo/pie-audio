@@ -1,8 +1,11 @@
 import typing
 from functools import partial
 
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QFileDialog
 
+from pieapp.structs.menus import Menus, MenuItems
+from piekit.managers.registry import Managers
+from piekit.managers.structs import Sections, SysManagers
 from piekit.plugins.api.helpers import getAPI
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugins
@@ -15,6 +18,8 @@ from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.managers.toolbars.mixins import ToolBarAccessor
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
 from piekit.managers.plugins.decorators import onPluginAvailable
+from piekit.system.loader import Config
+from piekit.widgets.menus import INDEX_END, INDEX_START
 
 
 class Converter(
@@ -34,6 +39,34 @@ class Converter(
         self.dialog.setWindowIcon(self.getAssetIcon("go.png"))
         self.dialog.resize(400, 300)
 
+    def openFiles(self) -> None:
+        fileDialog = QFileDialog(self.dialog, self.getTranslation("Open files"))
+        selectedFiles = fileDialog.getOpenFileNames(self.dialog)
+        getAPI(Containers.ContentTable, "receive", files=selectedFiles[0])
+
+    @onPluginAvailable(target=Containers.MenuBar)
+    def onMenuBarAvailable(self) -> None:
+        self.menuBar = self.getMenuBar(Sections.Shared)
+
+        self.addMenuItem(
+            section=Sections.Shared,
+            menu=Menus.File,
+            name=MenuItems.OpenFiles,
+            text=self.getTranslation("Open file"),
+            icon=self.getAssetIcon("open-file.png"),
+            index=INDEX_START()
+        )
+
+        self.addMenuItem(
+            section=Sections.Shared,
+            menu=Menus.File,
+            name=MenuItems.Exit,
+            text=self.getTranslation("Exit"),
+            icon=self.getAssetIcon("exit.png"),
+            triggered=self.parent().close,
+            index=INDEX_END()
+        )
+
     @onPluginAvailable(target=Containers.Workbench)
     def onWorkbenchAvailable(self) -> None:
         self.addToolButton(
@@ -43,7 +76,7 @@ class Converter(
             text=self.getTranslation("Open file"),
             tooltip=self.getTranslation("Open file"),
             icon=self.getAssetIcon("open-folder.png"),
-            triggered=partial(getAPI, Containers.ContentTable, "receive")
+            triggered=self.openFiles
         )
 
         self.addToolButton(

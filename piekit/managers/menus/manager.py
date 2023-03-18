@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from PyQt5.QtWidgets import QAction, QMenu
+from PyQt5.QtWidgets import QAction, QMenu, QMenuBar
 
 from piekit.widgets.menus import PieMenu
 from piekit.managers.base import BaseManager
@@ -14,11 +14,30 @@ class MenuManager(BaseManager):
     def __init__(self):
         super().__init__()
 
+        self._bars: dict[str, QMenuBar] = {}
+
         # Menu mapping
         self._menus: dict[str, dict[str, PieMenu]] = {}
 
         # Menu items/actions mapping
         self._items: dict[str, dict[str, QAction]] = {}
+
+    def add_menu_bar(
+        self,
+        name: str,
+        menu_bar: QMenuBar
+    ) -> QMenuBar:
+        if name in self._bars:
+            raise PieException(f"MenuBar {name} already registered")
+
+        self._bars[name] = menu_bar
+        return menu_bar
+
+    def get_menu_bar(self, name: str) -> QMenuBar:
+        if name not in self._bars:
+            raise PieException(f"MenuBar {name} doesn't exist")
+
+        return self._bars[name]
 
     def add_menu(
         self,
@@ -75,3 +94,5 @@ class MenuManager(BaseManager):
     getMenu = get_menu
     addMenuItem = add_menu_item
     getMenuItem = get_menu_item
+    addMenuBar = add_menu_bar
+    getMenuBar = get_menu_bar
