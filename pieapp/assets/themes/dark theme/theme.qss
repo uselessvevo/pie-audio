@@ -135,7 +135,7 @@ QTabWidget::tab-bar {
 /* QTabBar */
 
 QTabBar {
-   background-color: #494949;
+   background-color: #424242;
    color: #cccccc;
    min-height:20px;
    min-width:80px;
@@ -146,19 +146,19 @@ QTabBar {
 
 QTabBar::tab {
    padding:4px 6px;
-   background-color: #2d73ff;
+   background-color: #303030;
    border:0px solid #2d73ff;
 }
 
 QTabBar::tab:selected {
-   background-color: rgb(66,66,66);
+   background-color: #303030;
    border-top-color: rgba(66,66,66,75%);
    border-bottom-color: rgba(66,66,66,75%);
 }
 
 QTabBar::tab:!selected {
    color:rgb(175,175,175);
-   background-color: #303030;
+   background-color: #424242;
    border-top-color: #303030;
    border-bottom-color:rgba(66,66,66,75%);
 }
