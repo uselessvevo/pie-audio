@@ -1,7 +1,7 @@
 /* QMainWindow */
 
 QMainWindow {
-   background-color:rgb(53,53,53);
+   background-color: #353535;
 }
 QMainWindow::separator {
    width:6px;
@@ -12,8 +12,10 @@ QMainWindow::separator {
 
 QWidget {
    color:white;
-   background-color: #353535;
-   selection-background-color: #353535;
+}
+
+QDialog {
+    background-color: #424242
 }
 
 QToolTip {
@@ -123,12 +125,17 @@ QSplitter::handle:vertical {
 
 /* Tab widget */
 
+QTabWidget > QWidget {
+    background-color: #424242;
+}
+
 QTabWidget::pane {
    background-color: #2d73ff;
    border: 0;
 }
 
 QTabWidget::tab-bar {
+    border: 1px solid gray;
 	background-color: #2d73ff;
 }
 
@@ -137,30 +144,21 @@ QTabWidget::tab-bar {
 QTabBar {
    background-color: #424242;
    color: #cccccc;
-   min-height:20px;
-   min-width:80px;
-   padding:1px 1px 1px 1px;
    font-family: Arial;
    font-size: 12px;
 }
 
 QTabBar::tab {
-   padding:4px 6px;
    background-color: #303030;
-   border:0px solid #2d73ff;
 }
 
 QTabBar::tab:selected {
    background-color: #303030;
-   border-top-color: rgba(66,66,66,75%);
-   border-bottom-color: rgba(66,66,66,75%);
 }
 
 QTabBar::tab:!selected {
-   color:rgb(175,175,175);
+   color: #afafaf;
    background-color: #424242;
-   border-top-color: #303030;
-   border-bottom-color:rgba(66,66,66,75%);
 }
 
 QTabBar::tab:hover:!pressed, QTabBar::tab:hover:pressed {
@@ -175,7 +173,7 @@ QTabBar::tab:hover {
 /* ComboBox */
 
 QComboBox {
-   border:1px solid rgb(53,53,53);;
+   border:1px solid #353535;
    background: #494949;
    color: #cccccc;
    min-height:20px;
@@ -541,7 +539,11 @@ QToolButton:pressed { background-color: #2d73ff; }
 
 /*Tips label*/
 
-#tips-label {
+#TipsLabel {
    font-size: 12px;
    font-family: Arial;
+}
+
+#SettingsDialog {
+    background-color: #303030;
 }

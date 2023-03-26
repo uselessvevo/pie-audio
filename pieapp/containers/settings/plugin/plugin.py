@@ -1,14 +1,6 @@
-import os
 import typing
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QDialog, QTabWidget, QLabel,
-    QComboBox, QLineEdit, QPushButton,
-    QGridLayout, QWidget, QTabBar, QFrame,
-    QFileDialog, QStylePainter, QStyleOptionTab, QStyle
-)
 
 from pieapp.structs.containers import Containers
 from pieapp.structs.menus import Menus, MenuItems
@@ -25,82 +17,90 @@ from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.system.loader import Config
 from piekit.utils.files import writeJson
 
+from PyQt5 import QtCore, QtWidgets
 
-class HorizontalTabBar(QTabBar):
 
-    def __init__(self, parent: QWidget = None) -> None:
-        super().__init__(parent)
-        self.setStyleSheet("QTabBar::tab {width: 100%}")
-
-    def paintEvent(self, event):
-        painter = QStylePainter(self)
-        option = QStyleOptionTab()
-        for index in range(self.count()):
-            self.initStyleOption(option, index)
-            painter.drawControl(QStyle.CE_TabBarTabShape, option)
-            painter.drawText(
-                self.tabRect(index),
-                QtCore.Qt.AlignCenter | QtCore.Qt.TextDontClip,
-                self.tabText(index)
-            )
+class TabBar(QtWidgets.QTabBar):
 
     def tabSizeHint(self, index):
-        size = QTabBar.tabSizeHint(self, index)
-        if size.width() < size.height():
-            size.transpose()
-        return size
+        sizeHint = QtWidgets.QTabBar.tabSizeHint(self, index)
+        sizeHint.transpose()
+        return sizeHint
+
+    def paintEvent(self, event):
+        painter = QtWidgets.QStylePainter(self)
+        option = QtWidgets.QStyleOptionTab()
+
+        for i in range(self.count()):
+            self.initStyleOption(option, i)
+            painter.drawControl(QtWidgets.QStyle.CE_TabBarTabShape, option)
+            painter.save()
+
+            rectSize = option.rect.size()
+            rectSize.transpose()
+            rect = QtCore.QRect(QtCore.QPoint(), rectSize)
+            rect.moveCenter(option.rect.center())
+            option.rect = rect
+
+            tabRectCenter = self.tabRect(i).center()
+            painter.translate(tabRectCenter)
+            painter.rotate(90)
+            painter.translate(-tabRectCenter)
+            painter.drawControl(QtWidgets.QStyle.CE_TabBarTabLabel, option)
+            painter.restore()
 
 
-class TabWidget(QTabWidget):
-    def __init__(self, parent=None):
-        QTabWidget.__init__(self, parent)
-        self.setTabBar(HorizontalTabBar())
+class TabWidget(QtWidgets.QTabWidget):
+    def __init__(self, *args, **kwargs):
+        QtWidgets.QTabWidget.__init__(self, *args, **kwargs)
+        self.setTabBar(TabBar(self))
+        self.setTabPosition(QtWidgets.QTabWidget.West)
 
 
-class Spacer(QFrame):
+class Spacer(QtWidgets.QFrame):
 
     def __init__(self, frameLine: bool = False):
         super(Spacer, self).__init__()
         if frameLine:
-            self.setFrameShape(QFrame.HLine)
-            self.setFrameShadow(QFrame.Sunken)
+            self.setFrameShape(QtWidgets.QFrame.HLine)
+            self.setFrameShadow(QtWidgets.QFrame.Sunken)
 
 
 class MainSettingsWidget(
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
-    QWidget
+    QtWidgets.QWidget
 ):
     section = Sections.Shared
 
-    def __init__(self, parent: QWidget = None) -> None:
+    def __init__(self, parent: QtWidgets.QWidget = None) -> None:
         super().__init__(parent)
-        mainGrid = QGridLayout(parent)
+        mainGrid = QtWidgets.QGridLayout(parent)
 
-        self.ffmpegPrompt = QLineEdit()
+        self.ffmpegPrompt = QtWidgets.QLineEdit()
         self.ffmpegPrompt.insert(self.getConfig("ffmpeg.root", section=Sections.User))
-        self.ffmpegButton = QPushButton(self.getTranslation("Set ffmpeg path"))
+        self.ffmpegButton = QtWidgets.QPushButton(self.getTranslation("Set ffmpeg path"))
         self.ffmpegButton.clicked.connect(self.ffmpegButtonConnect)
 
         locales = Config.LOCALES
-        self.localeCBox = QComboBox()
+        self.localeCBox = QtWidgets.QComboBox()
         self.localeCBox.addItems(locales)
         self.localeCBox.setCurrentText(self.getConfig("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
 
         themes = Managers(SysManagers.Assets).themes
-        self.themeCBox = QComboBox()
+        self.themeCBox = QtWidgets.QComboBox()
         self.themeCBox.addItems(themes)
         self.themeCBox.setCurrentText(self.getConfig("theme", section=Sections.User))
         # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
 
-        mainGrid.addWidget(QLabel(self.getTranslation("Language")), 0, 0, 1, 1)
+        mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("Language")), 0, 0, 1, 1)
         mainGrid.addWidget(self.localeCBox, 0, 1, 1, 1)
 
-        mainGrid.addWidget(QLabel(self.getTranslation("Theme")), 2, 0, 1, 1)
+        mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("Theme")), 2, 0, 1, 1)
         mainGrid.addWidget(self.themeCBox, 2, 1, 1, 1)
 
-        mainGrid.addWidget(QLabel(self.getTranslation("FFmpeg path")), 6, 0, 1, 1)
+        mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("FFmpeg path")), 6, 0, 1, 1)
         mainGrid.addWidget(self.ffmpegPrompt, 6, 1, 1, 1)
         mainGrid.addWidget(self.ffmpegButton, 7, 1, 1, 1)
         mainGrid.setAlignment(self.ffmpegButton, Qt.AlignRight)
@@ -109,9 +109,9 @@ class MainSettingsWidget(
         self.setLayout(mainGrid)
 
     def ffmpegButtonConnect(self) -> None:
-        directory = QFileDialog(self, self.getTranslation("Select ffmpeg directory"))
-        directory.setFileMode(QFileDialog.DirectoryOnly)
-        directory.setOption(QFileDialog.ShowDirsOnly, False)
+        directory = QtWidgets.QFileDialog(self, self.getTranslation("Select ffmpeg directory"))
+        directory.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
+        directory.setOption(QtWidgets.QFileDialog.ShowDirsOnly, False)
         directory.getExistingDirectory(self, directory=str(Config.USER_ROOT))
         directoryPath = directory.directory().path()
 
@@ -137,20 +137,18 @@ class Settings(
     requires = [Containers.MenuBar, Containers.Workbench]
 
     def init(self) -> None:
-        self.dialog = QDialog(self.parent())
+        self.dialog = QtWidgets.QDialog(self.parent())
+        self.dialog.setObjectName("SettingsDialog")
         self.dialog.setWindowTitle(self.getTranslation("Settings"))
         self.dialog.setWindowIcon(self.getAssetIcon("settings.png"))
         self.dialog.resize(740, 450)
 
-        rootGrid = QGridLayout(self.dialog)
+        rootGrid = QtWidgets.QGridLayout(self.dialog)
 
-        tabWidget = QTabWidget(self.dialog)
-        tabWidget.setTabBar(HorizontalTabBar())
-        tabWidget.setTabPosition(tabWidget.West)
-        tabWidget.setDocumentMode(True)
-        tabWidget.setElideMode(Qt.ElideLeft)
-        tabWidget.setUsesScrollButtons(True)
-
+        tabWidget = TabWidget(self.dialog)
+        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
+        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
+        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
         tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
 
         rootGrid.addWidget(tabWidget, 0, 0, 1, 2)
