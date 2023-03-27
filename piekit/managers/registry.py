@@ -3,7 +3,7 @@ from typing import Union
 from piekit.utils.logger import logger
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import ManagerConfig
-from piekit.system.loader import Config
+from piekit.system import Config
 from piekit.utils.modules import import_by_string
 from piekit.managers.exceptions import ManagerNotMountedError, DependencyNotFoundError
 

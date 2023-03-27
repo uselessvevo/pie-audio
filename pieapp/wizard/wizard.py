@@ -10,7 +10,7 @@ from piekit.utils.files import writeJson
 from piekit.utils.core import restartApplication
 
 from piekit.managers.registry import Managers
-from piekit.system.loader import Config
+from piekit.system import Config
 
 
 class LocaleWizardPage(QtWidgets.QWizardPage):

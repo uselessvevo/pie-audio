@@ -11,7 +11,7 @@ from pieapp.structs.plugins import Plugins
 from pieapp.structs.containers import Containers
 from piekit.managers.menus.mixins import MenuAccessor
 
-from piekit.system.loader import Config
+from piekit.system import Config
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.managers.plugins.decorators import onPluginAvailable
