@@ -8,7 +8,7 @@ from dotty_dict import Dotty
 from piekit.managers.structs import Sections, SysManagers
 from piekit.managers.base import BaseManager
 from piekit.system.exceptions import PieException
-from piekit.system.config import Config
+from piekit.system import Config
 from piekit.utils.files import read_json, write_json
 from piekit.observers.filesystem import FileSystemObserver
 

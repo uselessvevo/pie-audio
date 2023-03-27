@@ -7,8 +7,8 @@ import types
 import importlib
 
 from piekit.system import types as ext_types
-from piekit.system.config.handlers import IHandler, EDictHandler, EListHandler
-from piekit.system.config.exceptions import HandlerNotFoundError, HandlerNotImportedError
+from piekit.system.handlers import IHandler, EDictHandler, EListHandler
+from piekit.system.exceptions import HandlerNotFoundError, HandlerNotImportedError
 
 
 class ConfigLoader:
@@ -42,7 +42,7 @@ class ConfigLoader:
 
         module_attributes: dict = config_module.__dict__
         annotated_attrs: dict = {
-            k: v for (k, v) in config_module.__annotations__.items()
+            k: v.__name__ for (k, v) in config_module.__annotations__.items()
             if v.__name__ in dir(ext_types)
         }
 
@@ -51,14 +51,14 @@ class ConfigLoader:
                 if use_handlers and self._handlers and name in annotated_attrs:
                     if annotated_attrs.get(name):
                         handler_class_name = annotated_attrs.get(name)
-                        handler_class_name = f"{self._handlers.get(handler_class_name.__name__)}Handler"
+                        handler_class_name = f"{handler_class_name}Handler"
 
                         if handler_class_name not in globals().keys():
                             raise HandlerNotImportedError(handler_class_name)
 
                         handler_instance = globals()[handler_class_name]()
 
-                        if handler_instance not in self._handlers:
+                        if type(handler_instance) not in self._handlers:
                             raise HandlerNotFoundError(handler_class_name)
 
                         handler_result = handler_instance(getattr(self, name), value)
