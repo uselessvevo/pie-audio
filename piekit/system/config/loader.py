@@ -53,12 +53,12 @@ class ConfigLoader:
                         handler_class_name = annotated_attrs.get(name)
                         handler_class_name = f"{self._handlers.get(handler_class_name.__name__)}Handler"
 
-                        if not handler_class_name not in globals().keys():
+                        if handler_class_name not in globals().keys():
                             raise HandlerNotImportedError(handler_class_name)
 
                         handler_instance = globals()[handler_class_name]()
 
-                        if not handler_instance in self._handlers:
+                        if handler_instance not in self._handlers:
                             raise HandlerNotFoundError(handler_class_name)
 
                         handler_result = handler_instance(getattr(self, name), value)
