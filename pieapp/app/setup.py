@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication
 
 from pieapp.wizard.wizard import SetupWizard
 from piekit.managers.registry import Managers
-from piekit.system.config import Config
+from piekit.system import Config
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs, except_hook
 from piekit.utils.core import restore_crabs

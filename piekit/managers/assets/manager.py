@@ -9,7 +9,7 @@ from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers, DirectoryType
-from piekit.system.config import Config
+from piekit.system import Config
 
 
 class AssetsManager(BaseManager):

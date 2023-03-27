@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
-from piekit.system.config import Config
+from piekit.system import Config
 
 
 class ToolButtonAccessor:
