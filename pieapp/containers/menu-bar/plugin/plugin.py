@@ -1,9 +1,7 @@
 import typing
 
-from PyQt5.QtWidgets import QMenuBar
-
-from pieapp.structs.containers import Containers
 from pieapp.structs.menus import Menus
+from pieapp.structs.containers import Containers
 from piekit.managers.menus.mixins import MenuAccessor
 from piekit.plugins.plugins import PiePlugin
 
@@ -23,44 +21,26 @@ class MenuBar(
     name = Containers.MenuBar
 
     def init(self) -> None:
-        self._menuBar = QMenuBar()
+        self.menuBar = self.addMenuBar(
+            name=Sections.Shared,
+        )
 
         self.fileMenu = self.addMenu(
             section=Sections.Shared,
-            parent=self._menuBar,
+            parent=self.menuBar,
             name=Menus.File,
             text=self.getTranslation("File"),
         )
-
-        self.addMenuItem(
-            section=Sections.Shared,
-            menu=self.fileMenu.name,
-            name="openFiles",
-            text=self.getTranslation("Open file"),
-            icon=self.getAssetIcon("open-file.png")
-        )
-
-        self.addMenuItem(
-            section=Sections.Shared,
-            menu=self.fileMenu.name,
-            name="exit",
-            text=self.getTranslation("Exit"),
-            icon=self.getAssetIcon("exit.png"),
-            triggered=self.parent().close
-        )
-
-        # Help menu
         self.helpMenu = self.addMenu(
             section=Sections.Shared,
-            parent=self._menuBar,
+            parent=self.menuBar,
             name=Menus.Help,
             text=self.getTranslation("Help")
         )
 
-        self._menuBar.addMenu(self.fileMenu)
-        self._menuBar.addMenu(self.helpMenu)
-
-        self.parent().setMenuBar(self._menuBar)
+        self.menuBar.addMenu(self.fileMenu)
+        self.menuBar.addMenu(self.helpMenu)
+        self.parent().setMenuBar(self.menuBar)
 
 
 def main(*args, **kwargs) -> typing.Any:

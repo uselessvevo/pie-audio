@@ -39,7 +39,7 @@ class PieToolBar(QWidget):
         before: str = None
     ) -> QObject:
         if name in self._items:
-            raise PieException(f"ToolBar {name} already exist")
+            raise PieException(f"ToolBar {name} already registered")
 
         if after:
             index = self._keys.index(after) + 1

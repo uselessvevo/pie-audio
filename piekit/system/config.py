@@ -11,7 +11,6 @@ BASE_DIR: Path = Path(__file__).parent.parent.parent
 APP_ROOT: Path = BASE_DIR / os.getenv("PIEADUIO_ROOT", "pieapp")
 USER_ROOT: Path = os.getenv("USER_ROOT", Path.home() / ".crabs")
 SYSTEM_ROOT: Path = BASE_DIR / "piekit"
-PIEAPP_VERSION: str = "2023.02.pre-alpha"
 
 # Plugins configuration
 # Built-in plugins folder

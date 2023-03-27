@@ -81,9 +81,6 @@ class PiePlugin(
 
         self._managers: list[BaseManager] = []
 
-        if self.api:
-            self.api = self.api(self)
-
     # Main methods
 
     def prepare(self) -> None:
@@ -93,11 +90,11 @@ class PiePlugin(
         # PiePlugin is loading
         self.signalPluginLoading.emit(self.__class__.__name__)
 
-        # Prepare PiePluginAPI
-        self.prepareAPI()
-
         # Initializing plugin
         self.init()
+
+        # Prepare PiePluginAPI
+        self.prepareAPI()
 
     # Signals, shortcuts etc. methods
 
@@ -107,7 +104,8 @@ class PiePlugin(
         """
         from piekit.plugins.api.api import PiePluginAPI
 
-        if isinstance(self.api, PiePluginAPI):
+        if self.api and issubclass(self.api, PiePluginAPI):
+            self.api = self.api(self)
             self.api.mount()
 
     def prepareBaseSignals(self):

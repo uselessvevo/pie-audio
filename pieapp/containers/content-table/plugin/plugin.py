@@ -24,7 +24,7 @@ class ContentTable(
     def setColumns(self, count: int, columns: tuple = None) -> None:
         self.table.setColumnCount(count)
         self.table.setHorizontalHeaderLabels(columns)
-        self.table.setRowCount(len(columns))
+        self.table.setRowCount(count)
 
     def setTextAlignment(self, count: int) -> None:
         headers = self.table.horizontalHeader()
@@ -42,7 +42,7 @@ class ContentTable(
             return
 
         for row, item in enumerate(data):
-            self.table.setItem(row, row, QTableWidgetItem(item))
+            self.table.setItem(row, 0, QTableWidgetItem(item))
 
         self.parent().mainLayout.addWidget(self.table, 1, 0)
 

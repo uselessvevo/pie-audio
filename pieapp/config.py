@@ -1,6 +1,10 @@
 from piekit.system.types import EList, EDict
 from piekit.managers.structs import DirectoryType
 
+PIEAPP_VERSION: str = "2023.03.pre-alpha"
+
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS: EList = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
-TOOL_BUTTON_ICON_SIZE = (25, 25)
+
+# QToolButton icon size
+TOOL_BUTTON_ICON_SIZE: tuple = (25, 25)

@@ -3,7 +3,7 @@ import typing
 from PyQt5.QtWidgets import QDialog
 
 from pieapp.structs.containers import Containers
-from pieapp.structs.menus import Menus
+from pieapp.structs.menus import Menus, MenuItems
 from piekit.managers.menus.mixins import MenuAccessor
 from piekit.managers.plugins.decorators import onPluginAvailable
 from piekit.managers.structs import Sections
@@ -41,7 +41,8 @@ class Settings(
             name="settings",
             text=self.getTranslation("Settings"),
             triggered=self.dialog.show,
-            icon=self.getAssetIcon("settings.png")
+            icon=self.getAssetIcon("settings.png"),
+            before=MenuItems.Exit
         )
 
 
