@@ -4,7 +4,7 @@ import traceback
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 
-from piekit.system.loader import Config
+from piekit.system.config import Config
 from piekit.managers.registry import Managers
 from piekit.widgets.errorwindow import ErrorWindow
 
