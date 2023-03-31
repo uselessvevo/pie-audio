@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Union, Any
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenuBar, QMenu, QAction
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QMenuBar, QMenu, QAction
 
 from piekit.system.exceptions import PieException
 

@@ -1,6 +1,6 @@
 import typing
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 from pieapp.structs.containers import Containers
 from pieapp.structs.menus import Menus, MenuItems

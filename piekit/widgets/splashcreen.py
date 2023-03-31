@@ -1,6 +1,6 @@
-from PyQt5.QtSvg import QSvgRenderer
-from PyQt5.QtWidgets import QSplashScreen
-from PyQt5.QtGui import QPixmap, QImage, QPainter
+from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtWidgets import QSplashScreen
+from PyQt6.QtGui import QPixmap, QImage, QPainter
 
 
 def SplashScreen(path: str) -> QSplashScreen:

@@ -22,4 +22,4 @@ def start_application():
     pieApp.init()
     pieApp.show()
 
-    sys.exit(qapp.exec_())
+    sys.exit(qapp.exec())

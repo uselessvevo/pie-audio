@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Union
 
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
+from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtCore import pyqtSignal, QObject, pyqtSlot
 
 from piekit.utils.logger import logger
 

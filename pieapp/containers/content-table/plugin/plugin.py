@@ -1,7 +1,7 @@
 import typing
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QHeaderView, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QHeaderView, QLabel
 
 from plugin.api import ContentTableAPI
 from pieapp.structs.containers import Containers

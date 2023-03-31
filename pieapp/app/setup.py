@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 from pieapp.wizard.wizard import SetupWizard
 from piekit.managers.registry import Managers

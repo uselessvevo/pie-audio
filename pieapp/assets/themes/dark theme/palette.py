@@ -1,8 +1,8 @@
 # fuck you qt
 # this module was made
 # because i can't set link (href) color in qss file
-from PyQt5.QtGui import QPalette
-from PyQt5.QtGui import QColor
+from PyQt6.QtGui import QPalette
+from PyQt6.QtGui import QColor
 
 
 def getPalette():

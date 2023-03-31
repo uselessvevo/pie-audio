@@ -1,7 +1,7 @@
 import os
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from piekit.utils.logger import logger
 from piekit.plugins.types import Error
@@ -41,7 +41,7 @@ class MainWindow(
         if os.name == "nt":
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                "mycompany.myproduct.subproduct.version"
+                "com.crabdevs.pieaudio"
             )
 
     # Main methods

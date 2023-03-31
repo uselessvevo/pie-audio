@@ -3,8 +3,9 @@ from __future__ import annotations
 from collections import OrderedDict
 from typing import Union, Any
 
-from PyQt5.QtCore import QObject, Qt
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QWidget, QSizePolicy
+from PyQt6.QtCore import QObject, Qt
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
 
 from piekit.system.exceptions import PieException
 

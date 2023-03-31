@@ -2,7 +2,7 @@ import sys
 import traceback
 
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 from piekit.system import Config
 from piekit.managers.registry import Managers
