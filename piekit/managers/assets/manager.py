@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Union
 
-from PyQt5.QtGui import QIcon
+from PyQt6.QtGui import QIcon
 
 from piekit.managers.assets.utils import setSvgColor
 from piekit.managers.base import BaseManager
@@ -26,11 +26,10 @@ class AssetsManager(BaseManager):
         self._themes = []
 
         theme_folders = tuple(i for i in (self._assets_folder / "themes").glob("*") if i.is_dir())
+        for theme in theme_folders:
+            self._themes.append(theme.name)
 
         if not self._theme and theme_folders:
-            for theme in theme_folders:
-                self._themes.append(theme.name)
-
             self._theme = self._themes[0]
 
     def mount(self) -> None:

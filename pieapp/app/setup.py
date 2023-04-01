@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 from pieapp.wizard.wizard import SetupWizard
 from piekit.managers.registry import Managers
@@ -33,7 +33,7 @@ def setup_application() -> None:
 
         wizard = SetupWizard()
         wizard.show()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
 
     Managers.mount(*Config.MANAGERS)
 

@@ -1,7 +1,7 @@
 import typing
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QHeaderView, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QHeaderView, QLabel
 
 from plugin.api import ContentTableAPI
 from pieapp.structs.containers import Containers
@@ -51,15 +51,15 @@ class ContentTable(
             icon=self.getAsset("empty-box.png"),
             text=self.getTranslation("No files selected")
         ))
-        placeholder.setAlignment(Qt.AlignCenter)
+        placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.parent().mainLayout.addWidget(placeholder, 1, 0)
 
     def init(self) -> None:
         self.table = QTableWidget()
         self.setPlaceholder()
         self.table.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Expanding
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding
         )
 
 

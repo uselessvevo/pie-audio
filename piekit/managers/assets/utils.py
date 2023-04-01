@@ -4,7 +4,7 @@ import importlib
 import importlib.util
 from pathlib import Path
 
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QIcon
+from PyQt6.QtGui import QPixmap, QPainter, QColor, QIcon
 
 from piekit.utils.files import read_json
 from piekit.system import Config

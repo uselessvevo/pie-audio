@@ -1,8 +1,7 @@
 import typing
 
-from PyQt5.Qt import Qt
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QWidget
+from PyQt6 import QtWidgets
+from PyQt6.QtWidgets import QWidget
 
 from pieapp.structs.containers import Containers
 from pieapp.structs.workbench import WorkbenchItems
@@ -42,8 +41,8 @@ class Workbench(
         spacer = QtWidgets.QWidget()
         spacer.setObjectName(WorkbenchItems.Spacer)
         spacer.setSizePolicy(
-            QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding
         )
 
         self.addToolBarItem(

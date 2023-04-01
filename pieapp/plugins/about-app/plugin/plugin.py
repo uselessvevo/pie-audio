@@ -1,8 +1,8 @@
 import typing
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
 
 from pieapp.structs.menus import Menus
 from piekit.managers.structs import Sections
@@ -49,10 +49,10 @@ class About(
         githubLinkLabel.setText("<a href='https://github.com/uselessvevo/pie-audio/'>Project URL</a>")
 
         gridLayout = QGridLayout()
-        gridLayout.addWidget(iconLabel, 0, 0, alignment=Qt.AlignHCenter)
-        gridLayout.addWidget(descriptionLabel, 1, 0, alignment=Qt.AlignHCenter)
-        gridLayout.addWidget(githubLinkLabel, 2, 0, alignment=Qt.AlignHCenter)
-        gridLayout.addWidget(okButton, 3, 0, alignment=Qt.AlignRight)
+        gridLayout.addWidget(iconLabel, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        gridLayout.addWidget(descriptionLabel, 1, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        gridLayout.addWidget(githubLinkLabel, 2, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        gridLayout.addWidget(okButton, 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.dialog.setLayout(gridLayout)
         self.dialog.setWindowIcon(self.getAssetIcon("help.png"))

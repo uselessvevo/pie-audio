@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QShortcut
+from PyQt6.QtWidgets import QShortcut
 
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.base import BaseManager

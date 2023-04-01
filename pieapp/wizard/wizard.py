@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QFileDialog
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QFileDialog
 
 from piekit.managers.structs import SysManagers, Sections
 from piekit.utils.files import writeJson

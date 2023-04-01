@@ -1,8 +1,8 @@
 from typing import Union
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QObject, QSize
-from PyQt5.QtWidgets import QToolButton
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt, QObject, QSize
+from PyQt6.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
@@ -30,16 +30,16 @@ class ToolButtonAccessor:
             toolButton.setToolTip(tooltip)
 
         if text:
-            toolButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            toolButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             toolButton.setText(text)
 
         if triggered:
             toolButton.clicked.connect(triggered)
 
         if onlyIcon:
-            toolButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            toolButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
-        toolButton.setFocusPolicy(Qt.NoFocus)
+        toolButton.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         toolButton.setIconSize(QSize(*Config.TOOL_BUTTON_ICON_SIZE))
 
         return Managers(SysManagers.ToolButton).addToolButton(section or Sections.Shared, name, toolButton)

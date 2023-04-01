@@ -1,7 +1,7 @@
 import typing
 from functools import partial
 
-from PyQt5.QtWidgets import QDialog, QFileDialog
+from PyQt6.QtWidgets import QDialog, QFileDialog
 
 from pieapp.structs.menus import Menus, MenuItems
 from piekit.managers.registry import Managers
