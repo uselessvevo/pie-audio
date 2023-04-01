@@ -11,10 +11,6 @@ class PieApiException(PieException):
     pass
 
 
-class PieApiException(PieException):
-    pass
-
-
 class HandlerNotFoundError(Exception):
 
     def __init__(self, name: str) -> None:
