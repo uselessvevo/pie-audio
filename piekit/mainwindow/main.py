@@ -75,7 +75,7 @@ class MainWindow(
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
         messageBox.setWindowTitle(self.getTranslation("Error"))
-        messageBox.exec_()
+        messageBox.exec()
 
     # Properties
 

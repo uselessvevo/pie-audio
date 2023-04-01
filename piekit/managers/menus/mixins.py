@@ -1,7 +1,8 @@
 from typing import Union
 
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QMenuBar, QAction, QWidget
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMenuBar, QWidget
 
 from piekit.widgets.menus import PieMenu, INDEX_END, INDEX_START
 from piekit.managers.registry import Managers

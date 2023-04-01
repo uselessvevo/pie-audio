@@ -5,7 +5,7 @@ from PyQt6.QtGui import QPixmap, QImage, QPainter
 
 def SplashScreen(path: str) -> QSplashScreen:
     """ Simple splash screen """
-    splashImage = QImage(720, 480, QImage.Format_ARGB32_Premultiplied)
+    splashImage = QImage(720, 480, QImage.Format.Format_ARGB32_Premultiplied)
     splashImage.fill(0)
 
     svgPainter = QPainter(splashImage)

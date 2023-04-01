@@ -51,6 +51,7 @@ QMenuBar::item:pressed {
 }
 
 QMenu, QToolButton-item:checked {
+   background-color: #424242;
    border: 1px solid #2d73ff;
    color: #cccccc;
    font-family: Arial;

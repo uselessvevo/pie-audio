@@ -33,7 +33,7 @@ def setup_application() -> None:
 
         wizard = SetupWizard()
         wizard.show()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
 
     Managers.mount(*Config.MANAGERS)
 

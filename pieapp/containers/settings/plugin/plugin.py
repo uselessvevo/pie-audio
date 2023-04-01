@@ -17,7 +17,7 @@ from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.system.loader import Config
 from piekit.utils.files import writeJson
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 
 class TabBar(QtWidgets.QTabBar):
@@ -33,7 +33,7 @@ class TabBar(QtWidgets.QTabBar):
 
         for i in range(self.count()):
             self.initStyleOption(option, i)
-            painter.drawControl(QtWidgets.QStyle.CE_TabBarTabShape, option)
+            painter.drawControl(QtWidgets.QStyle.ControlElement.CE_TabBarTabShape, option)
             painter.save()
 
             rectSize = option.rect.size()
@@ -46,7 +46,7 @@ class TabBar(QtWidgets.QTabBar):
             painter.translate(tabRectCenter)
             painter.rotate(90)
             painter.translate(-tabRectCenter)
-            painter.drawControl(QtWidgets.QStyle.CE_TabBarTabLabel, option)
+            painter.drawControl(QtWidgets.QStyle.ControlElement.CE_TabBarTabLabel, option)
             painter.restore()
 
 
@@ -54,7 +54,7 @@ class TabWidget(QtWidgets.QTabWidget):
     def __init__(self, *args, **kwargs):
         QtWidgets.QTabWidget.__init__(self, *args, **kwargs)
         self.setTabBar(TabBar(self))
-        self.setTabPosition(QtWidgets.QTabWidget.West)
+        self.setTabPosition(QtWidgets.QTabWidget.TabPosition.West)
 
 
 class Spacer(QtWidgets.QFrame):
@@ -62,8 +62,8 @@ class Spacer(QtWidgets.QFrame):
     def __init__(self, frameLine: bool = False):
         super(Spacer, self).__init__()
         if frameLine:
-            self.setFrameShape(QtWidgets.QFrame.HLine)
-            self.setFrameShadow(QtWidgets.QFrame.Sunken)
+            self.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+            self.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
 
 
 class MainSettingsWidget(
@@ -103,15 +103,15 @@ class MainSettingsWidget(
         mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("FFmpeg path")), 6, 0, 1, 1)
         mainGrid.addWidget(self.ffmpegPrompt, 6, 1, 1, 1)
         mainGrid.addWidget(self.ffmpegButton, 7, 1, 1, 1)
-        mainGrid.setAlignment(self.ffmpegButton, Qt.AlignRight)
+        mainGrid.setAlignment(self.ffmpegButton, Qt.AlignmentFlag.AlignRight)
         mainGrid.addWidget(Spacer(), 8, 0, 1, 2)
 
         self.setLayout(mainGrid)
 
     def ffmpegButtonConnect(self) -> None:
         directory = QtWidgets.QFileDialog(self, self.getTranslation("Select ffmpeg directory"))
-        directory.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
-        directory.setOption(QtWidgets.QFileDialog.ShowDirsOnly, False)
+        directory.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
+        directory.setOption(QtWidgets.QFileDialog.Option.ShowDirsOnly, False)
         directory.getExistingDirectory(self, directory=str(Config.USER_ROOT))
         directoryPath = directory.directory().path()
 
@@ -146,9 +146,6 @@ class Settings(
         rootGrid = QtWidgets.QGridLayout(self.dialog)
 
         tabWidget = TabWidget(self.dialog)
-        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
-        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
-        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
         tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
 
         rootGrid.addWidget(tabWidget, 0, 0, 1, 2)

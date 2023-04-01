@@ -30,16 +30,16 @@ class ToolButtonAccessor:
             toolButton.setToolTip(tooltip)
 
         if text:
-            toolButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            toolButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             toolButton.setText(text)
 
         if triggered:
             toolButton.clicked.connect(triggered)
 
         if onlyIcon:
-            toolButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            toolButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
-        toolButton.setFocusPolicy(Qt.NoFocus)
+        toolButton.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         toolButton.setIconSize(QSize(*Config.TOOL_BUTTON_ICON_SIZE))
 
         return Managers(SysManagers.ToolButton).addToolButton(section or Sections.Shared, name, toolButton)

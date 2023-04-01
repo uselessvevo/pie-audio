@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QFileDialog

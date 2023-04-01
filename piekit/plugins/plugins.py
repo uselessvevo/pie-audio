@@ -156,7 +156,7 @@ class PiePlugin(
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
         messageBox.setWindowTitle(Managers(SysManagers.Locales)("Error", section="shared"))
-        messageBox.exec_()
+        messageBox.exec()
 
     # Properties
 

@@ -25,11 +25,11 @@ class PieToolBar(QWidget):
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setFixedHeight(50)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self._layout = QHBoxLayout()
         self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setAlignment(Qt.AlignLeft)
+        self._layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.setLayout(self._layout)
 
     def addToolBarItem(
@@ -44,12 +44,12 @@ class PieToolBar(QWidget):
 
         if after:
             index = self._keys.index(after) + 1
-            self._layout.insertWidget(index, item, Qt.AlignLeft)
+            self._layout.insertWidget(index, item, Qt.AlignmentFlag.AlignLeft)
 
         elif before:
-            self._layout.insertWidget(self._keys.index(before), item, Qt.AlignLeft)
+            self._layout.insertWidget(self._keys.index(before), item, Qt.AlignmentFlag.AlignLeft)
         else:
-            self._layout.addWidget(item, Qt.AlignLeft)
+            self._layout.addWidget(item, Qt.AlignmentFlag.AlignLeft)
 
         self._items[name] = item
         self._keys.append(name)

@@ -36,4 +36,4 @@ def ErrorWindow(err_type: Union[Exception, str], err_value: str, err_traceback: 
 
     logger.error(err_type, err_value)
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

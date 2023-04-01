@@ -21,8 +21,8 @@ class MessageBox(QMessageBox, LocalesAccessor):
         self.noButton = QPushButton()
         self.noButton.setText(self.getTranslation("No"))
 
-        self.addButton(self.yesButton, QMessageBox.YesRole)
-        self.addButton(self.noButton, QMessageBox.NoRole)
+        self.addButton(self.yesButton, QMessageBox.ButtonRole.YesRole)
+        self.addButton(self.noButton, QMessageBox.ButtonRole.NoRole)
         self.setDefaultButton(self.noButton)
 
-        self.exec_()
+        self.exec()

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QGridLayout

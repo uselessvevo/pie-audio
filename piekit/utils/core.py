@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from piekit.system import Config
@@ -11,8 +11,6 @@ from piekit.widgets.errorwindow import ErrorWindow
 
 def get_application(*args, **kwargs):
     app = QtWidgets.QApplication.instance()
-    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
     if app is None:
         if not args:

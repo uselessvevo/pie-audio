@@ -49,10 +49,10 @@ class About(
         githubLinkLabel.setText("<a href='https://github.com/uselessvevo/pie-audio/'>Project URL</a>")
 
         gridLayout = QGridLayout()
-        gridLayout.addWidget(iconLabel, 0, 0, alignment=Qt.AlignHCenter)
-        gridLayout.addWidget(descriptionLabel, 1, 0, alignment=Qt.AlignHCenter)
-        gridLayout.addWidget(githubLinkLabel, 2, 0, alignment=Qt.AlignHCenter)
-        gridLayout.addWidget(okButton, 3, 0, alignment=Qt.AlignRight)
+        gridLayout.addWidget(iconLabel, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        gridLayout.addWidget(descriptionLabel, 1, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        gridLayout.addWidget(githubLinkLabel, 2, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        gridLayout.addWidget(okButton, 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.dialog.setLayout(gridLayout)
         self.dialog.setWindowIcon(self.getAssetIcon("help.png"))

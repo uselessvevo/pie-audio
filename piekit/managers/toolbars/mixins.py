@@ -1,7 +1,8 @@
 from typing import Union
 
 from PyQt6.QtCore import QObject
-from PyQt6.QtWidgets import QToolBar, QWidget, QAction
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QToolBar, QWidget
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
