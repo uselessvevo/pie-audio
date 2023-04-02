@@ -1,11 +1,9 @@
 import typing
-from functools import partial
 
-from PyQt6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtWidgets import QDialog, QFileDialog
 
 from pieapp.structs.menus import Menus, MenuItems
-from piekit.managers.registry import Managers
-from piekit.managers.structs import Sections, SysManagers
+from piekit.managers.structs import Sections
 from piekit.plugins.api.helpers import getAPI
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugins
@@ -18,7 +16,6 @@ from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.managers.toolbars.mixins import ToolBarAccessor
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
 from piekit.managers.plugins.decorators import onPluginAvailable
-from piekit.system.loader import Config
 from piekit.widgets.menus import INDEX_END, INDEX_START
 
 
@@ -54,7 +51,8 @@ class Converter(
             name=MenuItems.OpenFiles,
             text=self.getTranslation("Open file"),
             icon=self.getAssetIcon("open-file.png"),
-            index=INDEX_START()
+            index=INDEX_START(),
+            triggered=self.openFiles
         )
 
         self.addMenuItem(
