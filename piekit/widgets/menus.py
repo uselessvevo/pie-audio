@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Union, Any
 
-from PyQt6.QtGui import QIcon
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMenuBar, QMenu
+from PySide6.QtGui import QIcon
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMenuBar, QMenu
 
 from piekit.system.exceptions import PieException
 

@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Union
 
-from PyQt6.QtWidgets import QMessageBox
-from PyQt6.QtCore import pyqtSignal, QObject, pyqtSlot
+from PySide6.QtWidgets import QMessageBox
+from PySide6.QtCore import Signal, QObject, Slot
 
 from piekit.utils.logger import logger
 
@@ -49,26 +49,32 @@ class PiePlugin(
     # Qt configuration #
 
     # Signal when plugin is ready
-    signalPluginReady = pyqtSignal()
+    signalPluginReady = Signal()
 
     # Signal when plugin is loading
-    signalPluginLoading = pyqtSignal(str)
+    signalPluginLoading = Signal(str)
 
     # Signal when plugin is reloading
-    signalPluginReloading = pyqtSignal(str)
+    signalPluginReloading = Signal(str)
 
     # Signal when main window is closing
-    signalOnMainWindowClose = pyqtSignal()
+    signalOnMainWindowClose = Signal()
 
     # Signal when exception occurred
-    signalExceptionOccurred = pyqtSignal(Error)
+    signalExceptionOccurred = Signal(Error)
 
     def __init__(
         self,
         parent: QObject = None,
         path: Path = None,
     ) -> None:
-        super().__init__(parent)
+        # For some reason, I can't use `super().__init__()` method with `PySide`
+
+        # Initialize `QObject` instance
+        QObject.__init__(self, parent)
+
+        # Initialize `PluginsObserverMixin` instance
+        PluginsObserverMixin.__init__(self)
 
         # Just a logger
         self._logger = logger
@@ -149,7 +155,7 @@ class PiePlugin(
 
     # Slots
 
-    @pyqtSlot(Error)
+    @Slot(Error)
     def errorHandler(self, error: Error) -> None:
         messageBox = QMessageBox()
         messageBox.setIcon(QMessageBox.Critical)

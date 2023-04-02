@@ -1,7 +1,7 @@
 from typing import Union
 
-from PyQt6.QtGui import QAction
-from PyQt6.QtCore import QObject
+from PySide6.QtGui import QAction
+from PySide6.QtCore import QObject
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections

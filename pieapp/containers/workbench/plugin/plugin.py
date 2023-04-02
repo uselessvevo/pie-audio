@@ -1,7 +1,7 @@
 import typing
 
-from PyQt6 import QtWidgets
-from PyQt6.QtWidgets import QWidget
+from PySide6 import QtWidgets
+from PySide6.QtWidgets import QWidget
 
 from pieapp.structs.containers import Containers
 from pieapp.structs.workbench import WorkbenchItems

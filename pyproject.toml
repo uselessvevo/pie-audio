@@ -6,7 +6,7 @@ authors = ["uselessvevo <jcommander13@yandex.ru>"]
 packages = [{ include = "src" }]
 license = "GPL"
 readme = "README.md"
-keywords = ["PyQt5", "audio", "media", "converter", "audio-converter", "experimental"]
+keywords = ["Qt", "PySide", "PySide6", "audio", "media", "converter", "audio-converter", "experimental"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Operating System :: Microsoft :: Windows",
@@ -24,13 +24,10 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.7,<3.12"
 colorama = "^0.4.6"
 loguru = "^0.6.0"
-PyQt5 = "^5.15.9"
-PyQt6 = "^6.4.2"
-PyQt6-Qt6 = "^6.4.3"
-PyQt6-sip = "^13.4.1"
+PySide6 = "6.4.3"
 click = "^8.1.3"
 dotty-dict = "^1.3.1"
 watchdog = "3.0.0"

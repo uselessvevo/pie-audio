@@ -1,8 +1,8 @@
 from typing import Union
 
-from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import Qt, QObject, QSize
-from PyQt6.QtWidgets import QToolButton
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, QObject, QSize
+from PySide6.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections

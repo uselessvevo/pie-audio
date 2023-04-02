@@ -3,13 +3,13 @@ from typing import Union
 
 from piekit.utils.logger import logger
 
-from PyQt6.QtWidgets import QApplication
-from PyQt6.QtWidgets import QErrorMessage
+from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QErrorMessage
 
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QStyle
-from PyQt6.QtWidgets import QCheckBox
-from PyQt6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QStyle
+from PySide6.QtWidgets import QCheckBox
+from PySide6.QtWidgets import QPushButton
 
 
 def ErrorWindow(err_type: Union[Exception, str], err_value: str, err_traceback: Union[str, list]):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Union
 
-from PyQt6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers

@@ -1,7 +1,7 @@
 import os
 
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
-from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from piekit.utils.logger import logger
 from piekit.plugins.types import Error
@@ -23,13 +23,13 @@ class MainWindow(
     # Accessors section
     section: str = Sections.Shared
 
-    signalMoved = pyqtSignal()
-    signalResized = pyqtSignal()
-    signalExceptionOccurred = pyqtSignal(dict)
+    signalMoved = Signal()
+    signalResized = Signal()
+    signalExceptionOccurred = Signal(dict)
 
-    signalPluginReady = pyqtSignal(str)
-    signalPluginLoading = pyqtSignal(str)
-    signalPluginReloading = pyqtSignal(str)
+    signalPluginReady = Signal(str)
+    signalPluginLoading = Signal(str)
+    signalPluginReloading = Signal(str)
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent=parent)
@@ -68,7 +68,7 @@ class MainWindow(
 
         return True
 
-    @pyqtSlot(Error)
+    @Slot(Error)
     def errorHandler(self, error: Error) -> None:
         messageBox = QMessageBox()
         messageBox.setIcon(QMessageBox.Critical)

@@ -332,6 +332,7 @@ QToolButton::checked {
 /* Table view and widget*/
 
 QTableView {
+   background-color: #494949;
    border: 0px transparent;
    gridline-color: #303030;
    color: #f2f2f2;
