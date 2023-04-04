@@ -1,6 +1,6 @@
 import typing
 
-from PyQt6.QtWidgets import QStatusBar, QWidget
+from PySide6.QtWidgets import QStatusBar, QWidget
 
 from pieapp.structs.containers import Containers
 from piekit.plugins.plugins import PiePlugin

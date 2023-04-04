@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMenu, QMenuBar
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMenu, QMenuBar
 
 from piekit.widgets.menus import PieMenu
 from piekit.managers.base import BaseManager

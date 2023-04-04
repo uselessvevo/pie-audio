@@ -1,6 +1,6 @@
 import typing
 
-from PyQt6.QtCore import Qt
+from PySide6.QtCore import Qt
 
 from pieapp.structs.containers import Containers
 from pieapp.structs.menus import Menus, MenuItems
@@ -17,7 +17,7 @@ from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.system.loader import Config
 from piekit.utils.files import writeJson
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 
 class TabBar(QtWidgets.QTabBar):

@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Union
 
-from PyQt6.QtGui import QIcon
+from PySide6.QtGui import QIcon
 
 from piekit.managers.assets.utils import setSvgColor
 from piekit.managers.base import BaseManager

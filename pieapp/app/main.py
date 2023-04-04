@@ -1,7 +1,7 @@
-from PyQt6 import QtWidgets
-from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QGridLayout
+from PySide6 import QtWidgets
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QGridLayout
 
 from pieapp.structs.containers import Containers
 from piekit.plugins.helpers import getPlugin
@@ -14,7 +14,7 @@ from piekit.managers.configs.mixins import ConfigAccessor
 
 class PieAudioApp(MainWindow, ConfigAccessor):
     section = Sections.Shared
-    signalPluginsReady = pyqtSignal()
+    signalPluginsReady = Signal()
 
     def init(self) -> None:
         self.setWindowTitle("Pie Audio • Audio Converter ({})".format(

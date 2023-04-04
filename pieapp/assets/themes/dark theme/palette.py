@@ -1,5 +1,5 @@
-from PyQt6.QtGui import QPalette
-from PyQt6.QtGui import QColor
+from PySide6.QtGui import QPalette
+from PySide6.QtGui import QColor
 
 
 def getPalette():

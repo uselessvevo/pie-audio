@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from PyQt6 import QtWidgets
-from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QFileDialog
+from PySide6 import QtWidgets
+from PySide6.QtCore import Slot
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QFileDialog
 
 from piekit.managers.structs import SysManagers, Sections
 from piekit.utils.files import writeJson
@@ -129,7 +129,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
     def isComplete(self) -> bool:
         return bool(Path(self.ffmpegPath).exists() if self.ffmpegPath else False) and super().isComplete()
 
-    @pyqtSlot()
+    @Slot()
     def selectFfmpegPath(self):
         directory = QFileDialog(self, Managers(SysManagers.Locales)(Sections.Shared, "Select ffmpeg directory"))
         directory.setFileMode(QFileDialog.DirectoryOnly)

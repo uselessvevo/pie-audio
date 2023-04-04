@@ -3,6 +3,7 @@
 QMainWindow {
    background-color: #353535;
 }
+
 QMainWindow::separator {
    width:6px;
    height:5px;
@@ -338,7 +339,7 @@ QTableView {
    font-family: Arial;
 }
 
-QTableView QTableCornerButton::section {
+QTableView > QTableCornerButton::section {
    background: transparent;
 }
 
@@ -360,12 +361,13 @@ QTableView {
    border: 1px #303030;
 }
 
-QTableView QHeaderView::section {
+QTableView > QHeaderView::section {
    background-color: transparent;
    border: 1px #303030;
 }
 
 QTableWidget  {
+    background-color: transparent;
 }
 
 /* Scrollbar */
@@ -547,4 +549,8 @@ QToolButton:pressed { background-color: #2d73ff; }
 
 #SettingsDialog {
     background-color: #303030;
+}
+
+#Workbench {
+    background-color: red;
 }

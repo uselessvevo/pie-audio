@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Union
 
-from PyQt6.QtCore import QObject, Qt
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QToolButton
+from PySide6.QtCore import QObject, Qt
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QToolButton
 
 from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers

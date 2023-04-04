@@ -1,7 +1,11 @@
 import typing
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QSizePolicy, QHeaderView, QLabel
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QTableWidget, QAbstractItemView,
+    QTableWidgetItem, QSizePolicy,
+    QHeaderView, QLabel
+)
 
 from plugin.api import ContentTableAPI
 from pieapp.structs.containers import Containers
@@ -34,7 +38,7 @@ class ContentTable(
     def setColumnsStretch(self, count: int) -> None:
         headers = self.table.horizontalHeader()
         for column in range(count):
-            headers.setSectionResizeMode(column, QHeaderView.Stretch)
+            headers.setSectionResizeMode(column, QHeaderView.ResizeMode.Stretch)
 
     def fillTable(self, data: list[dict]) -> None:
         if not data:
@@ -56,6 +60,7 @@ class ContentTable(
 
     def init(self) -> None:
         self.table = QTableWidget()
+        self.table.setSelectionMode(QAbstractItemView.NoSelection)
         self.setPlaceholder()
         self.table.setSizePolicy(
             QSizePolicy.Policy.Expanding,
