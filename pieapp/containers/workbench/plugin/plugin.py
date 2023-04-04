@@ -1,7 +1,6 @@
 import typing
 
-from PySide6 import QtWidgets
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from pieapp.structs.containers import Containers
 from pieapp.structs.workbench import WorkbenchItems
@@ -25,8 +24,9 @@ class Workbench(
     name = Containers.Workbench
 
     def init(self) -> None:
-        widget = QWidget()
-        self.workbench = self.addToolBar(widget, self.name)
+        self.widget = QWidget()
+        self.widget.setObjectName("Workbench")
+        self.workbench = self.addToolBar(self.widget, self.name)
 
         self.addToolButton(
             parent=self.workbench,
@@ -38,11 +38,11 @@ class Workbench(
             triggered=self.parent().close
         )
 
-        spacer = QtWidgets.QWidget()
+        spacer = QWidget()
         spacer.setObjectName(WorkbenchItems.Spacer)
         spacer.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding
         )
 
         self.addToolBarItem(
