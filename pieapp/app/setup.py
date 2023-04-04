@@ -1,9 +1,11 @@
+import os
 import sys
 from PySide6.QtWidgets import QApplication
 
+from piekit.system import Config
+from piekit.system.types import EDict, EList
 from pieapp.wizard.wizard import SetupWizard
 from piekit.managers.registry import Managers
-from piekit.system import Config
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs, except_hook
 from piekit.utils.core import restore_crabs
@@ -13,6 +15,11 @@ from piekit.widgets.splashcreen import SplashScreen
 
 def setup_application() -> None:
     sys.excepthook = except_hook
+
+    Config.add_type(EList)
+    Config.add_type(EDict)
+    Config.load_module("piekit.system.config", False)
+    Config.load_module(os.environ.get("CONFIG_MODULE_NAME", "pieapp.config"))
 
     splash = None
     app = get_application(sys.argv)
