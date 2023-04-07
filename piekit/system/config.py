@@ -2,8 +2,8 @@ import locale
 import os.path
 from pathlib import Path
 
-from piekit.system.types import EList
-from piekit.system.types import EDict
+from piekit.system.types import elist
+from piekit.system.types import edict
 from piekit.managers.structs import ManagerConfig
 
 # Base paths
@@ -26,7 +26,7 @@ COMPONENTS_FOLDER: str = os.getenv("COMPONENTS_FOLDER", "components")
 CONTAINERS_FOLDER: str = os.getenv("CONTAINERS_FOLDER", "containers")
 
 # Assets
-ASSETS_EXCLUDED_FORMATS: EList = []
+ASSETS_EXCLUDED_FORMATS: elist = []
 ASSETS_FOLDER: str = os.getenv("ASSETS_FOLDER", "assets")
 THEMES_FOLDER: str = os.getenv("THEMES_FOLDER", "themes")
 DEFAULT_THEME = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())[0]
@@ -34,10 +34,10 @@ DEFAULT_THEME = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_d
 # Configurations
 CONFIGS_FOLDER = os.getenv("CONFIGS_FOLDER", "configs")
 USER_CONFIG_FOLDER: str = os.getenv("USER_CONFIGS_FOLDER", "configs")
-USER_FOLDER_FILES: EList = ["locales.json", "assets.json"]
+USER_FOLDER_FILES: elist = ["locales.json", "assets.json"]
 
 # Locales
-LOCALES: EDict = {
+LOCALES: edict = {
     "en-US": "English",
     "ru-RU": "Русский"
 }
@@ -51,7 +51,7 @@ LOCALES_FOLDER: str = os.getenv("LOCALES_FOLDER", "locales")
 
 
 # Templates
-TEMPLATE_FILES: EList = [
+TEMPLATE_FILES: elist = [
     "locales.json",
     "assets.json",
     "ffmpeg.json",
@@ -60,7 +60,7 @@ TEMPLATE_FILES: EList = [
 
 # Managers startup configuration
 # TODO: Replace `mount` attribute with Qt signal name (str) and emit it via `QMetaObject` -> `invokeMethod`
-MANAGERS: EList = [
+MANAGERS: elist = [
     ManagerConfig(
         import_string="piekit.managers.configs.manager.ConfigManager",
         mount=True

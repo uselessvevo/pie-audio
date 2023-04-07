@@ -1,15 +1,18 @@
 import abc
-from typing import Any
+from typing import TypeVar, Protocol, Generic, Callable, Any
 
 # TODO: Add Expandable types mixing. For example: `EList[EDict, ...]`
 
 __all__ = (
-    "EList",
-    "EDict"
+    "elist",
+    "edict"
 )
 
 
-class EType:
+TCallable = TypeVar("TCallable", bound=Callable[..., Any], covariant=True)
+
+
+class etype(Protocol(Generic[TCallable])):
     """ Expandable type """
 
     @abc.abstractmethod
@@ -17,14 +20,15 @@ class EType:
         pass
 
 
-class EList(EType):
+class elist(etype):
     """ Expandable list """
+
     def __call__(self, previous_value: Any, value: Any) -> Any:
         previous_value.extend(value)
         return previous_value
 
 
-class EDict(EType):
+class edict(etype):
     """ Expandable dictionary """
 
     def __call__(self, previous_value: Any, value: Any) -> Any:

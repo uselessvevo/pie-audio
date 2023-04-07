@@ -2,7 +2,7 @@ import types
 import importlib
 
 from piekit.system import PieException
-from piekit.system.types import EType
+from piekit.system.types import etype
 
 
 class ConfigLoader:
@@ -11,10 +11,10 @@ class ConfigLoader:
     """
 
     def __init__(self) -> None:
-        self._etypes: list[EType] = []
+        self._etypes: list[etype] = []
 
-    def add_type(self, etype: EType) -> None:
-        if not issubclass(etype, EType):
+    def add_type(self, etype: etype) -> None:
+        if not issubclass(etype, etype):
             raise TypeError(f"Type {etype.__class__.__name__} is not a e-type based class")
 
         if etype in self._etypes:
