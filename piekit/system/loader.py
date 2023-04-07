@@ -1,4 +1,5 @@
 import types
+import warnings
 import importlib
 
 from piekit.system import PieException
@@ -47,6 +48,12 @@ class ConfigLoader:
         for name, value in module_attributes.items():
             if use_etypes and etyped_attributes.get(name):
                 etype_instance = etyped_attributes.get(name)()
+                if etype_instance.frozen is True:
+                    warnings.warn(
+                        f"etype {name} is frozen, "
+                        "that means you cant't overwrite value of it"
+                    )
+                    continue
                 try:
                     handler_result = etype_instance(getattr(self, name), value)
                     setattr(self, name, handler_result)
