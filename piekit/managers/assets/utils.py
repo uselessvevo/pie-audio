@@ -4,35 +4,8 @@ import importlib
 import importlib.util
 from pathlib import Path
 
-from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
-
-from piekit.utils.files import read_json
 from piekit.config import Config
-
-
-def parse_stylesheet(path: str, keys: dict = None) -> str:
-    if not os.path.exists(f'{path}/theme.qss'):
-        with open(f'{path}/theme.template.qss', encoding='utf-8') as output:
-            # Template pattern and variables
-            pattern = r'((\@)([A-Za-z]+[\d]+[\w@]*|[A-Za-z]+[\w@]*))'
-            variables = read_json(f'{path}/variables.json')
-            variables.update(keys)
-
-            # Template content
-            stylesheet = output.read()
-            matches = re.findall(pattern, stylesheet)
-
-            for match in matches:
-                stylesheet = stylesheet.replace(match[0], variables[match[2]])
-
-        with open(f'{path}/theme.qss', 'w') as output:
-            output.write(stylesheet)
-    else:
-        # Create empty theme file
-        with open(f'{path}/theme.qss', encoding='utf-8') as output:
-            stylesheet = output.read()
-
-    return stylesheet
+from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
 
 
 def get_theme(theme_name: str) -> str:
@@ -48,14 +21,12 @@ def get_theme(theme_name: str) -> str:
     if not theme_name.exists():
         # Get one of theme
         if themes_list and os.path.exists(themes_list[0]):
-            theme_name = f'assets/themes/{themes_list[0]}'
+            theme_name = Path(f'assets/themes/{themes_list[0]}')
         else:
             theme_name = None
 
     if theme_name and theme_name.exists():
-        stylesheet = parse_stylesheet(theme_name, {
-            'themeFolder': str(theme_name.as_posix())
-        })
+        stylesheet = (theme_name / "theme.qss").read_text(encoding="utf-8")
 
     return stylesheet
 
@@ -69,7 +40,6 @@ def get_palette(theme_name: str):
         palette (module): app.setPalette(palette.getPalette())
     """
     theme_folder = Config.APP_ROOT / Config.ASSETS_FOLDER / "themes" / theme_name
-    palette = None
 
     if theme_folder.exists():
         spec = importlib.util.spec_from_file_location(
@@ -94,5 +64,4 @@ def set_svg_color(file: str, color: str = "#7cd162"):
 # Qt aliases
 getTheme = get_theme
 getPalette = get_palette
-parseStylesheet = parse_stylesheet
 setSvgColor = set_svg_color
