@@ -101,6 +101,9 @@ class PluginManager(BaseManager):
 
                 # Importing plugin module
                 plugin_module = import_by_path("plugin", str(plugin_path / "plugin/plugin.py"))
+                if (plugin_path / "plugin/config.py").exists():
+                    config_module = import_by_path("config", str(plugin_path / "plugin/config.py"))
+                    Config.load_module(config_module)
 
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
