@@ -2,7 +2,7 @@
 ContentTable structs
 """
 
-from piekit.system import Config
+from piekit.config import Config
 
 
 DEFAULT_CONTENT_TABLE_COLUMNS: tuple = (

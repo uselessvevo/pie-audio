@@ -1,5 +1,5 @@
 from piekit.managers.structs import DirectoryType
-from piekit.system.types import Lock
+from piekit.config.types import Lock
 
 PIEAPP_VERSION: Lock = "2023.04.pre-alpha"
 

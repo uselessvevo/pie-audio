@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QGridLayout
 
 from pieapp.structs.containers import Containers
 from piekit.plugins.helpers import getPlugin
-from piekit.system import Config
+from piekit.config import Config
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections

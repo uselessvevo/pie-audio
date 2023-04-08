@@ -7,7 +7,7 @@ from pathlib import Path
 from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
 
 from piekit.utils.files import read_json
-from piekit.system import Config
+from piekit.config import Config
 
 
 def parse_stylesheet(path: str, keys: dict = None) -> str:

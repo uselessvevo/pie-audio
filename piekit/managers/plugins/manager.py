@@ -6,7 +6,7 @@ from pathlib import Path
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
 
-from piekit.system import Config
+from piekit.config import Config
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import SysManagers

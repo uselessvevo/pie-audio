@@ -2,7 +2,7 @@ import locale
 import os.path
 from pathlib import Path
 
-from piekit.system.types import Lock
+from piekit.config.types import Lock
 from piekit.managers.structs import ManagerConfig
 
 # Base paths

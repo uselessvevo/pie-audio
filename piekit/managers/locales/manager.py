@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Union
 
 from piekit.utils.files import read_json
-from piekit.system import Config
+from piekit.config import Config
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections

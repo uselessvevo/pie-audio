@@ -2,7 +2,7 @@ import types
 import warnings
 import importlib
 
-from piekit.system.types import Lock
+from piekit.config.types import Lock
 
 
 class ConfigLoader:
