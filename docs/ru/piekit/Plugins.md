@@ -41,6 +41,7 @@ plugins/
 ```py
 import typing
 
+from piekit.config import Config
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -60,6 +61,7 @@ class DreamPlugin(
 
 
 def main(*args, **kwargs) -> typing.Any:
+    Config.ASSETS_EXCLUDED_FORMATS.append(".wma")
     return DreamPlugin(*args, **kwargs)
 ```
 

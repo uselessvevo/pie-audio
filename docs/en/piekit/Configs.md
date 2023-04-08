@@ -1,5 +1,16 @@
 # System Configuration
 
+# Block configuration value via "Lock" annotation type
+
+Used to block configuration fields. Usage example:
+
+```py
+BASE_DIR: Lock = ...
+```
+
+After that you will not be able to overwrite field's value.
+
+
 # Base directories
 * `BASE_DIR <Path>` - root directory
 * `APP_ROOT <Path>` - application root
