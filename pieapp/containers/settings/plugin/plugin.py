@@ -14,7 +14,7 @@ from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
-from piekit.system.loader import Config
+from piekit.config.loader import Config
 from piekit.utils.files import writeJson
 
 from PySide6 import QtCore, QtWidgets

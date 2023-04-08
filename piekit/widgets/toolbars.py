@@ -7,7 +7,7 @@ from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
 
-from piekit.system.exceptions import PieException
+from piekit.config.exceptions import PieException
 
 
 class PieToolBar(QWidget):
