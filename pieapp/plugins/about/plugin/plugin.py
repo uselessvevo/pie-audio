@@ -29,6 +29,8 @@ class About(
     def init(self) -> None:
         self.dialog = QDialog(self.parent())
         self.dialog.setWindowTitle(self.getTranslation("About"))
+        self.dialog.setWindowIcon(self.getPluginIcon())
+        self.dialog.resize(400, 300)
 
         okButton = QPushButton(self.getTranslation("Ok"))
         okButton.clicked.connect(self.dialog.close)
@@ -55,8 +57,6 @@ class About(
         gridLayout.addWidget(okButton, 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.dialog.setLayout(gridLayout)
-        self.dialog.setWindowIcon(self.getAssetIcon("help.png"))
-        self.dialog.resize(400, 300)
 
     @onPluginAvailable(target=Containers.MenuBar)
     def onMenuBarAvailable(self) -> None:

@@ -158,7 +158,7 @@ class PiePlugin(
     @Slot(Error)
     def errorHandler(self, error: Error) -> None:
         messageBox = QMessageBox()
-        messageBox.setIcon(QMessageBox.Critical)
+        messageBox.setIcon(QMessageBox.Icon.Critical)
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
         messageBox.setWindowTitle(Managers(SysManagers.Locales)("Error", section="shared"))

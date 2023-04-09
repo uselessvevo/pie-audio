@@ -1,7 +1,6 @@
 import typing
 from typing import Union
 
-
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
 
@@ -27,5 +26,9 @@ class AssetsAccessor:
     ):
         return Managers(SysManagers.Assets).get_icon(self.section or section, key, default)
 
+    def get_plugin_icon(self) -> "QIcon":
+        return Managers(SysManagers.Assets).get_icon(self.name, "app.png")
+
     getAsset = get_asset
     getAssetIcon = get_asset_icon
+    getPluginIcon = get_plugin_icon

@@ -112,7 +112,7 @@ class MainSettingsWidget(
         directory = QtWidgets.QFileDialog(self, self.getTranslation("Select ffmpeg directory"))
         directory.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
         directory.setOption(QtWidgets.QFileDialog.Option.ShowDirsOnly, False)
-        directory.getExistingDirectory(self, directory=str(Config.USER_ROOT))
+        directory.getExistingDirectory(self, dir=str(Config.USER_ROOT))
         directoryPath = directory.directory().path()
 
         if directoryPath:
@@ -140,7 +140,7 @@ class Settings(
         self.dialog = QtWidgets.QDialog(self.parent())
         self.dialog.setObjectName("SettingsDialog")
         self.dialog.setWindowTitle(self.getTranslation("Settings"))
-        self.dialog.setWindowIcon(self.getAssetIcon("settings.png"))
+        self.dialog.setWindowIcon(self.getPluginIcon())
         self.dialog.resize(740, 450)
 
         rootGrid = QtWidgets.QGridLayout(self.dialog)
