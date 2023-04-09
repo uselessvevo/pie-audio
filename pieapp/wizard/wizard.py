@@ -132,9 +132,9 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
     @Slot()
     def selectFfmpegPath(self):
         directory = QFileDialog(self, Managers(SysManagers.Locales)(Sections.Shared, "Select ffmpeg directory"))
-        directory.setFileMode(QFileDialog.DirectoryOnly)
-        directory.setOption(QFileDialog.ShowDirsOnly, False)
-        directory.getExistingDirectory(directory=str(Config.USER_ROOT))
+        directory.setFileMode(QFileDialog.FileMode.Directory)
+        directory.setOption(QFileDialog.Option.ShowDirsOnly, False)
+        directory.getExistingDirectory(dir=str(Config.USER_ROOT))
         directoryPath = directory.directory().path()
 
         if directoryPath:
@@ -164,8 +164,8 @@ class SetupWizard(QtWidgets.QWizard):
         self.setWindowTitle("Setup wizard")
         self.resize(640, 380)
         self.setOptions(
-            QtWidgets.QWizard.NoBackButtonOnLastPage
-            | QtWidgets.QWizard.NoCancelButtonOnLastPage
+            QtWidgets.QWizard.WizardOption.NoBackButtonOnLastPage
+            | QtWidgets.QWizard.WizardOption.NoCancelButtonOnLastPage
         )
 
         self.pages = (
@@ -178,7 +178,7 @@ class SetupWizard(QtWidgets.QWizard):
         for page in self.pages:
             self.addPage(page)
 
-        self.button(QtWidgets.QWizard.FinishButton).clicked.connect(self.onFinish)
+        self.button(QtWidgets.QWizard.WizardButton.FinishButton).clicked.connect(self.onFinish)
 
     def onFinish(self):
         for page in self.pages:
