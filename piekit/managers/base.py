@@ -33,6 +33,9 @@ class BaseManager:
         This method reload manager
         """
 
+    def add(self, *args, **kwargs) -> None:
+        pass
+
     def set(self, *args, **kwargs) -> None:
         """
         Set data by key

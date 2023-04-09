@@ -41,40 +41,44 @@ class AssetsManager(BaseManager):
         self._read_plugin_assets(Config.APP_ROOT / Config.PLUGINS_FOLDER)
         self._read_plugin_assets(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 
+    def add(self, section: str, file: Path) -> None:
+        if not self._check_file(file):
+            self._logger.critical(f"Can't find file {file.as_posix()}")
+
+        self._add_section(section, file)
+
     def _read_root_assets(self, folder: Path, section: Union[str, Sections]) -> None:
         for file in (folder / Config.ASSETS_FOLDER / Config.THEMES_FOLDER / self._theme).rglob("*.*"):
-            if file.suffix in Config.ASSETS_EXCLUDED_FORMATS:
+            if not self._check_file(file):
                 continue
 
-            if file.is_dir() and DirectoryType in Config.ASSETS_EXCLUDED_FORMATS:
-                continue
-
-            if not self._dictionary.get(section):
-                self._dictionary[section] = {}
-
-            if not self._dictionary.get(file.name):
-                self._dictionary[section][file.name] = {}
-
-            self._dictionary[section].update({file.name: file.as_posix()})
+            self._add_section(section, file)
 
     def _read_plugin_assets(self, folder: Path) -> None:
         for package in folder.iterdir():
             for file in (package / Config.ASSETS_FOLDER).rglob("*.*"):
-                section = package.name
-
-                if file.suffix in Config.ASSETS_EXCLUDED_FORMATS:
+                if not self._check_file(file):
                     continue
 
-                if file.is_dir() and DirectoryType in Config.ASSETS_EXCLUDED_FORMATS:
-                    continue
+                self._add_section(package.name, file)
 
-                if not self._dictionary.get(section):
-                    self._dictionary[section] = {}
+    def _check_file(self, file: Path) -> bool:
+        if file.suffix in Config.ASSETS_EXCLUDED_FORMATS:
+            return False
 
-                if not self._dictionary.get(file.name):
-                    self._dictionary[section][file.name] = {}
+        if file.is_dir() and DirectoryType in Config.ASSETS_EXCLUDED_FORMATS:
+            return False
 
-                self._dictionary[section].update({file.name: file.as_posix()})
+        return True
+
+    def _add_section(self, section: str, file: Path) -> None:
+        if not self._dictionary.get(section):
+            self._dictionary[section] = {}
+
+        if not self._dictionary.get(file.name):
+            self._dictionary[section][file.name] = {}
+
+        self._dictionary[section].update({file.name: file.as_posix()})
 
     @lru_cache
     def get(self, section: str, key: Any, default: Any = None) -> Any:
