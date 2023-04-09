@@ -34,7 +34,7 @@ watchdog = "3.0.0"
 win32-setctime = [{ version = "^1.1.0", platform = "windows" }]
 
 [tool.poetry.dev-dependencies]
-PyQt5-stubs = "^5.15.6.0"
+Nuitka = "1.5.5"
 
 
 [tool.poetry.scripts]

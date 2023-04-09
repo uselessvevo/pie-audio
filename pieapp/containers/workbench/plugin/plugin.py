@@ -25,7 +25,6 @@ class Workbench(
 
     def init(self) -> None:
         self.widget = QWidget()
-        self.widget.setObjectName("Workbench")
         self.workbench = self.addToolBar(self.widget, self.name)
 
         self.addToolButton(

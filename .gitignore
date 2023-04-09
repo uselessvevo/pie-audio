@@ -1,6 +1,8 @@
 TODO.md
 poetry.lock
 
+build/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

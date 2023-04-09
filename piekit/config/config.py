@@ -29,6 +29,7 @@ ASSETS_EXCLUDED_FORMATS: list = []
 ASSETS_FOLDER: Lock = os.getenv("ASSETS_FOLDER", "assets")
 THEMES_FOLDER: Lock = os.getenv("THEMES_FOLDER", "themes")
 DEFAULT_THEME = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())[0]
+ASSETS_USE_STYLE: bool = bool(os.getenv("ASSETS_USE_STYLE", True))
 
 # Configurations
 CONFIGS_FOLDER: Lock = os.getenv("CONFIGS_FOLDER", "configs")
