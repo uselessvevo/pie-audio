@@ -15,7 +15,7 @@ class ConfigAccessor:
         default: Any = None,
         section: Union[str, Sections] = Sections.Shared
     ) -> Any:
-        return Managers(SysManagers.Configs).get(self.name or section, key, default)
+        return Managers(SysManagers.Configs).get(section or self.name, key, default)
 
     def set_config(self, key: Any, data: Any) -> None:
         Managers(SysManagers.Configs).set(self.name, key, data)

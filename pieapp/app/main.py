@@ -47,7 +47,7 @@ class PieAudioApp(MainWindow, ConfigAccessor):
 
     def preparePlugins(self) -> None:
         """ Prepare all (or selected) Plugins """
-        Managers(SysManagers.Plugins).mount(self)
+        Managers(SysManagers.Plugins).init(self)
         self.signalPluginsReady.emit()
 
     def notifyPluginReady(self):
