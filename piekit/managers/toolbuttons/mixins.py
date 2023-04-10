@@ -11,7 +11,7 @@ from piekit.config import Config
 
 class ToolButtonAccessor:
 
-    def addToolButton(
+    def add_tool_button(
         self,
         parent: QObject,
         section: Union[str, Sections],
@@ -44,8 +44,12 @@ class ToolButtonAccessor:
 
         return Managers(SysManagers.ToolButton).addToolButton(section or Sections.Shared, name, toolButton)
 
-    def getToolButtons(self, section: str, *names: str) -> list[QObject]:
+    def get_tool_buttons(self, section: str, *names: str) -> list[QObject]:
         return Managers(SysManagers.ToolButton).getToolButtons(section, *names)
 
-    def getToolButton(self, section: str, name: str) -> QToolButton:
+    def get_tool_button(self, section: str, name: str) -> QToolButton:
         return Managers(SysManagers.ToolButton).getToolButton(section or Sections.Shared, name)
+
+    addToolButton = add_tool_button
+    getToolButton = get_tool_button
+    getToolButtons = get_tool_buttons

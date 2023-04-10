@@ -32,7 +32,7 @@ class AssetsManager(BaseManager):
         if not self._theme and theme_folders:
             self._theme = self._themes[0]
 
-    def mount(self) -> None:
+    def init(self) -> None:
         # Read app/user configuration
         self._read_root_assets(Config.APP_ROOT, Sections.Shared)
         self._read_root_assets(Config.USER_ROOT, Sections.User)
@@ -96,6 +96,12 @@ class AssetsManager(BaseManager):
     def get_icon(self, section: str, key: Any, default: Any = None) -> QIcon:
         return QIcon(self.get(section, key, default))
 
+    def get_theme(self) -> str:
+        return self._theme
+
+    def get_themes(self) -> list[str]:
+        return self._themes
+
     @property
     def root(self):
         return self._assets_folder
@@ -110,3 +116,5 @@ class AssetsManager(BaseManager):
 
     getSvg = get_svg
     getIcon = get_icon
+    getTheme = get_theme
+    getThemes = get_themes

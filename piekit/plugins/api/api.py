@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.api.exceptions import ApiMethodNotFoundError
@@ -6,17 +6,24 @@ from piekit.plugins.api.exceptions import ApiMethodNotFoundError
 
 class PiePluginAPI:
 
-    def __init__(self, parent: Union[None, PiePlugin] = None) -> None:
+    def __init__(self, parent: PiePlugin) -> None:
         self._parent = parent
 
-    def mount(self) -> None:
+    def init(self) -> None:
         pass
 
-    def __call__(self, method: str, **kwargs) -> Any:
+    def shutdown(self, *args, **kwargs) -> None:
+        pass
+
+    def reload(self, *args, **kwargs) -> None:
+        self.init()
+        self.shutdown()
+
+    def call(self, method: str, **kwargs) -> Any:
         try:
             return self.__getattribute__(method)(**kwargs)
         except AttributeError:
-            raise ApiMethodNotFoundError(method)
+            raise AttributeError(method)
 
     @property
     def parent(self) -> PiePlugin:

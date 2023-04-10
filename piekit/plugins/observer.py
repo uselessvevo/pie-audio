@@ -9,7 +9,7 @@ class PluginsObserverMixin:
 
     def __init__(self) -> None:
         self._plugin_availability_listeners = {}
-        self._plugin_unmount_listeners = {}
+        self._plugin_shutdown_listeners = {}
 
         for method_name in dir(self):
             method = getattr(self, method_name, None)
@@ -25,17 +25,17 @@ class PluginsObserverMixin:
 
                 self._plugin_availability_listeners[plugin_listen] = method_name
 
-            if hasattr(method, "plugin_unmount"):
-                object_unmount = method.plugin_unmount
+            if hasattr(method, "plugin_shutdown"):
+                object_shutdown = method.plugin_shutdown
 
-                if object_unmount not in self.requires + self.optional:
+                if object_shutdown not in self.requires + self.optional:
                     raise PieException(
                         f"Method {method_name} of {self} is trying to watch "
-                        f"plugin {object_unmount}, but that plugin is not "
+                        f"plugin {object_shutdown}, but that plugin is not "
                         f"listed in `requires` nor `optional`."
                     )
 
-                self._plugin_unmount_listeners[object_unmount] = method_name
+                self._plugin_shutdown_listeners[object_shutdown] = method_name
 
     def on_plugin_available(self, target: str) -> None:
         if target in self._plugin_availability_listeners:
@@ -49,11 +49,11 @@ class PluginsObserverMixin:
             method = getattr(self, method_name)
             method(target)
 
-    def on_plugin_unmount(self, target: str) -> None:
-        if target in self._plugin_unmount_listeners:
-            method_name = self._plugin_unmount_listeners[target]
+    def on_plugin_shutdown(self, target: str) -> None:
+        if target in self._plugin_shutdown_listeners:
+            method_name = self._plugin_shutdown_listeners[target]
             method = getattr(self, method_name)
             method()
 
     onPluginAvailable = on_plugin_available
-    onPluginUnmount = on_plugin_unmount
+    onPluginShutdown = on_plugin_shutdown

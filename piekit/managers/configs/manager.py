@@ -24,7 +24,7 @@ class ConfigManager(BaseManager):
         self._configuration: Dotty[str, dict[str, typing.Any]] = Dotty({})
         self._observer = FileSystemObserver()
 
-    def mount(self) -> None:
+    def init(self) -> None:
         # Read app/user configuration
         self._read_root_configuration(Config.APP_ROOT / Config.USER_CONFIG_FOLDER, Sections.Shared)
         self._read_root_configuration(Config.USER_ROOT / Config.USER_CONFIG_FOLDER, Sections.User)
@@ -66,13 +66,9 @@ class ConfigManager(BaseManager):
 
             self._observer.add_handler(str(folder), str(folder.name))
 
-    def unmount(self, *args, **kwargs) -> None:
+    def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})
         self._observer.remove_handlers(full_house=True)
-
-    def reload(self) -> None:
-        self.unmount()
-        self.mount()
 
     @lru_cache
     def get(

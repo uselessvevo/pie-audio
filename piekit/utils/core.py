@@ -20,7 +20,7 @@ def get_application(*args, **kwargs):
 
 
 def restart_application() -> None:
-    Managers.unmount(full_house=True)
+    Managers.shutdown(full_house=True)
     QtCore.QCoreApplication.quit()
     QtCore.QProcess.startDetached(sys.executable, sys.argv)
 

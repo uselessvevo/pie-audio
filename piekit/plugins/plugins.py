@@ -112,7 +112,7 @@ class PiePlugin(
 
         if self.api and issubclass(self.api, PiePluginAPI):
             self.api = self.api(self)
-            self.api.mount()
+            self.api.init()
 
     def prepareBaseSignals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
@@ -161,7 +161,7 @@ class PiePlugin(
         messageBox.setIcon(QMessageBox.Icon.Critical)
         messageBox.setText(error.title)
         messageBox.setInformativeText(error.description)
-        messageBox.setWindowTitle(Managers(SysManagers.Locales)("Error", section="shared"))
+        messageBox.setWindowTitle(Managers(SysManagers.Locales).get("Error", section="shared"))
         messageBox.exec()
 
     # Properties

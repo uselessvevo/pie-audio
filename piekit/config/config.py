@@ -59,34 +59,34 @@ TEMPLATE_FILES: Lock = [
 
 
 # Managers startup configuration
-# TODO: Replace `mount` attribute with Qt signal name (str) and emit it via `QMetaObject` -> `invokeMethod`
+# TODO: Replace `init` attribute with Qt signal name (str) and emit it via `QMetaObject` -> `invokeMethod`
 MANAGERS: Lock = [
     ManagerConfig(
         import_string="piekit.managers.configs.manager.ConfigManager",
-        mount=True
+        init=True
     ),
     ManagerConfig(
         import_string="piekit.managers.locales.manager.LocaleManager",
-        mount=True
+        init=True
     ),
     ManagerConfig(
         import_string="piekit.managers.assets.manager.AssetsManager",
-        mount=True
+        init=True
     ),
     ManagerConfig(
         import_string="piekit.managers.plugins.manager.PluginManager",
-        mount=False
+        init=False
     ),
     ManagerConfig(
         import_string="piekit.managers.menus.manager.MenuManager",
-        mount=True
+        init=True
     ),
     ManagerConfig(
         import_string="piekit.managers.toolbars.manager.ToolBarManager",
-        mount=True
+        init=True
     ),
     ManagerConfig(
         import_string="piekit.managers.toolbuttons.manager.ToolButtonManager",
-        mount=True
+        init=True
     )
 ]

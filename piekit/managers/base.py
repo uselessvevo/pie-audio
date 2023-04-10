@@ -14,15 +14,15 @@ class BaseManager:
         # Just a logger
         self._logger = logger
 
-        # Is manager mounted
-        self._mounted: bool = False
+        # Is manager ready
+        self._ready: bool = False
 
-    def mount(self, *args, **kwargs) -> None:
+    def init(self, *args, **kwargs) -> None:
         """
-        Main and optional entrypoint
+        Optional initializer
         """
 
-    def unmount(self, *args, **kwargs):
+    def shutdown(self, *args, **kwargs):
         """
         This method serves to reset all containers, variables etc.
         Don't use it to delete data from memory
@@ -32,6 +32,8 @@ class BaseManager:
         """
         This method reload manager
         """
+        self.shutdown()
+        self.init()
 
     def add(self, *args, **kwargs) -> None:
         pass
@@ -55,12 +57,12 @@ class BaseManager:
         """
 
     @property
-    def mounted(self) -> bool:
-        return self._mounted
+    def ready(self) -> bool:
+        return self._ready
 
-    @mounted.setter
-    def mounted(self, mounted: bool) -> None:
-        self._mounted = mounted
+    @ready.setter
+    def ready(self, ready: bool) -> None:
+        self._ready = ready
 
     def __call__(self, *args, **kwargs):
         return self.get(*args, **kwargs)

@@ -88,7 +88,7 @@ class MainSettingsWidget(
         self.localeCBox.addItems(locales)
         self.localeCBox.setCurrentText(self.getConfig("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
 
-        themes = Managers(SysManagers.Assets).themes
+        themes = Managers(SysManagers.Assets).getThemes()
         self.themeCBox = QtWidgets.QComboBox()
         self.themeCBox.addItems(themes)
         self.themeCBox.setCurrentText(self.getConfig("theme", section=Sections.User))

@@ -46,7 +46,7 @@ class Sections:
 @dt.dataclass(frozen=True, eq=False)
 class ManagerConfig:
     import_string: typing.Optional[str]
-    mount: bool = dt.field(default=False)
+    init: bool = dt.field(default=False)
     args: tuple = dt.field(default_factory=tuple)
     kwargs: dict = dt.field(default_factory=dict)
 

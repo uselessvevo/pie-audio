@@ -11,7 +11,7 @@ def start_application():
     from pieapp.app.main import PieAudioApp
     qapp = getApplication()
 
-    theme = Managers.get(SysManagers.Assets).theme
+    theme = Managers.get(SysManagers.Assets).getTheme()
     if theme:
         if Config.ASSETS_USE_STYLE:
             qapp.setStyleSheet(getTheme(theme))
