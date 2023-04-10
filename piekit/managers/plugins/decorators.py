@@ -35,9 +35,9 @@ def on_plugin_available(
     return func
 
 
-def on_plugin_unmount(func: Callable = None, target: Optional[str] = None):
+def on_plugin_shutdown(func: Callable = None, target: Optional[str] = None):
     """
-    Method decorator used to handle plugins unmount on Spyder.
+    Method decorator used to handle plugins shutdown on Spyder.
 
     This decorator will be called **before** the specified plugins is deleted
     and also **before** the plugins that uses the decorator is destroyed.
@@ -53,18 +53,18 @@ def on_plugin_unmount(func: Callable = None, target: Optional[str] = None):
         func(callable): The same method that was given as input.
     """
     if func is None:
-        return functools.partial(on_plugin_unmount, plugin=target)
+        return functools.partial(on_plugin_shutdown, plugin=target)
 
     if target is None:
         raise PieException(
-            "A method `on_plugin_unmount` must have a well "
+            "A method `on_plugin_shutdown` must have a well "
             "defined plugins keyword argument value. "
             "For example - target=Container.Workbench"
         )
 
-    func.plugin_unmount = target
+    func.plugin_shutdown = target
     return func
 
 
 onPluginAvailable = on_plugin_available
-onPluginUnmount = on_plugin_unmount
+onPluginShutdown = on_plugin_shutdown

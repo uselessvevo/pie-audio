@@ -16,7 +16,7 @@ class AssetsAccessor:
         default: typing.Any = None,
         section: Union[str, Sections] = Sections.Shared
     ) -> typing.Any:
-        return Managers(SysManagers.Assets)(self.section or section, key, default)
+        return Managers(SysManagers.Assets).get(self.section or section, key, default)
 
     def get_asset_icon(
         self,

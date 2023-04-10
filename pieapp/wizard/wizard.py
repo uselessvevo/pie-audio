@@ -20,7 +20,7 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
 
         self._parent = parent
         self._locales = Config.LOCALES
-        self._curLocale = Managers(SysManagers.Configs)(
+        self._curLocale = Managers(SysManagers.Configs).get(
             Sections.User, "locales.locale", Config.DEFAULT_LOCALE
         )
         self._localesRev = {v: k for (k, v) in self._locales.items()}
@@ -32,7 +32,9 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         self.comboBox.addItems([self._locales.get(i) for (i, _) in self._locales.items()])
         self.comboBox.currentIndexChanged.connect(self.getResult)
 
-        self.localeLabel = QtWidgets.QLabel(Managers(SysManagers.Locales)(Sections.Shared, "Select locale"))
+        self.localeLabel = QtWidgets.QLabel(
+            Managers(SysManagers.Locales).get(Sections.Shared, "Select locale")
+        )
         self.localeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -61,14 +63,16 @@ class ThemeWizardPage(QtWidgets.QWizardPage):
 
         self.comboBox = QtWidgets.QComboBox()
         self.comboBox.setStyleSheet("QComboBox{font-size: 12pt;}")
-        self.comboBox.addItems(Managers(SysManagers.Assets).themes)
+        self.comboBox.addItems(Managers(SysManagers.Assets).getTheme())
         self.comboBox.currentIndexChanged.connect(self.getResult)
 
-        self._curTheme = Managers(SysManagers.Configs)(
-            Sections.User, "assets.theme", default=Managers(SysManagers.Assets).theme
+        self._curTheme = Managers(SysManagers.Configs).get(
+            Sections.User, "assets.theme", default=Managers(SysManagers.Assets).getTheme()
         )
 
-        themeLabel = QtWidgets.QLabel(Managers(SysManagers.Locales)(Sections.Shared, "Select theme"))
+        themeLabel = QtWidgets.QLabel(
+            Managers(SysManagers.Locales).get(Sections.Shared, "Select theme")
+        )
         themeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -110,7 +114,7 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
             }
         """)
         self.lineEditButton.setIcon(QIcon(
-            Managers(SysManagers.Assets)(Sections.Shared, "open-folder.png")
+            Managers(SysManagers.Assets).get(Sections.Shared, "open-folder.png")
         ))
         self.lineEditButton.clicked.connect(self.selectFfmpegPath)
 
@@ -131,7 +135,9 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
 
     @Slot()
     def selectFfmpegPath(self):
-        directory = QFileDialog(self, Managers(SysManagers.Locales)(Sections.Shared, "Select ffmpeg directory"))
+        directory = QFileDialog(self, Managers(SysManagers.Locales).get(
+            Sections.Shared, "Select ffmpeg directory"
+        ))
         directory.setFileMode(QFileDialog.FileMode.Directory)
         directory.setOption(QFileDialog.Option.ShowDirsOnly, False)
         directory.getExistingDirectory(dir=str(Config.USER_ROOT))

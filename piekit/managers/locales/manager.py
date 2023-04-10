@@ -22,7 +22,7 @@ class LocaleManager(BaseManager):
         self._roots: set[Path] = set()
         self._translations: dict[str, dict[str, str]] = {}
 
-    def mount(self) -> None:
+    def init(self) -> None:
         # Read app/user configuration
         self._read_root_translations(Config.APP_ROOT, Sections.Shared)
         self._read_root_translations(Config.USER_ROOT, Sections.User)
@@ -51,12 +51,12 @@ class LocaleManager(BaseManager):
 
                 self._translations[file.stem].update(**read_json(str(file)))
 
-    def unmount(self, *args, **kwargs) -> None:
+    def shutdown(self, *args, **kwargs) -> None:
         self._translations = {}
 
     def reload(self) -> None:
-        self.unmount()
-        self.mount()
+        self.shutdown()
+        self.init()
 
     def get(self, section: str, key: str) -> str:
         if section not in self._translations:

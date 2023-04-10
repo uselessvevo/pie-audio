@@ -14,5 +14,5 @@ class ShortcutsManager(BaseManager):
 
         self._shortcuts: dict[str, QShortcut] = {}
 
-    def mount(self, section: str, shortcut: str, parent: MainWindow = None) -> None:
+    def init(self, section: str, shortcut: str, parent: MainWindow = None) -> None:
         pass

@@ -64,7 +64,7 @@ class MainWindow(
                 return False
 
         QApplication.processEvents()
-        Managers.unmount(full_house=True)
+        Managers.shutdown(full_house=True)
 
         return True
 

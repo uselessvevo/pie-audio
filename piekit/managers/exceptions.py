@@ -12,10 +12,10 @@ class DependencyNotFoundError(AttributeError):
         return f"Required manager {self._name} not found"
 
 
-class ManagerNotMountedError(AttributeError):
+class ManagerNotReadyError(AttributeError):
 
     def __init__(self, name: str) -> None:
         self._name = name
 
     def __str__(self):
-        return f"Manager {self._name} not mounted"
+        return f"Manager {self._name} not ready"

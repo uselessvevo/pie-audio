@@ -8,7 +8,7 @@ from piekit.plugins.api.api import PiePluginAPI
 
 class ContentTableAPI(PiePluginAPI):
 
-    def mount(self) -> None:
+    def init(self) -> None:
         self.file_struct = ContentTableStruct()
         self.prepare_parent_table()
 

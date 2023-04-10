@@ -15,13 +15,13 @@ class ConfigAccessor:
         default: Any = None,
         section: Union[str, Sections] = Sections.Shared
     ) -> Any:
-        return Managers.get(SysManagers.Configs).get(self.section or section, key, default)
+        return Managers(SysManagers.Configs).get(self.name or section, key, default)
 
     def set_config(self, key: Any, data: Any) -> None:
-        Managers.get(SysManagers.Configs).set(self.section, key, data)
+        Managers(SysManagers.Configs).set(self.name, key, data)
 
     def delete_config(self, key: Any) -> None:
-        Managers.get(SysManagers.Configs).delete(self.section, key)
+        Managers(SysManagers.Configs).delete(self.name, key)
 
     getConfig = get_config
     setConfig = set_config

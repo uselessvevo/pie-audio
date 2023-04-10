@@ -35,11 +35,11 @@ class FileSystemObserver:
         self._handlers: dict = {}
         self._observer: Observer = Observer()
 
-    def mount(self) -> None:
+    def init(self) -> None:
         """ Start observer """
         self._observer.start()
 
-    def unmount(self) -> None:
+    def shutdown(self) -> None:
         """ Unschedule and stop observer """
         self._watchers = {}
         self._observer.unschedule_all()

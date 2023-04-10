@@ -7,7 +7,7 @@ from piekit.plugins.plugins import PiePlugin
 
 
 def get_plugin(plugin: str) -> PiePlugin:
-    return Managers(SysManagers.Plugins)(plugin)
+    return Managers(SysManagers.Plugins).get(plugin)
 
 
 getPlugin = get_plugin

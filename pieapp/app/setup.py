@@ -30,7 +30,7 @@ def setup_application() -> None:
 
     if not check_crabs():
         restore_crabs()
-        Managers.mount(*Config.MANAGERS)
+        Managers.init(*Config.MANAGERS)
 
         if splash:
             splash.close()
@@ -39,7 +39,7 @@ def setup_application() -> None:
         wizard.show()
         sys.exit(app.exec())
 
-    Managers.mount(*Config.MANAGERS)
+    Managers.init(*Config.MANAGERS)
 
     if splash:
         splash.close()

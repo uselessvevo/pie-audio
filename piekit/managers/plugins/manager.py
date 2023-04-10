@@ -38,28 +38,26 @@ class PluginManager(BaseManager):
 
     # BaseManager methods
 
-    def mount(self, parent: "MainWindow" = None) -> None:
-        """ Mount all built-in or site PiePlugins, components and user plugins """
-        self._mount_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
-        self._mount_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
-        self._mount_from_packages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
+    def init(self, parent: "MainWindow" = None) -> None:
+        """ Initialize all built-in or site PiePlugins, components and user plugins """
+        self._initialize_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
+        self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
+        self._initialize_from_packages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
 
-    def unmount(self, *plugins: str, full_house: bool = False) -> None:
+    def shutdown(self, *plugins: str, full_house: bool = False) -> None:
         """
-        Unmount managers, services in parent object or all at once
+        Shutdown managers, services in parent object or all at once
 
         Args:
             plugins (objects): PiePlugin based classes
             full_house (bool): reload all managers, services from all instances
-
-        TODO: Notify all objects to unmount all dependencies
         """
         plugins = plugins if not full_house else self._plugins_registry.keys()
         for plugin in plugins:
-            self._logger.info(f"Unmounting {plugin} from {self.__class__.__name__}")
+            self._logger.info(f"Shutting down {plugin} from {self.__class__.__name__}")
 
             if plugin in self._plugins_registry:
-                self._unmount_plugin(plugin)
+                self._shutdown_plugin(plugin)
 
         # List of PiePlugins that depend on it
         self._plugin_dependents: dict[str, dict[str, list[str]]] = {}
@@ -75,7 +73,7 @@ class PluginManager(BaseManager):
 
     def reload(self, *plugins: str, full_house: bool = False) -> None:
         """ Reload listed or all objects and components """
-        self.unmount(*plugins, full_house=full_house)
+        self.shutdown(*plugins, full_house=full_house)
         for plugin in self._plugins_registry:
             plugin_instance = self._plugins_registry.get(plugin)
             self._initialize_plugin(plugin_instance)
@@ -86,7 +84,7 @@ class PluginManager(BaseManager):
 
     # PluginManager protected methods
 
-    def _mount_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
+    def _initialize_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
         if not folder.exists():
             folder.mkdir()
 
@@ -241,7 +239,7 @@ class PluginManager(BaseManager):
         plugin_dependencies[category] = plugin_strict_dependencies
         self._plugin_dependencies[plugin] = plugin_dependencies
 
-    def _notify_plugin_unmount(self, plugin_name: str):
+    def _notify_plugin_shutting_down(self, plugin_name: str):
         """Notify dependents of a plugin that is going to be unavailable."""
         plugin_dependents = self._plugin_dependents.get(plugin_name, {})
         required_plugins = plugin_dependents.get("requires", [])
@@ -255,10 +253,10 @@ class PluginManager(BaseManager):
                         f"Notifying {plugin_instance.type.capitalize()} "
                         f"that {plugin_name} is going to be turned off"
                     )
-                    plugin_instance.on_plugin_unmount(plugin_name)
+                    plugin_instance.on_plugin_shutdown(plugin_name)
 
-    def _unmount_plugin(self, plugin_name: str):
-        """ Unmount a plugin from its dependencies """
+    def _shutdown_plugin(self, plugin_name: str):
+        """ Shutdown a plugin from its dependencies """
         plugin_instance: PiePlugin = self._plugins_registry[plugin_name]
         plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
         required_plugins = plugin_dependencies.get("requires", [])
@@ -267,8 +265,8 @@ class PluginManager(BaseManager):
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugins_registry:
                 if self._plugin_availability.get(plugin, False):
-                    self._logger.info(f"Unmounting {plugin_name} from {plugin}")
-                    plugin_instance.on_plugin_unmount(plugin)
+                    self._logger.info(f"Shutting down {plugin_name} from {plugin}")
+                    plugin_instance.on_plugin_shutdown(plugin)
 
     # PluginManager public methods
 
