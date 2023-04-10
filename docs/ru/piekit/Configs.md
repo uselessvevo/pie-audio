@@ -57,5 +57,5 @@ ConfigLoader используется для загрузки конфигура
 Пример настройки:
 
 ```py
-Config.load_module(os.environ.get("CONFIG_MODULE_NAME", "pieapp.config"))
+Config.import_module(os.getenv("CONFIG_MODULE_NAME", "pieapp.config"))
 ```

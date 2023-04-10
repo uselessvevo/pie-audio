@@ -57,5 +57,5 @@ To load your application's configuration module, you need to add it yourself usi
 For example:
 
 ```py
-Config.load_module(os.environ.get("CONFIG_MODULE_NAME", "pieapp.config"))
+Config.import_module(os.getenv("CONFIG_MODULE_NAME", "pieapp.config"))
 ```
