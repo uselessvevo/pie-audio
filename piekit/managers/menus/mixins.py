@@ -11,7 +11,7 @@ from piekit.managers.structs import SysManagers, Sections
 
 class MenuAccessor:
 
-    def addMenuBar(
+    def add_menu_bar(
         self,
         parent: QWidget = None,
         name: str = None
@@ -19,10 +19,10 @@ class MenuAccessor:
         menuBar = QMenuBar(parent)
         return Managers(SysManagers.Menus).addMenuBar(name or Sections.Shared, menuBar)
 
-    def getMenuBar(self, name: str) -> QMenuBar:
+    def get_menu_bar(self, name: str) -> QMenuBar:
         return Managers(SysManagers.Menus).getMenuBar(name or Sections.Shared)
 
-    def addMenu(
+    def add_menu(
         self,
         parent: QMenuBar = None,
         section: str = None,
@@ -37,7 +37,7 @@ class MenuAccessor:
 
         return Managers(SysManagers.Menus).addMenu(section or Sections.Shared, name, menu)
 
-    def addMenuItem(
+    def add_menu_item(
         self,
         section: str = None,
         menu: str = None,
@@ -53,8 +53,15 @@ class MenuAccessor:
         menuInstance.addMenuItem(name, text, triggered, icon, before, index)
         return manager.addMenuItem(section or Sections.Shared, menu, name, menuInstance)
 
-    def getMenu(self, section: str, name: str) -> PieMenu:
+    def get_menu(self, section: str, name: str) -> PieMenu:
         return Managers(SysManagers.Menus).getMenu(section or Sections.Shared, name)
 
-    def getMenuItem(self, section: str, menu: str, name: str) -> QAction:
+    def get_menu_item(self, section: str, menu: str, name: str) -> QAction:
         return Managers(SysManagers.Menus).getMenuItem(section, menu, name)
+
+    addMenu = add_menu
+    getMenu = get_menu
+    addMenuBar = add_menu_bar
+    getMenuBar = get_menu_bar
+    getMenuItem = get_menu_item
+    addMenuItem = add_menu_item
