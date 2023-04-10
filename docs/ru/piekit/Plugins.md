@@ -61,7 +61,6 @@ class DreamPlugin(
 
 
 def main(*args, **kwargs) -> typing.Any:
-    Config.ASSETS_EXCLUDED_FORMATS.append(".wma")
     return DreamPlugin(*args, **kwargs)
 ```
 
@@ -71,8 +70,11 @@ def main(*args, **kwargs) -> typing.Any:
 
 ```py
 def init(self) -> None:
+    """
+    Метод отрисовки плагина
+    """
     self.dialog = QDialog(self.parent())
-    self.dialog.setWindowIcon(self.getAssetIcon("help.png"))
+    self.dialog.setWindowIcon(self.getPluginIcon())
     self.dialog.setWindowTitle(self.getTranslation("Dream plugin"))
 
     self.button = QPushButton(self.getTranslation("Ok"))
@@ -83,6 +85,19 @@ def init(self) -> None:
 
     self.dialog.setLayout(gridLayout)
     self.dialog.resize(400, 300)
+```
+
+```py
+def main(*args, **kwargs) -> typing.Any:
+    """
+    Метод настройки и запуска плагина
+    """
+
+    # Мы так же можем изменить значение поля конфигурации
+    Config.ASSETS_EXCLUDED_FORMATS.append(".wma")
+
+    # Запустим плагин
+    return DreamPlugin(*args, **kwargs)
 ```
 
 Добавим кнопку в `MenuBar`:
