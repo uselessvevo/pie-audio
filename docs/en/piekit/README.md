@@ -15,4 +15,4 @@ At this moment, this application still in deep development and there is no reaso
 * `ASSETS_FOLDER` - resource directory; default - assets
 * `THEMES_FOLDER` - directory of themes; by default - themes
 
-Now you need to set up the dev environment and run the file `pieapp/launcher.py `
+Now you need to set up the dev environment and run the file `pie-audio.py `
