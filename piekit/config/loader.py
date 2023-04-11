@@ -37,7 +37,7 @@ class ConfigLoader:
         for name, value in module_attributes.items():
             if issubclass(value, Lock):
                 if name in self.locked_attributes:
-                    warnings.warn(f"{name} is locked - you can't change the value of it")
+                    warnings.warn(f"{name} is locked - you can't change its value")
                     continue
                 else:
                     temp_locked_attributes.append(name)
