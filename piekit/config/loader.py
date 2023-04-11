@@ -40,7 +40,6 @@ class ConfigLoader:
                     warnings.warn(f"{name} is locked - you can't change the value of it")
                     continue
                 else:
-                    setattr(self, name, value)
                     temp_locked_attributes.append(name)
 
             setattr(self, name, value)
