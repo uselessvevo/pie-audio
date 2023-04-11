@@ -33,9 +33,13 @@ class ConfigLoader:
         module_attributes: dict[str, Any] = {
             k: v for (k, v) in config_module.__dict__.items() if k.isupper()
         }
+        module_locked_attributes: dict = {
+            k: v for (k, v) in getattr(config_module, "__annotations__", {}).items()
+            if k.isupper() and issubclass(v, Lock)
+        }
 
         for name, value in module_attributes.items():
-            if issubclass(value, Lock):
+            if name in module_locked_attributes:
                 if name in self.locked_attributes:
                     warnings.warn(f"{name} is locked - you can't change its value")
                     continue
