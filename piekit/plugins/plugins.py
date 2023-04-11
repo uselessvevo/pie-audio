@@ -1,15 +1,10 @@
 from pathlib import Path
 from typing import Union
 
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import Signal, QObject, Slot
+from PySide6.QtCore import Signal, QObject
 
 from piekit.utils.logger import logger
-
 from piekit.managers.base import BaseManager
-from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers
-
 from piekit.plugins.types import PluginTypes, Error
 from piekit.plugins.observer import PluginsObserverMixin
 
@@ -118,7 +113,7 @@ class PiePlugin(
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
         self.signalPluginLoading.connect(self._parent.signalPluginLoading)
         self.signalPluginReloading.connect(self._parent.signalPluginReloading)
-        self.signalExceptionOccurred.connect(self.errorHandler)
+        self.signalExceptionOccurred.connect(self._parent.errorHandler)
 
     def prepareShortcuts(self) -> None:
         """ Prepare plugin shortcuts and register them in `ShortcutsManager` """
@@ -152,17 +147,6 @@ class PiePlugin(
 
     def getVersion(self) -> tuple[int]:
         return self.version
-
-    # Slots
-
-    @Slot(Error)
-    def errorHandler(self, error: Error) -> None:
-        messageBox = QMessageBox()
-        messageBox.setIcon(QMessageBox.Icon.Critical)
-        messageBox.setText(error.title)
-        messageBox.setInformativeText(error.description)
-        messageBox.setWindowTitle(Managers(SysManagers.Locales).get("Error", section="shared"))
-        messageBox.exec()
 
     # Properties
 
