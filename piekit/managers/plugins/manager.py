@@ -104,9 +104,6 @@ class PluginManager(BaseManager):
                     config_module = import_by_path("config", str(plugin_path / "plugin/config.py"))
                     Config.load_module(config_module)
 
-                if (plugin_path / "app.png").exists():
-                    Managers(SysManagers.Assets).add(package.name, (plugin_path / "app.png"))
-
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
 
