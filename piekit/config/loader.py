@@ -29,6 +29,12 @@ class ConfigLoader:
         self.load_module(config_module)
 
     def load_module(self, config_module: ModuleType) -> None:
+        """
+        Process configuration module
+
+        Args:
+            config_module (ModuleType): configuration module
+        """
         temp_locked_attributes: list[str] = []
         module_attributes: dict[str, Any] = {
             k: v for (k, v) in config_module.__dict__.items() if k.isupper()
