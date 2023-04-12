@@ -1,7 +1,6 @@
 from typing import Any
 
 from piekit.plugins.plugins import PiePlugin
-from piekit.plugins.api.exceptions import ApiMethodNotFoundError
 
 
 class PiePluginAPI:
