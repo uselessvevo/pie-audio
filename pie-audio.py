@@ -1,5 +1,9 @@
 from pieapp.launcher import launch
 
 
-if __name__ == '__main__':
+def main(*args, **kwargs) -> None:
     launch()
+
+
+if __name__ == '__main__':
+    main()
