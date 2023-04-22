@@ -1,4 +1,6 @@
 import os.path
+from copy import copy
+
 from watchdog import events
 from watchdog.observers import Observer
 
@@ -72,7 +74,9 @@ class FileSystemObserver:
         self._watchers.pop(name)
 
     def remove_handlers(self, *handlers, full_house: bool = False) -> None:
-        pass
+        handlers = copy(self._watchers) if full_house else handlers
+        for handler in handlers:
+            self.remove_handler(handler)
 
     @property
     def watchers(self) -> dict:

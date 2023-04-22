@@ -3,9 +3,9 @@ from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout
 
+from piekit.config import Config
 from pieapp.structs.containers import Containers
 from piekit.plugins.helpers import getPlugin
-from piekit.config import Config
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
@@ -13,6 +13,7 @@ from piekit.managers.configs.mixins import ConfigAccessor
 
 
 class PieAudioApp(MainWindow, ConfigAccessor):
+    name = Config.PIEAPP_NAME
     section = Sections.Shared
     signalPluginsReady = Signal()
 

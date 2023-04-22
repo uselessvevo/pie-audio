@@ -13,9 +13,17 @@ class ConfigAccessor:
         self,
         key: Any,
         default: Any = None,
-        section: Union[str, Sections] = Sections.Shared
+        section: Union[str, Sections] = Sections.Inner
     ) -> Any:
-        return Managers(SysManagers.Configs).get(section or self.name, key, default)
+        return Managers(SysManagers.Configs).get(self.name, section, key, default)
+
+    def get_shared_config(
+        self,
+        key: Any,
+        default: Any = None,
+        section: Union[Sections.Inner, Sections.User] = Sections.Shared
+    ) -> Any:
+        return Managers(SysManagers.Configs).get_shared(section, key, default)
 
     def set_config(self, key: Any, data: Any) -> None:
         Managers(SysManagers.Configs).set(self.name, key, data)
@@ -23,6 +31,11 @@ class ConfigAccessor:
     def delete_config(self, key: Any) -> None:
         Managers(SysManagers.Configs).delete(self.name, key)
 
+    def save_config(self, data: dict, create: bool = False) -> None:
+        Managers(SysManagers.Configs).save(self.name, data, create)
+
     getConfig = get_config
+    getSharedConfig = get_shared_config
     setConfig = set_config
+    saveConfig = save_config
     deleteConfig = delete_config

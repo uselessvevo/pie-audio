@@ -72,6 +72,7 @@ class MainSettingsWidget(
     AssetsAccessor,
     QtWidgets.QWidget
 ):
+    name = Containers.Settings
     section = Sections.Shared
 
     def __init__(self, parent: QtWidgets.QWidget = None) -> None:
@@ -79,19 +80,19 @@ class MainSettingsWidget(
         mainGrid = QtWidgets.QGridLayout(parent)
 
         self.ffmpegPrompt = QtWidgets.QLineEdit()
-        self.ffmpegPrompt.insert(self.getConfig("ffmpeg.root", section=Sections.User))
+        self.ffmpegPrompt.insert(self.getSharedConfig("ffmpeg.root", section=Sections.User))
         self.ffmpegButton = QtWidgets.QPushButton(self.getTranslation("Set ffmpeg path"))
         self.ffmpegButton.clicked.connect(self.ffmpegButtonConnect)
 
         locales = Config.LOCALES
         self.localeCBox = QtWidgets.QComboBox()
         self.localeCBox.addItems(locales)
-        self.localeCBox.setCurrentText(self.getConfig("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
+        self.localeCBox.setCurrentText(self.getSharedConfig("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
 
         themes = Managers(SysManagers.Assets).getThemes()
         self.themeCBox = QtWidgets.QComboBox()
         self.themeCBox.addItems(themes)
-        self.themeCBox.setCurrentText(self.getConfig("theme", section=Sections.User))
+        self.themeCBox.setCurrentText(self.getSharedConfig("assets.theme", section=Sections.User))
         # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
 
         mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("Language")), 0, 0, 1, 1)

@@ -42,14 +42,14 @@ def restore_crabs() -> None:
         (Config.USER_ROOT / Config.USER_PLUGINS_FOLDER).mkdir()
 
 
-def except_hook(exc_type, exc_value, exc_traceback):
+def except_hook(_, exc_value, exc_traceback):
     traceback_collect = []
     if exc_traceback:
         format_exception = traceback.format_tb(exc_traceback)
         for line in format_exception:
             traceback_collect.append(repr(line).replace("\\n", ""))
 
-    ErrorWindow(exc_type, exc_value, traceback_collect)
+    ErrorWindow(exc_value, traceback_collect)
 
 
 restartApplication = restart_application

@@ -15,6 +15,6 @@ class LocalesAccessor:
         key: typing.Any,
         section: Union[str, Sections] = Sections.Shared
     ) -> typing.Any:
-        return Managers.get(SysManagers.Locales).get(self.section or section, key)
+        return Managers(SysManagers.Locales).get(self.section or section, key)
 
     getTranslation = get_translation

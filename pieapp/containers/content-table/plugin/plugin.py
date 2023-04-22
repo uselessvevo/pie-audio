@@ -33,7 +33,7 @@ class ContentTable(
     def setTextAlignment(self, count: int) -> None:
         headers = self.table.horizontalHeader()
         for column in range(count):
-            headers.horizontalHeaderItem(column).setTextAlignment(Qt.AlignCenter)
+            headers.horizontalHeaderItem(column).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def setColumnsStretch(self, count: int) -> None:
         headers = self.table.horizontalHeader()
@@ -60,7 +60,7 @@ class ContentTable(
 
     def init(self) -> None:
         self.table = QTableWidget()
-        self.table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setPlaceholder()
         self.table.setSizePolicy(
             QSizePolicy.Policy.Expanding,

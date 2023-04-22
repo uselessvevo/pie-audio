@@ -1,5 +1,10 @@
 /* QMainWindow */
 
+QTextEdit {
+    background-color: #353535;
+    border: none;
+}
+
 QMainWindow {
    background-color: #353535;
 }

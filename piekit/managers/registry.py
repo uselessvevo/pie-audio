@@ -1,11 +1,14 @@
 from typing import Union
+from pathlib import Path
 
+from piekit.config import Config
 from piekit.utils.logger import logger
+from piekit.utils.files import read_json
+from piekit.utils.modules import import_by_string
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import ManagerConfig
-from piekit.config import Config
-from piekit.utils.modules import import_by_string
-from piekit.managers.exceptions import ManagerNotReadyError, DependencyNotFoundError
+from piekit.managers.exceptions import ManagerNotReadyError
+from piekit.managers.exceptions import DependencyNotFoundError
 
 
 class ManagersRegistry:
@@ -32,33 +35,33 @@ class ManagersRegistry:
                 # TODO: Add managers order resolver
                 raise ManagerNotReadyError(dependency)
 
-    def _init_manually(self, manager: BaseManager, *args, **kwargs) -> None:
-        """ 
+    def from_class(self, manager_class: BaseManager, init: bool = True, *args, **kwargs) -> None:
+        """
         Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
-
         For example:
         >>> from piekit.managers.registry import Managers
         >>> from piekit.managers.configs.manager import ConfigManager
         >>> Managers.init(ConfigManager, PathConfig(...), ...)
         """
-        manager = manager()
-        self._check_dependencies(manager)
-        self._logger.info(f"Initializing `{manager.__class__.__name__}`")
+        manager_instance = manager_class()
+        self._check_dependencies(manager_instance)
+        self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
-        manager.init(*args, **kwargs)
-        self._managers_instances[manager.name] = manager
+        if init is True:
+            manager_instance.init(*args, **kwargs)
 
-        setattr(self, manager.name, manager)
-        setattr(manager, "ready", True)
+        self._managers_instances[manager_instance.name] = manager_instance
+        setattr(self, manager_instance.name, manager_instance)
+        setattr(manager_instance, "ready", init)
 
-    def _init_from_config(self, config: ManagerConfig) -> None:
+    def from_config(self, config: ManagerConfig) -> None:
         """
         Initialize manager from `ManagerConfig` structure
         """
         manager_instance = import_by_string(config.import_string)()
         self._check_dependencies(manager_instance)
-
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
+
         if config.init is True:
             manager_instance.init(*config.args, **config.kwargs)
 
@@ -66,21 +69,16 @@ class ManagersRegistry:
         setattr(self, manager_instance.name, manager_instance)
         setattr(manager_instance, "ready", config.init)
 
-    def init(self, *managers: Union[ManagerConfig, BaseManager]) -> None:
+    def from_json(self, file: Union[str, Path]) -> None:
         """
-        Add and initialize managers via import string or via `BaseManager` instance
-        >>> Managers.init(*Config.MANAGERS)
+        Initialize managers from json file.
+        File structure must have next structure: [{"import_string": string, "init": boolean}, ...]
         """
-        for manager in managers:
-            if isinstance(manager, ManagerConfig):
-                self._init_from_config(manager)
+        file_data = read_json(file)
+        file_data = tuple(ManagerConfig(import_string=f["import"], init=file["init"]) for f in file_data)
 
-            elif issubclass(manager, BaseManager):
-                self._init_manually(manager)
-
-            else:
-                self._logger.info(f"Manager {manager} has incorrect `{type(manager)}` type. Skipping.")
-                continue
+        for config in file_data:
+            self.from_config(config)
 
     def shutdown(self, *managers: str, full_house: bool = False) -> None:
         self._logger.info("Preparing to shutdown all managers")
@@ -112,17 +110,11 @@ class ManagersRegistry:
         manager = getattr(self, name)
         return manager.ready
 
-    def get(self, manager: str) -> BaseManager:
+    def __call__(self, manager: str) -> BaseManager:
         try:
             return self.__getattribute__(manager)
         except AttributeError:
             raise ManagerNotReadyError(manager)
-
-    def __call__(self, *args, **kwargs):
-        return self.get(*args, **kwargs)
-
-    def __getattr__(self, *args, **kwargs) -> BaseManager:
-        return self.get(*args, **kwargs)
 
 
 Managers = ManagersRegistry()

@@ -36,11 +36,17 @@ class SysManagers:
     
 
 class Sections:
+    # Plugin access section
+    Inner = "inner"
+
     # User/site access section
     User = "user"
     
     # Shared/root access section
     Shared = "shared"
+
+    # System section
+    Root = "root"
 
 
 @dt.dataclass(frozen=True, eq=False)

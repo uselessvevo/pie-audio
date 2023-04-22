@@ -20,7 +20,7 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
 
         self._parent = parent
         self._locales = Config.LOCALES
-        self._curLocale = Managers(SysManagers.Configs).get(
+        self._curLocale = Managers(SysManagers.Configs).get_shared(
             Sections.User, "locales.locale", Config.DEFAULT_LOCALE
         )
         self._localesRev = {v: k for (k, v) in self._locales.items()}
@@ -63,11 +63,11 @@ class ThemeWizardPage(QtWidgets.QWizardPage):
 
         self.comboBox = QtWidgets.QComboBox()
         self.comboBox.setStyleSheet("QComboBox{font-size: 12pt;}")
-        self.comboBox.addItems(Managers(SysManagers.Assets).getTheme())
+        self.comboBox.addItems(Managers(SysManagers.Assets).getThemes())
         self.comboBox.currentIndexChanged.connect(self.getResult)
 
-        self._curTheme = Managers(SysManagers.Configs).get(
-            Sections.User, "assets.theme", default=Managers(SysManagers.Assets).getTheme()
+        self._curTheme = Managers(SysManagers.Configs).get_shared(
+            Sections.User, "assets.theme", Managers(SysManagers.Assets).getTheme()
         )
 
         themeLabel = QtWidgets.QLabel(

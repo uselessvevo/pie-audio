@@ -19,18 +19,15 @@ class AssetsManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
 
-        self._roots: set[Path] = set()
-        self._dictionary: dict = dict()
-        self._theme = Managers.get(SysManagers.Configs).get("user", "assets.theme")
-        self._assets_folder = Config.APP_ROOT / Config.ASSETS_FOLDER
-        self._themes = []
+        self._assets_dictionary: dict[str, Path] = {}
+        self._current_theme = Managers(SysManagers.Configs).get_shared(Sections.User, "assets.theme")
 
-        theme_folders = tuple(i for i in (self._assets_folder / "themes").glob("*") if i.is_dir())
-        for theme in theme_folders:
-            self._themes.append(theme.name)
+        assets_folder: Path = Config.APP_ROOT / Config.ASSETS_FOLDER / "themes"
+        theme_folders = list(i.name for i in assets_folder.iterdir() if i.is_dir())
+        self._themes: list[str] = theme_folders
 
-        if not self._theme and theme_folders:
-            self._theme = self._themes[0]
+        if not self._current_theme and theme_folders:
+            self._current_theme = theme_folders[0]
 
     def init(self) -> None:
         # Read app/user configuration
@@ -48,7 +45,7 @@ class AssetsManager(BaseManager):
         self._add_section(section, file)
 
     def _read_root_assets(self, folder: Path, section: Union[str, Sections]) -> None:
-        for file in (folder / Config.ASSETS_FOLDER / Config.THEMES_FOLDER / self._theme).rglob("*.*"):
+        for file in (folder / Config.ASSETS_FOLDER / Config.THEMES_FOLDER / self._current_theme).rglob("*.*"):
             if not self._check_file(file):
                 continue
 
@@ -72,18 +69,19 @@ class AssetsManager(BaseManager):
         return True
 
     def _add_section(self, section: str, file: Path) -> None:
-        if not self._dictionary.get(section):
-            self._dictionary[section] = {}
+        if not self._assets_dictionary.get(section):
+            self._assets_dictionary[section] = {}
 
-        if not self._dictionary.get(file.name):
-            self._dictionary[section][file.name] = {}
+        if not self._assets_dictionary.get(file.name):
+            self._assets_dictionary[section][file.name] = {}
 
-        self._dictionary[section].update({file.name: file.as_posix()})
+        self._assets_dictionary[section].update({file.name: file.as_posix()})
 
     @lru_cache
     def get(self, section: str, key: Any, default: Any = None) -> Any:
         try:
-            return self._dictionary[section][key]
+            self._logger.warning(f"{self._assets_dictionary[section][key]=}")
+            return self._assets_dictionary[section][key]
         except KeyError:
             self._logger.info(f"File {key} not found")
             return default
@@ -97,21 +95,9 @@ class AssetsManager(BaseManager):
         return QIcon(self.get(section, key, default))
 
     def get_theme(self) -> str:
-        return self._theme
+        return self._current_theme
 
     def get_themes(self) -> list[str]:
-        return self._themes
-
-    @property
-    def root(self):
-        return self._assets_folder
-
-    @property
-    def theme(self):
-        return self._theme
-
-    @property
-    def themes(self):
         return self._themes
 
     getSvg = get_svg

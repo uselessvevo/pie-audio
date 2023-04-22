@@ -15,8 +15,8 @@ from piekit.widgets.splashcreen import SplashScreen
 def setup_application() -> None:
     sys.excepthook = except_hook
 
-    Config.import_module("piekit.config.config")
-    Config.import_module(os.environ.get("CONFIG_MODULE_NAME", "pieapp.config"))
+    Config.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.config"))
+    Config.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.config"))
 
     splash = None
     app = get_application(sys.argv)
@@ -30,7 +30,8 @@ def setup_application() -> None:
 
     if not check_crabs():
         restore_crabs()
-        Managers.init(*Config.MANAGERS)
+        for manager in Config.INITIAL_MANAGERS:
+            Managers.from_config(manager)
 
         if splash:
             splash.close()
@@ -39,7 +40,8 @@ def setup_application() -> None:
         wizard.show()
         sys.exit(app.exec())
 
-    Managers.init(*Config.MANAGERS)
+    for manager in Config.MANAGERS:
+        Managers.from_config(manager)
 
     if splash:
         splash.close()
