@@ -27,5 +27,6 @@
     "Plugin {} is ready": "Плагин {} готов к работе",
     "Plugin {} is loading": "Плагин {} загружается",
     "Select ffmpeg directory": "Выберите директорию с ffmpeg (bin)",
-    "About": "О программе"
+    "About": "О программе",
+    "No files selected": "Файлы не выбраны"
 }

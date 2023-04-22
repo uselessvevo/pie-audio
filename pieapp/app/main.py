@@ -32,12 +32,22 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.prepareBaseSignals()
         self.prepareSignals()
         self.prepareMainLayout()
+        self.prepareWorkbenchLayout()
+        self.prepareTableLayout()
         self.prepareCentralDefaultWidget()
         self.preparePlugins()
 
     def prepareMainLayout(self) -> None:
         self.mainLayout = QGridLayout()
         self.setLayout(self.mainLayout)
+
+    def prepareWorkbenchLayout(self) -> None:
+        self.workbenchLayout = QGridLayout()
+        self.mainLayout.addLayout(self.workbenchLayout, 0, 0)
+
+    def prepareTableLayout(self) -> None:
+        self.tableLayout = QGridLayout()
+        self.mainLayout.addLayout(self.tableLayout, 1, 0)
 
     def prepareCentralDefaultWidget(self):
         widget = QtWidgets.QLabel()

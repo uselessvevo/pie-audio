@@ -27,5 +27,6 @@
     "Plugin {} is ready": "Plugin {} is ready",
     "Plugin {} is loading": "Plugin {} is loading",
     "Select ffmpeg directory": "Select ffmpeg bin directory",
-    "About": "About"
+    "About": "About",
+    "No files selected": "No files selected"
 }
