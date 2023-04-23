@@ -162,6 +162,15 @@ class FinishWizardPage(QtWidgets.QWizardPage):
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
+        label = QtWidgets.QLabel(Managers(SysManagers.Locales).get(
+            Sections.Shared, "Done"
+        ))
+        label.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(label)
+        self.setLayout(layout)
+
 
 class SetupWizard(QtWidgets.QWizard):
 

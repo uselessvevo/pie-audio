@@ -1,6 +1,5 @@
 import os
 import sys
-from PySide6.QtWidgets import QApplication
 
 from piekit.config import Config
 from pieapp.wizard.wizard import SetupWizard
@@ -26,7 +25,7 @@ def setup_application() -> None:
         splash = SplashScreen(str(splash_image))
         splash.show()
 
-    QApplication.processEvents()
+    app.processEvents()
 
     if not check_crabs():
         restore_crabs()
