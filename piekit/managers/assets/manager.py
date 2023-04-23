@@ -80,7 +80,6 @@ class AssetsManager(BaseManager):
     @lru_cache
     def get(self, section: str, key: Any, default: Any = None) -> Any:
         try:
-            self._logger.warning(f"{self._assets_dictionary[section][key]=}")
             return self._assets_dictionary[section][key]
         except KeyError:
             self._logger.info(f"File {key} not found")

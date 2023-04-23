@@ -56,6 +56,14 @@ class ConfigManager(BaseManager):
         self._observer.add_handler(str(folder), str(folder.name))
 
     def _read_plugins_configuration(self, plugin_folder: Path) -> None:
+        def read_config(section, package):
+            for config in package.rglob("*.json"):
+                if not self._configuration[section].get(config.name):
+                    self._configuration[section][config.stem] = {}
+
+                self._configuration[section]["__FILE__"] = config
+                self._configuration[section][config.stem].update(**read_json(str(config)))
+
         for plugin_package in plugin_folder.iterdir():
             self._roots.add(plugin_package)
 
@@ -73,20 +81,8 @@ class ConfigManager(BaseManager):
                 self._configuration[user_section] = {}
 
             # Read configuration from plugin's inner configuration folder
-            for inner_config in plugin_package.rglob("*.json"):
-                if not self._configuration[inner_section].get(inner_config.name):
-                    self._configuration[inner_section][inner_config.stem] = {}
-
-                self._configuration[inner_section]["__FILE__"] = inner_config
-                self._configuration[inner_section][inner_config.stem].update(**read_json(str(inner_config)))
-
-            # Read configuration from plugin's user configuration folder
-            for user_config in user_folder.rglob("*.json"):
-                if not self._configuration[user_section].get(user_config.name):
-                    self._configuration[user_section][user_config.stem] = {}
-
-                self._configuration[user_section]["__FILE__"] = user_config
-                self._configuration[user_section][user_config.stem].update(**read_json(str(user_config)))
+            read_config(inner_section, plugin_package)
+            read_config(user_section, plugin_package)
 
             self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
             self._observer.add_handler(str(user_folder), str(user_folder.name))
@@ -114,10 +110,6 @@ class ConfigManager(BaseManager):
         if key in self.protected_keys:
             raise PieException(f"Can't use protected key: {key}")
 
-        self._logger.warning(
-            f'{scope}.{section}.{key}: '
-            f'{self._configuration.get(f"{scope}.{section}.{key}", default)}'
-        )
         return self._configuration.get(f"{scope}.{section}.{key}", default)
 
     def get_shared(
@@ -184,9 +176,6 @@ class ConfigManager(BaseManager):
         """
         Save user settings
         """
-        if section != Sections.User:
-            raise PieException(f"Can't save protected data in `{scope}.{section}`")
-
         try:
             file = self._configuration[scope][section]["__FILE__"]
             folder = file.parent
