@@ -3,7 +3,7 @@ import importlib
 from typing import Any
 from types import ModuleType
 
-from piekit.config.types import Annotated
+from piekit.config.types import AnnotatedHandler
 
 
 class ConfigLoader:
@@ -18,12 +18,12 @@ class ConfigLoader:
         # Dictionary of fields to handlers relation (<field name>: <handler name>)
         self.__dict__["_fields_handlers"]: dict[str, str] = {}
 
-    def add_handlers(self, *handlers: Annotated) -> None:
+    def add_handlers(self, *handlers: AnnotatedHandler) -> None:
         for handler in handlers:
-            if handler in self._handler:
+            if handler in self._handlers:
                 raise AttributeError(f"Handler {handler} is already added")
 
-            self._handlers[handler.__class__.__name__] = handler()
+            self._handlers[handler.__name__] = handler()
 
     def import_module(self, import_path: str) -> None:
         """
@@ -50,13 +50,13 @@ class ConfigLoader:
         module_attributes: dict[str, Any] = {
             k: v for (k, v) in config_module.__dict__.items() if k.isupper()
         }
-        
+
         # Get all fields with `Annotated` type annotation
         module_annotated_attributes: dict = {
-            k: v for (k, v) in getattr(config_module, "__annotations__", {}).items()
+            k: v.__name__ for (k, v) in getattr(config_module, "__annotations__", {}).items()
             if k.isupper() 
-            and issubclass(v, Annotated) 
-            and v.__class__.__name__ in self._handlers
+            and issubclass(v, AnnotatedHandler)
+            and v.__name__ in self._handlers
         }
 
         for field, value in module_attributes.items():
@@ -65,14 +65,25 @@ class ConfigLoader:
 
             setattr(self, field, value)
 
+    def __getattr__(self, field: str) -> Any:
+        if field in self._fields_handlers:
+            handler_name = self._fields_handlers.get(field)
+            handler_instance = self._handlers.get(handler_name)
+            try:
+                return handler_instance.get(field)
+            except Exception as e:
+                warnings.warn(str(e))
+        else:
+            return self.__dict__.get(field)
+
     def __setattr__(self, field: str, value: Any) -> None:
         if field in self._fields_handlers:
             handler_name = self._fields_handlers.get(field)
-            handler_instance: Annotated = self._handlers.get(handler_name)
+            handler_instance = self._handlers.get(handler_name)
             try:
                 handler_instance.set(field, value)
             except Exception as e:
-                warnings.warn(e)
+                warnings.warn(str(e))
         else:
             self.__dict__[field] = value
 

@@ -19,11 +19,12 @@ class TestPlugin(
     section = Plugins.TestPlugin
 
     def init(self) -> None:
-        self.logger.info(f"{Config.TEST_STR_ATTRIBUTE=}, {Config.TEST_LIST_ATTRIBUTE=}")
+        self.logger.info(f"{Config.APP_ROOT=}, {Config.TEST_STR_ATTRIBUTE=}, {Config.TEST_LIST_ATTRIBUTE=}")
         self.logger.info(self.getConfig("config.key"))
         self.logger.info(self.getTranslation("Test String"))
         self.logger.info(self.getAsset("cancel.png"))
 
 
 def main(*args, **kwargs) -> typing.Any:
+    Config.APP_ROOT = 123
     return TestPlugin(*args, **kwargs)

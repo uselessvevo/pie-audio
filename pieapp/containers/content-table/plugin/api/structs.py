@@ -15,7 +15,7 @@ DEFAULT_CONTENT_TABLE_COUNT: int = len(DEFAULT_CONTENT_TABLE_COLUMNS)
 
 class ContentTableStruct:
     count: int = DEFAULT_CONTENT_TABLE_COUNT
-    columns: tuple = getattr(Config, "CONTENT_TABLE_COLUMNS", DEFAULT_CONTENT_TABLE_COLUMNS)
+    columns: tuple = Config.CONTENT_TABLE_COLUMNS or DEFAULT_CONTENT_TABLE_COLUMNS
 
 
 class ContentTableSectionSize:
