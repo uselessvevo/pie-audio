@@ -50,8 +50,8 @@ class MaxHandler(AnnotatedHandler):
         self.__attributes: dict[str, Any] = {}
 
     def set(self, field: str, value: Any) -> Any:
-        if len(value) > self._max:
-            raise ValueError(f"Field {field} bigger than max value ({self._max})")
+        if len(value) > self.__max:
+            raise ValueError(f"Field {field} bigger than max value ({self.__max})")
 
         self.__attributes[field] = value
 
@@ -62,7 +62,7 @@ class MaxHandler(AnnotatedHandler):
         if not isinstance(max_value, int):
             raise TypeError("Max value must be integer")
 
-        cls._max = max_value
+        cls.__max = max_value
         return cls
 
     @property
