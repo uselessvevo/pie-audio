@@ -27,4 +27,5 @@ class TestPlugin(
 
 def main(*args, **kwargs) -> typing.Any:
     Config.APP_ROOT = 123
+    Config.IMMUTABLE_FIELD = "New immutable value"
     return TestPlugin(*args, **kwargs)

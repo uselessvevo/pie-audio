@@ -1,8 +1,9 @@
 import os
 import sys
 
-from piekit.config import Config, Lock
+from piekit.config import Config, Lock, Max
 from pieapp.wizard.wizard import SetupWizard
+from piekit.config.types import Min
 from piekit.managers.registry import Managers
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs
@@ -15,7 +16,7 @@ from piekit.widgets.splashcreen import SplashScreen
 def setup_application() -> None:
     sys.excepthook = except_hook
 
-    Config.add_handlers(Lock)
+    Config.add_handlers(Lock, Max, Min)
     Config.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.config"))
     Config.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.config"))
 

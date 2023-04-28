@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import abc
-from typing import Any
+from typing import Any, Type
 
-
-__all__ = ("Lock", "Max")
+__all__ = ("Lock", "Max", "Min")
 
 
 class AnnotatedHandler:
@@ -49,32 +50,33 @@ class MaxHandler(AnnotatedHandler):
         self.__attributes: dict[str, Any] = {}
 
     def set(self, field: str, value: Any) -> Any:
-        if len(value) > self.__max:
-            raise ValueError(f"Field {field} bigger than max value ({self.__max})")
+        if len(value) > self._max:
+            raise ValueError(f"Field {field} bigger than max value ({self._max})")
 
         self.__attributes[field] = value
 
     def get(self, field: str) -> Any:
         return self.__attributes[field]
 
-    def __class_getitem__(cls, max_value: int) -> None:
+    def __class_getitem__(cls, max_value: int) -> Type[MaxHandler]:
         if not isinstance(max_value, int):
             raise TypeError("Max value must be integer")
 
-        cls.__max = max_value
+        cls._max = max_value
+        return cls
 
     @property
     def attributes(self) -> dict[str, Any]:
         return self.__attributes
 
 
-class LenHandler(AnnotatedHandler):
+class MinHandler(AnnotatedHandler):
 
     def __init__(self) -> None:
         self.__attributes: dict[str, Any] = {}
 
     def set(self, field: str, value: Any) -> Any:
-        if len(value) < self.__max:
+        if len(value) < self.__min:
             raise ValueError(f"Field {field} is smaller than min value ({self.__min})")
 
         self.__attributes[field] = value
@@ -82,11 +84,12 @@ class LenHandler(AnnotatedHandler):
     def get(self, field: str) -> Any:
         return self.__attributes[field]
 
-    def __class_getitem__(cls, min_value: int) -> None:
+    def __class_getitem__(cls, min_value: int) -> Type[MinHandler]:
         if not isinstance(min_value, int):
             raise TypeError("Min value must be integer")
 
         cls.__min = min_value
+        return cls
 
     @property
     def attributes(self) -> dict[str, Any]:
@@ -94,5 +97,5 @@ class LenHandler(AnnotatedHandler):
 
 
 Max = type("Max", (MaxHandler,), {})
-Min = type("Min", (LenHandler,), {})
+Min = type("Min", (MinHandler,), {})
 Lock = type("Lock", (LockHandler,), {})
