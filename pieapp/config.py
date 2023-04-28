@@ -5,7 +5,6 @@ from piekit.managers.structs import ManagerConfig
 
 PIEAPP_NAME: Lock = "pie-audio"
 PIEAPP_VERSION: Lock = "2023.04.pre-alpha"
-
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
 
