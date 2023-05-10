@@ -2,7 +2,6 @@ import sys
 import traceback
 
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import Qt
 
 from piekit.config import Config
 from piekit.managers.registry import Managers

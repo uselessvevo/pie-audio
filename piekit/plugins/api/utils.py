@@ -4,7 +4,7 @@ API helpers
 from typing import Any
 
 from piekit.plugins.api.api import PiePluginAPI
-from piekit.plugins.helpers import get_plugin
+from piekit.plugins.utils import get_plugin
 
 
 def get_api(plugin: str, method: str, **kwargs) -> Any:

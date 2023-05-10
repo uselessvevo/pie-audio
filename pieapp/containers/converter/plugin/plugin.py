@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QDialog, QFileDialog
 
 from pieapp.structs.menus import Menus, MenuItems
 from piekit.managers.structs import Sections
-from piekit.plugins.api.helpers import getAPI
+from piekit.plugins.api.utils import getAPI
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugins
 from pieapp.structs.containers import Containers

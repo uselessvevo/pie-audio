@@ -4,6 +4,7 @@ import sys
 from piekit.config import Config, Lock, Max
 from pieapp.wizard.wizard import SetupWizard
 from piekit.config.types import Min
+from piekit.managers.locales.utils import get_translation
 from piekit.managers.registry import Managers
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs
@@ -29,11 +30,14 @@ def setup_application() -> None:
         splash.show()
 
     app.processEvents()
+    splash.setText(get_translation("Starting up application..."))
 
     if not check_crabs():
         restore_crabs()
         for manager in Config.INITIAL_MANAGERS:
             Managers.from_config(manager)
+
+        splash.setText(get_translation("Setting up application wizard..."))
 
         if splash:
             splash.close()
@@ -41,6 +45,8 @@ def setup_application() -> None:
         wizard = SetupWizard()
         wizard.show()
         sys.exit(app.exec())
+
+    splash.setText(get_translation("Setting up managers..."))
 
     for manager in Config.MANAGERS:
         Managers.from_config(manager)
