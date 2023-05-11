@@ -21,15 +21,15 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
 
         self._parent = parent
         self._locales = Config.LOCALES
-        self._curLocale = Managers(SysManagers.Configs).get_shared(
+        self._cur_locale = Managers(SysManagers.Configs).get_shared(
             Sections.User, "locales.locale", Config.DEFAULT_LOCALE
         )
         self._locales_reversed = {v: k for (k, v) in self._locales.items()}
-        self._cur_locale = self._locales.get(self._curLocale)
+        self._cur_locale = self._locales.get(self._cur_locale)
 
         self.combo_box = QtWidgets.QComboBox()
         self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
-        self.combo_box.insert_item(0, self._locales.pop(self._curLocale))
+        self.combo_box.insert_item(0, self._locales.pop(self._cur_locale))
         self.combo_box.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
         self.combo_box.current_index_changed.connect(self.get_result)
 
@@ -51,7 +51,7 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
             create=True
         )
 
-        if self._curLocale != new_locale:
+        if self._cur_locale != new_locale:
             restart_application()
 
         return new_locale
