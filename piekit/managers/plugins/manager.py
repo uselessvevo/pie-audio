@@ -3,7 +3,6 @@ import sys
 from typing import Any
 from pathlib import Path
 
-from piekit.managers.registry import Managers
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
 
@@ -86,7 +85,8 @@ class PluginManager(BaseManager):
 
     def _initialize_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
         if not folder.exists():
-            folder.mkdir()
+            self._logger.warning(f"Plugins folder {folder.name} doesn't exist")
+            return
 
         for package in folder.iterdir():
             if package.is_dir() and package.name not in ("__pycache__",) and parent:
@@ -121,7 +121,7 @@ class PluginManager(BaseManager):
         # Hashing PiePlugin instance
         self._plugins_registry[plugin_instance.name] = plugin_instance
 
-        plugin_instance.signalPluginReady.connect(
+        plugin_instance.sig_plugin_ready.connect(
             lambda: (
                 self._notify_plugin_availability(plugin_instance.name),
                 self._notify_plugin_availability_on_main(plugin_instance.name)
@@ -132,7 +132,7 @@ class PluginManager(BaseManager):
         plugin_instance.prepare()
 
         # PiePlugin is ready
-        plugin_instance.signalPluginReady.emit()
+        plugin_instance.sig_plugin_ready.emit()
 
         self._notify_plugin_dependencies(plugin_instance.name)
 
@@ -164,7 +164,7 @@ class PluginManager(BaseManager):
     def _notify_plugin_availability_on_main(self, name: str) -> None:
         plugin_instance = self._plugins_registry.get(name)
         if plugin_instance:
-            plugin_instance.parent().signalPluginReady.emit(name)
+            plugin_instance.parent().sig_plugin_ready.emit(name)
 
     def _notify_plugin_dependencies(self, name: str) -> None:
         """ Notify PiePlugins dependencies """

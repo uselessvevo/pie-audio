@@ -13,7 +13,7 @@ class ToolBarAccessor:
 
     def add_toolbar(self, parent: QObject, name: str = None) -> QToolBar:
         toolbar = PieToolBar(parent=parent)
-        return Managers(SysManagers.ToolBars).addToolBar(name or Sections.Shared, toolbar)
+        return Managers(SysManagers.ToolBars).add_toolbar(name or Sections.Shared, toolbar)
 
     def add_toolbar_item(
         self,
@@ -24,21 +24,21 @@ class ToolBarAccessor:
         before: str = None
     ) -> QToolBar:
         manager = Managers(SysManagers.ToolBars)
-        toolbar: PieToolBar = manager.getToolBar(section)
-        toolbar.addToolBarItem(name, item, after, before)
-        return manager.addItem(section or Sections.Shared, name, item)
+        toolbar: PieToolBar = manager.get_toolbar(section)
+        toolbar.add_toolbar_item(name, item, after, before)
+        return manager.add_item(section or Sections.Shared, name, item)
 
     def get_toolbar_item(self, section: str, name: str) -> QWidget:
-        return Managers(SysManagers.ToolBars).getItem(section, name)
+        return Managers(SysManagers.ToolBars).get_item(section, name)
 
     def get_toolbar_items(self, section: str, *names: str) -> list[QObject]:
-        return Managers(SysManagers.ToolBars).getItems(section, *names)
+        return Managers(SysManagers.ToolBars).get_items(section, *names)
 
     def get_toolbar(self, name: str) -> QToolBar:
-        return Managers(SysManagers.ToolBars).getToolBar(name)
+        return Managers(SysManagers.ToolBars).get_toolbar(name)
 
     def get_toolbars(self, *names: str) -> list[QToolBar]:
-        return Managers(SysManagers.ToolBars).getToolBars(*names)
+        return Managers(SysManagers.ToolBars).get_toolbars(*names)
 
     addToolBar = add_toolbar
     getToolBar = get_toolbar

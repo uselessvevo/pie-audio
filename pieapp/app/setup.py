@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import os
 import sys
 
@@ -29,15 +31,15 @@ def setup_application() -> None:
         splash = SplashScreen(str(splash_image))
         splash.show()
 
-    app.processEvents()
-    splash.setText(get_translation("Starting up application..."))
+    app.process_events()
+    splash.set_text(get_translation("Starting up application..."))
 
     if not check_crabs():
         restore_crabs()
         for manager in Config.INITIAL_MANAGERS:
             Managers.from_config(manager)
 
-        splash.setText(get_translation("Setting up application wizard..."))
+        splash.set_text(get_translation("Setting up application wizard..."))
 
         if splash:
             splash.close()
@@ -46,7 +48,7 @@ def setup_application() -> None:
         wizard.show()
         sys.exit(app.exec())
 
-    splash.setText(get_translation("Setting up managers..."))
+    splash.set_text(get_translation("Setting up managers..."))
 
     for manager in Config.MANAGERS:
         Managers.from_config(manager)

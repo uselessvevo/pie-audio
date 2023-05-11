@@ -1,10 +1,12 @@
+from __feature__ import snake_case
+
 import typing
 
 from PySide6.QtWidgets import QDialog, QFileDialog
 
 from pieapp.structs.menus import Menus, MenuItems
 from piekit.managers.structs import Sections
-from piekit.plugins.api.utils import getAPI
+from piekit.plugins.api.utils import get_api
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugins
 from pieapp.structs.containers import Containers
@@ -15,7 +17,7 @@ from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.managers.toolbars.mixins import ToolBarAccessor
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
-from piekit.managers.plugins.decorators import onPluginAvailable
+from piekit.managers.plugins.decorators import on_plugin_available
 from piekit.widgets.menus import INDEX_END, INDEX_START
 
 
@@ -32,87 +34,87 @@ class Converter(
 
     def init(self) -> None:
         self.dialog = QDialog(self.parent())
-        self.dialog.setWindowTitle(self.getTranslation("Convert"))
-        self.dialog.setWindowIcon(self.getAssetIcon("go.png"))
+        self.dialog.set_window_title(self.get_translation("Convert"))
+        self.dialog.set_window_icon(self.get_asset_icon("go.png"))
         self.dialog.resize(400, 300)
 
-    def openFiles(self) -> None:
-        fileDialog = QFileDialog(self.dialog, self.getTranslation("Open files"))
-        selectedFiles = fileDialog.getOpenFileNames(self.dialog)
-        getAPI(Containers.ContentTable, "receive", files=selectedFiles[0])
+    def open_files(self) -> None:
+        file_dialog = QFileDialog(self.dialog, self.get_translation("Open files"))
+        selected_files = file_dialog.getOpenFileNames(self.dialog)
+        get_api(Containers.ContentTable, "receive", files=selected_files[0])
 
-    @onPluginAvailable(target=Containers.MenuBar)
-    def onMenuBarAvailable(self) -> None:
-        self.menuBar = self.getMenuBar(Sections.Shared)
+    @on_plugin_available(target=Containers.MenuBar)
+    def on_menu_bar_available(self) -> None:
+        self.menu_bar = self.get_menu_bar(Sections.Shared)
 
-        self.addMenuItem(
+        self.add_menu_item(
             section=Sections.Shared,
             menu=Menus.File,
             name=MenuItems.OpenFiles,
-            text=self.getTranslation("Open file"),
-            icon=self.getAssetIcon("open-file.png"),
+            text=self.get_translation("Open file"),
+            icon=self.get_asset_icon("open-file.png"),
             index=INDEX_START(),
-            triggered=self.openFiles
+            triggered=self.open_files
         )
 
-        self.addMenuItem(
+        self.add_menu_item(
             section=Sections.Shared,
             menu=Menus.File,
             name=MenuItems.Exit,
-            text=self.getTranslation("Exit"),
-            icon=self.getAssetIcon("exit.png"),
+            text=self.get_translation("Exit"),
+            icon=self.get_asset_icon("exit.png"),
             triggered=self.parent().close,
             index=INDEX_END()
         )
 
-    @onPluginAvailable(target=Containers.Workbench)
-    def onWorkbenchAvailable(self) -> None:
-        self.addToolButton(
-            parent=self.getToolBar(Containers.Workbench),
+    @on_plugin_available(target=Containers.Workbench)
+    def on_workbench_available(self) -> None:
+        self.add_tool_button(
+            parent=self.get_toolbar(Containers.Workbench),
             section=self.name,
             name=WorkbenchItems.OpenFiles,
-            text=self.getTranslation("Open file"),
-            tooltip=self.getTranslation("Open file"),
-            icon=self.getAssetIcon("open-folder.png"),
-            triggered=self.openFiles
+            text=self.get_translation("Open file"),
+            tooltip=self.get_translation("Open file"),
+            icon=self.get_asset_icon("open-folder.png"),
+            triggered=self.open_files
         )
 
-        self.addToolButton(
-            parent=self.getToolBar(Containers.Workbench),
+        self.add_tool_button(
+            parent=self.get_toolbar(Containers.Workbench),
             section=self.name,
             name=WorkbenchItems.Convert,
-            text=self.getTranslation("Convert"),
-            tooltip=self.getTranslation("Convert"),
-            icon=self.getAssetIcon("go.png")
-        ).setEnabled(False)
+            text=self.get_translation("Convert"),
+            tooltip=self.get_translation("Convert"),
+            icon=self.get_asset_icon("go.png")
+        ).set_enabled(False)
 
-        self.addToolButton(
-            parent=self.getToolBar(Containers.Workbench),
+        self.add_tool_button(
+            parent=self.get_toolbar(Containers.Workbench),
             section=self.name,
             name=WorkbenchItems.Clear,
-            text=self.getTranslation("Clear"),
-            tooltip=self.getTranslation("Clear"),
-            icon=self.getAssetIcon("recycle-bin.png")
-        ).setEnabled(False)
+            text=self.get_translation("Clear"),
+            tooltip=self.get_translation("Clear"),
+            icon=self.get_asset_icon("recycle-bin.png")
+        ).set_enabled(False)
 
-        self.addToolBarItem(
+        self.add_toolbar_item(
             section=Containers.Workbench,
             name=WorkbenchItems.Clear,
-            item=self.getToolButton(self.name, WorkbenchItems.Clear),
+            item=self.get_tool_button(self.name, WorkbenchItems.Clear),
             before=WorkbenchItems.Spacer
         )
 
-        self.addToolBarItem(
+        self.add_toolbar_item(
             section=Containers.Workbench,
             name=WorkbenchItems.Convert,
-            item=self.getToolButton(self.name, WorkbenchItems.Convert),
+            item=self.get_tool_button(self.name, WorkbenchItems.Convert),
             before=WorkbenchItems.Spacer
         )
 
-        self.addToolBarItem(
+        self.add_toolbar_item(
             section=Containers.Workbench,
             name=WorkbenchItems.OpenFiles,
-            item=self.getToolButton(self.name, WorkbenchItems.OpenFiles),
+            item=self.get_tool_button(self.name, WorkbenchItems.OpenFiles),
             before=WorkbenchItems.Spacer
         )
 

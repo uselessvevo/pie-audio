@@ -23,13 +23,13 @@ class MainWindow(
     # Accessors section
     section: str = Sections.Shared
 
-    signalMoved = Signal()
-    signalResized = Signal()
-    signalExceptionOccurred = Signal(dict)
+    sig_moved = Signal()
+    sig_resized = Signal()
+    sig_exception_occurred = Signal(dict)
 
-    signalPluginReady = Signal(str)
-    signalPluginLoading = Signal(str)
-    signalPluginReloading = Signal(str)
+    sig_plugin_ready = Signal(str)
+    sig_plugin_loading = Signal(str)
+    sig_plugin_reloading = Signal(str)
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent=parent)
@@ -46,8 +46,8 @@ class MainWindow(
 
     # Main methods
 
-    def prepareBaseSignals(self) -> None:
-        self.signalExceptionOccurred.connect(self.errorHandler)
+    def prepare_base_signals(self) -> None:
+        self.sig_exception_occurred.connect(self.errorHandler)
 
     # Event methods
 
@@ -60,7 +60,7 @@ class MainWindow(
     def closeHandler(self, cancellable: bool = True) -> bool:
         if cancellable and self.getConfig("ui.show_exit_dialog", True, Sections.User):
             messageBox = MessageBox(self)
-            if messageBox.clickedButton() == messageBox.noButton:
+            if messageBox.clickedButton() == messageBox.no_button:
                 return False
 
         QApplication.processEvents()

@@ -1,6 +1,7 @@
 import sys
 import traceback
 
+from __feature__ import snake_case
 from PySide6 import QtWidgets, QtCore
 
 from piekit.config import Config

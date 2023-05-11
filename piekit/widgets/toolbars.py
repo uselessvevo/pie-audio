@@ -32,7 +32,7 @@ class PieToolBar(QWidget):
         self._layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.setLayout(self._layout)
 
-    def addToolBarItem(
+    def add_toolbar_item(
         self,
         name: str,
         item: Union[QWidget, QAction],
@@ -55,3 +55,5 @@ class PieToolBar(QWidget):
         self._keys.append(name)
 
         return item
+
+    addToolBarItem = add_toolbar_item
