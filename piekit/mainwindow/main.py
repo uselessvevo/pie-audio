@@ -58,12 +58,12 @@ class MainWindow(
             event.ignore()
 
     def closeHandler(self, cancellable: bool = True) -> bool:
-        if cancellable and self.getConfig("ui.show_exit_dialog", True, Sections.User):
+        if cancellable and self.get_config("ui.show_exit_dialog", True, Sections.User):
             messageBox = MessageBox(self)
-            if messageBox.clickedButton() == messageBox.no_button:
+            if messageBox.clicked_button() == messageBox.no_button:
                 return False
 
-        QApplication.processEvents()
+        QApplication.process_events()
         Managers.shutdown(full_house=True)
 
         return True
@@ -71,10 +71,10 @@ class MainWindow(
     @Slot(Error)
     def errorHandler(self, error: Error) -> None:
         messageBox = QMessageBox()
-        messageBox.setIcon(QMessageBox.Critical)
-        messageBox.setText(error.title)
-        messageBox.setInformativeText(error.description)
-        messageBox.setWindowTitle(self.getTranslation("Error"))
+        messageBox.set_icon(QMessageBox.Critical)
+        messageBox.set_text(error.title)
+        messageBox.set_informative_text(error.description)
+        messageBox.set_window_title(self.get_translation("Error"))
         messageBox.exec()
 
     # Properties

@@ -22,7 +22,7 @@ def get_application(*args, **kwargs):
 def restart_application() -> None:
     Managers.shutdown(full_house=True)
     QtCore.QCoreApplication.quit()
-    QtCore.QProcess.startDetached(sys.executable, sys.argv)
+    QtCore.QProcess.start_detached(sys.executable, sys.argv)
 
 
 def check_crabs() -> bool:

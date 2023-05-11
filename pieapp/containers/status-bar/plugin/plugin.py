@@ -27,6 +27,8 @@ class StatusBar(
         self.status_bar.insert_permanent_widget(0, QWidget())
         self._parent.set_status_bar(self.status_bar)
 
+    showMessage = show_message
+
 
 def main(*args, **kwargs) -> typing.Any:
     return StatusBar(*args, **kwargs)
