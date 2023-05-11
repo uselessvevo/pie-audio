@@ -47,20 +47,20 @@ class MainWindow(
     # Main methods
 
     def prepare_base_signals(self) -> None:
-        self.sig_exception_occurred.connect(self.errorHandler)
+        self.sig_exception_occurred.connect(self.error_handler)
 
     # Event methods
 
-    def closeEvent(self, event) -> None:
+    def close_event(self, event) -> None:
         if self.closeHandler(True):
             event.accept()
         else:
             event.ignore()
 
-    def closeHandler(self, cancellable: bool = True) -> bool:
+    def close_handler(self, cancellable: bool = True) -> bool:
         if cancellable and self.get_config("ui.show_exit_dialog", True, Sections.User):
-            messageBox = MessageBox(self)
-            if messageBox.clicked_button() == messageBox.no_button:
+            message_box = MessageBox(self)
+            if message_box.clicked_button() == message_box.no_button:
                 return False
 
         QApplication.process_events()
@@ -69,20 +69,16 @@ class MainWindow(
         return True
 
     @Slot(Error)
-    def errorHandler(self, error: Error) -> None:
-        messageBox = QMessageBox()
-        messageBox.set_icon(QMessageBox.Critical)
-        messageBox.set_text(error.title)
-        messageBox.set_informative_text(error.description)
-        messageBox.set_window_title(self.get_translation("Error"))
-        messageBox.exec()
+    def error_handler(self, error: Error) -> None:
+        message_box = QMessageBox()
+        message_box.set_icon(QMessageBox.Critical)
+        message_box.set_text(error.title)
+        message_box.set_informative_text(error.description)
+        message_box.set_window_title(self.get_translation("Error"))
+        message_box.exec()
 
     # Properties
 
     @property
     def logger(self) -> logger:
         return self._logger
-
-    @property
-    def registry(self):
-        return Managers

@@ -1,3 +1,4 @@
+from __feature__ import snake_case
 from pathlib import Path
 
 from PySide6 import QtWidgets
@@ -6,8 +7,8 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QFileDialog
 
 from piekit.managers.structs import SysManagers, Sections
-from piekit.utils.files import writeJson
-from piekit.utils.core import restartApplication
+from piekit.utils.files import write_json
+from piekit.utils.core import restart_application
 
 from piekit.managers.registry import Managers
 from piekit.config import Config
@@ -23,37 +24,37 @@ class LocaleWizardPage(QtWidgets.QWizardPage):
         self._curLocale = Managers(SysManagers.Configs).get_shared(
             Sections.User, "locales.locale", Config.DEFAULT_LOCALE
         )
-        self._localesRev = {v: k for (k, v) in self._locales.items()}
-        self._curLocaleRev = self._locales.get(self._curLocale)
+        self._locales_reversed = {v: k for (k, v) in self._locales.items()}
+        self._cur_locale = self._locales.get(self._curLocale)
 
-        self.comboBox = QtWidgets.QComboBox()
-        self.comboBox.setStyleSheet("QComboBox{font-size: 12pt;}")
-        self.comboBox.insertItem(0, self._locales.pop(self._curLocale))
-        self.comboBox.addItems([self._locales.get(i) for (i, _) in self._locales.items()])
-        self.comboBox.currentIndexChanged.connect(self.getResult)
+        self.combo_box = QtWidgets.QComboBox()
+        self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
+        self.combo_box.insert_item(0, self._locales.pop(self._curLocale))
+        self.combo_box.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
+        self.combo_box.current_index_changed.connect(self.get_result)
 
-        self.localeLabel = QtWidgets.QLabel(
+        self.locale_label = QtWidgets.QLabel(
             Managers(SysManagers.Locales).get(Sections.Shared, "Select locale")
         )
-        self.localeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
+        self.locale_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.localeLabel)
-        layout.addWidget(self.comboBox)
-        self.setLayout(layout)
+        layout.add_widget(self.locale_label)
+        layout.add_widget(self.combo_box)
+        self.set_layout(layout)
 
-    def getResult(self):
-        newLocale = self._localesRev.get(self.comboBox.currentText())
-        writeJson(
+    def get_result(self):
+        new_locale = self._locales_reversed.get(self.combo_box.current_text())
+        write_json(
             file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "locales.json"),
-            data={"locale": newLocale},
+            data={"locale": new_locale},
             create=True
         )
 
-        if self._curLocale != newLocale:
-            restartApplication()
+        if self._curLocale != new_locale:
+            restart_application()
 
-        return newLocale
+        return new_locale
 
 
 class ThemeWizardPage(QtWidgets.QWizardPage):
@@ -61,37 +62,37 @@ class ThemeWizardPage(QtWidgets.QWizardPage):
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
-        self.comboBox = QtWidgets.QComboBox()
-        self.comboBox.setStyleSheet("QComboBox{font-size: 12pt;}")
-        self.comboBox.addItems(Managers(SysManagers.Assets).getThemes())
-        self.comboBox.currentIndexChanged.connect(self.getResult)
+        self.combo_box = QtWidgets.QComboBox()
+        self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
+        self.combo_box.add_items(Managers(SysManagers.Assets).get_themes())
+        self.combo_box.current_index_changed.connect(self.get_result)
 
         self._curTheme = Managers(SysManagers.Configs).get_shared(
-            Sections.User, "assets.theme", Managers(SysManagers.Assets).getTheme()
+            Sections.User, "assets.theme", Managers(SysManagers.Assets).get_theme()
         )
 
-        themeLabel = QtWidgets.QLabel(
+        theme_label = QtWidgets.QLabel(
             Managers(SysManagers.Locales).get(Sections.Shared, "Select theme")
         )
-        themeLabel.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
+        theme_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(themeLabel)
-        layout.addWidget(self.comboBox)
-        self.setLayout(layout)
+        layout.add_widget(theme_label)
+        layout.add_widget(self.combo_box)
+        self.set_layout(layout)
 
-    def getResult(self):
-        newTheme = self.comboBox.currentText()
-        writeJson(
+    def get_result(self):
+        new_theme = self.combo_box.current_text()
+        write_json(
             file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "assets.json"),
-            data={"theme": newTheme},
+            data={"theme": new_theme},
             create=True
         )
 
-        if self._curTheme != newTheme:
-            restartApplication()
+        if self._curTheme != new_theme:
+            restart_application()
 
-        return self.comboBox.currentText()
+        return self.combo_box.current_text()
 
 
 class FfmpegWizardPage(QtWidgets.QWizardPage):
@@ -99,62 +100,62 @@ class FfmpegWizardPage(QtWidgets.QWizardPage):
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self._parent = parent
-        self.ffmpegPath = None
+        self.ffmpeg_path = None
 
-        self.lineEdit = QtWidgets.QLineEdit()
-        self.lineEdit.setDisabled(True)
-        self.lineEdit.setStyleSheet("QLineEdit{font-size: 15pt;}")
+        self.line_edit = QtWidgets.QLineEdit()
+        self.line_edit.setDisabled(True)
+        self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
 
-        self.lineEditButton = QtWidgets.QToolButton()
-        self.lineEditButton.setStyleSheet("""
+        self.line_edit_button = QtWidgets.QToolButton()
+        self.line_edit_button.set_style_sheet("""
             QPushButton {
                 font-size: 15pt;
                 width: 300px;
                 border-radius: 50px;
             }
         """)
-        self.lineEditButton.setIcon(QIcon(
+        self.line_edit_button.setIcon(QIcon(
             Managers(SysManagers.Assets).get(Sections.Shared, "open-folder.png")
         ))
-        self.lineEditButton.clicked.connect(self.selectFfmpegPath)
+        self.line_edit_button.clicked.connect(self.select_ffmpeg_path)
 
-        pageTitle = QtWidgets.QLabel("Setup ffmpeg")
-        pageTitle.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
+        page_title = QtWidgets.QLabel("Setup ffmpeg")
+        page_title.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
-        ffmpegHBox = QtWidgets.QHBoxLayout()
-        ffmpegHBox.addWidget(self.lineEditButton)
-        ffmpegHBox.addWidget(self.lineEdit)
+        ffmpeg_hbox = QtWidgets.QHBoxLayout()
+        ffmpeg_hbox.add_widget(self.line_edit_button)
+        ffmpeg_hbox.add_widget(self.line_edit)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(pageTitle)
-        layout.addLayout(ffmpegHBox)
-        self.setLayout(layout)
+        layout.add_widget(page_title)
+        layout.add_layout(ffmpeg_hbox)
+        self.set_layout(layout)
 
-    def isComplete(self) -> bool:
-        return bool(Path(self.ffmpegPath).exists() if self.ffmpegPath else False) and super().isComplete()
+    def is_complete(self) -> bool:
+        return bool(Path(self.ffmpeg_path).exists() if self.ffmpeg_path else False) and super().is_complete()
 
     @Slot()
-    def selectFfmpegPath(self):
+    def select_ffmpeg_path(self):
         directory = QFileDialog(self, Managers(SysManagers.Locales).get(
             Sections.Shared, "Select ffmpeg directory"
         ))
-        directory.setFileMode(QFileDialog.FileMode.Directory)
-        directory.setOption(QFileDialog.Option.ShowDirsOnly, False)
-        directory.getExistingDirectory(dir=str(Config.USER_ROOT))
-        directoryPath = directory.directory().path()
+        directory.set_file_mode(QFileDialog.FileMode.Directory)
+        directory.set_option(QFileDialog.Option.ShowDirsOnly, False)
+        directory.get_existing_directory(dir=str(Config.USER_ROOT))
+        directory_path = directory.directory().path()
 
-        if directoryPath:
-            writeJson(
+        if directory_path:
+            write_json(
                 file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "ffmpeg.json"),
-                data={"root": directoryPath},
+                data={"root": directory_path},
                 create=True
             )
-            self.ffmpegPath = directoryPath
-            self.lineEdit.setText(directoryPath)
-            self.completeChanged.emit()
+            self.ffmpeg_path = directory_path
+            self.line_edit.set_text(directory_path)
+            self.complete_changed.emit()
 
-    def getResult(self):
-        return self.lineEdit.text()
+    def get_result(self):
+        return self.line_edit.text()
 
 
 class FinishWizardPage(QtWidgets.QWizardPage):
@@ -165,20 +166,20 @@ class FinishWizardPage(QtWidgets.QWizardPage):
         label = QtWidgets.QLabel(Managers(SysManagers.Locales).get(
             Sections.Shared, "Done"
         ))
-        label.setStyleSheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
+        label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(label)
-        self.setLayout(layout)
+        layout.add_widget(label)
+        self.set_layout(layout)
 
 
 class SetupWizard(QtWidgets.QWizard):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Setup wizard")
+        self.set_window_title("Setup wizard")
         self.resize(640, 380)
-        self.setOptions(
+        self.set_options(
             QtWidgets.QWizard.WizardOption.NoBackButtonOnLastPage
             | QtWidgets.QWizard.WizardOption.NoCancelButtonOnLastPage
         )
@@ -191,13 +192,13 @@ class SetupWizard(QtWidgets.QWizard):
         )
 
         for page in self.pages:
-            self.addPage(page)
+            self.add_page(page)
 
         self.button(QtWidgets.QWizard.WizardButton.FinishButton).clicked.connect(self.onFinish)
 
     def onFinish(self):
         for page in self.pages:
             if hasattr(page, "getResult"):
-                page.getResult()
+                page.get_result()
 
-        restartApplication()
+        restart_application()
