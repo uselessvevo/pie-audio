@@ -32,14 +32,14 @@ def setup_application() -> None:
         splash.show()
 
     app.process_events()
-    splash.set_text(get_translation("Starting up application..."))
+    splash.set_text(get_translation("Starting up application"))
 
     if not check_crabs():
         restore_crabs()
         for manager in Config.INITIAL_MANAGERS:
             Managers.from_config(manager)
 
-        splash.set_text(get_translation("Setting up application wizard..."))
+        splash.set_text(get_translation("Setting up application wizard"))
 
         if splash:
             splash.close()
@@ -48,7 +48,7 @@ def setup_application() -> None:
         wizard.show()
         sys.exit(app.exec())
 
-    splash.set_text(get_translation("Setting up managers..."))
+    splash.set_text(get_translation("Setting up managers"))
 
     for manager in Config.MANAGERS:
         Managers.from_config(manager)
