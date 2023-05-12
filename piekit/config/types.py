@@ -7,9 +7,6 @@ __all__ = ("Lock", "Max", "Min")
 
 
 class AnnotatedHandler:
-    """
-    All implementations must contain private `attributes <dict[str, Any]>` field
-    """
 
     @abc.abstractmethod
     def set(self, field: str, value: Any) -> Any:
@@ -17,11 +14,6 @@ class AnnotatedHandler:
 
     @abc.abstractmethod
     def get(self, field: str) -> Any:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def attributes(self) -> dict[str, Any]:
         pass
 
 
@@ -38,10 +30,6 @@ class LockHandler(AnnotatedHandler):
 
     def get(self, field: str) -> Any:
         return self.__attributes.get(field)
-
-    @property
-    def attributes(self) -> dict[str, Any]:
-        return self.__attributes
 
 
 class MaxHandler(AnnotatedHandler):
@@ -65,10 +53,6 @@ class MaxHandler(AnnotatedHandler):
         cls.__max = max_value
         return cls
 
-    @property
-    def attributes(self) -> dict[str, Any]:
-        return self.__attributes
-
 
 class MinHandler(AnnotatedHandler):
 
@@ -90,10 +74,6 @@ class MinHandler(AnnotatedHandler):
 
         cls.__min = min_value
         return cls
-
-    @property
-    def attributes(self) -> dict[str, Any]:
-        return self.__attributes
 
 
 Max = type("Max", (MaxHandler,), {})
