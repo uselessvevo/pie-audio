@@ -30,7 +30,7 @@ def check_crabs() -> bool:
         return False
 
     user_folder = Config.USER_ROOT / Config.CONFIGS_FOLDER
-    req_files = set((Config.SYSTEM_ROOT / i).name for i in Config.TEMPLATE_FILES)
+    req_files = set((Config.SYSTEM_ROOT / i).name for i in Config.DEFAULT_CONFIG_FILES)
     ex_files = set(i.name for i in user_folder.rglob("*.json"))
     return req_files == ex_files
 
