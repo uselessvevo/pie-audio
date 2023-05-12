@@ -24,7 +24,7 @@ class PieAudioApp(MainWindow, ConfigAccessor):
             Config.PIEAPP_VERSION
         ))
         self.set_minimum_size(720, 480)
-        self.resize(*self.get_config("ui.winsize", (900, 560), Sections.User))
+        self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_DEFAULT_WINDOW_SIZE, Sections.User))
         self.set_window_icon(QIcon(self.get_asset("cloud.png")))
 
     def prepare_signals(self) -> None:
@@ -35,7 +35,7 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.prepare_main_layout()
         self.prepare_workbench_layout()
         self.prepare_table_layout()
-        self.prepare_central_default_widget()
+        self.prepare_central_widget()
         self.prepare_plugins()
 
     def prepare_main_layout(self) -> None:
@@ -50,7 +50,7 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.table_layout = QGridLayout()
         self.main_layout.add_layout(self.table_layout, 1, 0)
 
-    def prepare_central_default_widget(self):
+    def prepare_central_widget(self):
         widget = QtWidgets.QLabel()
         widget.set_layout(self.main_layout)
         self.set_central_widget(widget)
