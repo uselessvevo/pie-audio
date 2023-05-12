@@ -4,7 +4,7 @@ from typing import Any, Union
 
 from PySide6.QtGui import QIcon
 
-from piekit.managers.assets.utils import setSvgColor
+from piekit.managers.assets.utils import set_svg_color
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Sections
@@ -22,7 +22,7 @@ class AssetsManager(BaseManager):
         self._assets_dictionary: dict[str, Path] = {}
         self._current_theme = Managers(SysManagers.Configs).get_shared(Sections.User, "assets.theme")
 
-        assets_folder: Path = Config.APP_ROOT / Config.ASSETS_FOLDER / "themes"
+        assets_folder: Path = Config.APP_ROOT / Config.ASSETS_FOLDER / Config.THEMES_FOLDER
         theme_folders = list(i.name for i in assets_folder.iterdir() if i.is_dir())
         self._themes: list[str] = theme_folders
 
@@ -38,7 +38,7 @@ class AssetsManager(BaseManager):
         self._read_plugin_assets(Config.APP_ROOT / Config.PLUGINS_FOLDER)
         self._read_plugin_assets(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 
-    def add(self, section: str, file: Path) -> None:
+    def add(self, section: Union[str, Sections], file: Path) -> None:
         if not self._check_file(file):
             self._logger.critical(f"Can't find file {file.as_posix()}")
 
@@ -68,7 +68,7 @@ class AssetsManager(BaseManager):
 
         return True
 
-    def _add_section(self, section: str, file: Path) -> None:
+    def _add_section(self, section: Union[str, Sections], file: Path) -> None:
         if not self._assets_dictionary.get(section):
             self._assets_dictionary[section] = {}
 
@@ -78,7 +78,7 @@ class AssetsManager(BaseManager):
         self._assets_dictionary[section].update({file.name: file.as_posix()})
 
     @lru_cache
-    def get(self, section: str, key: Any, default: Any = None) -> Any:
+    def get(self, section: Union[str, Sections], key: Any, default: Any = None) -> Any:
         try:
             return self._assets_dictionary[section][key]
         except KeyError:
@@ -87,10 +87,10 @@ class AssetsManager(BaseManager):
 
     @lru_cache
     def get_svg(self, *args, color: str = "#7cd162") -> QIcon:
-        return setSvgColor(self.get(*args), color)
+        return set_svg_color(self.get(*args), color)
 
     @lru_cache
-    def get_icon(self, section: str, key: Any, default: Any = None) -> QIcon:
+    def get_icon(self, section: Union[str, Sections], key: Any, default: Any = None) -> QIcon:
         return QIcon(self.get(section, key, default))
 
     def get_theme(self) -> str:
