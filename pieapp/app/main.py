@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QGridLayout
 
 from piekit.config import Config
 from pieapp.structs.containers import Containers
-from piekit.plugins.utils import getPlugin
+from piekit.plugins.utils import get_plugin
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
@@ -63,4 +63,4 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.sig_plugins_ready.emit()
 
     def notify_plugins_ready(self):
-        getPlugin(Containers.StatusBar).show_message(self.get_translation("Plugins are ready"))
+        get_plugin(Containers.StatusBar).show_message(self.get_translation("Plugins are ready"))
