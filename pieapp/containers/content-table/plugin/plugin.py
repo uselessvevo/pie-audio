@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import typing
 
 from PySide6.QtCore import Qt
@@ -25,49 +27,49 @@ class ContentTable(
     api = ContentTableAPI
     name = Containers.ContentTable
 
-    def setColumns(self, count: int, columns: tuple = None) -> None:
-        self.table.setColumnCount(count)
-        self.table.setHorizontalHeaderLabels(columns)
-        self.table.setRowCount(count)
+    def set_columns(self, count: int, columns: tuple = None) -> None:
+        self.table.set_column_count(count)
+        self.table.set_horizontal_header_labels(columns)
+        self.table.set_row_count(count)
 
-    def setTextAlignment(self, count: int) -> None:
-        headers = self.table.horizontalHeader()
+    def set_text_alignment(self, count: int) -> None:
+        headers = self.table.horizontal_header()
         for column in range(count):
-            headers.horizontalHeaderItem(column).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            headers.horizontal_header_item(column).set_text_alignment(Qt.AlignmentFlag.AlignCenter)
 
-    def setColumnsStretch(self, count: int) -> None:
-        headers = self.table.horizontalHeader()
+    def set_columns_stretch(self, count: int) -> None:
+        headers = self.table.horizontal_header()
         for column in range(count):
-            headers.setSectionResizeMode(column, QHeaderView.ResizeMode.Stretch)
+            headers.set_section_resize_mode(column, QHeaderView.ResizeMode.Stretch)
 
-    def fillTable(self, data: list[dict]) -> None:
+    def fill_table(self, data: list[dict]) -> None:
         if not data:
             self.logger.error("No data were provided")
             return
 
         for row, item in enumerate(data):
-            self.table.setItem(row, 0, QTableWidgetItem(item))
+            self.table.set_item(row, 0, QTableWidgetItem(item))
 
         # We need to clear `table_layout` to remove placeholder from it
         # But we don't need to do it in pyqt5... Yeah
         for item in reversed(range(self.parent().table_layout.count())):
-            self.parent().table_layout.itemAt(item).widget().setParent(None)
+            self.parent().table_layout.item_at(item).widget().set_parent(None)
 
-        self.parent().table_layout.addWidget(self.table, 1, 0)
+        self.parent().table_layout.add_widget(self.table, 1, 0)
 
-    def setPlaceholder(self) -> None:
+    def set_placeholder(self) -> None:
         placeholder = QLabel("<img src='{icon}' width=64 height=64><br>{text}".format(
-            icon=self.getAsset("empty-box.png"),
-            text=self.getTranslation("No files selected")
+            icon=self.get_asset("empty-box.png"),
+            text=self.get_translation("No files selected")
         ))
-        placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.parent().table_layout.addWidget(placeholder, 1, 0)
+        placeholder.set_alignment(Qt.AlignmentFlag.AlignCenter)
+        self.parent().table_layout.add_widget(placeholder, 1, 0)
 
     def init(self) -> None:
         self.table = QTableWidget()
-        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        self.setPlaceholder()
-        self.table.setSizePolicy(
+        self.table.set_selection_model(QAbstractItemView.SelectionMode.NoSelection)
+        self.set_placeholder()
+        self.table.set_size_policy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Expanding
         )

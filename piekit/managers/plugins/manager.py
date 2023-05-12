@@ -2,6 +2,7 @@ import os
 import sys
 from typing import Any
 from pathlib import Path
+from piekit.plugins.types import PluginTypes
 
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
@@ -34,6 +35,9 @@ class PluginManager(BaseManager):
 
         # PiePlugins dictionary with availability boolean status
         self._plugin_availability: dict[str, bool] = {}
+
+        # Dictionary with plugin name to its type
+        self._plugins_types_registry: dict[PluginTypes, set[str]] = {k.name.lower(): set() for (k, _) in PluginTypes}
 
     # BaseManager methods
 
@@ -120,6 +124,7 @@ class PluginManager(BaseManager):
 
         # Hashing PiePlugin instance
         self._plugins_registry[plugin_instance.name] = plugin_instance
+        self._plugins_types_registry[plugin_instance.type].add(plugin_instance.name)
 
         plugin_instance.sig_plugin_ready.connect(
             lambda: (
@@ -270,4 +275,11 @@ class PluginManager(BaseManager):
     def is_plugin_available(self, name: str) -> bool:
         return self._plugin_availability.get(name, False)
 
+    def plugin_has_type(self, plugin_type: PluginTypes, plugin_name: str) -> bool:
+        if plugin_type not in self._plugins_types_registry:
+            raise KeyError(f"Plugin type {plugin_type} not found")
+
+        return plugin_name in self._plugins_types_registry[plugin_type]
+
+    pluginHasType = plugin_has_type
     isPluginAvailable = is_plugin_available
