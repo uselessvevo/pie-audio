@@ -14,7 +14,7 @@ from piekit.utils.core import check_crabs
 from piekit.utils.core import except_hook
 from piekit.utils.core import restore_crabs
 from piekit.utils.core import get_application
-from piekit.widgets.splashcreen import SplashScreen
+from piekit.widgets.splashscreen import SplashScreen
 
 
 def setup_application() -> None:
@@ -39,17 +39,12 @@ def setup_application() -> None:
         for manager in Config.INITIAL_MANAGERS:
             Managers.from_config(manager)
 
-        # splash.set_text(get_translation("Setting up application wizard"))
-
         if splash:
             splash.close()
 
         wizard = SetupWizard()
         wizard.show()
         sys.exit(app.exec())
-
-    # splash.set_text(get_translation("Starting up application"))
-    # splash.set_text(get_translation("Setting up managers"))
 
     for manager in Config.MANAGERS:
         Managers.from_config(manager)
