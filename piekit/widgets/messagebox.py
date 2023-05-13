@@ -18,7 +18,7 @@ class MessageBox(QMessageBox, LocalesAccessor):
         self.set_text(self.get_translation("Are you sure you want to exit?"))
 
         self.yes_button = QPushButton()
-        self.yes_button.setText(self.get_translation("Yes"))
+        self.yes_button.set_text(self.get_translation("Yes"))
 
         self.no_button = QPushButton()
         self.no_button.set_text(self.get_translation("No"))

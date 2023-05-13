@@ -40,7 +40,7 @@ class Converter(
 
     def open_files(self) -> None:
         file_dialog = QFileDialog(self.dialog, self.get_translation("Open files"))
-        selected_files = file_dialog.getOpenFileNames(self.dialog)
+        selected_files = file_dialog.get_open_file_names(self.dialog)
         get_api(Containers.ContentTable, "receive", files=selected_files[0])
 
     @on_plugin_available(target=Containers.MenuBar)

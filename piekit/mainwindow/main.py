@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import os
 
 from PySide6.QtCore import Signal, Slot
@@ -52,7 +54,7 @@ class MainWindow(
     # Event methods
 
     def close_event(self, event) -> None:
-        if self.closeHandler(True):
+        if self.close_handler(True):
             event.accept()
         else:
             event.ignore()

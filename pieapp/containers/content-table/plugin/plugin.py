@@ -67,7 +67,7 @@ class ContentTable(
 
     def init(self) -> None:
         self.table = QTableWidget()
-        self.table.set_selection_model(QAbstractItemView.SelectionMode.NoSelection)
+        # self.table.set_selection_model(QAbstractItemView.SelectionMode.NoSelection)
         self.set_placeholder()
         self.table.set_size_policy(
             QSizePolicy.Policy.Expanding,

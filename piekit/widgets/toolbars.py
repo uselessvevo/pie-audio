@@ -1,4 +1,5 @@
 from __future__ import annotations
+from __feature__ import snake_case
 
 from collections import OrderedDict
 from typing import Union, Any
@@ -23,14 +24,14 @@ class PieToolBar(QWidget):
 
         self._keys: list[Any] = list(self._items.keys())
 
-        self.setContentsMargins(0, 0, 0, 0)
-        self.setFixedHeight(50)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.set_contents_margins(0, 0, 0, 0)
+        self.set_fixed_height(50)
+        self.set_size_policy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self._layout = QHBoxLayout()
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.setLayout(self._layout)
+        self._layout.set_contents_margins(0, 0, 0, 0)
+        self._layout.set_alignment(Qt.AlignmentFlag.AlignLeft)
+        self.set_layout(self._layout)
 
     def add_toolbar_item(
         self,
@@ -44,12 +45,12 @@ class PieToolBar(QWidget):
 
         if after:
             index = self._keys.index(after) + 1
-            self._layout.insertWidget(index, item, Qt.AlignmentFlag.AlignLeft)
+            self._layout.insert_widget(index, item, Qt.AlignmentFlag.AlignLeft)
 
         elif before:
-            self._layout.insertWidget(self._keys.index(before), item, Qt.AlignmentFlag.AlignLeft)
+            self._layout.insert_widget(self._keys.index(before), item, Qt.AlignmentFlag.AlignLeft)
         else:
-            self._layout.addWidget(item, Qt.AlignmentFlag.AlignLeft)
+            self._layout.add_widget(item, Qt.AlignmentFlag.AlignLeft)
 
         self._items[name] = item
         self._keys.append(name)

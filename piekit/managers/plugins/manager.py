@@ -37,7 +37,7 @@ class PluginManager(BaseManager):
         self._plugin_availability: dict[str, bool] = {}
 
         # Dictionary with plugin name to its type
-        self._plugins_types_registry: dict[PluginTypes, set[str]] = {k.name.lower(): set() for (k, _) in PluginTypes}
+        self._plugins_types_registry: dict[PluginTypes, set[str]] = {k.value: set() for k in PluginTypes}
 
     # BaseManager methods
 
@@ -114,7 +114,7 @@ class PluginManager(BaseManager):
                 self._initialize_plugin(plugin_instance)
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
-        self._logger.info(f"Preparing {plugin_instance.type} {plugin_instance.name}")
+        self._logger.info(f"Preparing {plugin_instance.type.value} {plugin_instance.name}")
 
         self._update_plugin_info(
             plugin_instance.name,
@@ -124,7 +124,7 @@ class PluginManager(BaseManager):
 
         # Hashing PiePlugin instance
         self._plugins_registry[plugin_instance.name] = plugin_instance
-        self._plugins_types_registry[plugin_instance.type].add(plugin_instance.name)
+        self._plugins_types_registry[plugin_instance.type.value].add(plugin_instance.name)
 
         plugin_instance.sig_plugin_ready.connect(
             lambda: (
@@ -142,7 +142,7 @@ class PluginManager(BaseManager):
         self._notify_plugin_dependencies(plugin_instance.name)
 
         # Inform about that
-        self._logger.info(f"{plugin_instance.type.capitalize()} {plugin_instance.name} is ready!")
+        self._logger.info(f"{plugin_instance.type.value.capitalize()} {plugin_instance.name} is ready!")
 
     def _notify_plugin_availability(
         self,
@@ -181,7 +181,7 @@ class PluginManager(BaseManager):
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugins_registry:
                 if self._plugin_availability.get(plugin, False):
-                    self._logger.debug(f"{plugin_instance.type.capitalize()} {plugin} has already loaded")
+                    self._logger.debug(f"{plugin_instance.type.value.capitalize()} {plugin} has already loaded")
                     plugin_instance.on_plugin_available(plugin)
 
     def _update_plugin_info(
@@ -252,7 +252,7 @@ class PluginManager(BaseManager):
                 if self._plugin_availability.get(plugin, False):
                     plugin_instance: PiePlugin = self._plugins_registry[plugin]
                     self._logger.debug(
-                        f"Notifying {plugin_instance.type.capitalize()} "
+                        f"Notifying {plugin_instance.type.value.capitalize()} "
                         f"that {plugin_name} is going to be turned off"
                     )
                     plugin_instance.on_plugin_shutdown(plugin_name)

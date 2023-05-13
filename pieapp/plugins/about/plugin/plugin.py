@@ -44,13 +44,13 @@ class About(
         icon_label.set_pixmap(pixmap)
 
         description_label = QLabel()
-        description_label.setText("Pie Audio • Audio Converter ({})".format(
+        description_label.set_text("Pie Audio • Audio Converter ({})".format(
             Config.PIEAPP_VERSION
         ))
 
         github_link_label = QLabel()
-        github_link_label.setOpenExternalLinks(True)
-        github_link_label.setText("<a href='https://github.com/uselessvevo/pie-audio/'>Project URL</a>")
+        github_link_label.set_open_external_links(True)
+        github_link_label.set_text("<a href='https://github.com/uselessvevo/pie-audio/'>Project URL</a>")
 
         grid_layout = QGridLayout()
         grid_layout.add_widget(icon_label, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)

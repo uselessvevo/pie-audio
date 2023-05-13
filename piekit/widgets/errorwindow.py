@@ -22,7 +22,7 @@ def ErrorWindow(err_value: str, err_traceback: Union[tuple, list]):
 
     error_message = f"An error has been occurred: {err_value}"
     err_traceback = "<br>".join(i for i in err_traceback)
-    error_message = f"{error_message}<br>==========================<br>{err_traceback}"
+    error_message = f"{error_message}<br><br>{err_traceback}"
 
     window = QErrorMessage()
     window.resize(600, 350)

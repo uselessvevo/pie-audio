@@ -113,7 +113,7 @@ class PiePlugin(
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
         self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
         self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
-        self.sig_exception_occurred.connect(self._parent.errorHandler)
+        self.sig_exception_occurred.connect(self._parent.error_handler)
 
     def prepare_shortcuts(self) -> None:
         """ Prepare plugin shortcuts and register them in `ShortcutsManager` """

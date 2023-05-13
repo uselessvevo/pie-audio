@@ -106,7 +106,7 @@ class MainSettingsWidget(
         mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("FFmpeg path")), 6, 0, 1, 1)
         mainGrid.add_widget(self.ffpeg_prompt, 6, 1, 1, 1)
         mainGrid.add_widget(self.ffmpeg_button, 7, 1, 1, 1)
-        mainGrid.setAlignment(self.ffmpeg_button, Qt.AlignmentFlag.AlignRight)
+        mainGrid.set_alignment(self.ffmpeg_button, Qt.AlignmentFlag.AlignRight)
         mainGrid.add_widget(Spacer(), 8, 0, 1, 2)
 
         self.set_layout(mainGrid)
@@ -124,7 +124,7 @@ class MainSettingsWidget(
                 data={"root": directory_path},
                 create=True
             )
-            self.ffpeg_prompt.setText(directory_path)
+            self.ffpeg_prompt.set_text(directory_path)
 
 
 class Settings(
@@ -149,10 +149,10 @@ class Settings(
         rootGrid = QtWidgets.QGridLayout(self.dialog)
 
         tab_widget = TabWidget(self.dialog)
-        tab_widget.addTab(MainSettingsWidget(), self.get_translation("Main"))
+        tab_widget.add_tab(MainSettingsWidget(), self.get_translation("Main"))
 
         rootGrid.add_widget(tab_widget, 0, 0, 1, 2)
-        self.dialog.setLayout(rootGrid)
+        self.dialog.set_layout(rootGrid)
 
     @on_plugin_available(target=Containers.MenuBar)
     def on_menu_bar_available(self) -> None:
