@@ -73,7 +73,7 @@ class MainWindow(
     @Slot(Error)
     def error_handler(self, error: Error) -> None:
         message_box = QMessageBox()
-        message_box.set_icon(QMessageBox.Critical)
+        message_box.set_icon(QMessageBox.Icon.Critical)
         message_box.set_text(error.title)
         message_box.set_informative_text(error.description)
         message_box.set_window_title(self.get_translation("Error"))
