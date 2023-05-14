@@ -4,10 +4,8 @@ from __feature__ import snake_case
 import os
 import sys
 
-from piekit.config import Config, Lock, Max
+from piekit.config import Config, Lock, Max, Min
 from pieapp.wizard.wizard import SetupWizard
-from piekit.config.types import Min
-from piekit.managers.locales.utils import get_translation
 from piekit.managers.registry import Managers
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs

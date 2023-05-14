@@ -29,7 +29,7 @@ class About(
     requires = [Containers.MenuBar]
 
     def init(self) -> None:
-        self.dialog = QDialog(self.parent())
+        self.dialog = QDialog(self._parent)
         self.dialog.set_window_title(self.get_translation("About"))
         self.dialog.set_window_icon(self.get_plugin_icon())
         self.dialog.resize(400, 300)

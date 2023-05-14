@@ -40,7 +40,7 @@ class MenuBar(
 
         self.menu_bar.add_menu(self.file_menu)
         self.menu_bar.add_menu(self.help_menu)
-        self.parent().set_menu_bar(self.menu_bar)
+        self._parent.set_menu_bar(self.menu_bar)
 
 
 def main(*args, **kwargs) -> typing.Any:

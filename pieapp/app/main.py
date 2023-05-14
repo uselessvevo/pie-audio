@@ -27,9 +27,6 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_DEFAULT_WINDOW_SIZE, Sections.User))
         self.set_window_icon(QIcon(self.get_asset("cloud.png")))
 
-    def prepare_signals(self) -> None:
-        self.sig_plugins_ready.connect(self.notify_plugins_ready)
-
     def prepare(self):
         self.prepare_base_signals()
         self.prepare_main_layout()
@@ -61,6 +58,3 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         """ Prepare all (or selected) Plugins """
         Managers(SysManagers.Plugins).init(self)
         self.sig_plugins_ready.emit()
-
-    def notify_plugins_ready(self):
-        get_plugin(Containers.StatusBar).show_message(self.get_translation("Plugins are ready"))

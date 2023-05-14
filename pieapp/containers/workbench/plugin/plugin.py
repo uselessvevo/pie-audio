@@ -26,8 +26,7 @@ class Workbench(
     name = Containers.Workbench
 
     def init(self) -> None:
-        self.widget = QWidget()
-        self.workbench = self.add_toolbar(self.widget, self.name)
+        self.workbench = self.add_toolbar(self._parent, self.name)
 
         self.add_tool_button(
             parent=self.workbench,
@@ -36,7 +35,7 @@ class Workbench(
             text=self.get_translation("Exit"),
             tooltip=self.get_translation("Exit"),
             icon=self.get_asset_icon("exit.png"),
-            triggered=self.parent().close
+            triggered=self._parent.close
         )
 
         spacer = QWidget()
@@ -58,7 +57,7 @@ class Workbench(
             item=self.get_tool_button(self.name, WorkbenchItems.Exit)
         )
 
-        self.parent().main_layout.add_widget(self.workbench, 0, 0)
+        self._parent.workbench_layout.add_widget(self.workbench, 0, 0)
 
 
 def main(*args, **kwargs) -> typing.Any:

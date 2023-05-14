@@ -11,7 +11,7 @@ from piekit.widgets.toolbars import PieToolBar
 
 class ToolBarAccessor:
 
-    def add_toolbar(self, parent: QObject, name: str = None) -> QToolBar:
+    def add_toolbar(self, parent: QObject, name: str = None) -> PieToolBar:
         toolbar = PieToolBar(parent=parent)
         return Managers(SysManagers.ToolBars).add_toolbar(name or Sections.Shared, toolbar)
 
@@ -22,7 +22,7 @@ class ToolBarAccessor:
         item: Union[QWidget, QAction] = None,
         after: str = None,
         before: str = None
-    ) -> QToolBar:
+    ) -> QWidget:
         manager = Managers(SysManagers.ToolBars)
         toolbar: PieToolBar = manager.get_toolbar(section)
         toolbar.add_toolbar_item(name, item, after, before)
@@ -34,10 +34,10 @@ class ToolBarAccessor:
     def get_toolbar_items(self, section: str, *names: str) -> list[QObject]:
         return Managers(SysManagers.ToolBars).get_items(section, *names)
 
-    def get_toolbar(self, name: str) -> QToolBar:
+    def get_toolbar(self, name: str) -> PieToolBar:
         return Managers(SysManagers.ToolBars).get_toolbar(name)
 
-    def get_toolbars(self, *names: str) -> list[QToolBar]:
+    def get_toolbars(self, *names: str) -> list[PieToolBar]:
         return Managers(SysManagers.ToolBars).get_toolbars(*names)
 
     addToolBar = add_toolbar

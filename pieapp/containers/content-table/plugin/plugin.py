@@ -52,10 +52,10 @@ class ContentTable(
 
         # We need to clear `table_layout` to remove placeholder from it
         # But we don't need to do it in pyqt5... Yeah
-        for item in reversed(range(self.parent().table_layout.count())):
-            self.parent().table_layout.item_at(item).widget().set_parent(None)
+        for item in reversed(range(self._parent.table_layout.count())):
+            self._parent.table_layout.item_at(item).widget().set_parent(None)
 
-        self.parent().table_layout.add_widget(self.table, 1, 0)
+        self._parent.table_layout.add_widget(self.table, 1, 0)
 
     def set_placeholder(self) -> None:
         placeholder = QLabel("<img src='{icon}' width=64 height=64><br>{text}".format(
@@ -63,7 +63,7 @@ class ContentTable(
             text=self.get_translation("No files selected")
         ))
         placeholder.set_alignment(Qt.AlignmentFlag.AlignCenter)
-        self.parent().table_layout.add_widget(placeholder, 1, 0)
+        self._parent.table_layout.add_widget(placeholder, 1, 0)
 
     def init(self) -> None:
         self.table = QTableWidget()

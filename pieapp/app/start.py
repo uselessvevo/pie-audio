@@ -11,19 +11,19 @@ from piekit.managers.assets.utils import get_theme, get_palette
 
 def start_application():
     from pieapp.app.main import PieAudioApp
-    qapp = get_application()
+    app = get_application()
 
     theme = Managers(SysManagers.Assets).get_theme()
     if theme:
         if Config.ASSETS_USE_STYLE:
-            qapp.set_style_sheet(get_theme(theme))
+            app.set_style_sheet(get_theme(theme))
             palette = get_palette(theme)
             if palette:
-                qapp.set_palette(palette)
+                app.set_palette(palette)
 
-    pieApp = PieAudioApp()
-    pieApp.prepare()
-    pieApp.init()
-    pieApp.show()
+    pie_app = PieAudioApp()
+    pie_app.prepare()
+    pie_app.init()
+    pie_app.show()
 
-    sys.exit(qapp.exec())
+    sys.exit(app.exec())

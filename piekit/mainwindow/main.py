@@ -78,9 +78,3 @@ class MainWindow(
         message_box.set_informative_text(error.description)
         message_box.set_window_title(self.get_translation("Error"))
         message_box.exec()
-
-    # Properties
-
-    @property
-    def logger(self) -> logger:
-        return self._logger

@@ -33,7 +33,7 @@ class Converter(
     requires = [Containers.Workbench, Containers.MenuBar]
 
     def init(self) -> None:
-        self.dialog = QDialog(self.parent())
+        self.dialog = QDialog(self._parent)
         self.dialog.set_window_title(self.get_translation("Convert"))
         self.dialog.set_window_icon(self.get_asset_icon("go.png"))
         self.dialog.resize(400, 300)
@@ -63,7 +63,7 @@ class Converter(
             name=MenuItems.Exit,
             text=self.get_translation("Exit"),
             icon=self.get_asset_icon("exit.png"),
-            triggered=self.parent().close,
+            triggered=self._parent.close,
             index=INDEX_END()
         )
 
