@@ -21,26 +21,26 @@ class MenuBar(
     name = Containers.MenuBar
 
     def init(self) -> None:
-        self.menuBar = self.addMenuBar(
+        self.menu_bar = self.add_menu_bar(
             name=Sections.Shared,
         )
 
-        self.fileMenu = self.addMenu(
+        self.file_menu = self.add_menu(
             section=Sections.Shared,
-            parent=self.menuBar,
+            parent=self.menu_bar,
             name=Menus.File,
-            text=self.getTranslation("File"),
+            text=self.get_translation("File"),
         )
-        self.helpMenu = self.addMenu(
+        self.help_menu = self.add_menu(
             section=Sections.Shared,
-            parent=self.menuBar,
+            parent=self.menu_bar,
             name=Menus.Help,
-            text=self.getTranslation("Help")
+            text=self.get_translation("Help")
         )
 
-        self.menuBar.addMenu(self.fileMenu)
-        self.menuBar.addMenu(self.helpMenu)
-        self.parent().setMenuBar(self.menuBar)
+        self.menu_bar.add_menu(self.file_menu)
+        self.menu_bar.add_menu(self.help_menu)
+        self._parent.set_menu_bar(self.menu_bar)
 
 
 def main(*args, **kwargs) -> typing.Any:

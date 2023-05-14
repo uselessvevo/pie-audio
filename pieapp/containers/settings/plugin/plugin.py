@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import typing
 
 from PySide6.QtCore import Qt
@@ -5,7 +7,7 @@ from PySide6.QtCore import Qt
 from pieapp.structs.containers import Containers
 from pieapp.structs.menus import Menus, MenuItems
 from piekit.managers.menus.mixins import MenuAccessor
-from piekit.managers.plugins.decorators import onPluginAvailable
+from piekit.managers.plugins.decorators import on_plugin_available
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Sections, SysManagers
 from piekit.managers.toolbars.mixins import ToolBarAccessor
@@ -15,55 +17,55 @@ from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.config.loader import Config
-from piekit.utils.files import writeJson
+from piekit.utils.files import write_json
 
 from PySide6 import QtCore, QtWidgets
 
 
 class TabBar(QtWidgets.QTabBar):
 
-    def tabSizeHint(self, index):
-        sizeHint = QtWidgets.QTabBar.tabSizeHint(self, index)
-        sizeHint.transpose()
-        return sizeHint
+    def tab_size_hint(self, index):
+        size_hint = QtWidgets.QTabBar.tab_size_hint(self, index)
+        size_hint.transpose()
+        return size_hint
 
-    def paintEvent(self, event):
+    def paint_event(self, event):
         painter = QtWidgets.QStylePainter(self)
         option = QtWidgets.QStyleOptionTab()
 
         for i in range(self.count()):
-            self.initStyleOption(option, i)
-            painter.drawControl(QtWidgets.QStyle.ControlElement.CE_TabBarTabShape, option)
+            self.init_style_option(option, i)
+            painter.draw_control(QtWidgets.QStyle.ControlElement.CE_TabBarTabShape, option)
             painter.save()
 
-            rectSize = option.rect.size()
-            rectSize.transpose()
-            rect = QtCore.QRect(QtCore.QPoint(), rectSize)
-            rect.moveCenter(option.rect.center())
+            rect_size = option.rect.size()
+            rect_size.transpose()
+            rect = QtCore.QRect(QtCore.QPoint(), rect_size)
+            rect.move_center(option.rect.center())
             option.rect = rect
 
-            tabRectCenter = self.tabRect(i).center()
-            painter.translate(tabRectCenter)
+            tab_rect_center = self.tab_rect(i).center()
+            painter.translate(tab_rect_center)
             painter.rotate(90)
-            painter.translate(-tabRectCenter)
-            painter.drawControl(QtWidgets.QStyle.ControlElement.CE_TabBarTabLabel, option)
+            painter.translate(-tab_rect_center)
+            painter.draw_control(QtWidgets.QStyle.ControlElement.CE_TabBarTabLabel, option)
             painter.restore()
 
 
 class TabWidget(QtWidgets.QTabWidget):
     def __init__(self, *args, **kwargs):
         QtWidgets.QTabWidget.__init__(self, *args, **kwargs)
-        self.setTabBar(TabBar(self))
-        self.setTabPosition(QtWidgets.QTabWidget.TabPosition.West)
+        self.set_tab_bar(TabBar(self))
+        self.set_tab_position(QtWidgets.QTabWidget.TabPosition.West)
 
 
 class Spacer(QtWidgets.QFrame):
 
-    def __init__(self, frameLine: bool = False):
+    def __init__(self, frame_line: bool = False):
         super(Spacer, self).__init__()
-        if frameLine:
-            self.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-            self.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        if frame_line:
+            self.set_frame_shape(QtWidgets.QFrame.Shape.HLine)
+            self.set_frame_shadow(QtWidgets.QFrame.Shadow.Sunken)
 
 
 class MainSettingsWidget(
@@ -79,50 +81,50 @@ class MainSettingsWidget(
         super().__init__(parent)
         mainGrid = QtWidgets.QGridLayout(parent)
 
-        self.ffmpegPrompt = QtWidgets.QLineEdit()
-        self.ffmpegPrompt.insert(self.getSharedConfig("ffmpeg.root", section=Sections.User))
-        self.ffmpegButton = QtWidgets.QPushButton(self.getTranslation("Set ffmpeg path"))
-        self.ffmpegButton.clicked.connect(self.ffmpegButtonConnect)
+        self.ffpeg_prompt = QtWidgets.QLineEdit()
+        self.ffpeg_prompt.insert(self.get_shared_config("ffmpeg.root", section=Sections.User))
+        self.ffmpeg_button = QtWidgets.QPushButton(self.get_translation("Set ffmpeg path"))
+        self.ffmpeg_button.clicked.connect(self.ffmpeg_button_connect)
 
         locales = Config.LOCALES
-        self.localeCBox = QtWidgets.QComboBox()
-        self.localeCBox.addItems(locales)
-        self.localeCBox.setCurrentText(self.getSharedConfig("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
+        self.locales_cbox = QtWidgets.QComboBox()
+        self.locales_cbox.add_items(locales)
+        self.locales_cbox.set_current_text(self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
 
-        themes = Managers(SysManagers.Assets).getThemes()
+        themes = Managers(SysManagers.Assets).get_themes()
         self.themeCBox = QtWidgets.QComboBox()
-        self.themeCBox.addItems(themes)
-        self.themeCBox.setCurrentText(self.getSharedConfig("assets.theme", section=Sections.User))
+        self.themeCBox.add_items(themes)
+        self.themeCBox.set_current_text(self.get_shared_config("assets.theme", section=Sections.User))
         # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
 
-        mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("Language")), 0, 0, 1, 1)
-        mainGrid.addWidget(self.localeCBox, 0, 1, 1, 1)
+        mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("Language")), 0, 0, 1, 1)
+        mainGrid.add_widget(self.locales_cbox, 0, 1, 1, 1)
 
-        mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("Theme")), 2, 0, 1, 1)
-        mainGrid.addWidget(self.themeCBox, 2, 1, 1, 1)
+        mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("Theme")), 2, 0, 1, 1)
+        mainGrid.add_widget(self.themeCBox, 2, 1, 1, 1)
 
-        mainGrid.addWidget(QtWidgets.QLabel(self.getTranslation("FFmpeg path")), 6, 0, 1, 1)
-        mainGrid.addWidget(self.ffmpegPrompt, 6, 1, 1, 1)
-        mainGrid.addWidget(self.ffmpegButton, 7, 1, 1, 1)
-        mainGrid.setAlignment(self.ffmpegButton, Qt.AlignmentFlag.AlignRight)
-        mainGrid.addWidget(Spacer(), 8, 0, 1, 2)
+        mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("FFmpeg path")), 6, 0, 1, 1)
+        mainGrid.add_widget(self.ffpeg_prompt, 6, 1, 1, 1)
+        mainGrid.add_widget(self.ffmpeg_button, 7, 1, 1, 1)
+        mainGrid.set_alignment(self.ffmpeg_button, Qt.AlignmentFlag.AlignRight)
+        mainGrid.add_widget(Spacer(), 8, 0, 1, 2)
 
-        self.setLayout(mainGrid)
+        self.set_layout(mainGrid)
 
-    def ffmpegButtonConnect(self) -> None:
-        directory = QtWidgets.QFileDialog(self, self.getTranslation("Select ffmpeg directory"))
-        directory.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
-        directory.setOption(QtWidgets.QFileDialog.Option.ShowDirsOnly, False)
-        directory.getExistingDirectory(self, dir=str(Config.USER_ROOT))
-        directoryPath = directory.directory().path()
+    def ffmpeg_button_connect(self) -> None:
+        directory = QtWidgets.QFileDialog(self, self.get_translation("Select ffmpeg directory"))
+        directory.set_file_mode(QtWidgets.QFileDialog.FileMode.Directory)
+        directory.set_option(QtWidgets.QFileDialog.Option.ShowDirsOnly, False)
+        directory.get_existing_directory(self, dir=str(Config.USER_ROOT))
+        directory_path = directory.directory().path()
 
-        if directoryPath:
-            writeJson(
+        if directory_path:
+            write_json(
                 file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "ffmpeg.json"),
-                data={"root": directoryPath},
+                data={"root": directory_path},
                 create=True
             )
-            self.ffmpegPrompt.setText(directoryPath)
+            self.ffpeg_prompt.set_text(directory_path)
 
 
 class Settings(
@@ -138,29 +140,29 @@ class Settings(
     requires = [Containers.MenuBar, Containers.Workbench]
 
     def init(self) -> None:
-        self.dialog = QtWidgets.QDialog(self.parent())
-        self.dialog.setObjectName("SettingsDialog")
-        self.dialog.setWindowTitle(self.getTranslation("Settings"))
-        self.dialog.setWindowIcon(self.getPluginIcon())
+        self.dialog = QtWidgets.QDialog(self._parent)
+        self.dialog.set_object_name("SettingsDialog")
+        self.dialog.set_window_title(self.get_translation("Settings"))
+        self.dialog.set_window_icon(self.get_plugin_icon())
         self.dialog.resize(740, 450)
 
         rootGrid = QtWidgets.QGridLayout(self.dialog)
 
-        tabWidget = TabWidget(self.dialog)
-        tabWidget.addTab(MainSettingsWidget(), self.getTranslation("Main"))
+        tab_widget = TabWidget(self.dialog)
+        tab_widget.add_tab(MainSettingsWidget(), self.get_translation("Main"))
 
-        rootGrid.addWidget(tabWidget, 0, 0, 1, 2)
-        self.dialog.setLayout(rootGrid)
+        rootGrid.add_widget(tab_widget, 0, 0, 1, 2)
+        self.dialog.set_layout(rootGrid)
 
-    @onPluginAvailable(target=Containers.MenuBar)
-    def onMenuBarAvailable(self) -> None:
+    @on_plugin_available(target=Containers.MenuBar)
+    def on_menu_bar_available(self) -> None:
         self.addMenuItem(
             section=Sections.Shared,
             menu=Menus.File,
             name="settings",
-            text=self.getTranslation("Settings"),
+            text=self.get_translation("Settings"),
             triggered=self.dialog.show,
-            icon=self.getAssetIcon("settings.png"),
+            icon=self.get_asset_icon("settings.png"),
             before=MenuItems.Exit
         )
 

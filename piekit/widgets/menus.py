@@ -1,4 +1,5 @@
 from __future__ import annotations
+from __feature__ import snake_case
 
 from typing import Union, Any
 
@@ -11,7 +12,6 @@ from piekit.config.exceptions import PieException
 
 INDEX_END = type("INDEX_END", (), {})
 INDEX_START = type("INDEX_START", (), {})
-DEFAULT_INDEX = type("DEFAULT_INDEX", (), {})
 
 
 class PieMenu(QMenu):
@@ -33,7 +33,7 @@ class PieMenu(QMenu):
         else:
             super().__init__(parent=parent)
 
-    def addMenuItem(
+    def add_menu_item(
         self,
         name: str,
         text: str,
@@ -54,28 +54,31 @@ class PieMenu(QMenu):
 
         if isinstance(index, INDEX_START):
             index = self._items[self._keys[0]]
-            self.insertAction(index, action)
+            self.insert_action(index, action)
 
         elif isinstance(index, INDEX_END):
             index = self._items[self._keys[-1]]
-            self.insertAction(index, action)
+            self.insert_action(index, action)
 
         elif isinstance(index, int):
             index = self._items[self._keys[index]]
-            self.insertAction(index, action)
+            self.insert_action(index, action)
 
         elif before:
             before = self._items[before]
-            self.insertAction(before, action)
+            self.insert_action(before, action)
 
         else:
-            self.addAction(action)
+            self.add_action(action)
 
         return action
 
-    def getItem(self, name: str) -> QAction:
+    def get_item(self, name: str) -> QAction:
         return self._items[name]
 
     @property
     def name(self) -> str:
         return self._name
+
+    addMenuItem = add_menu_item
+    getItem = get_item

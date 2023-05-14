@@ -27,13 +27,14 @@ CONTAINERS_FOLDER: Lock = os.getenv("PIE_CONTAINERS_FOLDER", "containers")
 ASSETS_EXCLUDED_FORMATS: list = []
 ASSETS_FOLDER: Lock = os.getenv("PIE_ASSETS_FOLDER", "assets")
 THEMES_FOLDER: Lock = os.getenv("PIE_THEMES_FOLDER", "themes")
-DEFAULT_THEME = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())[0]
-ASSETS_USE_STYLE: bool = bool(os.getenv("PIE_ASSETS_USE_STYLE", True))
+
+themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
+DEFAULT_THEME: Lock = themes_list[0] if themes_list else None
+ASSETS_USE_STYLE: Lock = bool(os.getenv("PIE_ASSETS_USE_STYLE", True))
 
 # Configurations
 CONFIGS_FOLDER: Lock = os.getenv("PIE_CONFIGS_FOLDER", "configs")
 USER_CONFIG_FOLDER: Lock = os.getenv("PIE_USER_CONFIGS_FOLDER", "configs")
-USER_FOLDER_FILES: Lock = ["locales.json", "assets.json"]
 
 # Locales
 LOCALES: Lock = {
@@ -49,7 +50,7 @@ DEFAULT_LOCALE: Lock = os.getenv("PIE_DEFAULT_LOCALE", default_locale)
 LOCALES_FOLDER: Lock = os.getenv("PIE_LOCALES_FOLDER", "locales")
 
 # Templates
-TEMPLATE_FILES: Lock = [
+DEFAULT_CONFIG_FILES: Lock = [
     "locales.json",
     "assets.json",
     "ffmpeg.json",

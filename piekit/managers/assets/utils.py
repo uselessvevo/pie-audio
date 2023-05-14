@@ -47,14 +47,14 @@ def get_palette(theme_name: str):
         )
         palette = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(palette)
-        return palette.getPalette()
+        return palette.get_palette()
 
 
 def set_svg_color(file: str, color: str = "#7cd162"):
     pixmap = QPixmap(file)
     painter = QPainter(pixmap)
-    painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
-    painter.fillRect(pixmap.rect(), QColor(color))
+    painter.set_composition_model(QPainter.CompositionMode_SourceIn)
+    painter.fill_rect(pixmap.rect(), QColor(color))
     painter.end()
 
     return QIcon(pixmap)

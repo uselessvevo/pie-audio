@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import typing
 
 from PySide6.QtWidgets import QStatusBar, QWidget
@@ -17,13 +19,16 @@ class StatusBar(
 ):
     name = Containers.StatusBar
 
-    def showMessage(self, message: str) -> None:
-        self.statusBar.showMessage(message)
+    def show_message(self, message: str) -> None:
+        self.status_bar.show_message(message)
 
     def init(self) -> None:
-        self.statusBar = QStatusBar(self._parent)
-        self.statusBar.insertPermanentWidget(0, QWidget())
-        self._parent.setStatusBar(self.statusBar)
+        self.status_bar = QStatusBar(self._parent)
+        self.status_bar.insert_permanent_widget(0, QWidget())
+        self._parent.set_status_bar(self.status_bar)
+        self._parent.sig_plugin_ready.connect(lambda _: self.show_message(self.get_translation("Plugins are ready")))
+
+    showMessage = show_message
 
 
 def main(*args, **kwargs) -> typing.Any:

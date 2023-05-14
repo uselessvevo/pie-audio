@@ -2,8 +2,8 @@ import os
 import sys
 from typing import Any
 from pathlib import Path
+from piekit.plugins.types import PluginTypes
 
-from piekit.managers.registry import Managers
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
 
@@ -35,6 +35,9 @@ class PluginManager(BaseManager):
 
         # PiePlugins dictionary with availability boolean status
         self._plugin_availability: dict[str, bool] = {}
+
+        # Dictionary with plugin name to its type
+        self._plugins_types_registry: dict[PluginTypes, set[str]] = {k.value: set() for k in PluginTypes}
 
     # BaseManager methods
 
@@ -86,7 +89,8 @@ class PluginManager(BaseManager):
 
     def _initialize_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
         if not folder.exists():
-            folder.mkdir()
+            self._logger.warning(f"Plugins folder {folder.name} doesn't exist")
+            return
 
         for package in folder.iterdir():
             if package.is_dir() and package.name not in ("__pycache__",) and parent:
@@ -110,7 +114,7 @@ class PluginManager(BaseManager):
                 self._initialize_plugin(plugin_instance)
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
-        self._logger.info(f"Preparing {plugin_instance.type} {plugin_instance.name}")
+        self._logger.info(f"Preparing {plugin_instance.type.value} {plugin_instance.name}")
 
         self._update_plugin_info(
             plugin_instance.name,
@@ -120,8 +124,9 @@ class PluginManager(BaseManager):
 
         # Hashing PiePlugin instance
         self._plugins_registry[plugin_instance.name] = plugin_instance
+        self._plugins_types_registry[plugin_instance.type.value].add(plugin_instance.name)
 
-        plugin_instance.signalPluginReady.connect(
+        plugin_instance.sig_plugin_ready.connect(
             lambda: (
                 self._notify_plugin_availability(plugin_instance.name),
                 self._notify_plugin_availability_on_main(plugin_instance.name)
@@ -132,12 +137,12 @@ class PluginManager(BaseManager):
         plugin_instance.prepare()
 
         # PiePlugin is ready
-        plugin_instance.signalPluginReady.emit()
+        plugin_instance.sig_plugin_ready.emit()
 
         self._notify_plugin_dependencies(plugin_instance.name)
 
         # Inform about that
-        self._logger.info(f"{plugin_instance.type.capitalize()} {plugin_instance.name} is ready!")
+        self._logger.info(f"{plugin_instance.type.value.capitalize()} {plugin_instance.name} is ready!")
 
     def _notify_plugin_availability(
         self,
@@ -164,7 +169,7 @@ class PluginManager(BaseManager):
     def _notify_plugin_availability_on_main(self, name: str) -> None:
         plugin_instance = self._plugins_registry.get(name)
         if plugin_instance:
-            plugin_instance.parent().signalPluginReady.emit(name)
+            plugin_instance.parent().sig_plugin_ready.emit(name)
 
     def _notify_plugin_dependencies(self, name: str) -> None:
         """ Notify PiePlugins dependencies """
@@ -176,7 +181,7 @@ class PluginManager(BaseManager):
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugins_registry:
                 if self._plugin_availability.get(plugin, False):
-                    self._logger.debug(f"{plugin_instance.type.capitalize()} {plugin} has already loaded")
+                    self._logger.debug(f"{plugin_instance.type.value.capitalize()} {plugin} has already loaded")
                     plugin_instance.on_plugin_available(plugin)
 
     def _update_plugin_info(
@@ -247,7 +252,7 @@ class PluginManager(BaseManager):
                 if self._plugin_availability.get(plugin, False):
                     plugin_instance: PiePlugin = self._plugins_registry[plugin]
                     self._logger.debug(
-                        f"Notifying {plugin_instance.type.capitalize()} "
+                        f"Notifying {plugin_instance.type.value.capitalize()} "
                         f"that {plugin_name} is going to be turned off"
                     )
                     plugin_instance.on_plugin_shutdown(plugin_name)
@@ -270,4 +275,11 @@ class PluginManager(BaseManager):
     def is_plugin_available(self, name: str) -> bool:
         return self._plugin_availability.get(name, False)
 
+    def plugin_has_type(self, plugin_type: PluginTypes, plugin_name: str) -> bool:
+        if plugin_type not in self._plugins_types_registry:
+            raise KeyError(f"Plugin type {plugin_type} not found")
+
+        return plugin_name in self._plugins_types_registry[plugin_type]
+
+    pluginHasType = plugin_has_type
     isPluginAvailable = is_plugin_available

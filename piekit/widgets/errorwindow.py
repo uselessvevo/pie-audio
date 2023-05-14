@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import sys
 from typing import Union
 
@@ -15,21 +17,21 @@ def ErrorWindow(err_value: str, err_traceback: Union[tuple, list]):
     A window will close after it initialization
     """
     app = QApplication.instance()
-    app.setQuitOnLastWindowClosed(True)
-    app.setWindowIcon(app.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning))
+    app.set_quit_on_last_window_closed(True)
+    app.set_window_icon(app.style().standard_icon(QStyle.StandardPixmap.SP_MessageBoxWarning))
 
     error_message = f"An error has been occurred: {err_value}"
     err_traceback = "<br>".join(i for i in err_traceback)
-    error_message = f"{error_message}<br>==========================<br>{err_traceback}"
+    error_message = f"{error_message}<br><br>{err_traceback}"
 
     window = QErrorMessage()
     window.resize(600, 350)
-    window.finished.connect(lambda e: app.quit)
+    window.finished.connect(lambda _: app.quit)
 
-    window.findChild(QLabel, "").setVisible(False)
-    window.findChild(QCheckBox, "").setVisible(False)
-    window.findChild(QPushButton, "").setVisible(False)
-    window.setWindowTitle(f"Error: {err_value}")
-    window.showMessage(error_message)
+    window.find_child(QLabel, "").set_visible(False)
+    window.find_child(QCheckBox, "").set_visible(False)
+    window.find_child(QPushButton, "").set_visible(False)
+    window.set_window_title(f"Error: {err_value}")
+    window.show_message(error_message)
 
     sys.exit(app.exec())

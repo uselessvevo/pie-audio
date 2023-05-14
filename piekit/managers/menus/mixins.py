@@ -16,11 +16,11 @@ class MenuAccessor:
         parent: QWidget = None,
         name: str = None
     ) -> QMenuBar:
-        menuBar = QMenuBar(parent)
-        return Managers(SysManagers.Menus).addMenuBar(name or Sections.Shared, menuBar)
+        menu_bar = QMenuBar(parent)
+        return Managers(SysManagers.Menus).add_menu_bar(name or Sections.Shared, menu_bar)
 
     def get_menu_bar(self, name: str) -> QMenuBar:
-        return Managers(SysManagers.Menus).getMenuBar(name or Sections.Shared)
+        return Managers(SysManagers.Menus).get_menu_bar(name or Sections.Shared)
 
     def add_menu(
         self,
@@ -32,10 +32,10 @@ class MenuAccessor:
     ):
         menu = PieMenu(parent=parent, name=name, text=text)
         if icon:
-            menu.menuAction().setIconVisibleInMenu(True)
-            menu.setIcon(icon)
+            menu.menu_action().set_icon_visible_in_menu(True)
+            menu.set_icon(icon)
 
-        return Managers(SysManagers.Menus).addMenu(section or Sections.Shared, name, menu)
+        return Managers(SysManagers.Menus).add_menu(section or Sections.Shared, name, menu)
 
     def add_menu_item(
         self,
@@ -49,15 +49,15 @@ class MenuAccessor:
         index: Union[int, INDEX_START, INDEX_END] = None
     ) -> QAction:
         manager = Managers(SysManagers.Menus)
-        menuInstance = manager.getMenu(section, menu)
-        menuInstance.addMenuItem(name, text, triggered, icon, before, index)
-        return manager.addMenuItem(section or Sections.Shared, menu, name, menuInstance)
+        menu_instance = manager.get_menu(section, menu)
+        menu_instance.add_menu_item(name, text, triggered, icon, before, index)
+        return manager.add_menu_item(section or Sections.Shared, menu, name, menu_instance)
 
     def get_menu(self, section: str, name: str) -> PieMenu:
-        return Managers(SysManagers.Menus).getMenu(section or Sections.Shared, name)
+        return Managers(SysManagers.Menus).get_menu(section or Sections.Shared, name)
 
     def get_menu_item(self, section: str, menu: str, name: str) -> QAction:
-        return Managers(SysManagers.Menus).getMenuItem(section, menu, name)
+        return Managers(SysManagers.Menus).get_menu_item(section, menu, name)
 
     addMenu = add_menu
     getMenu = get_menu

@@ -4,6 +4,7 @@ from typing import Union
 from PySide6.QtCore import Signal, QObject
 
 from piekit.utils.logger import logger
+from piekit.mainwindow.main import MainWindow
 from piekit.managers.base import BaseManager
 from piekit.plugins.types import PluginTypes, Error
 from piekit.plugins.observer import PluginsObserverMixin
@@ -44,23 +45,23 @@ class PiePlugin(
     # Qt configuration #
 
     # Signal when plugin is ready
-    signalPluginReady = Signal()
+    sig_plugin_ready = Signal()
 
     # Signal when plugin is loading
-    signalPluginLoading = Signal(str)
+    sig_plugin_loading = Signal(str)
 
     # Signal when plugin is reloading
-    signalPluginReloading = Signal(str)
+    sig_plugin_reloading = Signal(str)
 
     # Signal when main window is closing
-    signalOnMainWindowClose = Signal()
+    sig_on_main_window_close = Signal()
 
     # Signal when exception occurred
-    signalExceptionOccurred = Signal(Error)
+    sig_exception_occurred = Signal(Error)
 
     def __init__(
         self,
-        parent: QObject = None,
+        parent: MainWindow = None,
         path: Path = None,
     ) -> None:
         # For some reason, I can't use `super().__init__()` method with `PySide`
@@ -86,20 +87,20 @@ class PiePlugin(
 
     def prepare(self) -> None:
         # First, we need to initialize base signals
-        self.prepareBaseSignals()
+        self.prepare_base_signals()
 
         # PiePlugin is loading
-        self.signalPluginLoading.emit(self.__class__.__name__)
+        self.sig_plugin_loading.emit(self.__class__.__name__)
 
         # Initializing plugin
         self.init()
 
         # Prepare PiePluginAPI
-        self.prepareAPI()
+        self.prepare_api()
 
     # Signals, shortcuts etc. methods
 
-    def prepareAPI(self) -> None:
+    def prepare_api(self) -> None:
         """
         Method that prepare PiePluginAPI based instance
         """
@@ -109,17 +110,17 @@ class PiePlugin(
             self.api = self.api(self)
             self.api.init()
 
-    def prepareBaseSignals(self):
+    def prepare_base_signals(self):
         self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
-        self.signalPluginLoading.connect(self._parent.signalPluginLoading)
-        self.signalPluginReloading.connect(self._parent.signalPluginReloading)
-        self.signalExceptionOccurred.connect(self._parent.errorHandler)
+        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
+        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
+        self.sig_exception_occurred.connect(self._parent.error_handler)
 
-    def prepareShortcuts(self) -> None:
+    def prepare_shortcuts(self) -> None:
         """ Prepare plugin shortcuts and register them in `ShortcutsManager` """
         pass
 
-    def prepareConfigurationPage(self) -> None:
+    def prepare_configuration_page(self) -> None:
         """ Prepare configuration page widget """
         pass
 
@@ -131,21 +132,21 @@ class PiePlugin(
 
     # Update methods
 
-    def updateStyle(self) -> None:
+    def update_style(self) -> None:
         pass
 
-    def updateLocalization(self) -> None:
+    def update_localization(self) -> None:
         pass
 
     # Getter methods
 
-    def getDescription(self) -> str:
+    def get_description(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    def getName(self) -> str:
+    def get_name(self) -> str:
         return self.name or self.__class__.__name__
 
-    def getVersion(self) -> tuple[int]:
+    def get_version(self) -> tuple[int]:
         return self.version
 
     # Properties

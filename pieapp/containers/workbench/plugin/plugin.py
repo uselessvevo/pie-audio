@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import typing
 
 from PySide6.QtWidgets import QSizePolicy, QWidget
@@ -24,39 +26,38 @@ class Workbench(
     name = Containers.Workbench
 
     def init(self) -> None:
-        self.widget = QWidget()
-        self.workbench = self.addToolBar(self.widget, self.name)
+        self.workbench = self.add_toolbar(self._parent, self.name)
 
-        self.addToolButton(
+        self.add_tool_button(
             parent=self.workbench,
             section=self.name,
             name=WorkbenchItems.Exit,
-            text=self.getTranslation("Exit"),
-            tooltip=self.getTranslation("Exit"),
-            icon=self.getAssetIcon("exit.png"),
-            triggered=self.parent().close
+            text=self.get_translation("Exit"),
+            tooltip=self.get_translation("Exit"),
+            icon=self.get_asset_icon("exit.png"),
+            triggered=self._parent.close
         )
 
         spacer = QWidget()
-        spacer.setObjectName(WorkbenchItems.Spacer)
-        spacer.setSizePolicy(
+        spacer.set_object_name(WorkbenchItems.Spacer)
+        spacer.set_size_policy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Expanding
         )
 
-        self.addToolBarItem(
+        self.add_toolbar_item(
             section=self.name,
             name=WorkbenchItems.Spacer,
             item=spacer
         )
 
-        self.addToolBarItem(
+        self.add_toolbar_item(
             section=self.name,
             name=WorkbenchItems.Exit,
-            item=self.getToolButton(self.name, WorkbenchItems.Exit)
+            item=self.get_tool_button(self.name, WorkbenchItems.Exit)
         )
 
-        self.parent().mainLayout.addWidget(self.workbench, 0, 0)
+        self._parent.workbench_layout.add_widget(self.workbench, 0, 0)
 
 
 def main(*args, **kwargs) -> typing.Any:

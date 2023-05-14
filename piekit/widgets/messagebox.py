@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QPushButton
 
@@ -11,18 +13,18 @@ class MessageBox(QMessageBox, LocalesAccessor):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
 
-        self.setStyleSheet("QLabel{min-width: 300px; min-height: 50}")
-        self.setWindowTitle(self.getTranslation('Exit'))
-        self.setText(self.getTranslation("Are you sure you want to exit?"))
+        self.set_style_sheet("QLabel{min-width: 300px; min-height: 50}")
+        self.set_window_title(self.get_translation('Exit'))
+        self.set_text(self.get_translation("Are you sure you want to exit?"))
 
-        self.yesButton = QPushButton()
-        self.yesButton.setText(self.getTranslation("Yes"))
+        self.yes_button = QPushButton()
+        self.yes_button.set_text(self.get_translation("Yes"))
 
-        self.noButton = QPushButton()
-        self.noButton.setText(self.getTranslation("No"))
+        self.no_button = QPushButton()
+        self.no_button.set_text(self.get_translation("No"))
 
-        self.addButton(self.yesButton, QMessageBox.ButtonRole.YesRole)
-        self.addButton(self.noButton, QMessageBox.ButtonRole.NoRole)
-        self.setDefaultButton(self.noButton)
+        self.add_button(self.yes_button, QMessageBox.ButtonRole.YesRole)
+        self.add_button(self.no_button, QMessageBox.ButtonRole.NoRole)
+        self.set_default_button(self.no_button)
 
         self.exec()

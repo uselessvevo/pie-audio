@@ -1,6 +1,6 @@
 import warnings
 import importlib
-from typing import Any
+from typing import Any, Type
 from types import ModuleType
 
 from piekit.config.types import AnnotatedHandler
@@ -18,7 +18,7 @@ class ConfigLoader:
         # Dictionary of fields to handlers relation (<field name>: <handler name>)
         self.__dict__["_fields_handlers"]: dict[str, str] = {}
 
-    def add_handlers(self, *handlers: AnnotatedHandler) -> None:
+    def add_handlers(self, *handlers: Type[AnnotatedHandler]) -> None:
         for handler in handlers:
             if handler in self._handlers:
                 raise AttributeError(f"Handler {handler} is already added")

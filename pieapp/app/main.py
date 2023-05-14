@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 from PySide6 import QtWidgets
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal
@@ -5,7 +7,7 @@ from PySide6.QtWidgets import QGridLayout
 
 from piekit.config import Config
 from pieapp.structs.containers import Containers
-from piekit.plugins.helpers import getPlugin
+from piekit.plugins.utils import get_plugin
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManagers, Sections
@@ -15,51 +17,44 @@ from piekit.managers.configs.mixins import ConfigAccessor
 class PieAudioApp(MainWindow, ConfigAccessor):
     name = Config.PIEAPP_NAME
     section = Sections.Shared
-    signalPluginsReady = Signal()
+    sig_plugins_ready = Signal()
 
     def init(self) -> None:
-        self.setWindowTitle("Pie Audio • Audio Converter ({})".format(
+        self.set_window_title("Pie Audio • Audio Converter ({})".format(
             Config.PIEAPP_VERSION
         ))
-        self.setMinimumSize(720, 480)
-        self.resize(*self.getConfig("ui.winsize", (900, 560), Sections.User))
-        self.setWindowIcon(QIcon(self.getAsset("cloud.png")))
-
-    def prepareSignals(self) -> None:
-        self.signalPluginsReady.connect(self.notifyPluginReady)
+        self.set_minimum_size(720, 480)
+        self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_DEFAULT_WINDOW_SIZE, Sections.User))
+        self.set_window_icon(QIcon(self.get_asset("cloud.png")))
 
     def prepare(self):
-        self.prepareBaseSignals()
-        self.prepareSignals()
-        self.prepareMainLayout()
-        self.prepareWorkbenchLayout()
-        self.prepareTableLayout()
-        self.prepareCentralDefaultWidget()
-        self.preparePlugins()
+        self.prepare_base_signals()
+        self.prepare_main_layout()
+        self.prepare_workbench_layout()
+        self.prepare_table_layout()
+        self.prepare_central_widget()
+        self.prepare_plugins()
 
-    def prepareMainLayout(self) -> None:
-        self.mainLayout = QGridLayout()
-        self.setLayout(self.mainLayout)
+    def prepare_main_layout(self) -> None:
+        self.main_layout = QGridLayout()
+        self.set_layout(self.main_layout)
 
-    def prepareWorkbenchLayout(self) -> None:
-        self.workbenchLayout = QGridLayout()
-        self.mainLayout.addLayout(self.workbenchLayout, 0, 0)
+    def prepare_workbench_layout(self) -> None:
+        self.workbench_layout = QGridLayout()
+        self.main_layout.add_layout(self.workbench_layout, 0, 0)
 
-    def prepareTableLayout(self) -> None:
-        self.tableLayout = QGridLayout()
-        self.mainLayout.addLayout(self.tableLayout, 1, 0)
+    def prepare_table_layout(self) -> None:
+        self.table_layout = QGridLayout()
+        self.main_layout.add_layout(self.table_layout, 1, 0)
 
-    def prepareCentralDefaultWidget(self):
+    def prepare_central_widget(self):
         widget = QtWidgets.QLabel()
-        widget.setLayout(self.mainLayout)
-        self.setCentralWidget(widget)
+        widget.set_layout(self.main_layout)
+        self.set_central_widget(widget)
 
     # Plugin method and signals
 
-    def preparePlugins(self) -> None:
+    def prepare_plugins(self) -> None:
         """ Prepare all (or selected) Plugins """
         Managers(SysManagers.Plugins).init(self)
-        self.signalPluginsReady.emit()
-
-    def notifyPluginReady(self):
-        getPlugin(Containers.StatusBar).showMessage(self.getTranslation("Plugins are ready"))
+        self.sig_plugins_ready.emit()

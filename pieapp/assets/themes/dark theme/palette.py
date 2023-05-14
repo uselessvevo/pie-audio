@@ -2,9 +2,9 @@ from PySide6.QtGui import QPalette
 from PySide6.QtGui import QColor
 
 
-def getPalette():
+def get_palette():
     palette = QPalette()
-    palette.setColor(QPalette.ColorRole.Link, QColor(242, 242, 242))
-    palette.setColor(QPalette.ColorRole.LinkVisited, QColor(242, 242, 242))
+    palette.set_color(QPalette.ColorRole.Link, QColor(242, 242, 242))
+    palette.set_color(QPalette.ColorRole.LinkVisited, QColor(242, 242, 242))
 
     return palette

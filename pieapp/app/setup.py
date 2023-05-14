@@ -1,16 +1,18 @@
+import PySide6
+from __feature__ import snake_case
+
 import os
 import sys
 
-from piekit.config import Config, Lock, Max
+from piekit.config import Config, Lock, Max, Min
 from pieapp.wizard.wizard import SetupWizard
-from piekit.config.types import Min
 from piekit.managers.registry import Managers
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs
 from piekit.utils.core import except_hook
 from piekit.utils.core import restore_crabs
 from piekit.utils.core import get_application
-from piekit.widgets.splashcreen import SplashScreen
+from piekit.widgets.splashscreen import SplashScreen
 
 
 def setup_application() -> None:
@@ -28,7 +30,7 @@ def setup_application() -> None:
         splash = SplashScreen(str(splash_image))
         splash.show()
 
-    app.processEvents()
+    app.process_events()
 
     if not check_crabs():
         restore_crabs()

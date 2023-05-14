@@ -1,8 +1,8 @@
 import sys
 import traceback
 
+from __feature__ import snake_case
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import Qt
 
 from piekit.config import Config
 from piekit.managers.registry import Managers
@@ -22,7 +22,7 @@ def get_application(*args, **kwargs):
 def restart_application() -> None:
     Managers.shutdown(full_house=True)
     QtCore.QCoreApplication.quit()
-    QtCore.QProcess.startDetached(sys.executable, sys.argv)
+    QtCore.QProcess.start_detached(sys.executable, sys.argv)
 
 
 def check_crabs() -> bool:
@@ -30,7 +30,7 @@ def check_crabs() -> bool:
         return False
 
     user_folder = Config.USER_ROOT / Config.CONFIGS_FOLDER
-    req_files = set((Config.SYSTEM_ROOT / i).name for i in Config.TEMPLATE_FILES)
+    req_files = set((Config.SYSTEM_ROOT / i).name for i in Config.DEFAULT_CONFIG_FILES)
     ex_files = set(i.name for i in user_folder.rglob("*.json"))
     return req_files == ex_files
 
