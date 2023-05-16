@@ -146,13 +146,13 @@ class Settings(
         self.dialog.set_window_icon(self.get_plugin_icon())
         self.dialog.resize(740, 450)
 
-        rootGrid = QtWidgets.QGridLayout(self.dialog)
+        root_grid = QtWidgets.QGridLayout(self.dialog)
 
         tab_widget = TabWidget(self.dialog)
         tab_widget.add_tab(MainSettingsWidget(), self.get_translation("Main"))
 
-        rootGrid.add_widget(tab_widget, 0, 0, 1, 2)
-        self.dialog.set_layout(rootGrid)
+        root_grid.add_widget(tab_widget, 0, 0, 1, 2)
+        self.dialog.set_layout(root_grid)
 
     @on_plugin_available(target=Containers.MenuBar)
     def on_menu_bar_available(self) -> None:
