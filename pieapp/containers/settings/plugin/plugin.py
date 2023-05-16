@@ -79,7 +79,7 @@ class MainSettingsWidget(
 
     def __init__(self, parent: QtWidgets.QWidget = None) -> None:
         super().__init__(parent)
-        mainGrid = QtWidgets.QGridLayout(parent)
+        main_grid = QtWidgets.QGridLayout(parent)
 
         self.ffpeg_prompt = QtWidgets.QLineEdit()
         self.ffpeg_prompt.insert(self.get_shared_config("ffmpeg.root", section=Sections.User))
@@ -92,24 +92,24 @@ class MainSettingsWidget(
         self.locales_cbox.set_current_text(self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
 
         themes = Managers(SysManagers.Assets).get_themes()
-        self.themeCBox = QtWidgets.QComboBox()
-        self.themeCBox.add_items(themes)
-        self.themeCBox.set_current_text(self.get_shared_config("assets.theme", section=Sections.User))
+        self.theme_cbox = QtWidgets.QComboBox()
+        self.theme_cbox.add_items(themes)
+        self.theme_cbox.set_current_text(self.get_shared_config("assets.theme", section=Sections.User))
         # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
 
-        mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("Language")), 0, 0, 1, 1)
-        mainGrid.add_widget(self.locales_cbox, 0, 1, 1, 1)
+        main_grid.add_widget(QtWidgets.QLabel(self.get_translation("Language")), 0, 0, 1, 1)
+        main_grid.add_widget(self.locales_cbox, 0, 1, 1, 1)
 
-        mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("Theme")), 2, 0, 1, 1)
-        mainGrid.add_widget(self.themeCBox, 2, 1, 1, 1)
+        main_grid.add_widget(QtWidgets.QLabel(self.get_translation("Theme")), 2, 0, 1, 1)
+        main_grid.add_widget(self.theme_cbox, 2, 1, 1, 1)
 
-        mainGrid.add_widget(QtWidgets.QLabel(self.get_translation("FFmpeg path")), 6, 0, 1, 1)
-        mainGrid.add_widget(self.ffpeg_prompt, 6, 1, 1, 1)
-        mainGrid.add_widget(self.ffmpeg_button, 7, 1, 1, 1)
-        mainGrid.set_alignment(self.ffmpeg_button, Qt.AlignmentFlag.AlignRight)
-        mainGrid.add_widget(Spacer(), 8, 0, 1, 2)
+        main_grid.add_widget(QtWidgets.QLabel(self.get_translation("FFmpeg path")), 6, 0, 1, 1)
+        main_grid.add_widget(self.ffpeg_prompt, 6, 1, 1, 1)
+        main_grid.add_widget(self.ffmpeg_button, 7, 1, 1, 1)
+        main_grid.set_alignment(self.ffmpeg_button, Qt.AlignmentFlag.AlignRight)
+        main_grid.add_widget(Spacer(), 8, 0, 1, 2)
 
-        self.set_layout(mainGrid)
+        self.set_layout(main_grid)
 
     def ffmpeg_button_connect(self) -> None:
         directory = QtWidgets.QFileDialog(self, self.get_translation("Select ffmpeg directory"))
@@ -156,7 +156,7 @@ class Settings(
 
     @on_plugin_available(target=Containers.MenuBar)
     def on_menu_bar_available(self) -> None:
-        self.addMenuItem(
+        self.add_menu_item(
             section=Sections.Shared,
             menu=Menus.File,
             name="settings",
