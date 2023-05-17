@@ -12,6 +12,7 @@ from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers
 from piekit.utils.files import read_json, write_json
 from piekit.observers.filesystem import FileSystemObserver
+from piekit.utils.logger import logger
 
 
 class ConfigManager(BaseManager):
@@ -19,8 +20,7 @@ class ConfigManager(BaseManager):
     protected_keys = ("__FILE__",)
 
     def __init__(self) -> None:
-        super().__init__()
-
+        self._logger = logger
         self._roots: set[Path] = set()
         self._configuration: Dotty[str, dict[str, Any]] = Dotty({})
         self._observer = FileSystemObserver()

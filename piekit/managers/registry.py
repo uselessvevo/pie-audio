@@ -1,14 +1,11 @@
-from typing import Union
+from typing import Union, Type
 from pathlib import Path
 
-from piekit.config import Config
 from piekit.utils.logger import logger
 from piekit.utils.files import read_json
 from piekit.utils.modules import import_by_string
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import ManagerConfig
-from piekit.managers.exceptions import ManagerNotReadyError
-from piekit.managers.exceptions import DependencyNotFoundError
 
 
 class ManagersRegistry:
@@ -20,22 +17,7 @@ class ManagersRegistry:
         # Dictionary with stored `BaseManager` base classes. Use to reload them
         self._managers_instances: dict[str, BaseManager] = {}
 
-    def _check_dependencies(self, obj):
-        """
-        Checks required managers
-        """
-        for dependency in getattr(obj, "dependencies") or tuple():
-            self._logger.info(f"Checking {obj.__class__.__name__} manager dependencies")
-            managers = tuple(i.import_string.split(".")[2] for i in Config.MANAGERS)
-
-            if dependency not in managers and not hasattr(self, dependency):
-                raise DependencyNotFoundError(dependency)
-
-            if dependency in managers and not self._is_ready(dependency):
-                # TODO: Add managers order resolver
-                raise ManagerNotReadyError(dependency)
-
-    def from_class(self, manager_class: BaseManager, init: bool = True, *args, **kwargs) -> None:
+    def from_class(self, manager_class: Type[BaseManager], init: bool = True, *args, **kwargs) -> None:
         """
         Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
         For example:
@@ -44,7 +26,6 @@ class ManagersRegistry:
         >>> Managers.init(ConfigManager, PathConfig(...), ...)
         """
         manager_instance = manager_class()
-        self._check_dependencies(manager_instance)
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
         if init is True:
@@ -59,7 +40,6 @@ class ManagersRegistry:
         Initialize manager from `ManagerConfig` structure
         """
         manager_instance = import_by_string(config.import_string)()
-        self._check_dependencies(manager_instance)
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
         if config.init is True:
@@ -106,15 +86,11 @@ class ManagersRegistry:
             self._logger.info(f"Destroying `{manager.__class__.__name__}`")
             delattr(self, manager)
 
-    def _is_ready(self, name: str) -> bool:
-        manager = getattr(self, name)
-        return manager.ready
-
     def __call__(self, manager: str) -> BaseManager:
         try:
             return self.__getattribute__(manager)
         except AttributeError:
-            raise ManagerNotReadyError(manager)
+            raise AttributeError(f"Manager `{manager}` not found or not initialized")
 
 
 Managers = ManagersRegistry()

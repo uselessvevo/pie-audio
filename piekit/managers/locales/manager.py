@@ -13,8 +13,6 @@ class LocaleManager(BaseManager):
     dependencies = (SysManagers.Configs,)
 
     def __init__(self) -> None:
-        super().__init__()
-
         self._locale: str = Managers.configs.get_shared(
             Sections.User, "locales.locale", Config.DEFAULT_LOCALE
         )

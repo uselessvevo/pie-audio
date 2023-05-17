@@ -8,14 +8,14 @@ from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers
 from piekit.managers.base import BaseManager
 from piekit.config.exceptions import PieException
+from piekit.utils.logger import logger
 
 
 class ActionManager(BaseManager):
     name = SysManagers.Actions
 
     def __init__(self) -> None:
-        super().__init__()
-
+        self._logger = logger
         self._actions: dict[str, QAction] = {}
 
     def add_action(

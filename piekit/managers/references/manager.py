@@ -4,20 +4,20 @@ from piekit.managers.base import BaseManager
 from piekit.managers.structs import Sections
 from piekit.config.exceptions import PieException
 
-from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QObject
 
 
-class ManagerRefs(BaseManager):
+class ReferenceManager(BaseManager):
     """
     The premise of this manager is to simplify common for this project data organization and access:
     * `<parent 1>: <item 1, item 2, ..., item n>, ..., <parent n>: ...`
     """
 
     def __init__(self) -> None:
-        self._parent_refs: dict[str, QWidget] = {}
-        self._children_refs: dict[str, dict[str, QWidget]] = {}
+        self._parent_refs: dict[str, QObject] = {}
+        self._children_refs: dict[str, dict[str, QObject]] = {}
 
-    def add_section(self, name: Union[str, Sections], target_instance: QWidget) -> None:
+    def add_section(self, name: Union[str, Sections], target_instance: QObject) -> QObject:
         if name in self._parent_refs:
             raise PieException(f"Parent object `{name}` already registered")
 
@@ -25,21 +25,21 @@ class ManagerRefs(BaseManager):
 
         return target_instance
 
-    def add_item(self, section: Union[str, Sections], item_name: str, item_instance: QWidget) -> QWidget:
+    def add_item(self, section: Union[str, Sections], item_name: str, item_instance: QObject) -> QObject:
         if section not in self._children_refs:
             self._children_refs[section] = {}
 
         self._children_refs[section][item_name] = item_instance
         return item_instance
 
-    def get_section(self, section: Union[str, Sections]) -> QWidget:
+    def get_section(self, section: Union[str, Sections]) -> QObject:
         if section not in self._parent_refs:
             raise KeyError(f"Parent object `{section}` already registered")
         
         return self._parent_refs[section]
     
-    def get_sections(self, *sections: Union[str, Sections]) -> list[QWidget]:
-        collect: list[QWidget] = []
+    def get_sections(self, *sections: Union[str, Sections]) -> list[QObject]:
+        collect: list[QObject] = []
 
         for section in sections:
             if section not in self._parent_refs:
@@ -50,7 +50,7 @@ class ManagerRefs(BaseManager):
 
         return collect
 
-    def get_item(self, section: Union[str, Sections], name: Union[str, Sections]) -> QWidget:
+    def get_item(self, section: Union[str, Sections], name: Union[str, Sections]) -> QObject:
         if section not in self._children_refs:
             raise PieException(f"Section {section} not found")
 
@@ -59,8 +59,8 @@ class ManagerRefs(BaseManager):
 
         return self._children_refs[section][name]
 
-    def get_items(self, section: Union[str, Sections], *names: Union[str, Sections]) -> list[QWidget]:
-        collect: list[QWidget] = []
+    def get_items(self, section: Union[str, Sections], *names: Union[str, Sections]) -> list[QObject]:
+        collect: list[QObject] = []
 
         if section not in self._parent_refs[section]:
             raise KeyError(f"Parent object `{section}` already registered")

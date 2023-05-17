@@ -15,8 +15,6 @@ class ToolBarManager(BaseManager):
     name = SysManagers.ToolBars
 
     def __init__(self):
-        super().__init__()
-
         # ToolBar mapping
         self._toolbars: dict[str, PieToolBar] = {}
 

@@ -13,8 +13,6 @@ class MenuManager(BaseManager):
     name = SysManagers.Menus
 
     def __init__(self):
-        super().__init__()
-
         self._bars: dict[str, QMenuBar] = {}
 
         # Menu mapping

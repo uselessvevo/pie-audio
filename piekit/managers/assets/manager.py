@@ -10,6 +10,7 @@ from piekit.managers.registry import Managers
 from piekit.managers.structs import Sections
 from piekit.managers.structs import SysManagers, DirectoryType
 from piekit.config import Config
+from piekit.utils.logger import logger
 
 
 class AssetsManager(BaseManager):
@@ -17,8 +18,7 @@ class AssetsManager(BaseManager):
     dependencies = (SysManagers.Configs,)
 
     def __init__(self) -> None:
-        super().__init__()
-
+        self._logger = logger
         self._assets_dictionary: dict[str, Path] = {}
         self._current_theme = Managers(SysManagers.Configs).get_shared(Sections.User, "assets.theme")
 

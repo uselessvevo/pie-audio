@@ -1,21 +1,11 @@
-from typing import Any
-
-from piekit.utils.logger import logger
+"""
+Base manager
+"""
 
 
 class BaseManager:
     # Manager name
     name: str
-
-    # Contains a tuple of required `BaseManager` based objects name
-    dependencies: tuple[str] = None
-
-    def __init__(self) -> None:
-        # Just a logger
-        self._logger = logger
-
-        # Is manager ready
-        self._ready: bool = False
 
     def init(self, *args, **kwargs) -> None:
         """
@@ -34,14 +24,6 @@ class BaseManager:
         """
         self.shutdown()
         self.init()
-
-    @property
-    def ready(self) -> bool:
-        return self._ready
-
-    @ready.setter
-    def ready(self, ready: bool) -> None:
-        self._ready = ready
 
     def __str__(self) -> str:
         return self.__class__.__name__

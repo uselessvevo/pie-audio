@@ -2,12 +2,13 @@ import os
 import sys
 from typing import Any
 from pathlib import Path
-from piekit.plugins.types import PluginTypes
 
+from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
 
 from piekit.config import Config
+from piekit.plugins.types import PluginTypes
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import SysManagers
@@ -22,7 +23,7 @@ class PluginManager(BaseManager):
     dependencies = (SysManagers.Configs, SysManagers.Locales)
 
     def __init__(self) -> None:
-        super().__init__()
+        self._logger = logger
 
         # List of PiePlugins that depend on it
         self._plugin_dependents: dict[str, dict[str, list[str]]] = {}
@@ -158,8 +159,8 @@ class PluginManager(BaseManager):
 
         # Notify plugin dependents
         plugin_dependents = self._plugin_dependents.get(name, {})
-        required_plugins = plugin_dependents.get('requires', [])
-        optional_plugins = plugin_dependents.get('optional', [])
+        required_plugins = plugin_dependents.get("requires", [])
+        optional_plugins = plugin_dependents.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugins_registry:

@@ -14,8 +14,6 @@ class ToolButtonManager(BaseManager):
     name = SysManagers.ToolButton
 
     def __init__(self):
-        super().__init__()
-
         # Menu items/actions mapping
         self._buttons: dict[str, dict[str, QToolButton]] = {}
 
