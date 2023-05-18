@@ -3,7 +3,7 @@ Built-in app containers
 """
 
 
-class Containers:
+class Container:
     MenuBar = "menu-bar"
     Settings = "settings"
     Workbench = "workbench"

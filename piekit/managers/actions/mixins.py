@@ -4,20 +4,20 @@ from PySide6.QtGui import QAction
 from PySide6.QtCore import QObject
 
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 
 
 class ActionAccessor:
 
-    def add_action(self, section: Union[str, Sections], parent: QObject, name: str = None) -> QAction:
+    def add_action(self, section: Union[str, Section], parent: QObject, name: str = None) -> QAction:
         action = QAction(parent=parent)
-        return Managers(SysManagers.Actions).add_action(section or Sections.Shared, name, action)
+        return Managers(SysManager.Actions).add_action(section or Section.Shared, name, action)
 
     def get_action(self, section: str, name: str) -> QAction:
-        return Managers(SysManagers.ToolBars).get_action(section, name)
+        return Managers(SysManager.ToolBars).get_action(section, name)
 
-    def get_actions(self, section: Union[str, Sections], *names: str) -> list[QAction]:
-        return Managers(SysManagers.ToolBars).get_actions(section, *names)
+    def get_actions(self, section: Union[str, Section], *names: str) -> list[QAction]:
+        return Managers(SysManager.ToolBars).get_actions(section, *names)
 
     addAction = add_action
     getAction = get_action

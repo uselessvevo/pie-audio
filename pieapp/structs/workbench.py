@@ -3,7 +3,7 @@ Workbench items
 """
 
 
-class WorkbenchItems:
+class WorkbenchItem:
     OpenFiles = "openFiles"
     Clear = "clear"
     Convert = "convert"

@@ -5,7 +5,7 @@ import sys
 from piekit.config import Config
 from piekit.utils.core import get_application
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import SysManager
 from piekit.managers.assets.utils import get_theme, get_palette
 
 
@@ -13,7 +13,7 @@ def start_application():
     from pieapp.app.main import PieAudioApp
     app = get_application()
 
-    theme = Managers(SysManagers.Assets).get_theme()
+    theme = Managers(SysManager.Assets).get_theme()
     if theme:
         if Config.ASSETS_USE_STYLE:
             app.set_style_sheet(get_theme(theme))

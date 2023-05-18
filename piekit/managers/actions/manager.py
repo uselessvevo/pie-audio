@@ -4,15 +4,15 @@ from typing import Union
 
 from PySide6.QtGui import QAction
 
-from piekit.managers.structs import Sections
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import Section
+from piekit.managers.structs import SysManager
 from piekit.managers.base import BaseManager
 from piekit.config.exceptions import PieException
 from piekit.utils.logger import logger
 
 
 class ActionManager(BaseManager):
-    name = SysManagers.Actions
+    name = SysManager.Actions
 
     def __init__(self) -> None:
         self._logger = logger
@@ -20,7 +20,7 @@ class ActionManager(BaseManager):
 
     def add_action(
         self,
-        section: Union[str, Sections],
+        section: Union[str, Section],
         name: str,
         action: QAction
     ) -> QAction:
@@ -36,7 +36,7 @@ class ActionManager(BaseManager):
 
     def get_action(
         self,
-        section: Union[str, Sections],
+        section: Union[str, Section],
         name: str
     ) -> QAction:
         if section not in self._actions:
@@ -49,7 +49,7 @@ class ActionManager(BaseManager):
 
     def get_actions(
         self,
-        section: Union[str, Sections],
+        section: Union[str, Section],
         *names: str
     ) -> list[QAction]:
         return [self.get_action(section, n) for n in names]

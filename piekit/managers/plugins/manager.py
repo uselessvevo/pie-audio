@@ -11,7 +11,7 @@ from piekit.config import Config
 from piekit.plugins.types import PluginTypes
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import SysManager
 
 
 class PluginManager(BaseManager):
@@ -19,8 +19,8 @@ class PluginManager(BaseManager):
     This manager is the PiePlugins registry.
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
-    name = SysManagers.Plugins
-    dependencies = (SysManagers.Configs, SysManagers.Locales)
+    name = SysManager.Plugins
+    dependencies = (SysManager.Configs, SysManager.Locales)
 
     def __init__(self) -> None:
         self._logger = logger

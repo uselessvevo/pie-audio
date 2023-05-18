@@ -4,12 +4,12 @@ import typing
 
 from PySide6.QtCore import Qt
 
-from pieapp.structs.containers import Containers
-from pieapp.structs.menus import Menus, MenuItems
+from pieapp.structs.containers import Container
+from pieapp.structs.menus import MainMenu, MainMenuItem
 from piekit.managers.menus.mixins import MenuAccessor
 from piekit.managers.plugins.decorators import on_plugin_available
 from piekit.managers.registry import Managers
-from piekit.managers.structs import Sections, SysManagers
+from piekit.managers.structs import Section, SysManager
 from piekit.managers.toolbars.mixins import ToolBarAccessor
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
 from piekit.plugins.plugins import PiePlugin
@@ -74,27 +74,27 @@ class MainSettingsWidget(
     AssetsAccessor,
     QtWidgets.QWidget
 ):
-    name = Containers.Settings
-    section = Sections.Shared
+    name = Container.Settings
+    section = Section.Shared
 
     def __init__(self, parent: QtWidgets.QWidget = None) -> None:
         super().__init__(parent)
         main_grid = QtWidgets.QGridLayout(parent)
 
         self.ffpeg_prompt = QtWidgets.QLineEdit()
-        self.ffpeg_prompt.insert(self.get_shared_config("ffmpeg.root", section=Sections.User))
+        self.ffpeg_prompt.insert(self.get_shared_config("ffmpeg.root", section=Section.User))
         self.ffmpeg_button = QtWidgets.QPushButton(self.get_translation("Set ffmpeg path"))
         self.ffmpeg_button.clicked.connect(self.ffmpeg_button_connect)
 
         locales = Config.LOCALES
         self.locales_cbox = QtWidgets.QComboBox()
         self.locales_cbox.add_items(locales)
-        self.locales_cbox.set_current_text(self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, section=Sections.User))
+        self.locales_cbox.set_current_text(self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, section=Section.User))
 
-        themes = Managers(SysManagers.Assets).get_themes()
+        themes = Managers(SysManager.Assets).get_themes()
         self.theme_cbox = QtWidgets.QComboBox()
         self.theme_cbox.add_items(themes)
-        self.theme_cbox.set_current_text(self.get_shared_config("assets.theme", section=Sections.User))
+        self.theme_cbox.set_current_text(self.get_shared_config("assets.theme", section=Section.User))
         # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
 
         main_grid.add_widget(QtWidgets.QLabel(self.get_translation("Language")), 0, 0, 1, 1)
@@ -136,8 +136,8 @@ class Settings(
     ToolBarAccessor,
     ToolButtonAccessor,
 ):
-    name = Containers.Settings
-    requires = [Containers.MenuBar, Containers.Workbench]
+    name = Container.Settings
+    requires = [Container.MenuBar, Container.Workbench]
 
     def init(self) -> None:
         self.dialog = QtWidgets.QDialog(self._parent)
@@ -154,16 +154,16 @@ class Settings(
         root_grid.add_widget(tab_widget, 0, 0, 1, 2)
         self.dialog.set_layout(root_grid)
 
-    @on_plugin_available(target=Containers.MenuBar)
+    @on_plugin_available(target=Container.MenuBar)
     def on_menu_bar_available(self) -> None:
         self.add_menu_item(
-            section=Sections.Shared,
-            menu=Menus.File,
+            section=Section.Shared,
+            menu=MainMenu.File,
             name="settings",
             text=self.get_translation("Settings"),
             triggered=self.dialog.show,
             icon=self.get_asset_icon("settings.png"),
-            before=MenuItems.Exit
+            before=MainMenuItem.Exit
         )
 
 

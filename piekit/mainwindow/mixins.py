@@ -1,7 +1,7 @@
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.types import PluginTypes
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import SysManager
 
 
 class ContainerRegisterAccessor:
@@ -23,10 +23,10 @@ class ContainerRegisterAccessor:
         if not isinstance(target, PiePlugin):
             raise TypeError(f"Target {target.name} is not a `PiePlugin` based instance")
             
-        if Managers(SysManagers.Plugins).plugin_has_type(PluginTypes.Container):
+        if Managers(SysManager.Plugins).plugin_has_type(PluginTypes.Container):
             raise KeyError(f"Container {container} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManagers.Plugins).get(container)
+        container_instance = Managers(SysManager.Plugins).get(container)
         container_instance.register_target(target)
 
         return container_instance
@@ -42,10 +42,10 @@ class ContainerRegisterAccessor:
         Returns:
             A container instance
         """
-        if Managers(SysManagers.Plugins).plugin_has_type(PluginTypes.Container):
+        if Managers(SysManager.Plugins).plugin_has_type(PluginTypes.Container):
             raise KeyError(f"Container {container} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManagers.Plugins).get(container)
+        container_instance = Managers(SysManager.Plugins).get(container)
         container_instance.remove_target(target)
 
         return container_instance

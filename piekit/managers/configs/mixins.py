@@ -1,7 +1,7 @@
 from typing import Any, Union
 
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 
 
 class ConfigAccessor:
@@ -13,26 +13,26 @@ class ConfigAccessor:
         self,
         key: Any,
         default: Any = None,
-        section: Union[str, Sections] = Sections.Inner
+        section: Union[str, Section] = Section.Inner
     ) -> Any:
-        return Managers(SysManagers.Configs).get(self.name, section, key, default)
+        return Managers(SysManager.Configs).get(self.name, section, key, default)
 
     def get_shared_config(
         self,
         key: Any,
         default: Any = None,
-        section: Union[Sections.Inner, Sections.User] = Sections.Shared
+        section: Union[Section.Inner, Section.User] = Section.Shared
     ) -> Any:
-        return Managers(SysManagers.Configs).get_shared(section, key, default)
+        return Managers(SysManager.Configs).get_shared(section, key, default)
 
     def set_config(self, key: Any, data: Any) -> None:
-        Managers(SysManagers.Configs).set(self.name, key, data)
+        Managers(SysManager.Configs).set(self.name, key, data)
 
     def delete_config(self, key: Any) -> None:
-        Managers(SysManagers.Configs).delete(self.name, key)
+        Managers(SysManager.Configs).delete(self.name, key)
 
     def save_config(self, data: dict, create: bool = False) -> None:
-        Managers(SysManagers.Configs).save(self.name, data, create)
+        Managers(SysManager.Configs).save(self.name, data, create)
 
     getConfig = get_config
     getSharedConfig = get_shared_config

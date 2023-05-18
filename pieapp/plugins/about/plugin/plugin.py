@@ -6,11 +6,11 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
 
-from pieapp.structs.menus import Menus
-from piekit.managers.structs import Sections
+from pieapp.structs.menus import MainMenu
+from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
-from pieapp.structs.plugins import Plugins
-from pieapp.structs.containers import Containers
+from pieapp.structs.plugins import Plugin
+from pieapp.structs.containers import Container
 from piekit.managers.menus.mixins import MenuAccessor
 
 from piekit.config import Config
@@ -25,8 +25,7 @@ class About(
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = Plugins.About
-    requires = [Containers.MenuBar]
+    name = Plugin.About
 
     def init(self) -> None:
         self.dialog = QDialog(self._parent)
@@ -60,11 +59,11 @@ class About(
 
         self.dialog.set_layout(grid_layout)
 
-    @on_plugin_available(target=Containers.MenuBar)
+    @on_plugin_available(target=Container.MenuBar)
     def onMenuBarAvailable(self) -> None:
         self.add_menu_item(
-            section=Sections.Shared,
-            menu=Menus.Help,
+            section=Section.Shared,
+            menu=MainMenu.Help,
             name="about",
             text=self.get_translation("About"),
             triggered=self.dialog.show,

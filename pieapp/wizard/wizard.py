@@ -9,7 +9,7 @@ from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 from piekit.utils.files import write_json
 from piekit.utils.core import restart_application
 
@@ -22,7 +22,7 @@ class LocaleWizardPage(
     LocalesAccessor,
     QtWidgets.QWizardPage
 ):
-    section = Sections.User
+    section = Section.User
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
@@ -39,7 +39,7 @@ class LocaleWizardPage(
         self.combo_box.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
         self.combo_box.current_index_changed.connect(self.get_result)
 
-        self.locale_label = QtWidgets.QLabel(self.get_translation("Select locale", Sections.Shared))
+        self.locale_label = QtWidgets.QLabel(self.get_translation("Select locale", Section.Shared))
         self.locale_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -66,17 +66,17 @@ class ThemeWizardPage(
     LocalesAccessor,
     QtWidgets.QWizardPage
 ):
-    section = Sections.Shared
+    section = Section.Shared
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
         self.combo_box = QtWidgets.QComboBox()
         self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
-        self.combo_box.add_items(Managers(SysManagers.Assets).get_themes())
+        self.combo_box.add_items(Managers(SysManager.Assets).get_themes())
         self.combo_box.current_index_changed.connect(self.get_result)
 
-        self._cur_theme = self.get_shared_config("assets.theme", Managers(SysManagers.Assets).get_theme(), Sections.User)
+        self._cur_theme = self.get_shared_config("assets.theme", Managers(SysManager.Assets).get_theme(), Section.User)
 
         theme_label = self.get_translation("Select theme")
         theme_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
@@ -105,7 +105,7 @@ class FfmpegWizardPage(
     AssetsAccessor,
     QtWidgets.QWizardPage
 ):
-    section = Sections.Shared
+    section = Section.Shared
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
@@ -125,7 +125,7 @@ class FfmpegWizardPage(
             }
         """)
         self.line_edit_button.setIcon(QIcon(
-            Managers(SysManagers.Assets).get(Sections.Shared, "open-folder.png")
+            Managers(SysManager.Assets).get(Section.Shared, "open-folder.png")
         ))
         self.line_edit_button.set_icon(self.get_asset_icon("open-folder.png"))
         self.line_edit_button.clicked.connect(self.select_ffmpeg_path)

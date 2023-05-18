@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QMenuBar, QWidget
 
 from piekit.widgets.menus import PieMenu, INDEX_END, INDEX_START
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 
 
 class MenuAccessor:
@@ -17,10 +17,10 @@ class MenuAccessor:
         name: str = None
     ) -> QMenuBar:
         menu_bar = QMenuBar(parent)
-        return Managers(SysManagers.Menus).add_menu_bar(name or Sections.Shared, menu_bar)
+        return Managers(SysManager.Menus).add_menu_bar(name or Section.Shared, menu_bar)
 
     def get_menu_bar(self, name: str) -> QMenuBar:
-        return Managers(SysManagers.Menus).get_menu_bar(name or Sections.Shared)
+        return Managers(SysManager.Menus).get_menu_bar(name or Section.Shared)
 
     def add_menu(
         self,
@@ -29,13 +29,14 @@ class MenuAccessor:
         name: str = None,
         text: str = None,
         icon: QIcon = None,
-    ):
+    ) -> PieMenu:
+        parent = self.get_menu_bar(parent)
         menu = PieMenu(parent=parent, name=name, text=text)
         if icon:
             menu.menu_action().set_icon_visible_in_menu(True)
             menu.set_icon(icon)
 
-        return Managers(SysManagers.Menus).add_menu(section or Sections.Shared, name, menu)
+        return Managers(SysManager.Menus).add_menu(section or Section.Shared, name, menu)
 
     def add_menu_item(
         self,
@@ -48,16 +49,16 @@ class MenuAccessor:
         before: str = None,
         index: Union[int, INDEX_START, INDEX_END] = None
     ) -> QAction:
-        manager = Managers(SysManagers.Menus)
+        manager = Managers(SysManager.Menus)
         menu_instance = manager.get_menu(section, menu)
         menu_instance.add_menu_item(name, text, triggered, icon, before, index)
-        return manager.add_menu_item(section or Sections.Shared, menu, name, menu_instance)
+        return manager.add_menu_item(section or Section.Shared, menu, name, menu_instance)
 
     def get_menu(self, section: str, name: str) -> PieMenu:
-        return Managers(SysManagers.Menus).get_menu(section or Sections.Shared, name)
+        return Managers(SysManager.Menus).get_menu(section or Section.Shared, name)
 
     def get_menu_item(self, section: str, menu: str, name: str) -> QAction:
-        return Managers(SysManagers.Menus).get_menu_item(section, menu, name)
+        return Managers(SysManager.Menus).get_menu_item(section, menu, name)
 
     addMenu = add_menu
     getMenu = get_menu

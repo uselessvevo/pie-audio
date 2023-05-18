@@ -3,7 +3,7 @@ Built-in app plugins
 """
 
 
-class Plugins:
+class Plugin:
     About = "about"
     Converter = "converter"
     TestPlugin = "test-plugin"

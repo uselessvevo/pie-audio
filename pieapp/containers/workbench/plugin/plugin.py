@@ -4,8 +4,8 @@ import typing
 
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
-from pieapp.structs.containers import Containers
-from pieapp.structs.workbench import WorkbenchItems
+from pieapp.structs.containers import Container
+from pieapp.structs.workbench import WorkbenchItem
 from piekit.plugins.plugins import PiePlugin
 
 from piekit.managers.assets.mixins import AssetsAccessor
@@ -23,7 +23,7 @@ class Workbench(
     ToolBarAccessor,
     ToolButtonAccessor,
 ):
-    name = Containers.Workbench
+    name = Container.Workbench
 
     def init(self) -> None:
         self.workbench = self.add_toolbar(self._parent, self.name)
@@ -31,7 +31,7 @@ class Workbench(
         self.add_tool_button(
             parent=self.workbench,
             section=self.name,
-            name=WorkbenchItems.Exit,
+            name=WorkbenchItem.Exit,
             text=self.get_translation("Exit"),
             tooltip=self.get_translation("Exit"),
             icon=self.get_asset_icon("exit.png"),
@@ -39,7 +39,7 @@ class Workbench(
         )
 
         spacer = QWidget()
-        spacer.set_object_name(WorkbenchItems.Spacer)
+        spacer.set_object_name(WorkbenchItem.Spacer)
         spacer.set_size_policy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Expanding
@@ -47,14 +47,14 @@ class Workbench(
 
         self.add_toolbar_item(
             section=self.name,
-            name=WorkbenchItems.Spacer,
+            name=WorkbenchItem.Spacer,
             item=spacer
         )
 
         self.add_toolbar_item(
             section=self.name,
-            name=WorkbenchItems.Exit,
-            item=self.get_tool_button(self.name, WorkbenchItems.Exit)
+            name=WorkbenchItem.Exit,
+            item=self.get_tool_button(self.name, WorkbenchItem.Exit)
         )
 
         self._parent.workbench_layout.add_widget(self.workbench, 0, 0)

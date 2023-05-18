@@ -5,12 +5,12 @@ from PySide6.QtWidgets import QMenu, QMenuBar
 
 from piekit.widgets.menus import PieMenu
 from piekit.managers.base import BaseManager
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import SysManager
 from piekit.config.exceptions import PieException
 
 
 class MenuManager(BaseManager):
-    name = SysManagers.Menus
+    name = SysManager.Menus
 
     def __init__(self):
         self._bars: dict[str, QMenuBar] = {}

@@ -3,12 +3,12 @@ from __feature__ import snake_case
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QPushButton
 
-from piekit.managers.structs import Sections
+from piekit.managers.structs import Section
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
 class MessageBox(QMessageBox, LocalesAccessor):
-    section = Sections.Shared
+    section = Section.Shared
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)

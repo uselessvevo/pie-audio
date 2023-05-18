@@ -1,13 +1,13 @@
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.base import BaseManager
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import SysManager
 
 from PySide6.QtGui import QShortcut
 
 
 class ShortcutsManager(BaseManager):
     """ QShortcuts managers """
-    name = SysManagers.Shortcuts
+    name = SysManager.Shortcuts
 
     def __init__(self) -> None:
         self._shortcuts: dict[str, QShortcut] = {}
