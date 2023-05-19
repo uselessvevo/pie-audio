@@ -52,7 +52,11 @@ class ManagersRegistry:
     def from_json(self, file: Union[str, Path]) -> None:
         """
         Initialize managers from json file.
-        File structure must have next structure: [{"import_string": string, "init": boolean}, ...]
+        File structure must have an array with the next parameters
+            * import_string (str): import string separated by dots - 'path.to.manager.ManagerClassName'
+            * init (bool): initialize manager
+
+        For example: `[{"import_string": string, "init": boolean}, ...]`
         """
         file_data = read_json(file)
         file_data = tuple(ManagerConfig(import_string=f["import"], init=file["init"]) for f in file_data)
@@ -63,7 +67,7 @@ class ManagersRegistry:
     def shutdown(self, *managers: str, full_house: bool = False) -> None:
         self._logger.info("Preparing to shutdown all managers")
         managers = reversed(self._managers_instances.keys()) if full_house else managers
-        managers_instances = [self._managers_instances.get(i) for i in managers or self._managers_instances.keys()]
+        managers_instances = (self._managers_instances.get(i) for i in managers or self._managers_instances.keys())
 
         for manager_instance in managers_instances:
             self._logger.info(f"Shutting down `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
@@ -73,7 +77,7 @@ class ManagersRegistry:
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
         managers = reversed(self._managers_instances.keys()) if full_house else managers
-        managers_instances = [self._managers_instances.get(i) for i in managers]
+        managers_instances = (self._managers_instances.get(i) for i in managers)
 
         for manager_instance in managers_instances:
             self._logger.info(f"Reloading `{manager_instance.__class__.__name__}`")
