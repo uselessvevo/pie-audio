@@ -49,7 +49,6 @@ class Converter(
 
         self.add_menu_item(
             section=Section.Shared,
-            menubar=Section.Shared,
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
             text=self.get_translation("Open file"),
