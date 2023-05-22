@@ -35,16 +35,15 @@ TEST_MAX_FIELD: Max[3] = [1, 2, 3, 4]
 * `SYSTEM_ROOT <pathlib.Path>` - директория piekit (по-умолчанию - "piekit")
 
 # Настройки плагинов
-* `USER_PLUGINS_FOLDER <str>` - наименование директории в пользовательской директории плагинов
-* `PLUGINS_FOLDER <str>` - наименование директории плагинов
-* `CONTAINERS_FOLDER <str>` - наименование директории контейнеров
+* `PLUGINS_FOLDER <str>` - наименование директории плагинов (по-умолчанию - "PIE_PLUGINS_FOLDER")
+* `CONTAINERS_FOLDER <str>` - наименование директории контейнеров (по-умолчанию - "PIE_CONTAINERS_FOLDER")
 
 # Настройки ресурсов
 * `ASSETS_FOLDER <str>` - наименование директории ресурсов (по-умолчанию - "PIE_ASSETS_FOLDER" или "assets")
 * `THEMES_FOLDER <str>` - наименование директории ресурсов (по-умолчанию - "PIE_THEMES_FOLDER" или "themes")
-* `ASSETS_EXCLUDED_FORMATS <EList>` - расширяемый список исключённых форматов файлов (по-умолчанию - пустой список)
 * `DEFAULT_THEME <str>` - тема по-умолчанию; выбирает среди доступных тем в директории `ASSETS_FOLDER`
 * `ASSETS_USE_STYLE <str>` - использовать ли тему оформления (по-умолчанию - "PIE_ASSETS_USE_STYLE" или True)
+* `ASSETS_EXCLUDED_FORMATS <EList>` - расширяемый список исключённых форматов файлов (по-умолчанию - пустой список)
 
 # Настройка директорий конфигураций
 * `CONFIGS_FOLDER <str>` - наименование директории конфигураций (по-умолчанию - "PIE_CONFIGS_FOLDER" или "configs")
