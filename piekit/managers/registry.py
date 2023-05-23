@@ -90,11 +90,25 @@ class ManagersRegistry:
             self._logger.info(f"Destroying `{manager.__class__.__name__}`")
             delattr(self, manager)
 
-    def __call__(self, manager: str) -> BaseManager:
+    def __call__(self, manager: str, fallback_method: callable = None) -> BaseManager:
+        """
+        Call needed manager instance via its name
+        For example: `Managers(SysManager.Configs).get(...)`
+        
+        Args:
+            manager (str): manager instance name
+            fallback_method (callable): method to call if manager was not found
+
+        Returns:
+            BaseManager instance
+        """
         try:
             return self.__getattribute__(manager)
         except AttributeError:
-            raise AttributeError(f"Manager `{manager}` not found or not initialized")
+            if not fallback_method:
+                raise AttributeError(f"Manager `{manager}` not found or not initialized")
+
+            fallback_method()
 
 
 Managers = ManagersRegistry()
