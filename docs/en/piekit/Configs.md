@@ -29,33 +29,33 @@ When declaring both fields, a warning about the impossibility of setting these v
 
 # Default fields (piekit.pieaudio-ver)
 
-# Директории
+# Directories
 * `BASE_DIR <pathlib.Path>` - root directory (by default - "PIE_BASE_DIR")
 * `APP_ROOT <pathlib.Path>` - application directory (by default - "PIE_APP_ROOT")
 * `USER_ROOT <pathlib.Path>` - user root directory (by default - "PIE_USER_ROOT")
 * `SYSTEM_ROOT <pathlib.Path>` - piekit root directory (by default - "piekit")
 
-# Настройки плагинов
+# Plugins
 * `PLUGINS_FOLDER <str>` - plugins folder name (by default - "PIE_PLUGINS_FOLDER")
 * `CONTAINERS_FOLDER <str>` - containers folder name (by default - "PIE_CONTAINERS_FOLDER")
 
-# Настройки ресурсов
+# Resources/assets
 * `ASSETS_FOLDER <str>` - assets folder name (by default - "PIE_ASSETS_FOLDER" or "assets")
 * `THEMES_FOLDER <str>` - themes folder name (by default - "PIE_THEMES_FOLDER" or "themes")
 * `DEFAULT_THEME <str>` - theme by default (selects among the available themes in the `ASSETS_FOLDER`)
 * `ASSETS_USE_STYLE <str>` - use stylesheet or not (by default - "PIE_ASSETS_USE_STYLE" or True)
 * `ASSETS_EXCLUDED_FORMATS <list>` - list of the excluded file formats (by default - empty list)
 
-# Настройка директорий конфигураций
+# Configuration folders
 * `CONFIGS_FOLDER <str>` - configuration folder name (by default - "PIE_CONFIGS_FOLDER" or "configs")
 * `USER_CONFIGS_FOLDER <str>` - user configuration folder name (by default - "PIE_USER_CONFIGS_FOLDER" or "configs")
 
-# Настройки локализации
+# Language/Localization
 * `DEFAULT_LOCALE <str>` - language by default (by default - "PIE_DEFAULT_LOCALE" or "en-US")
 * `LOCALES_FOLDER <str>` - localization folder name (by default - "PIE_LOCALES_FOLDER" or "locales")
 * `LOCALES <dict>` - locales dictionary
 
-# Настройка менеджеров
+# Managers
 * `MANAGERS <list>` - managers list
 
 
