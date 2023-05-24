@@ -9,6 +9,7 @@ from piekit.utils.logger import logger
 from piekit.plugins.types import Error
 from piekit.widgets.messagebox import MessageBox
 
+from piekit.config import Config
 from piekit.managers.structs import Section
 from piekit.managers.registry import Managers
 from piekit.managers.assets.mixins import AssetsAccessor
@@ -43,7 +44,7 @@ class MainWindow(
         if os.name == "nt":
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                "com.crabdevs.pieaudio"
+                Config.PIEAPP_PROCESS_NAME_ID
             )
 
     # Main methods
