@@ -1,61 +1,72 @@
-# System Configuration
+# Application configuration
 
-# Block configuration value via "Lock" annotation type
+# Magic/special annotations
 
-Used to block configuration fields. Usage example:
+Magic handlers are made to control fields and their data in the configuration module. To add them in the `ConfigLoader` you need to use `add_handler` method:
 
 ```py
-BASE_DIR: Lock = ...
+from piekit.config import Config, Lock, Min, Max
+
+Config.add_handlers(Lock, Min, Max)
 ```
 
-After that you will not be able to overwrite field's value.
+For example, we have the magic annotation - `Lock` that can protect it from value change.
+How to do that? It's very simple: `TEST_STRING_FIELD: Lock = "Test String Field"`.
+After that you will not be able change it's value - handler will trhrow warning.
+
+Besides a `Lock`, piekit has `Max` and `Min` magic annotations that allows you to set max and min field value.
+For example:
+
+```py
+from piekit.config.types import Min, Max
+
+TEST_MIN_FIELD: Min[3] = [1, 2]
+TEST_MAX_FIELD: Max[3] = [1, 2, 3, 4]
+```
+
+When declaring both fields, a warning about the impossibility of setting these values will be displayed.
 
 
-# Base directories
-* `BASE_DIR <Path>` - root directory
-* `APP_ROOT <Path>` - application root
+# Default fields (piekit.pieaudio-ver)
 
-# Plugins configuration
-* `PLUGINS <EList>` - expandable list of plugins
-* `PLUGINS_FOLDER <str>` - plugins directorty name
-* `PLUGINS_USER_FOLDER <str>` - user plugins directorty name
+# Директории
+* `BASE_DIR <pathlib.Path>` - root directory (by default - "PIE_BASE_DIR")
+* `APP_ROOT <pathlib.Path>` - application directory (by default - "PIE_APP_ROOT")
+* `USER_ROOT <pathlib.Path>` - user root directory (by default - "PIE_USER_ROOT")
+* `SYSTEM_ROOT <pathlib.Path>` - piekit root directory (by default - "piekit")
 
+# Настройки плагинов
+* `PLUGINS_FOLDER <str>` - plugins folder name (by default - "PIE_PLUGINS_FOLDER")
+* `CONTAINERS_FOLDER <str>` - containers folder name (by default - "PIE_CONTAINERS_FOLDER")
 
-# Components configuration
-* `COMPONENTS_FOLDER <str>` - components directorty name
-* `COMPONENTS <EList>` - expandable list of components
+# Настройки ресурсов
+* `ASSETS_FOLDER <str>` - assets folder name (by default - "PIE_ASSETS_FOLDER" or "assets")
+* `THEMES_FOLDER <str>` - themes folder name (by default - "PIE_THEMES_FOLDER" or "themes")
+* `DEFAULT_THEME <str>` - theme by default (selects among the available themes in the `ASSETS_FOLDER`)
+* `ASSETS_USE_STYLE <str>` - use stylesheet or not (by default - "PIE_ASSETS_USE_STYLE" or True)
+* `ASSETS_EXCLUDED_FORMATS <list>` - list of the excluded file formats (by default - empty list)
 
+# Настройка директорий конфигураций
+* `CONFIGS_FOLDER <str>` - configuration folder name (by default - "PIE_CONFIGS_FOLDER" or "configs")
+* `USER_CONFIGS_FOLDER <str>` - user configuration folder name (by default - "PIE_USER_CONFIGS_FOLDER" or "configs")
 
-# Assets/resources configuration constants
-* `ASSETS_EXCLUDED_FORMATS <EList>` - exnpandable list of excluded file formats
-* `ASSETS_FOLDER <str>` - resources directory name (by default - "PIEAPP_ASSETS_FOLDER")
-* `THEMES_FOLDER <str>` - themes directory name (by default - "PIEAPP_THEMES_FOLDER")
+# Настройки локализации
+* `DEFAULT_LOCALE <str>` - language by default (by default - "PIE_DEFAULT_LOCALE" or "en-US")
+* `LOCALES_FOLDER <str>` - localization folder name (by default - "PIE_LOCALES_FOLDER" or "locales")
+* `LOCALES <dict>` - locales dictionary
 
-
-# Configuration
-* `CONFIGS_FOLDER <str>` - configurations directory name
-* `USER_CONFIGS_FOLDER <str>` - user configurations directory name
-* `USER_FOLDER_FILES <EList>` - expandable list of user directory files; used for the first setup
-
-
-# Localization configuration
-* `DEFAULT_LOCALE <str>` - default language (by default - "en-US")
-* `LOCALES_FOLDER <str>` - localization files directory name (by default - "locales")
-* `LOCALES <EDict>` - expandable localization dictionary (locale code : language)
-
-
-# Manager configuration
-* `MANAGERS <EList>` - expandable list of `ManagerConfig`
+# Настройка менеджеров
+* `MANAGERS <list>` - managers list
 
 
 # ConfigLoader
 
-ConfigLoader is used to load extensible configurations from python modules. By default, the module specified in the environment variables (the default is `piekit.system.config`).
+Config Loader is used to load extensible configurations from python modules. by default, the module specified in the environment variables is loaded (by default - `piekit.system.config`).
 
-To load your application's configuration module, you need to add it yourself using the `load_module` method.
+To load the configuration module of your application, you need to add it yourself using the `load_module` method.
 
-For example:
+Setup example:
 
 ```py
-Config.import_module(os.getenv("CONFIG_MODULE_NAME", "pieapp.config"))
+Config.import_module(os.getenv("CONFIG_MODULE_NAME", "pekit.config.config"))
 ```
