@@ -4,6 +4,8 @@ from pathlib import Path
 
 from piekit.config.types import Lock
 
+PIEKIT_VERSION: Lock = "1.0.0"
+
 # Base paths
 BASE_DIR: Lock = Path(__file__).parent.parent.parent
 APP_ROOT: Lock = BASE_DIR / os.getenv("PIE_APP_ROOT", "pieapp")
