@@ -1,6 +1,6 @@
 import typing
 
-from pieapp.structs.plugins import Plugins
+from pieapp.structs.plugins import Plugin
 
 from piekit.config import Config
 from piekit.plugins.plugins import PiePlugin
@@ -15,8 +15,8 @@ class TestPlugin(
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = Plugins.TestPlugin
-    section = Plugins.TestPlugin
+    name = Plugin.TestPlugin
+    section = Plugin.TestPlugin
 
     def init(self) -> None:
         self.logger.info(f"{Config.APP_ROOT=}, {Config.TEST_STR_ATTRIBUTE=}, {Config.TEST_LIST_ATTRIBUTE=}")

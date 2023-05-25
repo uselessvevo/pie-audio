@@ -5,7 +5,7 @@ import typing
 import dataclasses as dt
 
 
-class SysManagers:
+class SysManager:
     # ConfigManager
     Configs = "configs"
     
@@ -34,7 +34,11 @@ class SysManagers:
     Actions = "actions"
     
 
-class Sections:
+class Section:
+    """
+    Configuration categories/sections
+    """
+    
     # Plugin access section
     Inner = "inner"
 

@@ -3,18 +3,17 @@ Built-in app menus
 """
 
 
-class MenuItems:
+class MainMenuItem:
     OpenFiles = "openFiles"
     Settings = "settings"
     Exit = "exit"
 
 
-class Menus:
+class MainMenu:
     File = "file"
     Help = "help"
-    Converter = "converter"
 
 
-class ToolButtons:
+class ToolButton:
     Play = "play"
     Plugins = "plugins"

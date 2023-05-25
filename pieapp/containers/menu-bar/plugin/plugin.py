@@ -1,11 +1,11 @@
 import typing
 
-from pieapp.structs.menus import Menus
-from pieapp.structs.containers import Containers
+from pieapp.structs.menus import MainMenu
+from pieapp.structs.containers import Container
 from piekit.managers.menus.mixins import MenuAccessor
 from piekit.plugins.plugins import PiePlugin
 
-from piekit.managers.structs import Sections
+from piekit.managers.structs import Section
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
@@ -18,23 +18,23 @@ class MenuBar(
     AssetsAccessor,
     MenuAccessor,
 ):
-    name = Containers.MenuBar
+    name = Container.MenuBar
 
     def init(self) -> None:
         self.menu_bar = self.add_menu_bar(
-            name=Sections.Shared,
+            name=Section.Shared,
         )
 
         self.file_menu = self.add_menu(
-            section=Sections.Shared,
+            section=Section.Shared,
             parent=self.menu_bar,
-            name=Menus.File,
+            name=MainMenu.File,
             text=self.get_translation("File"),
         )
         self.help_menu = self.add_menu(
-            section=Sections.Shared,
+            section=Section.Shared,
             parent=self.menu_bar,
-            name=Menus.Help,
+            name=MainMenu.Help,
             text=self.get_translation("Help")
         )
 

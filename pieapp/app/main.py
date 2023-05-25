@@ -6,17 +6,17 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout
 
 from piekit.config import Config
-from pieapp.structs.containers import Containers
+from pieapp.structs.containers import Container
 from piekit.plugins.utils import get_plugin
 from piekit.mainwindow.main import MainWindow
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 from piekit.managers.configs.mixins import ConfigAccessor
 
 
 class PieAudioApp(MainWindow, ConfigAccessor):
     name = Config.PIEAPP_NAME
-    section = Sections.Shared
+    section = Section.Shared
     sig_plugins_ready = Signal()
 
     def init(self) -> None:
@@ -24,7 +24,7 @@ class PieAudioApp(MainWindow, ConfigAccessor):
             Config.PIEAPP_VERSION
         ))
         self.set_minimum_size(720, 480)
-        self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_DEFAULT_WINDOW_SIZE, Sections.User))
+        self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_DEFAULT_WINDOW_SIZE, Section.User))
         self.set_window_icon(QIcon(self.get_asset("cloud.png")))
 
     def prepare(self):
@@ -56,5 +56,5 @@ class PieAudioApp(MainWindow, ConfigAccessor):
 
     def prepare_plugins(self) -> None:
         """ Prepare all (or selected) Plugins """
-        Managers(SysManagers.Plugins).init(self)
+        Managers(SysManager.Plugins).init(self)
         self.sig_plugins_ready.emit()

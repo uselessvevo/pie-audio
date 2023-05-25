@@ -5,32 +5,30 @@ from piekit.utils.files import read_json
 from piekit.config import Config
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 
 
 class LocaleManager(BaseManager):
-    name = SysManagers.Locales
-    dependencies = (SysManagers.Configs,)
+    name = SysManager.Locales
+    dependencies = (SysManager.Configs,)
 
     def __init__(self) -> None:
-        super().__init__()
-
         self._locale: str = Managers.configs.get_shared(
-            Sections.User, "locales.locale", Config.DEFAULT_LOCALE
+            Section.User, "locales.locale", Config.DEFAULT_LOCALE
         )
         self._roots: set[Path] = set()
         self._translations: dict[str, dict[str, str]] = {}
 
     def init(self) -> None:
         # Read app/user configuration
-        self._read_root_translations(Config.APP_ROOT, Sections.Shared)
-        self._read_root_translations(Config.USER_ROOT, Sections.User)
+        self._read_root_translations(Config.APP_ROOT, Section.Shared)
+        self._read_root_translations(Config.USER_ROOT, Section.User)
 
         # Read plugin configuration
         self._read_plugin_translations(Config.APP_ROOT / Config.PLUGINS_FOLDER)
         self._read_plugin_translations(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 
-    def _read_root_translations(self, folder: Path, section: Union[str, Sections] = None) -> None:
+    def _read_root_translations(self, folder: Path, section: Union[str, Section] = None) -> None:
         self._roots.add(folder)
 
         for file in (folder / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):

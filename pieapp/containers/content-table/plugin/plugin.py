@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 
 from plugin.api import ContentTableAPI
-from pieapp.structs.containers import Containers
+from pieapp.structs.containers import Container
 
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
@@ -25,7 +25,7 @@ class ContentTable(
     AssetsAccessor,
 ):
     api = ContentTableAPI
-    name = Containers.ContentTable
+    name = Container.ContentTable
 
     def set_columns(self, count: int, columns: tuple = None) -> None:
         self.table.set_column_count(count)

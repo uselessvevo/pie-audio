@@ -4,15 +4,15 @@ import typing
 
 from PySide6.QtWidgets import QDialog, QFileDialog
 
-from pieapp.structs.menus import Menus, MenuItems
-from piekit.managers.structs import Sections
+from pieapp.structs.menus import MainMenu, MainMenuItem
+from piekit.managers.structs import Section
 from piekit.plugins.api.utils import get_api
 from piekit.plugins.plugins import PiePlugin
-from pieapp.structs.plugins import Plugins
-from pieapp.structs.containers import Containers
+from pieapp.structs.plugins import Plugin
+from pieapp.structs.containers import Container
 from piekit.managers.menus.mixins import MenuAccessor
 
-from pieapp.structs.workbench import WorkbenchItems
+from pieapp.structs.workbench import WorkbenchItem
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 from piekit.managers.toolbars.mixins import ToolBarAccessor
@@ -29,8 +29,8 @@ class Converter(
     ToolBarAccessor,
     ToolButtonAccessor
 ):
-    name = Plugins.Converter
-    requires = [Containers.Workbench, Containers.MenuBar]
+    name = Plugin.Converter
+    requires = [Container.Workbench, Container.MenuBar]
 
     def init(self) -> None:
         self.dialog = QDialog(self._parent)
@@ -41,16 +41,16 @@ class Converter(
     def open_files(self) -> None:
         file_dialog = QFileDialog(self.dialog, self.get_translation("Open files"))
         selected_files = file_dialog.get_open_file_names(self.dialog)
-        get_api(Containers.ContentTable, "receive", files=selected_files[0])
+        get_api(Container.ContentTable, "receive", files=selected_files[0])
 
-    @on_plugin_available(target=Containers.MenuBar)
+    @on_plugin_available(target=Container.MenuBar)
     def on_menu_bar_available(self) -> None:
-        self.menu_bar = self.get_menu_bar(Sections.Shared)
+        self.menu_bar = self.get_menu_bar(Section.Shared)
 
         self.add_menu_item(
-            section=Sections.Shared,
-            menu=Menus.File,
-            name=MenuItems.OpenFiles,
+            section=Section.Shared,
+            menu=MainMenu.File,
+            name=MainMenuItem.OpenFiles,
             text=self.get_translation("Open file"),
             icon=self.get_asset_icon("open-file.png"),
             index=INDEX_START(),
@@ -58,21 +58,21 @@ class Converter(
         )
 
         self.add_menu_item(
-            section=Sections.Shared,
-            menu=Menus.File,
-            name=MenuItems.Exit,
+            section=Section.Shared,
+            menu=MainMenu.File,
+            name=MainMenuItem.Exit,
             text=self.get_translation("Exit"),
             icon=self.get_asset_icon("exit.png"),
             triggered=self._parent.close,
             index=INDEX_END()
         )
 
-    @on_plugin_available(target=Containers.Workbench)
+    @on_plugin_available(target=Container.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
-            parent=self.get_toolbar(Containers.Workbench),
+            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
-            name=WorkbenchItems.OpenFiles,
+            name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
             tooltip=self.get_translation("Open file"),
             icon=self.get_asset_icon("open-folder.png"),
@@ -80,42 +80,42 @@ class Converter(
         )
 
         self.add_tool_button(
-            parent=self.get_toolbar(Containers.Workbench),
+            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
-            name=WorkbenchItems.Convert,
+            name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
             tooltip=self.get_translation("Convert"),
             icon=self.get_asset_icon("go.png")
         ).set_enabled(False)
 
         self.add_tool_button(
-            parent=self.get_toolbar(Containers.Workbench),
+            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
-            name=WorkbenchItems.Clear,
+            name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),
             tooltip=self.get_translation("Clear"),
             icon=self.get_asset_icon("recycle-bin.png")
         ).set_enabled(False)
 
         self.add_toolbar_item(
-            section=Containers.Workbench,
-            name=WorkbenchItems.Clear,
-            item=self.get_tool_button(self.name, WorkbenchItems.Clear),
-            before=WorkbenchItems.Spacer
+            section=Container.Workbench,
+            name=WorkbenchItem.Clear,
+            item=self.get_tool_button(self.name, WorkbenchItem.Clear),
+            before=WorkbenchItem.Spacer
         )
 
         self.add_toolbar_item(
-            section=Containers.Workbench,
-            name=WorkbenchItems.Convert,
-            item=self.get_tool_button(self.name, WorkbenchItems.Convert),
-            before=WorkbenchItems.Spacer
+            section=Container.Workbench,
+            name=WorkbenchItem.Convert,
+            item=self.get_tool_button(self.name, WorkbenchItem.Convert),
+            before=WorkbenchItem.Spacer
         )
 
         self.add_toolbar_item(
-            section=Containers.Workbench,
-            name=WorkbenchItems.OpenFiles,
-            item=self.get_tool_button(self.name, WorkbenchItems.OpenFiles),
-            before=WorkbenchItems.Spacer
+            section=Container.Workbench,
+            name=WorkbenchItem.OpenFiles,
+            item=self.get_tool_button(self.name, WorkbenchItem.OpenFiles),
+            before=WorkbenchItem.Spacer
         )
 
 

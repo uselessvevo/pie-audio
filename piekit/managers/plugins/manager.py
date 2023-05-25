@@ -2,15 +2,16 @@ import os
 import sys
 from typing import Any
 from pathlib import Path
-from piekit.plugins.types import PluginTypes
 
+from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
 
 from piekit.config import Config
+from piekit.plugins.types import PluginTypes
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import SysManager
 
 
 class PluginManager(BaseManager):
@@ -18,11 +19,11 @@ class PluginManager(BaseManager):
     This manager is the PiePlugins registry.
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
-    name = SysManagers.Plugins
-    dependencies = (SysManagers.Configs, SysManagers.Locales)
+    name = SysManager.Plugins
+    dependencies = (SysManager.Configs, SysManager.Locales)
 
     def __init__(self) -> None:
-        super().__init__()
+        self._logger = logger
 
         # List of PiePlugins that depend on it
         self._plugin_dependents: dict[str, dict[str, list[str]]] = {}
@@ -158,8 +159,8 @@ class PluginManager(BaseManager):
 
         # Notify plugin dependents
         plugin_dependents = self._plugin_dependents.get(name, {})
-        required_plugins = plugin_dependents.get('requires', [])
-        optional_plugins = plugin_dependents.get('optional', [])
+        required_plugins = plugin_dependents.get("requires", [])
+        optional_plugins = plugin_dependents.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugins_registry:

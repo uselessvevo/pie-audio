@@ -8,27 +8,27 @@ from dotty_dict import Dotty
 from piekit.config import Config
 from piekit.config.exceptions import PieException
 from piekit.managers.base import BaseManager
-from piekit.managers.structs import Sections
-from piekit.managers.structs import SysManagers
+from piekit.managers.structs import Section
+from piekit.managers.structs import SysManager
 from piekit.utils.files import read_json, write_json
 from piekit.observers.filesystem import FileSystemObserver
+from piekit.utils.logger import logger
 
 
 class ConfigManager(BaseManager):
-    name = SysManagers.Configs
+    name = SysManager.Configs
     protected_keys = ("__FILE__",)
 
     def __init__(self) -> None:
-        super().__init__()
-
+        self._logger = logger
         self._roots: set[Path] = set()
         self._configuration: Dotty[str, dict[str, Any]] = Dotty({})
         self._observer = FileSystemObserver()
 
     def init(self) -> None:
         # Read app/user configuration
-        self._read_root_configuration(Config.APP_ROOT / Config.USER_CONFIG_FOLDER, Sections.Inner)
-        self._read_root_configuration(Config.USER_ROOT / Config.USER_CONFIG_FOLDER, Sections.User)
+        self._read_root_configuration(Config.APP_ROOT / Config.USER_CONFIG_FOLDER, Section.Inner)
+        self._read_root_configuration(Config.USER_ROOT / Config.USER_CONFIG_FOLDER, Section.User)
 
         # Read plugin configuration
         self._read_plugins_configuration(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
@@ -38,20 +38,20 @@ class ConfigManager(BaseManager):
     def _read_root_configuration(
         self,
         folder: Path,
-        section: Union[str, Sections] = None
+        section: Union[str, Section] = None
     ) -> None:
         self._roots.add(folder)
-        self._configuration[Sections.Root] = {}
+        self._configuration[Section.Root] = {}
 
         for file in folder.rglob("*.json"):
-            if not self._configuration[Sections.Root].get(section):
-                self._configuration[Sections.Root][section] = {}
+            if not self._configuration[Section.Root].get(section):
+                self._configuration[Section.Root][section] = {}
 
-            if not self._configuration[Sections.Root][section].get(file.name):
-                self._configuration[Sections.Root][section][file.stem] = {}
+            if not self._configuration[Section.Root][section].get(file.name):
+                self._configuration[Section.Root][section][file.stem] = {}
 
-            self._configuration[Sections.Root][section]["__FILE__"] = file
-            self._configuration[Sections.Root][section][file.stem].update(**read_json(str(file)))
+            self._configuration[Section.Root][section]["__FILE__"] = file
+            self._configuration[Section.Root][section][file.stem].update(**read_json(str(file)))
 
         self._observer.add_handler(str(folder), str(folder.name))
 
@@ -68,10 +68,10 @@ class ConfigManager(BaseManager):
             self._roots.add(plugin_package)
 
             # Plugin's inner configuration section - pieapp/plugins/<plugin name>/configs/
-            inner_section = f"{plugin_package.name}.{Sections.Inner}"
+            inner_section = f"{plugin_package.name}.{Section.Inner}"
 
             # Plugin's user configuration section - <user home folder>/configs/plugins/<plugin name>/
-            user_section = f"{plugin_package.name}.{Sections.User}"
+            user_section = f"{plugin_package.name}.{Section.User}"
             user_folder: Path = Config.USER_ROOT / Config.CONFIGS_FOLDER / plugin_package.name
 
             if not self._configuration.get(inner_section):
@@ -94,8 +94,8 @@ class ConfigManager(BaseManager):
     @lru_cache
     def get(
         self,
-        scope: Union[str, Sections] = Sections.Root,
-        section: Union[str, Sections] = Sections.Inner,
+        scope: Union[str, Section] = Section.Root,
+        section: Union[str, Section] = Section.Inner,
         key: Any = None,
         default: Any = None,
     ) -> Any:
@@ -114,16 +114,16 @@ class ConfigManager(BaseManager):
 
     def get_shared(
         self,
-        section: Union[Sections.Shared, Sections.User],
+        section: Union[Section.Shared, Section.User],
         key: str,
         default: Any = None,
     ) -> Any:
-        return self.get(Sections.Root, section, key, default)
+        return self.get(Section.Root, section, key, default)
 
     def set(
         self,
-        scope: Union[str, Sections] = Sections.Root,
-        section: Union[str, Sections] = Sections.Inner,
+        scope: Union[str, Section] = Section.Root,
+        section: Union[str, Section] = Section.Inner,
         key: Any = None,
         data: Any = None
     ) -> None:
@@ -144,8 +144,8 @@ class ConfigManager(BaseManager):
 
     def delete(
         self,
-        scope: Union[str, Sections] = Sections.Root,
-        section: Union[str, Sections] = Sections.Inner,
+        scope: Union[str, Section] = Section.Root,
+        section: Union[str, Section] = Section.Inner,
         key: Any = None
     ) -> None:
         """
@@ -168,8 +168,8 @@ class ConfigManager(BaseManager):
 
     def save(
         self,
-        scope: Union[str, Sections] = Sections.Root,
-        section: Union[str, Sections] = Sections.Inner,
+        scope: Union[str, Section] = Section.Root,
+        section: Union[str, Section] = Section.Inner,
         data: dict = None,
         create: bool = False
     ) -> None:

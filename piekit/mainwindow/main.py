@@ -9,7 +9,8 @@ from piekit.utils.logger import logger
 from piekit.plugins.types import Error
 from piekit.widgets.messagebox import MessageBox
 
-from piekit.managers.structs import Sections
+from piekit.config import Config
+from piekit.managers.structs import Section
 from piekit.managers.registry import Managers
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -23,7 +24,7 @@ class MainWindow(
     AssetsAccessor,
 ):
     # Accessors section
-    section: str = Sections.Shared
+    section: str = Section.Shared
 
     sig_moved = Signal()
     sig_resized = Signal()
@@ -43,7 +44,7 @@ class MainWindow(
         if os.name == "nt":
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                "com.crabdevs.pieaudio"
+                Config.PIEAPP_PROCESS_NAME_ID
             )
 
     # Main methods
@@ -60,7 +61,7 @@ class MainWindow(
             event.ignore()
 
     def close_handler(self, cancellable: bool = True) -> bool:
-        if cancellable and self.get_config("ui.show_exit_dialog", True, Sections.User):
+        if cancellable and self.get_config("ui.show_exit_dialog", True, Section.User):
             message_box = MessageBox(self)
             if message_box.clicked_button() == message_box.no_button:
                 return False

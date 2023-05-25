@@ -3,5 +3,5 @@ Workbench items
 """
 
 
-class ContentTableItems:
+class ContentTableItem:
     Convert = "convert"

@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt, QObject, QSize
 from PySide6.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManagers, Sections
+from piekit.managers.structs import SysManager, Section
 from piekit.config import Config
 
 
@@ -16,7 +16,7 @@ class ToolButtonAccessor:
     def add_tool_button(
         self,
         parent: QObject,
-        section: Union[str, Sections],
+        section: Union[str, Section],
         name: str,
         text: str = None,
         tooltip: str = None,
@@ -44,13 +44,13 @@ class ToolButtonAccessor:
         tool_button.set_focus_policy(Qt.FocusPolicy.NoFocus)
         tool_button.set_icon_size(QSize(*Config.TOOL_BUTTON_ICON_SIZE))
 
-        return Managers(SysManagers.ToolButton).add_tool_button(section or Sections.Shared, name, tool_button)
+        return Managers(SysManager.ToolButton).add_tool_button(section or Section.Shared, name, tool_button)
 
     def get_tool_buttons(self, section: str, *names: str) -> list[QObject]:
-        return Managers(SysManagers.ToolButton).get_tool_buttons(section, *names)
+        return Managers(SysManager.ToolButton).get_tool_buttons(section, *names)
 
     def get_tool_button(self, section: str, name: str) -> QToolButton:
-        return Managers(SysManagers.ToolButton).get_tool_button(section or Sections.Shared, name)
+        return Managers(SysManager.ToolButton).get_tool_button(section or Section.Shared, name)
 
     addToolButton = add_tool_button
     getToolButton = get_tool_button
