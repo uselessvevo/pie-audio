@@ -30,5 +30,7 @@
     "About": "О программе",
     "No files selected": "Файлы не выбраны",
     "Setup ffmpeg": "Настройка ffmpeg",
-    "Done": "Готово"
+    "Done": "Готово",
+    "Convert": "Сконвертировать",
+    "Clear": "Очистить"
 }

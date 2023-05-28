@@ -30,5 +30,7 @@
     "About": "About",
     "No files selected": "No files selected",
     "Setup ffmpeg": "Setup ffmpeg",
-    "Done": "Done"
+    "Done": "Done",
+    "Convert": "Convert",
+    "Clear": "Clear"
 }
