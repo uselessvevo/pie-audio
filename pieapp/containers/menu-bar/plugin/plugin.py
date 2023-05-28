@@ -19,6 +19,9 @@ class MenuBar(
     MenuAccessor,
 ):
     name = Container.MenuBar
+    version: str = "1.0.0"
+    pieapp_version: str = "1.0.0"
+    piekit_version: str = "1.0.0"
 
     def init(self) -> None:
         self.menu_bar = self.add_menu_bar(

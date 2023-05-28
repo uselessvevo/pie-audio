@@ -5,7 +5,7 @@ from piekit.managers.structs import ManagerConfig
 
 # Application main info
 PIEAPP_NAME: Lock = "pie-audio"
-PIEAPP_VERSION: Lock = "2023.04.pre-alpha"
+PIEAPP_VERSION: Lock = "1.0.0"
 PIEAPP_PROCESS_NAME_ID = "com.crabdevs.pieaudio"
 
 MAIN_WINDOW_DEFAULT_WINDOW_SIZE: Lock = (900, 560)
