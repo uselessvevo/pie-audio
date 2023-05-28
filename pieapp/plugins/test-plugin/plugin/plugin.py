@@ -17,6 +17,9 @@ class TestPlugin(
 ):
     name = Plugin.TestPlugin
     section = Plugin.TestPlugin
+    version: str = "1.0.0"
+    pieapp_version: str = "1.0.0"
+    piekit_version: str = "1.0.0"
 
     def init(self) -> None:
         self.logger.info(f"{Config.APP_ROOT=}, {Config.TEST_STR_ATTRIBUTE=}, {Config.TEST_LIST_ATTRIBUTE=}")

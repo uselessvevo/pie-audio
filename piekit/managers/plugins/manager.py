@@ -9,7 +9,7 @@ from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.mainwindow.main import MainWindow
 
-from piekit.config import Config
+from piekit.config import Config, PieException
 from piekit.plugins.types import PluginTypes
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
@@ -114,24 +114,33 @@ class PluginManager(BaseManager):
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
 
+                try:
+                    self._check_versions(plugin_instance)
+                except AttributeError as e:
+                    raise PieException(str(e))
+
                 self._initialize_plugin(plugin_instance)
 
     def _check_versions(self, plugin_instance: PiePlugin) -> None:
         """
-        Check application, piekit and plugin version
+        Check application/pieapp, piekit and plugin version
         """
         pieapp_version = Version(Config.PIEAPP_VERSION)
+        piekit_version = Version(Config.PIEKIT_VERSION)
+
+        if not plugin_instance.version:
+            raise AttributeError(f"Plugin {plugin_instance.name} must have `version` attribute")
+
         required_pieapp_version = Version(plugin_instance.pieapp_version)
         required_piekit_version = Version(plugin_instance.piekit_version)
 
-        if not plugin_instance.plugin_version:
-            raise AttributeError(f"Plugin {plugin_instance.name} must have `version` attribute")
+        if pieapp_version.get_major_version() != required_pieapp_version.get_major_version():
+            raise AttributeError(f"Application version ({Config.PIEAPP_VERSION}) is not compatible with plugin"
+                                 f"{plugin_instance.name} version ({plugin_instance.pieapp_version})")
 
-        if pieapp_version > required_pieapp_version:
-            raise AttributeError(f"Required pieapp version is greater than {plugin_instance.name} pieapp version")
-        
-        if pieapp_version > required_piekit_version:
-            raise AttributeError(f"Required piekit version is greater than {plugin_instance.name} piekit version")
+        if piekit_version != required_piekit_version:
+            raise AttributeError(f"PieKit version ({Config.PIEKIT_VERSION}) is not compatible with plugin"
+                                 f"{plugin_instance.name} version ({plugin_instance.piekit_version})")
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
         self._logger.info(f"Preparing {plugin_instance.type.value} {plugin_instance.name}")

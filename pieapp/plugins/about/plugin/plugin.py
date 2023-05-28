@@ -26,6 +26,10 @@ class About(
     AssetsAccessor,
 ):
     name = Plugin.About
+    version: str = "1.0.0"
+    pieapp_version: str = "1.0.0"
+    piekit_version: str = "1.0.0"
+    requires = [Container.MenuBar]
 
     def init(self) -> None:
         self.dialog = QDialog(self._parent)

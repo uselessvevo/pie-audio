@@ -30,7 +30,6 @@ class MenuAccessor:
         text: str = None,
         icon: QIcon = None,
     ) -> PieMenu:
-        parent = self.get_menu_bar(parent)
         menu = PieMenu(parent=parent, name=name, text=text)
         if icon:
             menu.menu_action().set_icon_visible_in_menu(True)

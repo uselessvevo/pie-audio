@@ -24,6 +24,9 @@ class Workbench(
     ToolButtonAccessor,
 ):
     name = Container.Workbench
+    version: str = "1.0.0"
+    pieapp_version: str = "1.0.0"
+    piekit_version: str = "1.0.0"
 
     def init(self) -> None:
         self.workbench = self.add_toolbar(self._parent, self.name)

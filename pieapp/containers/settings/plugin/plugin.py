@@ -137,6 +137,9 @@ class Settings(
     ToolButtonAccessor,
 ):
     name = Container.Settings
+    version: str = "1.0.0"
+    pieapp_version: str = "1.0.0"
+    piekit_version: str = "1.0.0"
     requires = [Container.MenuBar, Container.Workbench]
 
     def init(self) -> None:
