@@ -25,6 +25,7 @@ class LocaleManager(BaseManager):
         self._read_root_translations(Config.USER_ROOT, Section.User)
 
         # Read plugin configuration
+        self._read_plugin_translations(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
         self._read_plugin_translations(Config.APP_ROOT / Config.PLUGINS_FOLDER)
         self._read_plugin_translations(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 

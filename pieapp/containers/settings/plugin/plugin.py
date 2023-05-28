@@ -144,6 +144,7 @@ class Settings(
 
     def init(self) -> None:
         self.dialog = QtWidgets.QDialog(self._parent)
+        self.dialog.set_window_icon(self.get_plugin_icon())
         self.dialog.set_object_name("SettingsDialog")
         self.dialog.set_window_title(self.get_translation("Settings"))
         self.dialog.set_window_icon(self.get_plugin_icon())
