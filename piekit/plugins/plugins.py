@@ -32,7 +32,9 @@ class PiePlugin(
     section: str = None
 
     # PiePlugin version
-    version: tuple[int] = (0, 1, 0)
+    version: str = None
+    pieapp_version: str = None
+    piekit_version: str = None
 
     # List of required built-in plugins
     requires: list[str] = []
