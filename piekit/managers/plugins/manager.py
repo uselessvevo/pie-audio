@@ -106,9 +106,9 @@ class PluginManager(BaseManager):
                 sys.path.append(os.path.abspath(str(plugin_path)))
 
                 # Importing plugin module
-                plugin_module = import_by_path("plugin", str(plugin_path / "plugin/plugin.py"))
-                if (plugin_path / "plugin/config.py").exists():
-                    config_module = import_by_path("config", str(plugin_path / "plugin/config.py"))
+                plugin_module = import_by_path("plugin", str(plugin_path / "plugin.py"))
+                if (plugin_path / "config.py").exists():
+                    config_module = import_by_path("config", str(plugin_path / "config.py"))
                     Config.load_module(config_module)
 
                 # Initializing plugin instance

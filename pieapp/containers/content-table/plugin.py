@@ -4,18 +4,18 @@ import typing
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QTableWidget, QAbstractItemView,
-    QTableWidgetItem, QSizePolicy,
-    QHeaderView, QLabel
+    QTableWidget, QTableWidgetItem, 
+    QSizePolicy, QHeaderView, QLabel
 )
 
-from plugin.api import ContentTableAPI
 from pieapp.structs.containers import Container
 
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
+
+from .api import ContentTableAPI
 
 
 class ContentTable(
