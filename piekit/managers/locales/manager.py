@@ -10,7 +10,6 @@ from piekit.managers.structs import SysManager, Section
 
 class LocaleManager(BaseManager):
     name = SysManager.Locales
-    dependencies = (SysManager.Configs,)
 
     def __init__(self) -> None:
         self._locale: str = Managers.configs.get_shared(

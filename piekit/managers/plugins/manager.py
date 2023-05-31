@@ -22,7 +22,6 @@ class PluginManager(BaseManager):
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
     name = SysManager.Plugins
-    dependencies = (SysManager.Configs, SysManager.Locales)
 
     def __init__(self) -> None:
         self._logger = logger

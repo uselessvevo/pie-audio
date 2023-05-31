@@ -15,7 +15,6 @@ from piekit.utils.logger import logger
 
 class AssetsManager(BaseManager):
     name = SysManager.Assets
-    dependencies = (SysManager.Configs,)
 
     def __init__(self) -> None:
         self._logger = logger

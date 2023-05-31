@@ -16,6 +16,10 @@ SYSTEM_ROOT: Lock = BASE_DIR / "piekit"
 # Built-in plugins folder
 PLUGINS_FOLDER: Lock = os.getenv("PIE_PLUGINS_FOLDER", "plugins")
 
+# Configuration pages
+CONF_PAGES_FOLDER: Lock = os.getenv("PIE_CONF_PAGES_FOLDER", "app")
+CONF_PAGES_CATEGORIES: list[dict] = []
+
 # User/site plugins folder
 USER_PLUGINS_FOLDER: Lock = os.getenv("PIE_USER_PLUGINS_FOLDER", "plugins")
 

@@ -13,6 +13,12 @@ MAIN_WINDOW_DEFAULT_WINDOW_SIZE: Lock = (900, 560)
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
 
+# Configuration pages
+CONF_PAGES_CATEGORIES = [
+    {"title": "Main", "name": "main"},
+    {"title": "Plugins", "name": "plugins"},
+]
+
 # Managers startup configuration
 # TODO: Replace `init` attribute with Qt signal name (str) and emit it via `QMetaObject` -> `invokeMethod`
 INITIAL_MANAGERS: Lock = [

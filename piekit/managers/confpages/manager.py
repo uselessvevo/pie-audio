@@ -1,5 +1,12 @@
+import inspect
+from pathlib import Path
+from types import ModuleType
+from typing import Union
+
+from piekit.config import Config
+from piekit.utils.modules import import_by_path
 from piekit.managers.base import BaseManager
-from piekit.managers.structs import SysManager
+from piekit.managers.structs import Section, SysManager
 from piekit.managers.confpages.structs import ConfigurationPage
 
 
@@ -9,35 +16,53 @@ class ConfigurationPageManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
 
-        self._sections: dict[str, str] = {}
+        # <category name> : {<page name>: <ConfigurationPage instance>}
         self._pages: dict[str, dict[str, ConfigurationPage]] = {}
 
-    def add_section(self, section: str) -> None:
-        if section in self._pages:
-            raise KeyError(f"Section {section} is already registered")
+    def init(self) -> None:
+        for page_dict in Config.CONF_PAGES_CATEGORIES or []:
+            self._pages[page_dict["name"]] = {"__title__": page_dict["title"], "pages": []}
 
-        self._pages[section] = {}
+        self._read_root_configuration_pages(Config.APP_ROOT / Config.CONF_PAGES_FOLDER)
+        self._read_plugin_configuration_pages(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
+        self._read_plugin_configuration_pages(Config.APP_ROOT / Config.PLUGINS_FOLDER)
+        self._read_plugin_configuration_pages(Config.APP_ROOT / Config.USER_PLUGINS_FOLDER)
 
-    def remove_section(self, section: str) -> None:
-        if section not in self._pages:
-            raise KeyError(f"Section {section} doesn't exist")
+    def shutdown(self) -> None:
+        self._pages = {}
 
-        del self._pages[section]
+    def _collect_module_confpages(
+        self,
+        category: Union[str, Section],
+        confpage_module: ModuleType
+    ) -> list[ConfigurationPage]:
+        """
+        Collect all ConfigurationPage instances from the given module
 
-    def add_page(self, section: str, page: ConfigurationPage) -> None:
-        if section not in self._pages:
-            raise KeyError(f"Section {section} is already registered")
+        Args:
+            category (str|Section): category name
+            confpage_module (ModuleType): configuration page module
+        """
+        for page in inspect.getmembers(confpage_module):
+            if issubclass(page, ConfigurationPage):
+                self._pages[category]["pages"].append({page.name: page()})
 
-        if page not in self._pages[section]:
-            raise KeyError(f"Page {section}.{page} doesn't exist")
+    def _read_root_configuration_pages(self, folder: Path) -> None:
+        self._pages[Section.Root] = {}
+        confpage_module = import_by_path("confpage", str(folder / "confpage.py"))
+        self._collect_module_confpages(confpage_module)
 
-        self._pages[section] = {page: {}}
+    def _read_plugin_configuration_pages(self, plugins_folder: Path) -> None:
+        for folder in plugins_folder.iterdir():
+            confpage_module = import_by_path("confpage", str(folder / "confpage.py"))
+            self._collect_module_confpages(confpage_module)
 
-    def remove_page(self, section: str, page: ConfigurationPage) -> None:
-        pass
+    def get(self, category: Union[str, None], page_name: str) -> ConfigurationPage:
+        if category not in self._pages:
+            raise KeyError(f"Configuration category {category} not found")
 
-    def get_all_sections(self) -> list[str]:
-        pass
+        if page_name not in self._pages[page_name]:
+            raise KeyError(f"Configuration category {category} not found")
 
-    def get_all_pages(self) -> list[ConfigurationPage]:
-        pass
+    def get_pages(self) -> dict:
+        return self._pages
