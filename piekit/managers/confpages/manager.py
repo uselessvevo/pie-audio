@@ -23,19 +23,15 @@ class ConfigurationPageManager(BaseManager):
         for page_dict in Config.CONF_PAGES_CATEGORIES or []:
             self._pages[page_dict["name"]] = {"__title__": page_dict["title"], "pages": []}
 
-        self._read_root_configuration_pages(Config.APP_ROOT / Config.CONF_PAGES_FOLDER)
-        self._read_plugin_configuration_pages(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
-        self._read_plugin_configuration_pages(Config.APP_ROOT / Config.PLUGINS_FOLDER)
-        self._read_plugin_configuration_pages(Config.APP_ROOT / Config.USER_PLUGINS_FOLDER)
+        self._read_root_confpages(Config.APP_ROOT / Config.CONF_PAGES_FOLDER)
+        self._read_plugin_confpages(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
+        self._read_plugin_confpages(Config.APP_ROOT / Config.PLUGINS_FOLDER)
+        self._read_plugin_confpages(Config.APP_ROOT / Config.USER_PLUGINS_FOLDER)
 
     def shutdown(self) -> None:
         self._pages = {}
 
-    def _collect_module_confpages(
-        self,
-        category: Union[str, Section],
-        confpage_module: ModuleType
-    ) -> list[ConfigurationPage]:
+    def _collect_module_confpages(self, confpage_module: ModuleType) -> list[ConfigurationPage]:
         """
         Collect all ConfigurationPage instances from the given module
 
@@ -45,14 +41,17 @@ class ConfigurationPageManager(BaseManager):
         """
         for page in inspect.getmembers(confpage_module):
             if issubclass(page, ConfigurationPage):
-                self._pages[category]["pages"].append({page.name: page()})
+                confpage_instance = confpage_module()
+                self._pages[confpage_instance.category]["pages"].append({
+                    confpage_instance.name: confpage_instance
+                })
 
-    def _read_root_configuration_pages(self, folder: Path) -> None:
+    def _read_root_confpages(self, folder: Path) -> None:
         self._pages[Section.Root] = {}
         confpage_module = import_by_path("confpage", str(folder / "confpage.py"))
         self._collect_module_confpages(confpage_module)
 
-    def _read_plugin_configuration_pages(self, plugins_folder: Path) -> None:
+    def _read_plugin_confpages(self, plugins_folder: Path) -> None:
         for folder in plugins_folder.iterdir():
             confpage_module = import_by_path("confpage", str(folder / "confpage.py"))
             self._collect_module_confpages(confpage_module)
