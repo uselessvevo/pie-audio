@@ -15,11 +15,10 @@ from piekit.utils.logger import logger
 
 class AssetsManager(BaseManager):
     name = SysManager.Assets
-    dependencies = (SysManager.Configs,)
 
     def __init__(self) -> None:
         self._logger = logger
-        self._assets_dictionary: dict[str, Path] = {}
+        self._assets_dictionary: dict[str, dict[str, Path]] = {}
         self._current_theme = Managers(SysManager.Configs).get_shared(Section.User, "assets.theme")
 
         assets_folder: Path = Config.APP_ROOT / Config.ASSETS_FOLDER / Config.THEMES_FOLDER
@@ -35,6 +34,7 @@ class AssetsManager(BaseManager):
         self._read_root_assets(Config.USER_ROOT, Section.User)
 
         # Read plugin configuration
+        self._read_plugin_assets(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
         self._read_plugin_assets(Config.APP_ROOT / Config.PLUGINS_FOLDER)
         self._read_plugin_assets(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 

@@ -32,6 +32,9 @@ class SysManager:
 
     # ActionManager
     Actions = "actions"
+
+    # ConfigurationPageManager
+    ConfigPages = "configpages"
     
 
 class Section:

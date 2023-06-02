@@ -1,4 +1,3 @@
-from piekit.mainwindow.main import MainWindow
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import SysManager
 
@@ -12,5 +11,5 @@ class ShortcutsManager(BaseManager):
     def __init__(self) -> None:
         self._shortcuts: dict[str, QShortcut] = {}
 
-    def init(self, section: str, shortcut: str, parent: MainWindow = None) -> None:
+    def init(self, section: str, shortcut: str, parent: "QMainWindow" = None) -> None:
         pass

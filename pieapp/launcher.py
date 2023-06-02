@@ -1,7 +1,8 @@
-from pieapp.app.setup import setup_application
 from pieapp.app.start import start_application
 
 
 def launch():
-    setup_application()
+    """
+    TODO: Add cli support
+    """
     start_application()

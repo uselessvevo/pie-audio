@@ -2,12 +2,11 @@ import os
 import sys
 from typing import Any
 from pathlib import Path
-import warnings
 from version_parser import Version
 
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
-from piekit.mainwindow.main import MainWindow
+from piekit.utils.core import get_main_window
 
 from piekit.config import Config, PieException
 from piekit.plugins.types import PluginTypes
@@ -22,7 +21,6 @@ class PluginManager(BaseManager):
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
     name = SysManager.Plugins
-    dependencies = (SysManager.Configs, SysManager.Locales)
 
     def __init__(self) -> None:
         self._logger = logger
@@ -44,8 +42,12 @@ class PluginManager(BaseManager):
 
     # BaseManager methods
 
-    def init(self, parent: "MainWindow" = None) -> None:
+    def init(self) -> None:
         """ Initialize all built-in or site PiePlugins, components and user plugins """
+        parent = get_main_window()
+        if not parent:
+            raise PieException(f"Can't find an initialized QMainWindow instance")
+            
         self._initialize_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
         self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
         self._initialize_from_packages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
@@ -90,7 +92,11 @@ class PluginManager(BaseManager):
 
     # PluginManager protected methods
 
-    def _initialize_from_packages(self, folder: "Path", parent: MainWindow = None) -> None:
+    def _initialize_from_packages(
+        self, 
+        folder: "Path", 
+        parent: "QMainWindow" = None
+    ) -> None:
         if not folder.exists():
             self._logger.warning(f"Plugins folder {folder.name} doesn't exist")
             return
@@ -106,9 +112,9 @@ class PluginManager(BaseManager):
                 sys.path.append(os.path.abspath(str(plugin_path)))
 
                 # Importing plugin module
-                plugin_module = import_by_path("plugin", str(plugin_path / "plugin/plugin.py"))
-                if (plugin_path / "plugin/config.py").exists():
-                    config_module = import_by_path("config", str(plugin_path / "plugin/config.py"))
+                plugin_module = import_by_path("plugin", str(plugin_path / "plugin.py"))
+                if (plugin_path / "config.py").exists():
+                    config_module = import_by_path("config", str(plugin_path / "config.py"))
                     Config.load_module(config_module)
 
                 # Initializing plugin instance

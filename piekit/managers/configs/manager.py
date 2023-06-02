@@ -110,7 +110,7 @@ class ConfigManager(BaseManager):
         if key in self.protected_keys:
             raise PieException(f"Can't use protected key: {key}")
 
-        return self._configuration.get(f"{scope}.{section}.{key}", default)
+        return self._configuration.get(f"{scope}.{section}.{key}") or default
 
     def get_shared(
         self,
