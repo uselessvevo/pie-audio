@@ -62,7 +62,7 @@ class PieAudioApp(
         self.sig_exception_occurred.connect(self.error_handler)
 
     def prepare_main_window(self) -> None:
-        self.set_minimum_size(Config.MAIN_WINDOW_MIN_WINDOW_SIZE)
+        self.set_minimum_size(*Config.MAIN_WINDOW_MIN_WINDOW_SIZE)
         self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_MIN_WINDOW_SIZE, Section.User))
         self.set_window_title("Pie Audio • Audio Converter ({})".format(Config.PIEAPP_VERSION))
         self.set_window_icon(self.get_asset_icon("cloud.png"))

@@ -18,7 +18,7 @@ from piekit.managers.plugins.decorators import on_plugin_available
 
 from PySide6.QtWidgets import QGridLayout, QDialog
 
-from .widgets import MainSettingsWidget
+from pieapp.containers.settings.widgets import MainSettingsWidget
 
 
 class Settings(

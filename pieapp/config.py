@@ -19,7 +19,7 @@ CONF_PAGES_CATEGORIES = [
     {"title": "Plugins", "name": "plugins"},
 ]
 
-DEFAULT_CONFIG_FILES: Lock = [
+DEFAULT_CONFIG_FILES = [
     "locales.json",
     "assets.json",
     "ffmpeg.json",

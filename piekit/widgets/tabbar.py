@@ -1,3 +1,4 @@
+from __feature__ import snake_case
 from PySide6.QtCore import QRect, QPoint
 from PySide6.QtWidgets import QTabWidget, QTabBar, QStylePainter, QStyleOptionTab, QStyle
 

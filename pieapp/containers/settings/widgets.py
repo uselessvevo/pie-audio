@@ -1,3 +1,4 @@
+from __feature__ import snake_case
 from pieapp.structs.containers import Container
 
 from piekit.widgets.spacer import Spacer
@@ -38,7 +39,9 @@ class MainSettingsWidget(
         locales = Config.LOCALES
         self.locales_cbox = QComboBox()
         self.locales_cbox.add_items(locales)
-        self.locales_cbox.set_current_text(self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, section=Section.User))
+        self.locales_cbox.set_current_text(self.get_shared_config(
+            "locales.locale", Config.DEFAULT_LOCALE, section=Section.User
+        ))
 
         themes = Managers(SysManager.Assets).get_themes()
         self.theme_cbox = QComboBox()

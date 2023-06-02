@@ -1,9 +1,9 @@
 """
 ContentTable API
 """
-from piekit.config.exceptions import PieApiException
-from plugin.api.structs import ContentTableStruct
 from piekit.plugins.api.api import PiePluginAPI
+from piekit.config.exceptions import PieApiException
+from pieapp.containers.contentable.structs import ContentTableStruct
 
 
 class ContentTableAPI(PiePluginAPI):

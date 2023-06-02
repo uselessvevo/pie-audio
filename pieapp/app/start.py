@@ -22,7 +22,7 @@ def start_application(*args, **kwargs) -> None:
     Main start-up entrypoint
     """
     # Swapping the exception hook
-    sys.excepthook = except_hook
+    # sys.excepthook = except_hook
 
     # Adding additional magic-annotations
     Config.add_handlers(Lock, Max, Min)
@@ -67,7 +67,7 @@ def start_application(*args, **kwargs) -> None:
     pie_app = PieAudioApp()
 
     # Starting all managers by order
-    for manager in Config.MANAGERS:
+    for manager in Config.INITIAL_MANAGERS:
         Managers.from_config(manager)
 
     # Applying *fantasticly* good theme
@@ -85,6 +85,11 @@ def start_application(*args, **kwargs) -> None:
 
     # Start the *magic*
     pie_app.init()
+
+    # Starting all managers by order
+    for manager in Config.MANAGERS:
+        Managers.from_config(manager)
+
     pie_app.show()
 
     sys.exit(app.exec())

@@ -15,7 +15,7 @@ from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
-from .api import ContentTableAPI
+from pieapp.containers.contentable.api import ContentTableAPI
 
 
 class ContentTable(
