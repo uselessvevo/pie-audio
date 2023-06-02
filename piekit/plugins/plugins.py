@@ -4,7 +4,6 @@ from typing import Union
 from PySide6.QtCore import Signal, QObject
 
 from piekit.utils.logger import logger
-from piekit.mainwindow.main import MainWindow
 from piekit.managers.base import BaseManager
 from piekit.plugins.types import PluginTypes, Error
 from piekit.plugins.observer import PluginsObserverMixin
@@ -63,7 +62,7 @@ class PiePlugin(
 
     def __init__(
         self,
-        parent: MainWindow = None,
+        parent: "QMainWindow" = None,
         path: Path = None,
     ) -> None:
         # For some reason, I can't use `super().__init__()` method with `PySide`

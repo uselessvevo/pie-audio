@@ -43,7 +43,7 @@ CONFIGS_FOLDER: Lock = os.getenv("PIE_CONFIGS_FOLDER", "configs")
 USER_CONFIG_FOLDER: Lock = os.getenv("PIE_USER_CONFIGS_FOLDER", "configs")
 
 # Locales
-LOCALES: Lock = {
+LOCALES = {
     "en-US": "English",
     "ru-RU": "Русский"
 }
@@ -56,8 +56,4 @@ DEFAULT_LOCALE: Lock = os.getenv("PIE_DEFAULT_LOCALE", default_locale)
 LOCALES_FOLDER: Lock = os.getenv("PIE_LOCALES_FOLDER", "locales")
 
 # Templates
-DEFAULT_CONFIG_FILES: Lock = [
-    "locales.json",
-    "assets.json",
-    "ffmpeg.json",
-]
+DEFAULT_CONFIG_FILES = []

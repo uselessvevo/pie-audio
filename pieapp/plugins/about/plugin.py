@@ -64,7 +64,7 @@ class About(
         self.dialog.set_layout(grid_layout)
 
     @on_plugin_available(target=Container.MenuBar)
-    def onMenuBarAvailable(self) -> None:
+    def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,
             menu=MainMenu.Help,

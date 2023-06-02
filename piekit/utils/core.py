@@ -1,8 +1,10 @@
 import sys
 import traceback
+from typing import Union
 
 from __feature__ import snake_case
-from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import QCoreApplication, QProcess
+from PySide6.QtWidgets import QApplication, QMainWindow
 
 from piekit.config import Config
 from piekit.managers.registry import Managers
@@ -10,19 +12,28 @@ from piekit.widgets.errorwindow import ErrorWindow
 
 
 def get_application(*args, **kwargs):
-    app = QtWidgets.QApplication.instance()
-
+    app = QApplication.instance()
     if app is None:
         if not args:
             args = ([''],)
-        app = QtWidgets.QApplication(*args, **kwargs)
+        app = QApplication(*args, **kwargs)
+
     return app
+
+
+def get_main_window() -> Union[QMainWindow, None]:
+    app = QApplication.instance()
+    for widget in app.top_level_widgets():
+        if isinstance(widget, QMainWindow):
+            return widget
+
+    return None
 
 
 def restart_application() -> None:
     Managers.shutdown(full_house=True)
-    QtCore.QCoreApplication.quit()
-    QtCore.QProcess.start_detached(sys.executable, sys.argv)
+    QCoreApplication.quit()
+    QProcess.start_detached(sys.executable, sys.argv)
 
 
 def check_crabs() -> bool:

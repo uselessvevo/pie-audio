@@ -1,39 +1,71 @@
 from __feature__ import snake_case
+import os
 
 from PySide6 import QtWidgets
-from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QMainWindow
 
 from piekit.config import Config
-from pieapp.structs.containers import Container
-from piekit.plugins.utils import get_plugin
-from piekit.mainwindow.main import MainWindow
-from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManager, Section
+from piekit.utils.logger import logger
+from piekit.managers.structs import Section
+from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
+from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.plugins.mixins import ErrorWindowMixin, QuitMixin
 
 
-class PieAudioApp(MainWindow, ConfigAccessor):
+class PieAudioApp(
+    ConfigAccessor,
+    LocalesAccessor,
+    AssetsAccessor,
+    QuitMixin,
+    ErrorWindowMixin,
+    QMainWindow,
+):
+    # Accessors section
+    section: str = Section.Shared
     name = Config.PIEAPP_NAME
-    section = Section.Shared
+
+    # Base signals
+    sig_moved = Signal()
+    sig_resized = Signal()
+    sig_exception_occurred = Signal(dict)
+
     sig_plugins_ready = Signal()
+    sig_plugin_ready = Signal(str)
+    sig_plugin_loading = Signal(str)
+    sig_plugin_reloading = Signal(str)
+
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent=parent)
+
+        # Just a logger
+        self._logger = logger
+
+        # Set windows taskbar icon
+        if os.name == "nt":
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                Config.PIEAPP_PROCESS_NAME_ID
+            )
 
     def init(self) -> None:
-        self.set_window_title("Pie Audio • Audio Converter ({})".format(
-            Config.PIEAPP_VERSION
-        ))
-        self.set_minimum_size(720, 480)
-        self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_DEFAULT_WINDOW_SIZE, Section.User))
-        self.set_window_icon(QIcon(self.get_asset("cloud.png")))
-
-    def prepare(self):
         self.prepare_base_signals()
+        self.prepare_main_window()
         self.prepare_main_layout()
         self.prepare_workbench_layout()
         self.prepare_table_layout()
         self.prepare_central_widget()
-        self.prepare_plugins()
+
+    def prepare_base_signals(self) -> None:
+        self.sig_exception_occurred.connect(self.error_handler)
+
+    def prepare_main_window(self) -> None:
+        self.set_minimum_size(Config.MAIN_WINDOW_MIN_WINDOW_SIZE)
+        self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_MIN_WINDOW_SIZE, Section.User))
+        self.set_window_title("Pie Audio • Audio Converter ({})".format(Config.PIEAPP_VERSION))
+        self.set_window_icon(self.get_asset_icon("cloud.png"))
 
     def prepare_main_layout(self) -> None:
         self.main_layout = QGridLayout()
@@ -51,10 +83,3 @@ class PieAudioApp(MainWindow, ConfigAccessor):
         widget = QtWidgets.QLabel()
         widget.set_layout(self.main_layout)
         self.set_central_widget(widget)
-
-    # Plugin method and signals
-
-    def prepare_plugins(self) -> None:
-        """ Prepare all (or selected) Plugins """
-        Managers(SysManager.Plugins).init(self)
-        self.sig_plugins_ready.emit()

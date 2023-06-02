@@ -8,7 +8,7 @@ PIEAPP_NAME: Lock = "pie-audio"
 PIEAPP_VERSION: Lock = "1.0.0"
 PIEAPP_PROCESS_NAME_ID = "com.crabdevs.pieaudio"
 
-MAIN_WINDOW_DEFAULT_WINDOW_SIZE: Lock = (900, 560)
+MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
 
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
@@ -19,8 +19,13 @@ CONF_PAGES_CATEGORIES = [
     {"title": "Plugins", "name": "plugins"},
 ]
 
+DEFAULT_CONFIG_FILES: Lock = [
+    "locales.json",
+    "assets.json",
+    "ffmpeg.json",
+]
+
 # Managers startup configuration
-# TODO: Replace `init` attribute with Qt signal name (str) and emit it via `QMetaObject` -> `invokeMethod`
 INITIAL_MANAGERS: Lock = [
     ManagerConfig(
         import_string="piekit.managers.configs.manager.ConfigManager",
@@ -39,10 +44,6 @@ INITIAL_MANAGERS: Lock = [
 MANAGERS: Lock = [
     *INITIAL_MANAGERS,
     ManagerConfig(
-        import_string="piekit.managers.plugins.manager.PluginManager",
-        init=False
-    ),
-    ManagerConfig(
         import_string="piekit.managers.menus.manager.MenuManager",
         init=True
     ),
@@ -53,5 +54,9 @@ MANAGERS: Lock = [
     ManagerConfig(
         import_string="piekit.managers.toolbuttons.manager.ToolButtonManager",
         init=True
-    )
+    ),
+    ManagerConfig(
+        import_string="piekit.managers.plugins.manager.PluginManager",
+        init=True
+    ),
 ]
