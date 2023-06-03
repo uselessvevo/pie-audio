@@ -60,7 +60,7 @@ class Settings(
             name="settings",
             text=self.get_translation("Settings"),
             triggered=self.dialog.show,
-            icon=self.get_asset_icon("settings.png"),
+            icon=self.get_plugin_icon(),
             before=MainMenuItem.Exit
         )
 
