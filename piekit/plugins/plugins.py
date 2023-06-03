@@ -3,6 +3,7 @@ from typing import Union
 
 from PySide6.QtCore import Signal, QObject
 
+from piekit.config import Config
 from piekit.utils.logger import logger
 from piekit.managers.base import BaseManager
 from piekit.plugins.types import PluginTypes, Error
@@ -19,7 +20,7 @@ class PiePlugin(
     type: PluginTypes = PluginTypes.Plugin
 
     # Icon name
-    icon: Union[None, str] = "app.png"
+    icon: Union[None, str] = Config.PLUGIN_ICON_NAME
 
     # By default, description must be written in English
     description: str = None
