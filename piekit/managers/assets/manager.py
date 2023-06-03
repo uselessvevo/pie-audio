@@ -89,10 +89,6 @@ class AssetsManager(BaseManager):
     def get_svg(self, *args, color: str = "#7cd162") -> QIcon:
         return set_svg_color(self.get(*args), color)
 
-    @lru_cache
-    def get_icon(self, section: Union[str, Section], key: Any, default: Any = None) -> QIcon:
-        return QIcon(self.get(section, key, default))
-
     def get_theme(self) -> str:
         return self._current_theme
 
@@ -100,6 +96,5 @@ class AssetsManager(BaseManager):
         return self._themes
 
     getSvg = get_svg
-    getIcon = get_icon
     getTheme = get_theme
     getThemes = get_themes
