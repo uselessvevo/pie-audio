@@ -4,8 +4,8 @@ Built-in app containers
 
 
 class Container:
-    MenuBar = "menubar"
+    MenuBar = "menu-bar"
     Settings = "settings"
     Workbench = "workbench"
-    StatusBar = "statusbar"
-    ContentTable = "contentable"
+    StatusBar = "status-bar"
+    ContentTable = "content-table"
