@@ -22,7 +22,7 @@ def start_application(*args, **kwargs) -> None:
     Main start-up entrypoint
     """
     # Swapping the exception hook
-    # sys.excepthook = except_hook
+    sys.excepthook = except_hook
 
     # Adding additional magic-annotations
     Config.add_handlers(Lock, Max, Min)
@@ -79,7 +79,7 @@ def start_application(*args, **kwargs) -> None:
             if palette:
                 app.set_palette(palette)
 
-    # Closing splashcreen
+    # Closing splashscreen
     if splash:
         splash.close()
 
