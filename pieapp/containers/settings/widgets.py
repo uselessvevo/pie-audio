@@ -1,3 +1,4 @@
+from PySide6.QtGui import QAction
 from __feature__ import snake_case
 from pieapp.structs.containers import Container
 
@@ -10,10 +11,10 @@ from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QDir
 
 from PySide6.QtWidgets import (
-    QWidget, QGridLayout, QPushButton, 
+    QWidget, QGridLayout,
     QLineEdit, QComboBox, QLabel, QFileDialog
 )
 
@@ -31,21 +32,29 @@ class MainSettingsWidget(
         super().__init__(parent)
         main_grid = QGridLayout(parent)
 
-        self.ffpeg_prompt = QLineEdit()
-        self.ffpeg_prompt.insert(self.get_shared_config("ffmpeg.root", section=Section.User))
-        self.ffmpeg_button = QPushButton(self.get_translation("Set ffmpeg path"))
-        self.ffmpeg_button.clicked.connect(self.ffmpeg_button_connect)
+        self.ffmpeg_line_edit_action = QAction()
+        self.ffmpeg_line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
+        self.ffmpeg_line_edit_action.triggered.connect(self.ffmpeg_button_connect)
 
-        locales = Config.LOCALES
+        self.ffmpeg_line_edit = QLineEdit()
+        self.ffmpeg_line_edit.set_style_sheet("QLineEdit{font-size: 10pt;}")
+        self.ffmpeg_line_edit.insert(self.get_shared_config("ffmpeg.root", section=Section.User))
+        self.ffmpeg_line_edit.add_action(self.ffmpeg_line_edit_action, QLineEdit.ActionPosition.TrailingPosition)
+
+        self._locales = Config.LOCALES
+        self._cur_locale = self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, Section.User)
+        self._locales_reversed = {v: k for (k, v) in self._locales.items()}
+
         self.locales_cbox = QComboBox()
-        self.locales_cbox.add_items(locales)
-        self.locales_cbox.set_current_text(self.get_shared_config(
-            "locales.locale", Config.DEFAULT_LOCALE, section=Section.User
-        ))
+        self.locales_cbox.set_style_sheet("QComboBox{font-size: 10pt;}")
+        self.locales_cbox.insert_item(0, self._locales.pop(self._cur_locale))
+        self.locales_cbox.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
+        self.locales_cbox.currentIndexChanged.connect(self.locales_cbox_connect)
 
         themes = Managers(SysManager.Assets).get_themes()
         self.theme_cbox = QComboBox()
         self.theme_cbox.add_items(themes)
+        self.theme_cbox.set_style_sheet("QComboBox{font-size: 10pt;}")
         self.theme_cbox.set_current_text(self.get_shared_config("assets.theme", section=Section.User))
         # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
 
@@ -56,19 +65,26 @@ class MainSettingsWidget(
         main_grid.add_widget(self.theme_cbox, 2, 1, 1, 1)
 
         main_grid.add_widget(QLabel(self.get_translation("FFmpeg path")), 6, 0, 1, 1)
-        main_grid.add_widget(self.ffpeg_prompt, 6, 1, 1, 1)
-        main_grid.add_widget(self.ffmpeg_button, 7, 1, 1, 1)
-        main_grid.set_alignment(self.ffmpeg_button, Qt.AlignmentFlag.AlignRight)
-        main_grid.add_widget(Spacer(), 8, 0, 1, 2)
+        main_grid.add_widget(self.ffmpeg_line_edit, 6, 1, 1, 1)
+        main_grid.add_widget(Spacer(), 7, 0, 1, 2)
 
         self.set_layout(main_grid)
 
+    def locales_cbox_connect(self) -> None:
+        new_locale = self._locales_reversed.get(self.locales_cbox.current_text())
+        write_json(
+            file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "locales.json"),
+            data={"locale": new_locale},
+            create=True
+        )
+
     def ffmpeg_button_connect(self) -> None:
-        directory = QFileDialog(self, self.get_translation("Select ffmpeg directory"))
-        directory.set_file_mode(QFileDialog.FileMode.Directory)
-        directory.set_option(QFileDialog.Option.ShowDirsOnly, False)
-        directory.get_existing_directory(self, dir=str(Config.USER_ROOT))
-        directory_path = directory.directory().path()
+        ffmpeg_directory = QFileDialog.get_existing_directory(
+            parent=self,
+            caption=self.get_translation("Select ffmpeg directory"),
+            dir=str(Config.USER_ROOT)
+        )
+        directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
             write_json(
@@ -76,4 +92,4 @@ class MainSettingsWidget(
                 data={"root": directory_path},
                 create=True
             )
-            self.ffpeg_prompt.set_text(directory_path)
+            self.ffmpeg_line_edit.set_text(directory_path)

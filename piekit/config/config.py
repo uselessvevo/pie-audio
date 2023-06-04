@@ -37,7 +37,7 @@ THEMES_FOLDER: Lock = os.getenv("PIE_THEMES_FOLDER", "themes")
 
 themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
 DEFAULT_THEME: Lock = themes_list[0] if themes_list else None
-ASSETS_USE_STYLE: Lock = bool(os.getenv("PIE_ASSETS_USE_STYLE", True))
+ASSETS_USE_STYLE: Lock = bool(int(os.getenv("PIE_ASSETS_USE_STYLE", True)))
 
 # Configurations
 CONFIGS_FOLDER: Lock = os.getenv("PIE_CONFIGS_FOLDER", "configs")

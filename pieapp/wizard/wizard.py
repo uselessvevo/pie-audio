@@ -2,8 +2,8 @@ from __feature__ import snake_case
 from pathlib import Path
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Slot
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Slot, QDir
+from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QFileDialog
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
@@ -111,29 +111,18 @@ class FfmpegWizardPage(
         self._parent = parent
         self.ffmpeg_path = None
 
-        self.line_edit = QtWidgets.QLineEdit()
-        self.line_edit.set_disabled(True)
-        self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
+        self.line_edit_action = QAction()
+        self.line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
+        self.line_edit_action.triggered.connect(self.select_ffmpeg_path)
 
-        self.line_edit_button = QtWidgets.QToolButton()
-        self.line_edit_button.set_style_sheet("""
-            QPushButton {
-                font-size: 15pt;
-                width: 300px;
-                border-radius: 50px;
-            }
-        """)
-        self.line_edit_button.set_icon(QIcon(
-            Managers(SysManager.Assets).get(Section.Shared, "open-folder.png")
-        ))
-        self.line_edit_button.set_icon(self.get_asset_icon("open-folder.png"))
-        self.line_edit_button.clicked.connect(self.select_ffmpeg_path)
+        self.line_edit = QtWidgets.QLineEdit()
+        self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
+        self.line_edit.add_action(self.line_edit_action, QtWidgets.QLineEdit.ActionPosition.TrailingPosition)
 
         page_title = QtWidgets.QLabel("Setup ffmpeg")
         page_title.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         ffmpeg_hbox = QtWidgets.QHBoxLayout()
-        ffmpeg_hbox.add_widget(self.line_edit_button)
         ffmpeg_hbox.add_widget(self.line_edit)
 
         layout = QtWidgets.QVBoxLayout()
@@ -144,13 +133,13 @@ class FfmpegWizardPage(
     def is_complete(self) -> bool:
         return bool(Path(self.ffmpeg_path).exists() if self.ffmpeg_path else False) and super().is_complete()
 
-    @Slot()
     def select_ffmpeg_path(self):
-        directory = QFileDialog(self, self.get_translation("Select ffmpeg directory"))
-        directory.set_file_mode(QFileDialog.FileMode.Directory)
-        directory.set_option(QFileDialog.Option.ShowDirsOnly, False)
-        directory.get_existing_directory(dir=str(Config.USER_ROOT))
-        directory_path = directory.directory().path()
+        ffmpeg_directory = QFileDialog.get_existing_directory(
+            parent=self,
+            caption=self.get_translation("Select ffmpeg directory"),
+            dir=str(Config.USER_ROOT)
+        )
+        directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
             write_json(
