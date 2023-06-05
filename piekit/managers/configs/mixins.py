@@ -13,7 +13,7 @@ class ConfigAccessor:
         self,
         key: Any,
         default: Any = None,
-        section: Union[str, Section] = Section.Inner
+        section: Union[Section.Inner, Section.User] = Section.Inner,
     ) -> Any:
         return Managers(SysManager.Configs).get(self.name, section, key, default)
 
@@ -21,18 +21,41 @@ class ConfigAccessor:
         self,
         key: Any,
         default: Any = None,
-        section: Union[Section.Inner, Section.User] = Section.Shared
+        scope: Union[str, Section.Root] = Section.Root,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
     ) -> Any:
-        return Managers(SysManager.Configs).get_shared(section, key, default)
+        return Managers(SysManager.Configs).get(scope, section, key, default)
 
-    def set_config(self, key: Any, data: Any) -> None:
-        Managers(SysManager.Configs).set(self.name, key, data)
+    def set_config(
+        self,
+        key: Any,
+        data: Any,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
+    ) -> None:
+        if section in (Section.Shared, Section.Root):
+            raise KeyError(f"Can't set protected section \"{section}\"")
 
-    def delete_config(self, key: Any) -> None:
-        Managers(SysManager.Configs).delete(self.name, key)
+        Managers(SysManager.Configs).set(self.name, section, key, data)
 
-    def save_config(self, data: dict, create: bool = False) -> None:
-        Managers(SysManager.Configs).save(self.name, data, create)
+    def delete_config(
+        self,
+        key: Any,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
+    ) -> None:
+        if section in (Section.Shared, Section.Root):
+            raise KeyError(f"Can't delete protected section \"{section}\"")
+
+        Managers(SysManager.Configs).delete(self.name, section, key)
+
+    def save_config(
+        self,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
+        create: bool = False
+    ) -> None:
+        if section in (Section.Shared, Section.Root):
+            raise KeyError(f"Can't delete protected section \"{section}\"")
+            
+        Managers(SysManager.Configs).save(self.name, section, create)
 
     getConfig = get_config
     getSharedConfig = get_shared_config

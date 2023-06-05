@@ -19,7 +19,7 @@ class AssetsManager(BaseManager):
     def __init__(self) -> None:
         self._logger = logger
         self._assets_dictionary: dict[str, dict[str, Path]] = {}
-        self._current_theme = Managers(SysManager.Configs).get_shared(Section.User, "assets.theme")
+        self._current_theme = Managers(SysManager.Configs).get(Section.Root, Section.User, "assets.theme")
 
         assets_folder: Path = Config.APP_ROOT / Config.ASSETS_FOLDER / Config.THEMES_FOLDER
         theme_folders = list(i.name for i in assets_folder.iterdir() if i.is_dir())

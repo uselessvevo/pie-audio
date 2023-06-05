@@ -41,18 +41,19 @@ class Section:
     """
     Configuration categories/sections
     """
+
+    # Application/root scope
+    Root = "root"
     
-    # Plugin access section
+    # Plugin section name
     Inner = "inner"
 
-    # User/site access section
+    # User/site section name
     User = "user"
     
-    # Shared/root access section
+    # Shared access section
+    # TODO: Remove it in the future releases
     Shared = "shared"
-
-    # System section
-    Root = "root"
 
 
 @dt.dataclass(frozen=True, eq=False)

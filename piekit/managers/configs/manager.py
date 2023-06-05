@@ -21,7 +21,6 @@ class ConfigManager(BaseManager):
 
     def __init__(self) -> None:
         self._logger = logger
-        self._roots: set[Path] = set()
         self._configuration: Dotty[str, dict[str, Any]] = Dotty({})
         self._observer = FileSystemObserver()
 
@@ -40,7 +39,6 @@ class ConfigManager(BaseManager):
         folder: Path,
         section: Union[str, Section] = None
     ) -> None:
-        self._roots.add(folder)
         self._configuration[Section.Root] = {}
 
         for file in folder.rglob("*.json"):
@@ -65,8 +63,6 @@ class ConfigManager(BaseManager):
                 self._configuration[section][config.stem].update(**read_json(str(config)))
 
         for plugin_package in plugin_folder.iterdir():
-            self._roots.add(plugin_package)
-
             # Plugin's inner configuration section - pieapp/plugins/<plugin name>/configs/
             inner_section = f"{plugin_package.name}.{Section.Inner}"
 
@@ -94,8 +90,8 @@ class ConfigManager(BaseManager):
     @lru_cache
     def get(
         self,
-        scope: Union[str, Section] = Section.Root,
-        section: Union[str, Section] = Section.Inner,
+        scope: Union[str, Section.Root] = Section.Root,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
         key: Any = None,
         default: Any = None,
     ) -> Any:
@@ -112,18 +108,10 @@ class ConfigManager(BaseManager):
 
         return self._configuration.get(f"{scope}.{section}.{key}") or default
 
-    def get_shared(
-        self,
-        section: Union[Section.Shared, Section.User],
-        key: str,
-        default: Any = None,
-    ) -> Any:
-        return self.get(Section.Root, section, key, default)
-
     def set(
         self,
-        scope: Union[str, Section] = Section.Root,
-        section: Union[str, Section] = Section.Inner,
+        scope: Union[str, Section.Root] = Section.Root,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
         key: Any = None,
         data: Any = None
     ) -> None:
@@ -144,8 +132,8 @@ class ConfigManager(BaseManager):
 
     def delete(
         self,
-        scope: Union[str, Section] = Section.Root,
-        section: Union[str, Section] = Section.Inner,
+        scope: Union[str, Section.Root] = Section.Root,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
         key: Any = None
     ) -> None:
         """
@@ -168,8 +156,8 @@ class ConfigManager(BaseManager):
 
     def save(
         self,
-        scope: Union[str, Section] = Section.Root,
-        section: Union[str, Section] = Section.Inner,
+        scope: Union[str, Section.Root] = Section.Root,
+        section: Union[Section.Inner, Section.User] = Section.Inner,
         data: dict = None,
         create: bool = False
     ) -> None:

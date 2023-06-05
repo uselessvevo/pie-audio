@@ -70,13 +70,18 @@ class MainSettingsWidget(
 
         self.set_layout(main_grid)
 
+    def theme_cbox_connect(self) -> None:
+        new_theme = self.theme_cbox.current_text()
+        self.set_config("assets.theme", {"theme": new_theme}, Section.User)
+
     def locales_cbox_connect(self) -> None:
         new_locale = self._locales_reversed.get(self.locales_cbox.current_text())
-        write_json(
-            file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "locales.json"),
-            data={"locale": new_locale},
-            create=True
-        )
+        self.set_config("locales.locale", {"locale": new_locale}, section=Section.User)
+        # write_json(
+        #     file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "locales.json"),
+        #     data={"locale": new_locale},
+        #     create=True
+        # )
 
     def ffmpeg_button_connect(self) -> None:
         ffmpeg_directory = QFileDialog.get_existing_directory(
@@ -87,9 +92,10 @@ class MainSettingsWidget(
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
-            write_json(
-                file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "ffmpeg.json"),
-                data={"root": directory_path},
-                create=True
-            )
-            self.ffmpeg_line_edit.set_text(directory_path)
+            self.set_config("ffmpeg.root", {"root": directory_path}, Section.User)
+            # write_json(
+            #     file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "ffmpeg.json"),
+            #     data={"root": directory_path},
+            #     create=True
+            # )
+            # self.ffmpeg_line_edit.set_text(directory_path)
