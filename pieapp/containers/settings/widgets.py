@@ -42,7 +42,7 @@ class MainSettingsWidget(
         self.ffmpeg_line_edit.add_action(self.ffmpeg_line_edit_action, QLineEdit.ActionPosition.TrailingPosition)
 
         self._locales = Config.LOCALES
-        self._cur_locale = self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, Section.User)
+        self._cur_locale = self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, section=Section.User)
         self._locales_reversed = {v: k for (k, v) in self._locales.items()}
 
         self.locales_cbox = QComboBox()
