@@ -26,7 +26,7 @@ class ConfigurationPageManager(BaseManager):
         self._read_root_confpages(Config.APP_ROOT / Config.CONF_PAGES_FOLDER)
         self._read_plugin_confpages(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
         self._read_plugin_confpages(Config.APP_ROOT / Config.PLUGINS_FOLDER)
-        self._read_plugin_confpages(Config.APP_ROOT / Config.USER_PLUGINS_FOLDER)
+        self._read_plugin_confpages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 
     def shutdown(self) -> None:
         self._pages = {}
