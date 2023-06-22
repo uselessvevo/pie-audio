@@ -21,7 +21,7 @@ class ConfigAccessor:
         self,
         key: Any,
         default: Any = None,
-        section: Union[Section.Inner, Section.User] = Section.Shared
+        section: Union[Section.Inner, Section.User] = Section.Inner
     ) -> Any:
         return Managers(SysManager.Configs).get_shared(section, key, default)
 
