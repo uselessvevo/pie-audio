@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtWidgets import QDialog, QFileDialog
 
@@ -122,5 +122,5 @@ class Converter(
         )
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return Converter(*args, **kwargs)

@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -78,5 +78,5 @@ class ContentTable(
         )
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return ContentTable(*args, **kwargs)

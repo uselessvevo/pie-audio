@@ -1,3 +1,4 @@
 {
-  "key": "value123"
+    "key1": "Old String Value",
+    "key2": 123
 }

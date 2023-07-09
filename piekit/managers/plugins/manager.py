@@ -119,13 +119,13 @@ class PluginManager(BaseManager):
 
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
+                if plugin_instance:
+                    try:
+                        self._check_versions(plugin_instance)
+                    except AttributeError as e:
+                        raise PieException(str(e))
 
-                try:
-                    self._check_versions(plugin_instance)
-                except AttributeError as e:
-                    raise PieException(str(e))
-
-                self._initialize_plugin(plugin_instance)
+                    self._initialize_plugin(plugin_instance)
 
     def _check_versions(self, plugin_instance: PiePlugin) -> None:
         """
@@ -169,7 +169,10 @@ class PluginManager(BaseManager):
         )
 
         # Preparing `PiePlugin` instance
-        plugin_instance.prepare()
+        try:
+            plugin_instance.prepare()
+        except Exception as e:
+            raise PieException(str(e))
 
         # PiePlugin is ready
         plugin_instance.sig_plugin_ready.emit()

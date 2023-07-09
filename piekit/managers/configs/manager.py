@@ -1,5 +1,4 @@
-import typing
-from functools import lru_cache
+import copy
 from pathlib import Path
 from typing import Union, Any
 
@@ -17,11 +16,12 @@ from piekit.utils.logger import logger
 
 class ConfigManager(BaseManager):
     name = SysManager.Configs
-    protected_keys = ("__FILE__",)
+    protected_keys = ("__FOLDER__",)
 
     def __init__(self) -> None:
         self._logger = logger
         self._configuration: Dotty[str, dict[str, Any]] = Dotty({})
+        self._temp_configuration: Dotty[str, dict[str, Any]] = Dotty({})
         self._observer = FileSystemObserver()
 
     def init(self) -> None:
@@ -40,6 +40,7 @@ class ConfigManager(BaseManager):
         section: Union[str, Section] = None
     ) -> None:
         self._configuration[Section.Root] = {}
+        self._configuration[Section.Root]["__FILES__"] = list(i for i in folder.rglob("configs/*.json"))
 
         for file in folder.rglob("*.json"):
             if not self._configuration[Section.Root].get(section):
@@ -48,27 +49,27 @@ class ConfigManager(BaseManager):
             if not self._configuration[Section.Root][section].get(file.name):
                 self._configuration[Section.Root][section][file.stem] = {}
 
-            self._configuration[Section.Root][section]["__FILE__"] = file
             self._configuration[Section.Root][section][file.stem].update(**read_json(str(file)))
 
         self._observer.add_handler(str(folder), str(folder.name))
 
-    def _read_plugins_configuration(self, plugin_folder: Path) -> None:
+    def _read_plugins_configuration(self, plugins_folder: Path) -> None:
         def read_config(section, package):
-            for config in package.rglob("*.json"):
+            self._configuration[section]["__FILES__"] = list(i for i in package.rglob("configs/*.json"))
+
+            for config in package.rglob("configs/*.json"):
                 if not self._configuration[section].get(config.name):
                     self._configuration[section][config.stem] = {}
 
-                self._configuration[section]["__FILE__"] = config
                 self._configuration[section][config.stem].update(**read_json(str(config)))
 
-        for plugin_package in plugin_folder.iterdir():
+        for plugin_folder in plugins_folder.iterdir():
             # Plugin's inner configuration section - pieapp/plugins/<plugin name>/configs/
-            inner_section = f"{plugin_package.name}.{Section.Inner}"
+            inner_section = f"{plugin_folder.name}.{Section.Inner}"
 
             # Plugin's user configuration section - <user home folder>/configs/plugins/<plugin name>/
-            user_section = f"{plugin_package.name}.{Section.User}"
-            user_folder: Path = Config.USER_ROOT / Config.CONFIGS_FOLDER / plugin_package.name
+            user_section = f"{plugin_folder.name}.{Section.User}"
+            user_folder: Path = Config.USER_ROOT / Config.CONFIGS_FOLDER / plugin_folder.name
 
             if not self._configuration.get(inner_section):
                 self._configuration[inner_section] = {}
@@ -77,34 +78,38 @@ class ConfigManager(BaseManager):
                 self._configuration[user_section] = {}
 
             # Read configuration from plugin's inner configuration folder
-            read_config(inner_section, plugin_package)
-            read_config(user_section, plugin_package)
+            read_config(inner_section, plugin_folder)
+            read_config(user_section, user_folder)
 
-            self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
+            self._observer.add_handler(str(plugins_folder), str(plugins_folder.name))
             self._observer.add_handler(str(user_folder), str(user_folder.name))
 
     def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})
         self._observer.remove_handlers(full_house=True)
 
-    @lru_cache
     def get(
         self,
         scope: Union[str, Section.Root] = Section.Root,
         section: Union[Section.Inner, Section.User] = Section.Inner,
         key: Any = None,
         default: Any = None,
+        temp: bool = False
     ) -> Any:
         """
         Get inner configuration value
         Args:
-            scope (str|Sections): root/plugin configuration scope
-            section (str): inner (plugin)/user configuration section
-            key (Any): configuration key
+            scope (str|Section.Root): root/plugin configuration scope
+            section (Section.Inner|Section.User): inner (plugin)/user configuration section
+            key (str): configuration key
             default (Any): default value
+            temp (bool): get the copied data
         """
         if key in self.protected_keys:
             raise PieException(f"Can't use protected key: {key}")
+
+        if temp and self._temp_configuration.get(f"{scope}.{section}"):
+            return self._temp_configuration[f"{scope}.{section}.{key}"] or default
 
         return self._configuration.get(f"{scope}.{section}.{key}") or default
 
@@ -113,20 +118,37 @@ class ConfigManager(BaseManager):
         scope: Union[str, Section.Root] = Section.Root,
         section: Union[Section.Inner, Section.User] = Section.Inner,
         key: Any = None,
-        data: Any = None
+        data: Any = None,
+        temp: bool = False
     ) -> None:
         """
         Set data by section-key pair
         Args:
-            section (str|None): section name
-            key (Any): key for the nested data
+            scope (str|Section.Root): plugin/root configuration scope
+            section (Section.Inner|Section.User): inner (plugin)/user configuration section
+            key (str): configuration key
             data (Any): data to set
+            temp (bool): create temporary configuration path with copied data
         """
+        data_config_path = f"{scope}.{section}.{key}" if key else f"{scope}.{section}"
         if key in self.protected_keys:
             raise PieException(f"Can't use protected key: {key}")
 
         try:
-            self._configuration[scope][section][key] = data
+            if temp:
+                scope_config_path = f"{scope}.{section}"
+                temp_copy = copy.deepcopy(self._configuration[scope_config_path])
+
+                # Copy configuration into temporary configuration
+                if not self._temp_configuration.get(scope_config_path):
+                    self._temp_configuration[scope_config_path] = temp_copy
+                    self._temp_configuration[scope_config_path].update(**temp_copy)
+
+                self._temp_configuration[data_config_path] = data
+
+            else:
+                self._configuration[data_config_path] = data
+
         except KeyError as e:
             raise PieException(str(e))
 
@@ -139,44 +161,72 @@ class ConfigManager(BaseManager):
         """
         Delete value by section-key pair
         Args:
-            section (str|None): section name
-            key (Any): key to access data or nested data
+            scope (str|Section.Root): plugin/root configuration scope
+            section (Section.Inner|Section.User): inner (plugin)/user configuration section
+            key (str): key to access data or nested data
         """
         if key in self.protected_keys:
             raise PieException(f"Can't use protected key: {key}")
 
         try:
-            if not key:
-                del self._configuration[scope][section]
-            else:
-                del self._configuration[scope][section][key]
+            del self._configuration[f"{scope}.{section}.{key}" if key else f"{scope}.{section}"]
 
         except KeyError as e:
             raise PieException(str(e))
+
+    def copy(
+        self,
+        scope_from: Union[str, Section.Root] = Section.Root,
+        section_from: Union[Section.Inner, Section.User] = Section.Inner,
+        key_from: Any = None,
+
+        scope_into: Union[str, Section.Root] = Section.Root,
+        section_into: Union[Section.Inner, Section.User] = Section.User,
+        key_into: Any = None
+    ) -> None:
+        pass
+
+    def restore(
+        self,
+        scope: Union[str, Section.Root],
+        section: Union[Section.Inner, Section.User],
+        key: Any = None
+    ) -> None:
+        """
+        Restore configuration for given config path
+        """
+        self._logger.debug(f"Restoring {scope}.{section}")
+        config_path = f"{scope}.{section}.{key}" if key else f"{scope}.{section}"
+
+        if self._temp_configuration[f"{scope}.{section}"]:
+            self._temp_configuration[config_path] = self._configuration[config_path]
 
     def save(
         self,
-        scope: Union[str, Section.Root] = Section.Root,
+        scope: Union[str, Section.Root],
         section: Union[Section.Inner, Section.User] = Section.Inner,
-        data: dict = None,
-        create: bool = False
+        file_section: Union[str, None] = None,
+        temp: bool = False
     ) -> None:
         """
-        Save user settings
+        Save settings
         """
-        try:
-            file = self._configuration[scope][section]["__FILE__"]
-            folder = file.parent
-        except KeyError as e:
-            raise PieException(str(e))
+        # Check if temporary configuration exists
+        scope_config_path = f"{scope}.{section}"
 
-        if create:
-            try:
-                if not folder.exists():
-                    folder.mkdir()
-                self._configuration[scope].update({section: data})
-            except (OSError, KeyError) as e:
-                raise PieException(str(e))
+        if temp and self._temp_configuration.get(scope_config_path):
+            configuration_data = self._temp_configuration[scope_config_path]
+        else:
+            configuration_data = self._configuration[scope_config_path]
 
-        write_json(str(file), data)
-        self._configuration[scope][section] = data
+        if file_section:
+            files: list[Path] = self._configuration[f"{scope}.{section}.{file_section}"]
+        else:
+            files: list[Path] = self._configuration[f"{scope}.{section}"]["__FILES__"]
+
+        del configuration_data["__FILES__"]
+
+        files_zip = dict(zip(configuration_data.keys(), files))
+
+        for file_scope, file_path in files_zip.items():
+            write_json(str(file_path), configuration_data.get(file_scope))

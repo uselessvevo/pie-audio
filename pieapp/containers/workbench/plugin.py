@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
@@ -63,5 +63,5 @@ class Workbench(
         self._parent.workbench_layout.add_widget(self.workbench, 0, 0)
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return Workbench(*args, **kwargs)

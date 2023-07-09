@@ -98,11 +98,11 @@ class PiePlugin(
         self.init()
 
         # Prepare PiePluginAPI
-        self.prepare_api()
+        self.init_api()
 
     # Signals, shortcuts etc. methods
 
-    def prepare_api(self) -> None:
+    def init_api(self) -> None:
         """
         Method that prepare PiePluginAPI based instance
         """

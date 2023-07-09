@@ -1,7 +1,7 @@
 """
 Default managers
 """
-import typing
+from typing import Optional, Union
 import dataclasses as dt
 
 
@@ -33,7 +33,7 @@ class SysManager:
     # ActionManager
     Actions = "actions"
 
-    # ConfigurationPageManager
+    # ConfigPageManager
     ConfigPages = "configpages"
     
 
@@ -52,13 +52,12 @@ class Section:
     User = "user"
     
     # Shared access section
-    # TODO: Remove it in the future releases
     Shared = "shared"
 
 
 @dt.dataclass(frozen=True, eq=False)
 class ManagerConfig:
-    import_string: typing.Optional[str]
+    import_string: Optional[str]
     init: bool = dt.field(default=False)
     args: tuple = dt.field(default_factory=tuple)
     kwargs: dict = dt.field(default_factory=dict)

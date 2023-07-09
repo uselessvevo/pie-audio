@@ -1,5 +1,5 @@
 from piekit.managers.confpages.structs import ConfigurationPage
-from piekit.managers.confpages.manager import ConfigurationPageManager
+from piekit.managers.confpages.manager import ConfigPageManager
 
 
 class ConfigurationPageAccessor:

@@ -1,4 +1,4 @@
-import typing
+from typing import Union
 
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.containers import Container
@@ -46,5 +46,5 @@ class MenuBar(
         self._parent.set_menu_bar(self.menu_bar)
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return MenuBar(*args, **kwargs)

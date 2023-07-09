@@ -1,3 +1,5 @@
+import os
+
 from piekit.config.types import Lock
 from piekit.managers.structs import DirectoryType
 from piekit.managers.structs import ManagerConfig
@@ -13,17 +15,13 @@ MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
 
-# Configuration pages
-CONF_PAGES_CATEGORIES = [
-    {"title": "Main", "name": "main"},
-    {"title": "Plugins", "name": "plugins"},
-]
-
 DEFAULT_CONFIG_FILES = [
     "locales.json",
     "assets.json",
     "ffmpeg.json",
 ]
+
+USE_TEST_PLUGIN = os.getenv("PIE_USE_TEST_PLUGIN", True)
 
 # Managers startup configuration
 INITIAL_MANAGERS: Lock = [
@@ -53,6 +51,10 @@ MANAGERS: Lock = [
     ),
     ManagerConfig(
         import_string="piekit.managers.toolbuttons.manager.ToolButtonManager",
+        init=True
+    ),
+    ManagerConfig(
+        import_string="piekit.managers.confpages.manager.ConfigPageManager",
         init=True
     ),
     ManagerConfig(

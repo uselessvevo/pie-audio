@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtWidgets import QStatusBar, QWidget
 
@@ -34,5 +34,5 @@ class StatusBar(
     showMessage = show_message
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return StatusBar(*args, **kwargs)
