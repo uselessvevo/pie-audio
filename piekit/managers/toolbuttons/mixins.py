@@ -15,9 +15,9 @@ class ToolButtonAccessor:
 
     def add_tool_button(
         self,
-        parent: QObject,
-        section: Union[str, Section],
-        name: str,
+        parent: QObject = None,
+        section: Union[str, Section] = Section.Shared,
+        name: str = None,
         text: str = None,
         tooltip: str = None,
         icon: QIcon = None,

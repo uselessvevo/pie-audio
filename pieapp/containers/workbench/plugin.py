@@ -17,11 +17,8 @@ from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
 
 class Workbench(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
-    ToolBarAccessor,
-    ToolButtonAccessor,
+    ToolBarAccessor, ToolButtonAccessor,
+    ConfigAccessor, LocalesAccessor, AssetsAccessor,
 ):
     name = Container.Workbench
     version: str = "1.0.0"

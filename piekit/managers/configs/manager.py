@@ -16,7 +16,7 @@ from piekit.utils.logger import logger
 
 class ConfigManager(BaseManager):
     name = SysManager.Configs
-    protected_keys = ("__FOLDER__",)
+    protected_keys = ("__FILES__",)
 
     def __init__(self) -> None:
         self._logger = logger
@@ -176,13 +176,8 @@ class ConfigManager(BaseManager):
 
     def copy(
         self,
-        scope_from: Union[str, Section.Root] = Section.Root,
-        section_from: Union[Section.Inner, Section.User] = Section.Inner,
-        key_from: Any = None,
-
-        scope_into: Union[str, Section.Root] = Section.Root,
-        section_into: Union[Section.Inner, Section.User] = Section.User,
-        key_into: Any = None
+        target_from: dict,
+        target_into: dict,
     ) -> None:
         pass
 

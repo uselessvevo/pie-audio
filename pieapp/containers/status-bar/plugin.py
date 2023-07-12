@@ -13,14 +13,9 @@ from piekit.managers.locales.mixins import LocalesAccessor
 
 class StatusBar(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+    ConfigAccessor, LocalesAccessor, AssetsAccessor,
 ):
     name = Container.StatusBar
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
 
     def show_message(self, message: str) -> None:
         self.status_bar.show_message(message)

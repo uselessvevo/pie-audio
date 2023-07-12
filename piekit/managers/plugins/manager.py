@@ -1,6 +1,9 @@
+from typing import Any
+from types import ModuleType
+
 import os
 import sys
-from typing import Any
+
 from pathlib import Path
 from version_parser import Version
 
@@ -110,6 +113,11 @@ class PluginManager(BaseManager):
 
                 # Add our plugin into sys.path
                 sys.path.append(os.path.abspath(str(plugin_path)))
+                plugin_package_module = import_by_path("plugin", str(plugin_path / "__init__.py"))
+                try:
+                    self._check_versions(plugin_package_module)
+                except AttributeError as e:
+                    raise PieException(str(e))
 
                 # Importing plugin module
                 plugin_module = import_by_path("plugin", str(plugin_path / "plugin.py"))
@@ -120,33 +128,28 @@ class PluginManager(BaseManager):
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
                 if plugin_instance:
-                    try:
-                        self._check_versions(plugin_instance)
-                    except AttributeError as e:
-                        raise PieException(str(e))
-
                     self._initialize_plugin(plugin_instance)
 
-    def _check_versions(self, plugin_instance: PiePlugin) -> None:
+    def _check_versions(self, plugin_package: ModuleType) -> None:
         """
         Check application/pieapp, piekit and plugin version
         """
         pieapp_version = Version(Config.PIEAPP_VERSION)
         piekit_version = Version(Config.PIEKIT_VERSION)
 
-        if not plugin_instance.version:
-            raise AttributeError(f"Plugin {plugin_instance.name} must have `version` attribute")
+        if not plugin_package.version:
+            raise AttributeError(f"Plugin {plugin_package.name} must have `version` attribute")
 
-        required_pieapp_version = Version(plugin_instance.pieapp_version)
-        required_piekit_version = Version(plugin_instance.piekit_version)
+        required_pieapp_version = Version(plugin_package.pieapp_version)
+        required_piekit_version = Version(plugin_package.piekit_version)
 
         if pieapp_version.get_major_version() != required_pieapp_version.get_major_version():
             raise AttributeError(f"Application version ({Config.PIEAPP_VERSION}) is not compatible with plugin"
-                                 f"{plugin_instance.name} version ({plugin_instance.pieapp_version})")
+                                 f"{plugin_package.name} version ({plugin_package.pieapp_version})")
 
         if piekit_version != required_piekit_version:
             raise AttributeError(f"PieKit version ({Config.PIEKIT_VERSION}) is not compatible with plugin"
-                                 f"{plugin_instance.name} version ({plugin_instance.piekit_version})")
+                                 f"{plugin_package.name} version ({plugin_package.piekit_version})")
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
         self._logger.info(f"Preparing {plugin_instance.type.value} {plugin_instance.name}")

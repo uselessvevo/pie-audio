@@ -13,10 +13,8 @@ from piekit.managers.locales.mixins import LocalesAccessor
 
 class MenuBar(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
-    MenuAccessor,
+    AssetsAccessor, MenuAccessor,
+    ConfigAccessor, LocalesAccessor,
 ):
     name = Container.MenuBar
     version: str = "1.0.0"

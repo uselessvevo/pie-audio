@@ -22,12 +22,8 @@ from PySide6.QtWidgets import QGridLayout, QDialog, QTreeView
 
 class Settings(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
-    MenuAccessor,
-    ToolBarAccessor,
-    ToolButtonAccessor,
+    ConfigAccessor, LocalesAccessor, AssetsAccessor,
+    MenuAccessor, ToolBarAccessor, ToolButtonAccessor,
 ):
     name = Container.Settings
     version: str = "1.0.0"
@@ -58,8 +54,8 @@ class Settings(
 
         self._dialog.set_layout(self._root_grid)
 
-    def add_page(self, page: ConfigurationPage) -> None:
-        pass
+    def call(self) -> None:
+        self._dialog.show()
 
     @on_plugin_available(target=Container.MenuBar)
     def on_menu_bar_available(self) -> None:
@@ -68,7 +64,7 @@ class Settings(
             menu=MainMenu.File,
             name="settings",
             text=self.get_translation("Settings"),
-            triggered=self._dialog.show,
+            triggered=self.call,
             icon=self.get_plugin_icon(),
             before=MainMenuItem.Exit
         )

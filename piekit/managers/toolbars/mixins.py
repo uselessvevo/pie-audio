@@ -11,7 +11,11 @@ from piekit.widgets.toolbars import PieToolBar
 
 class ToolBarAccessor:
 
-    def add_toolbar(self, parent: QObject, name: str = None) -> PieToolBar:
+    def add_toolbar(
+        self,
+        parent: QObject = None,
+        name: str = None
+    ) -> PieToolBar:
         toolbar = PieToolBar(parent=parent)
         return Managers(SysManager.ToolBars).add_toolbar(name or Section.Shared, toolbar)
 

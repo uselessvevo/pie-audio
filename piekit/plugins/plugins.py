@@ -1,5 +1,5 @@
-from pathlib import Path
 from typing import Union
+from pathlib import Path
 
 from PySide6.QtCore import Signal, QObject
 
@@ -85,7 +85,7 @@ class PiePlugin(
 
         self._managers: list[BaseManager] = []
 
-    # Main methods
+    # Prepare methods
 
     def prepare(self) -> None:
         # First, we need to initialize base signals
@@ -102,6 +102,27 @@ class PiePlugin(
 
     # Signals, shortcuts etc. methods
 
+    def prepare_base_signals(self):
+        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
+        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
+        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
+        self.sig_exception_occurred.connect(self._parent.error_handler)
+
+    # Main methods
+
+    def init(self) -> None:
+        """
+        Initialize an object for the first time.
+        For example, you can call managers' register method
+        """
+
+    def call(self) -> None:
+        """
+        Call an object.
+        Notice, don't call managers' register methods.
+        """
+        raise NotImplementedError(f"Method `call` is not implemented")
+
     def init_api(self) -> None:
         """
         Method that prepare PiePluginAPI based instance
@@ -112,34 +133,6 @@ class PiePlugin(
             self.api = self.api(self)
             self.api.init()
 
-    def prepare_base_signals(self):
-        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
-        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
-        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
-        self.sig_exception_occurred.connect(self._parent.error_handler)
-
-    def prepare_shortcuts(self) -> None:
-        """ Prepare plugin shortcuts and register them in `ShortcutsManager` """
-        pass
-
-    def prepare_configuration_page(self) -> None:
-        """ Prepare configuration page widget """
-        pass
-
-    # Render methods
-
-    def init(self) -> None:
-        """ Initialize an object. For example, render it """
-        raise NotImplementedError("Method `init` must be implemented")
-
-    # Update methods
-
-    def update_style(self) -> None:
-        pass
-
-    def update_localization(self) -> None:
-        pass
-
     # Getter methods
 
     def get_description(self) -> str:
@@ -148,7 +141,7 @@ class PiePlugin(
     def get_name(self) -> str:
         return self.name or self.__class__.__name__
 
-    def get_version(self) -> tuple[int]:
+    def get_version(self) -> str:
         return self.version
 
     # Properties

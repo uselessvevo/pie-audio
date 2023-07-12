@@ -20,15 +20,10 @@ from api import ContentTableAPI
 
 class ContentTable(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+    ConfigAccessor, LocalesAccessor, AssetsAccessor,
 ):
     api = ContentTableAPI
     name = Container.ContentTable
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
 
     def set_columns(self, count: int, columns: tuple = None) -> None:
         self.table.set_column_count(count)
