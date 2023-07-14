@@ -1,5 +1,6 @@
-from typing import Union
 from __feature__ import snake_case
+
+from typing import Union
 
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QApplication
@@ -8,10 +9,24 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from piekit.plugins.types import Error
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.types import PluginTypes
+
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
+
 from piekit.widgets.messagebox import MessageBox
 from piekit.widgets.messagebox import MessageBox
+
+
+class StyleMixin:
+
+    def update_style(self) -> None:
+        pass
+
+
+class LocalizationMixin:
+
+    def update_localization(self) -> None:
+        pass
 
 
 class ContainerRegisterAccessor:
@@ -19,7 +34,7 @@ class ContainerRegisterAccessor:
     Main window accessor mixin
     """
 
-    def register_on(self, container: str, target: PiePlugin) -> PiePlugin:
+    def register_on(self, container_name: str, target: PiePlugin) -> None:
         """
         Register plugin on certain container by its name
         
@@ -32,41 +47,34 @@ class ContainerRegisterAccessor:
         """
         if not isinstance(target, PiePlugin):
             raise TypeError(f"Target {target.name} is not a `PiePlugin` based instance")
-            
-        if Managers(SysManager.Plugins).plugin_has_type(PluginTypes.Container):
-            raise KeyError(f"Container {container} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManager.Plugins).get(container)
+        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginTypes.Container):
+            raise KeyError(f"Container {container_name} doesn't exist on {self.__class__.__name__}")
+
+        container_instance = Managers(SysManager.Plugins).get(container_name)
         container_instance.register_target(target)
-
-        return container_instance
     
-    def remove_from(self, container: str, target: str) -> PiePlugin:
+    def remove_from(self, container_name: str, target: str) -> None:
         """
         Remove/unregister plugin from the container by its name
         
         Args:
             container (str): name of the container
             target (str): plugin name
-
-        Returns:
-            A container instance
         """
-        if Managers(SysManager.Plugins).plugin_has_type(PluginTypes.Container):
-            raise KeyError(f"Container {container} doesn't exist on {self.__class__.__name__}")
+        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginTypes.Container):
+            raise KeyError(f"Container {container_name} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManager.Plugins).get(container)
+        container_instance = Managers(SysManager.Plugins).get(container_name)
         container_instance.remove_target(target)
-
-        return container_instance
 
 
 class QuitMixin:
     """
     Mixin that calls the MessageBox on exit. 
-    Requires `ConfigManager` and `ConfigAccessor`
+    Requires `ConfigManager` and `ConfigAccessor` with specified `exit_dialog_section`
     """
-    show_exit_dialog_section: Union[str, Section] = Section.User
+    exit_dialog_section: Union[str, Section] = Section.User
 
     def close_event(self, event) -> None:
         if self.close_handler(True):
@@ -75,7 +83,7 @@ class QuitMixin:
             event.ignore()
 
     def close_handler(self, cancellable: bool = True) -> bool:
-        if cancellable and self.get_config("ui.show_exit_dialog", True, self.show_exit_dialog_section):
+        if cancellable and self.get_config("ui.show_exit_dialog", True, self.exit_dialog_section):
             message_box = MessageBox(self)
             if message_box.clicked_button() == message_box.no_button:
                 return False
