@@ -73,7 +73,6 @@ class Converter(
     @on_plugin_available(target=Container.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
-            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
             name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
@@ -83,7 +82,6 @@ class Converter(
         )
 
         self.add_tool_button(
-            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
             name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
@@ -92,7 +90,6 @@ class Converter(
         ).set_enabled(False)
 
         self.add_tool_button(
-            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
             name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),

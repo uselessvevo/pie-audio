@@ -33,6 +33,7 @@ class ToolButtonAccessor:
 
         if text:
             tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            # tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
             tool_button.set_text(text)
 
         if triggered:

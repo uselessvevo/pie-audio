@@ -26,10 +26,9 @@ class Workbench(
     piekit_version: str = "1.0.0"
 
     def init(self) -> None:
-        self.workbench = self.add_toolbar(self._parent, self.name)
+        self._workbench = self.add_toolbar(self._parent, self.name)
 
         self.add_tool_button(
-            parent=self.workbench,
             section=self.name,
             name=WorkbenchItem.Exit,
             text=self.get_translation("Exit"),
@@ -57,7 +56,7 @@ class Workbench(
             item=self.get_tool_button(self.name, WorkbenchItem.Exit)
         )
 
-        self._parent.workbench_layout.add_widget(self.workbench, 0, 0)
+        self._parent.workbench_layout.add_widget(self._workbench, 0, 0)
 
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:

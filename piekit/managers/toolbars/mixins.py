@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QToolBar, QWidget
+from PySide6.QtWidgets import QWidget
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
@@ -16,7 +16,7 @@ class ToolBarAccessor:
         parent: QObject = None,
         name: str = None
     ) -> PieToolBar:
-        toolbar = PieToolBar(parent=parent)
+        toolbar = PieToolBar(parent=parent, name=name)
         return Managers(SysManager.ToolBars).add_toolbar(name or Section.Shared, toolbar)
 
     def add_toolbar_item(
@@ -26,7 +26,7 @@ class ToolBarAccessor:
         item: Union[QWidget, QAction] = None,
         after: str = None,
         before: str = None
-    ) -> QWidget:
+    ) -> Union[QAction, QWidget]:
         manager = Managers(SysManager.ToolBars)
         toolbar: PieToolBar = manager.get_toolbar(section)
         toolbar.add_toolbar_item(name, item, after, before)

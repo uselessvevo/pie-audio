@@ -1,9 +1,10 @@
+from PySide6.QtGui import Qt
 from __feature__ import snake_case
 import os
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QGridLayout, QSizePolicy
 from PySide6.QtWidgets import QMainWindow
 
 from piekit.config import Config
@@ -64,20 +65,23 @@ class PieAudioApp(
     def prepare_main_window(self) -> None:
         self.set_minimum_size(*Config.MAIN_WINDOW_MIN_WINDOW_SIZE)
         self.resize(*self.get_config("ui.winsize", Config.MAIN_WINDOW_MIN_WINDOW_SIZE, Section.User))
-        self.set_window_title("Pie Audio • Audio Converter ({})".format(Config.PIEAPP_VERSION))
+        self.set_window_title(f'{self.get_translation("Pie Audio • Audio Converter")} ({Config.PIEAPP_VERSION})')
         self.set_window_icon(self.get_asset_icon("cloud.png"))
 
     def prepare_main_layout(self) -> None:
         self.main_layout = QGridLayout()
+        self.main_layout.set_spacing(0)
+        self.main_layout.set_contents_margins(0, 0, 0, 0)
+        self.main_layout.set_alignment(Qt.AlignmentFlag.AlignHCenter)
         self.set_layout(self.main_layout)
 
     def prepare_workbench_layout(self) -> None:
         self.workbench_layout = QGridLayout()
-        self.main_layout.add_layout(self.workbench_layout, 0, 0)
+        self.main_layout.add_layout(self.workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
 
     def prepare_table_layout(self) -> None:
         self.table_layout = QGridLayout()
-        self.main_layout.add_layout(self.table_layout, 1, 0)
+        self.main_layout.add_layout(self.table_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
 
     def prepare_central_widget(self):
         widget = QtWidgets.QLabel()
