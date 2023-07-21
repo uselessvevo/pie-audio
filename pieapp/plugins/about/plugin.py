@@ -26,9 +26,6 @@ class About(
     AssetsAccessor,
 ):
     name = Plugin.About
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
     requires = [Container.MenuBar]
 
     def call(self) -> None:
@@ -53,7 +50,7 @@ class About(
 
         github_link_label = QLabel()
         github_link_label.set_open_external_links(True)
-        github_link_label.set_text("<a href='https://github.com/uselessvevo/pie-audio/'>Project URL</a>")
+        github_link_label.set_text(f"<a href='{Config.PIEAPP_PROJECT_URL}'>{self.get_translation('Project URL')}</a>")
 
         grid_layout = QGridLayout()
         grid_layout.add_widget(icon_label, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)

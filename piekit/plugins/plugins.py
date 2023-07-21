@@ -5,8 +5,7 @@ from PySide6.QtCore import Signal, QObject
 
 from piekit.config import Config
 from piekit.utils.logger import logger
-from piekit.managers.base import BaseManager
-from piekit.plugins.types import PluginTypes, Error
+from piekit.plugins.types import PluginType, Error
 from piekit.plugins.observer import PluginsObserverMixin
 
 
@@ -17,7 +16,7 @@ class PiePlugin(
     # Main attributes #
 
     # Plugin type
-    type: PluginTypes = PluginTypes.Plugin
+    type: PluginType = PluginType.Plugin
 
     # Icon name
     icon: Union[None, str] = Config.PLUGIN_ICON_NAME
@@ -30,11 +29,6 @@ class PiePlugin(
 
     # Accessors section
     section: str = None
-
-    # PiePlugin version
-    version: str = None
-    pieapp_version: str = None
-    piekit_version: str = None
 
     # List of required built-in plugins
     requires: list[str] = []
@@ -61,11 +55,7 @@ class PiePlugin(
     # Signal when exception occurred
     sig_exception_occurred = Signal(Error)
 
-    def __init__(
-        self,
-        parent: "QMainWindow" = None,
-        path: Path = None,
-    ) -> None:
+    def __init__(self, parent: "QMainWindow" = None, path: Path = None) -> None:
         # For some reason, I can't use `super().__init__()` method with `PySide`
 
         # Initialize `QObject` instance
@@ -74,16 +64,14 @@ class PiePlugin(
         # Initialize `PluginsObserverMixin` instance
         PluginsObserverMixin.__init__(self)
 
-        # Just a logger
-        self._logger = logger
-
         # Parent object/window
         self._parent = parent
 
         # PiePlugin path
         self._path: Path = path
 
-        self._managers: list[BaseManager] = []
+        # Just a logger
+        self._logger = logger
 
     # Prepare methods
 
@@ -133,23 +121,22 @@ class PiePlugin(
             self.api = self.api(self)
             self.api.init()
 
-    # Getter methods
+    # Properties
 
-    def get_description(self) -> str:
+    @property
+    def path(self) -> Path:
+        return self._path
+
+    def description(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    def get_name(self) -> str:
+    @property
+    def name(self) -> str:
         return self.name or self.__class__.__name__
-
-    def get_version(self) -> str:
-        return self.version
-
-    # Properties
 
     @property
     def logger(self):
         return self._logger
 
-    @property
-    def path(self) -> Path:
-        return self._path
+    def __repr__(self) -> str:
+        return f"({self.__class__.__name__}) <id: {id(self)}, name: {self.name}>"

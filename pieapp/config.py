@@ -9,6 +9,7 @@ from piekit.managers.structs import ManagerConfig
 PIEAPP_NAME: Lock = "pie-audio"
 PIEAPP_VERSION: Lock = "1.0.0"
 PIEAPP_PROCESS_NAME_ID = "com.crabdevs.pieaudio"
+PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
 MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
 
