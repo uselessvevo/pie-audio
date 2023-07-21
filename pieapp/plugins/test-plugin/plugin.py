@@ -53,7 +53,6 @@ class TestPlugin(
         test_user_config_button.clicked.connect(self.test_user_config)
 
         call_dialog_button = self.add_tool_button(
-            parent=self._dialog,
             section=f"test-plugin-toolbutton",
             name="call-dialog",
             text="Call inner dialog",

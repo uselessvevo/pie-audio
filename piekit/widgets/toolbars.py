@@ -6,7 +6,7 @@ from typing import Union, Any
 
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSizePolicy
 
 from piekit.config.exceptions import PieException
 
@@ -24,14 +24,17 @@ class PieToolBar(QWidget):
 
         self._keys: list[Any] = list(self._items.keys())
 
-        self.set_contents_margins(0, 0, 0, 0)
         self.set_fixed_height(50)
-        self.set_size_policy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.set_contents_margins(0, 0, 0, 0)
+        self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
         self._layout = QHBoxLayout()
         self._layout.set_contents_margins(0, 0, 0, 0)
         self._layout.set_alignment(Qt.AlignmentFlag.AlignLeft)
         self.set_layout(self._layout)
+
+        self.set_object_name(name)
+        self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
 
     def add_toolbar_item(
         self,
@@ -41,7 +44,7 @@ class PieToolBar(QWidget):
         before: str = None
     ) -> QObject:
         if name in self._items:
-            raise PieException(f"ToolBar {name} already registered")
+            raise PieException(f"PieToolBar {name} already registered")
 
         if after:
             index = self._keys.index(after) + 1
