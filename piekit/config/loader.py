@@ -42,7 +42,7 @@ class ConfigLoader:
     def load_module(self, config_module: ModuleType) -> None:
         """
         Process configuration module
-
+ 
         Args:
             config_module (ModuleType): configuration module
         """
