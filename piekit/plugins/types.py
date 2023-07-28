@@ -2,7 +2,7 @@ from enum import Enum
 import dataclasses as dt
 
 
-class PluginTypes(Enum):
+class PluginType(Enum):
     # Plugin
     Plugin: str = "plugin"
 

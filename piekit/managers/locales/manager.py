@@ -13,7 +13,10 @@ class LocaleManager(BaseManager):
 
     def __init__(self) -> None:
         self._locale: str = Managers(SysManager.Configs).get(
-            Section.Root, Section.User, "locales.locale", Config.DEFAULT_LOCALE
+            scope=Section.Root,
+            section=Section.User,
+            key="locale.locale",
+            default=Config.DEFAULT_LOCALE
         )
         self._roots: set[Path] = set()
         self._translations: dict[str, dict[str, str]] = {}

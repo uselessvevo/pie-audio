@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 
 from piekit.config import Config
 from piekit.managers.registry import Managers
+from piekit.utils.files import write_json
 from piekit.widgets.errorwindow import ErrorWindow
 
 
@@ -37,13 +38,11 @@ def restart_application() -> None:
 
 
 def check_crabs() -> bool:
-    if not Config.USER_ROOT.exists():
-        return False
-
-    user_folder = Config.USER_ROOT / Config.CONFIGS_FOLDER
-    req_files = set((Config.SYSTEM_ROOT / i).name for i in Config.DEFAULT_CONFIG_FILES)
-    ex_files = set(i.name for i in user_folder.rglob("*.json"))
-    return req_files == ex_files
+    return (
+        Config.USER_ROOT.exists()
+        or (Config.USER_ROOT / Config.CONFIGS_FOLDER).exists()
+        or (Config.USER_ROOT / Config.CONFIGS_FOLDER / Config.CONFIG_FILE_NAME).exists()
+    )
 
 
 def restore_crabs() -> None:
@@ -51,6 +50,11 @@ def restore_crabs() -> None:
         Config.USER_ROOT.mkdir()
         (Config.USER_ROOT / Config.USER_CONFIG_FOLDER).mkdir()
         (Config.USER_ROOT / Config.USER_PLUGINS_FOLDER).mkdir()
+        write_json(
+            file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / Config.CONFIG_FILE_NAME),
+            data={"crab_status": "what a crab doin?"},
+            create=True
+        )
 
 
 def except_hook(_, exc_value, exc_traceback):

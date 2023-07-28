@@ -30,9 +30,6 @@ class Converter(
     ToolButtonAccessor
 ):
     name = Plugin.Converter
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
     requires = [Container.Workbench, Container.MenuBar]
 
     def init(self) -> None:

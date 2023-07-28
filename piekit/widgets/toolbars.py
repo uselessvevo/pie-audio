@@ -6,7 +6,7 @@ from typing import Union, Any
 
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSizePolicy
+from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
 
 from piekit.config.exceptions import PieException
 
@@ -29,7 +29,7 @@ class PieToolBar(QWidget):
         self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
         self._layout = QHBoxLayout()
-        self._layout.set_contents_margins(0, 0, 0, 0)
+        self._layout.set_contents_margins(0, 0, 0, 1)
         self._layout.set_alignment(Qt.AlignmentFlag.AlignLeft)
         self.set_layout(self._layout)
 

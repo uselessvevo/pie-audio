@@ -1,3 +1,4 @@
+import uuid
 from typing import Union
 
 from PySide6.QtGui import Qt
@@ -26,9 +27,6 @@ class TestPlugin(
 ):
     name = Plugin.TestPlugin
     section = Plugin.TestPlugin
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
     requires = [Container.MenuBar]
 
     def init(self) -> None:
@@ -52,6 +50,12 @@ class TestPlugin(
         test_user_config_button.set_tool_tip("Get, set and save user config")
         test_user_config_button.clicked.connect(self.test_user_config)
 
+        # NOTE: You can ignore `add_toolbar`, `add_tool_button` and `add_toolbar_item`
+        #       And register local toolbar and tool button
+        self._toolbar = self.add_toolbar(
+            parent=self._dialog,
+            name=f"test-plugin-toolbar"
+        )
         call_dialog_button = self.add_tool_button(
             section=f"test-plugin-toolbutton",
             name="call-dialog",
@@ -59,10 +63,6 @@ class TestPlugin(
             icon=self.get_asset_icon("go.png", section=Section.Shared),
             tooltip="Call inner dialog",
             triggered=self.test_show_inner_dialog
-        )
-        self._toolbar = self.add_toolbar(
-            parent=self._dialog,
-            name=f"test-plugin-toolbar"
         )
         self.add_toolbar_item(
             section=f"test-plugin-toolbar",
@@ -105,6 +105,11 @@ class TestPlugin(
 
     # Test methods
 
+    def test_set_config_fields(self) -> None:
+        self._logger.debug("Trying to change `Config.APP_ROOT/IMMUTABLE_FIELD` fields")
+        Config.APP_ROOT = 123
+        Config.IMMUTABLE_FIELD = "New immutable value"
+
     def test_show_inner_dialog(self) -> None:
         inner_dialog = QDialog(self._dialog)
         inner_dialog.set_window_title("Inner dialog")
@@ -117,35 +122,38 @@ class TestPlugin(
         self.logger.debug(self.get_translation("Test String"))
 
     def test_inner_config(self) -> None:
-        self.logger.debug(self.get_config("config.key1"))
+        self.logger.debug(self.get_config("key"))
         self.logger.debug("Setting new value")
-        self.set_config("config.key1", "New String Value")
-        self.logger.debug(self.get_config("config.key1"))
+        self.set_config("key", "New String Value", temp=True)
+        self.logger.debug(self.get_config("key"))
+        self.logger.debug(self.get_config("key", temp=True))
 
         self.logger.debug("Restoring configuration")
         self.restore_config()
 
         self.logger.debug("Retrieving value")
-        self.logger.debug(self.get_config("config.key1"))
+        self.logger.debug(self.get_config("key", temp=True))
 
     def test_user_config(self) -> None:
-        self.logger.debug(self.get_config("config1.key1", temp=True))
+        self.logger.debug(self.get_config("key"))
         self.logger.debug("Setting new value")
-        self.set_config("config1.key1", "New String Value", temp=True)
-        self.logger.debug(self.get_config("config1.key1", temp=True))
+        self.set_config("key", str(uuid.uuid4()), temp=True)
+        self.logger.debug(self.get_config("key", temp=True))
 
         self.logger.debug("Restoring configuration")
         self.restore_config()
 
         self.logger.debug("Retrieving value")
-        self.logger.debug(self.get_config("config1.key1", temp=True))
+        self.logger.debug(self.get_config("key", temp=True))
 
         self.logger.debug("Saving data")
         self.save_config(temp=True)
 
+        self.logger.debug("Retrieving saved value")
+        self.logger.debug(self.get_config("key"))
+        self.logger.debug(self.get_config("key", temp=True))
+
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:
     if Config.USE_TEST_PLUGIN:
-        Config.APP_ROOT = 123
-        Config.IMMUTABLE_FIELD = "New immutable value"
         return TestPlugin(*args, **kwargs)

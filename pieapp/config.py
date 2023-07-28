@@ -6,15 +6,18 @@ from piekit.managers.structs import ManagerConfig
 
 
 # Application main info
-PIEAPP_NAME: Lock = "pie-audio"
-PIEAPP_VERSION: Lock = "1.0.0"
-PIEAPP_PROCESS_NAME_ID = "com.crabdevs.pieaudio"
+PIEAPP_APPLICATION_NAME: Lock = "pie-audio"
+PIEAPP_APPLICATION_VERSION: Lock = "1.0.0"
+PIEAPP_ORGANIZATION_NAME: Lock = "Crab Devs."
+PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
+
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
 MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
 
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
+USE_EXCEPTION_HOOK: Lock = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
 
 DEFAULT_CONFIG_FILES = [
     "locales.json",
@@ -22,7 +25,7 @@ DEFAULT_CONFIG_FILES = [
     "ffmpeg.json",
 ]
 
-USE_TEST_PLUGIN = os.getenv("PIE_USE_TEST_PLUGIN", True)
+USE_TEST_PLUGIN = os.getenv("PIE_USE_TEST_PLUGIN", False)
 
 # Managers startup configuration
 INITIAL_MANAGERS: Lock = [

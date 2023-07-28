@@ -12,7 +12,7 @@ from piekit.utils.modules import import_by_path
 from piekit.utils.core import get_main_window
 
 from piekit.config import Config, PieException
-from piekit.plugins.types import PluginTypes
+from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import SysManager
@@ -41,7 +41,7 @@ class PluginManager(BaseManager):
         self._plugin_availability: dict[str, bool] = {}
 
         # Dictionary with plugin name to its type
-        self._plugins_types_registry: dict[PluginTypes, set[str]] = {k.value: set() for k in PluginTypes}
+        self._plugins_types_registry: dict[PluginType, set[str]] = {k.value: set() for k in PluginType}
 
     # BaseManager methods
 
@@ -134,18 +134,18 @@ class PluginManager(BaseManager):
         """
         Check application/pieapp, piekit and plugin version
         """
-        pieapp_version = Version(Config.PIEAPP_VERSION)
+        PIEAPP_APPLICATION_VERSION = Version(Config.PIEAPP_APPLICATION_VERSION)
         piekit_version = Version(Config.PIEKIT_VERSION)
 
         if not plugin_package.version:
             raise AttributeError(f"Plugin {plugin_package.name} must have `version` attribute")
 
-        required_pieapp_version = Version(plugin_package.pieapp_version)
+        required_PIEAPP_APPLICATION_VERSION = Version(plugin_package.PIEAPP_APPLICATION_VERSION)
         required_piekit_version = Version(plugin_package.piekit_version)
 
-        if pieapp_version.get_major_version() != required_pieapp_version.get_major_version():
-            raise AttributeError(f"Application version ({Config.PIEAPP_VERSION}) is not compatible with plugin"
-                                 f"{plugin_package.name} version ({plugin_package.pieapp_version})")
+        if PIEAPP_APPLICATION_VERSION.get_major_version() != required_PIEAPP_APPLICATION_VERSION.get_major_version():
+            raise AttributeError(f"Application version ({Config.PIEAPP_APPLICATION_VERSION}) is not compatible with plugin"
+                                 f"{plugin_package.name} version ({plugin_package.PIEAPP_APPLICATION_VERSION})")
 
         if piekit_version != required_piekit_version:
             raise AttributeError(f"PieKit version ({Config.PIEKIT_VERSION}) is not compatible with plugin"
@@ -316,7 +316,7 @@ class PluginManager(BaseManager):
     def is_plugin_available(self, name: str) -> bool:
         return self._plugin_availability.get(name, False)
 
-    def plugin_has_type(self, plugin_type: PluginTypes, plugin_name: str) -> bool:
+    def plugin_has_type(self, plugin_type: PluginType, plugin_name: str) -> bool:
         if plugin_type not in self._plugins_types_registry:
             raise KeyError(f"Plugin type {plugin_type} not found")
 

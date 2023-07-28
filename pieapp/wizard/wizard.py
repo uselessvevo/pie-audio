@@ -1,16 +1,17 @@
 from __feature__ import snake_case
+
+import os
 from pathlib import Path
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Slot, QDir
-from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtGui import QAction
+from PySide6.QtCore import QDir, QSettings
+from PySide6.QtWidgets import QFileDialog, QStyle
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 from piekit.managers.structs import SysManager, Section
-from piekit.utils.files import write_json
 from piekit.utils.core import restart_application
 
 from piekit.managers.registry import Managers
@@ -29,7 +30,12 @@ class LocaleWizardPage(
 
         self._parent = parent
         self._locales = Config.LOCALES
-        self._cur_locale = self.get_shared_config("locales.locale", Config.DEFAULT_LOCALE, Section.User)
+        self._cur_locale = self.get_config(
+            key="locale.locale",
+            default=Config.DEFAULT_LOCALE,
+            scope=Section.Root,
+            section=Section.User
+        )
         self._locales_reversed = {v: k for (k, v) in self._locales.items()}
 
         self.combo_box = QtWidgets.QComboBox()
@@ -48,9 +54,15 @@ class LocaleWizardPage(
 
     def get_result(self):
         new_locale = self._locales_reversed.get(self.combo_box.current_text())
-        write_json(
-            file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "locales.json"),
+        self.set_config(
+            key="locale",
             data={"locale": new_locale},
+            scope=Section.Root,
+            section=Section.User
+        )
+        self.save_config(
+            scope=Section.Root,
+            section=Section.User,
             create=True
         )
 
@@ -75,7 +87,12 @@ class ThemeWizardPage(
         self.combo_box.add_items(Managers(SysManager.Assets).get_themes())
         self.combo_box.currentIndexChanged.connect(self.get_result)
 
-        self._cur_theme = self.get_shared_config("assets.theme", Managers(SysManager.Assets).get_theme(), Section.User)
+        self._cur_theme = self.get_config(
+            key="assets.theme",
+            default=Managers(SysManager.Assets).get_theme(),
+            scope=Section.Root,
+            section=Section.User
+        )
 
         theme_label = QtWidgets.QLabel(self.get_translation("Select theme"))
         theme_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
@@ -87,10 +104,15 @@ class ThemeWizardPage(
 
     def get_result(self):
         new_theme = self.combo_box.current_text()
-        write_json(
-            file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "assets.json"),
-            data={"theme": new_theme},
-            create=True
+        self.set_config(
+            scope=Section.Root,
+            section=Section.User,
+            key="assets.theme",
+            data=new_theme
+        )
+        self.save_config(
+            scope=Section.Root,
+            section=Section.User
         )
 
         if self._cur_theme != new_theme:
@@ -102,6 +124,7 @@ class ThemeWizardPage(
 class FfmpegWizardPage(
     LocalesAccessor,
     AssetsAccessor,
+    ConfigAccessor,
     QtWidgets.QWizardPage
 ):
     section = Section.Shared
@@ -119,7 +142,7 @@ class FfmpegWizardPage(
         self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
         self.line_edit.add_action(self.line_edit_action, QtWidgets.QLineEdit.ActionPosition.TrailingPosition)
 
-        page_title = QtWidgets.QLabel("Setup ffmpeg")
+        page_title = QtWidgets.QLabel(self.get_translation("Setup ffmpeg"))
         page_title.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         ffmpeg_hbox = QtWidgets.QHBoxLayout()
@@ -142,10 +165,15 @@ class FfmpegWizardPage(
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
-            write_json(
-                file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / "ffmpeg.json"),
-                data={"root": directory_path},
-                create=True
+            self.set_config(
+                scope=Section.Root,
+                section=Section.User,
+                key="ffmpeg.path",
+                data=directory_path
+            )
+            self.save_config(
+                scope=Section.Root,
+                section=Section.User
             )
             self.ffmpeg_path = directory_path
             self.line_edit.set_text(directory_path)
@@ -172,11 +200,19 @@ class FinishWizardPage(
         self.set_layout(layout)
 
 
-class SetupWizard(QtWidgets.QWizard):
+class SetupWizard(QtWidgets.QWizard, LocalesAccessor):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.set_window_title("Setup wizard")
+        self.set_window_title(self.get_translation("Setup Wizard", Section.Shared))
+        self.set_window_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DialogHelpButton))
+
+        if os.name == "nt":
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                Config.PIEAPP_ORGANIZATION_DOMAIN
+            )
+
         self.resize(640, 380)
         self.set_options(
             QtWidgets.QWizard.WizardOption.NoBackButtonOnLastPage
@@ -201,3 +237,5 @@ class SetupWizard(QtWidgets.QWizard):
                 page.get_result()
 
         restart_application()
+        settings = QSettings()
+        settings.set_value("fully_setup", True)

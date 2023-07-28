@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from piekit.plugins.types import Error
 from piekit.plugins.plugins import PiePlugin
-from piekit.plugins.types import PluginTypes
+from piekit.plugins.types import PluginType
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
@@ -48,7 +48,7 @@ class ContainerRegisterAccessor:
         if not isinstance(target, PiePlugin):
             raise TypeError(f"Target {target.name} is not a `PiePlugin` based instance")
 
-        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginTypes.Container):
+        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginType.Container):
             raise KeyError(f"Container {container_name} doesn't exist on {self.__class__.__name__}")
 
         container_instance = Managers(SysManager.Plugins).get(container_name)
@@ -62,7 +62,7 @@ class ContainerRegisterAccessor:
             container (str): name of the container
             target (str): plugin name
         """
-        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginTypes.Container):
+        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginType.Container):
             raise KeyError(f"Container {container_name} doesn't exist on {self.__class__.__name__}")
 
         container_instance = Managers(SysManager.Plugins).get(container_name)

@@ -44,9 +44,7 @@ class About(
         icon_label.set_pixmap(pixmap)
 
         description_label = QLabel()
-        description_label.set_text("Pie Audio • Audio Converter ({})".format(
-            Config.PIEAPP_VERSION
-        ))
+        description_label.set_text(f'{self.get_translation("Pie Audio • Audio Converter")} ({Config.PIEAPP_APPLICATION_VERSION})')
 
         github_link_label = QLabel()
         github_link_label.set_open_external_links(True)

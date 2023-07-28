@@ -18,7 +18,7 @@ class AssetsAccessor:
         default: Any = None,
         section: Union[str, Section] = Section.Shared
     ) -> Any:
-        return Managers(SysManager.Assets).get(self.section or section, key, default)
+        return Managers(SysManager.Assets).get(section or self.section, key, default)
 
     def get_asset_icon(
         self,
@@ -26,7 +26,7 @@ class AssetsAccessor:
         default: Any = None,
         section: Union[str, Section] = Section.Shared
     ):
-        return QIcon(Managers(SysManager.Assets).get(self.section or section, key, default))
+        return QIcon(Managers(SysManager.Assets).get(section or self.section, key, default))
 
     def get_plugin_icon(self) -> "QIcon":
         return QIcon(Managers(SysManager.Assets).get(self.name, Config.PLUGIN_ICON_NAME))

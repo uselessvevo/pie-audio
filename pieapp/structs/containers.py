@@ -9,3 +9,4 @@ class Container:
     Workbench = "workbench"
     StatusBar = "status-bar"
     ContentTable = "content-table"
+    Converter = "converter"

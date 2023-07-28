@@ -1,4 +1,44 @@
+/*Tips label*/
+
+#spacer {
+   background-color: transparent;
+}
+
+#TipsLabel {
+   font-size: 12px;
+   font-family: Arial;
+}
+
 #workbench {
+    background-color: #4a4a4a;
+}
+
+#CurrentCanvasWidget {
+    font-size: 30px;
+}
+
+#SettingsDialog {
+    background-color: #303030;
+}
+
+#SettingsLineEdit {
+    font-size: 10pt;
+}
+
+#SettingsComboBox {
+    font-size: 10pt;
+}
+
+
+#SettingsTreeWidget {
+    font-size: 12pt;
+    border-radius: 0px;
+    border-color: none;
+    background-color: #4a4a4a;
+}
+
+#SettingsTreeWidget::item {
+    font-size: 8pt;
     background-color: #4a4a4a;
 }
 
@@ -36,7 +76,7 @@ QToolTip {
 }
 
 QMenuBar {
-   background-color: #494949;
+   background-color: #4a4a4a;
    color: #cccccc;
    min-height:20px;
    min-width:80px;
@@ -292,6 +332,11 @@ QPushButton::pressed {
    background-color: #2d73ff; /*216bff*/
 }
 
+QPushButton::disabled {
+   color: #cccccc;
+   background-color: #383838;
+}
+
 QRadioButton::indicator {
    width:18px;
    height:18px;
@@ -539,27 +584,8 @@ QSizeGrip {
 
 /* QToolBar */
 
-#spacer {
-   background-color: transparent;
-}
-
 /* QToolButton */
 QToolButton::menu-indicator{ image: none; }
 QToolButton { background-color: transparent; }
 QToolButton:hover { background-color: #2d73ff; }
 QToolButton:pressed { background-color: #2d73ff; }
-
-/*Tips label*/
-
-#TipsLabel {
-   font-size: 12px;
-   font-family: Arial;
-}
-
-#SettingsDialog {
-    background-color: #303030;
-}
-
-#Workbench {
-    background-color: red;
-}

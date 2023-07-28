@@ -21,9 +21,6 @@ class Workbench(
     ConfigAccessor, LocalesAccessor, AssetsAccessor,
 ):
     name = Container.Workbench
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
 
     def init(self) -> None:
         self._workbench = self.add_toolbar(self._parent, self.name)
