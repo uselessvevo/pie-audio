@@ -16,7 +16,7 @@ from piekit.utils.logger import logger
 
 class ConfigManager(BaseManager):
     name = SysManager.Configs
-    protected_keys = ("__FILES__",)
+    protected_keys = ("__FOLDER__",)
 
     def __init__(self) -> None:
         self._logger = logger
