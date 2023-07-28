@@ -1,12 +1,11 @@
-from pathlib import Path
 from typing import Union
+from pathlib import Path
 
 from PySide6.QtCore import Signal, QObject
 
 from piekit.config import Config
 from piekit.utils.logger import logger
-from piekit.managers.base import BaseManager
-from piekit.plugins.types import PluginTypes, Error
+from piekit.plugins.types import PluginType, Error
 from piekit.plugins.observer import PluginsObserverMixin
 
 
@@ -17,7 +16,7 @@ class PiePlugin(
     # Main attributes #
 
     # Plugin type
-    type: PluginTypes = PluginTypes.Plugin
+    type: PluginType = PluginType.Plugin
 
     # Icon name
     icon: Union[None, str] = Config.PLUGIN_ICON_NAME
@@ -30,11 +29,6 @@ class PiePlugin(
 
     # Accessors section
     section: str = None
-
-    # PiePlugin version
-    version: str = None
-    pieapp_version: str = None
-    piekit_version: str = None
 
     # List of required built-in plugins
     requires: list[str] = []
@@ -61,11 +55,7 @@ class PiePlugin(
     # Signal when exception occurred
     sig_exception_occurred = Signal(Error)
 
-    def __init__(
-        self,
-        parent: "QMainWindow" = None,
-        path: Path = None,
-    ) -> None:
+    def __init__(self, parent: "QMainWindow" = None, path: Path = None) -> None:
         # For some reason, I can't use `super().__init__()` method with `PySide`
 
         # Initialize `QObject` instance
@@ -74,18 +64,16 @@ class PiePlugin(
         # Initialize `PluginsObserverMixin` instance
         PluginsObserverMixin.__init__(self)
 
-        # Just a logger
-        self._logger = logger
-
         # Parent object/window
         self._parent = parent
 
         # PiePlugin path
         self._path: Path = path
 
-        self._managers: list[BaseManager] = []
+        # Just a logger
+        self._logger = logger
 
-    # Main methods
+    # Prepare methods
 
     def prepare(self) -> None:
         # First, we need to initialize base signals
@@ -98,11 +86,32 @@ class PiePlugin(
         self.init()
 
         # Prepare PiePluginAPI
-        self.prepare_api()
+        self.init_api()
 
     # Signals, shortcuts etc. methods
 
-    def prepare_api(self) -> None:
+    def prepare_base_signals(self):
+        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
+        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
+        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
+        self.sig_exception_occurred.connect(self._parent.error_handler)
+
+    # Main methods
+
+    def init(self) -> None:
+        """
+        Initialize an object for the first time.
+        For example, you can call managers' register method
+        """
+
+    def call(self) -> None:
+        """
+        Call an object.
+        Notice, don't call managers' register methods.
+        """
+        raise NotImplementedError(f"Method `call` is not implemented")
+
+    def init_api(self) -> None:
         """
         Method that prepare PiePluginAPI based instance
         """
@@ -112,51 +121,22 @@ class PiePlugin(
             self.api = self.api(self)
             self.api.init()
 
-    def prepare_base_signals(self):
-        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
-        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
-        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
-        self.sig_exception_occurred.connect(self._parent.error_handler)
+    # Properties
 
-    def prepare_shortcuts(self) -> None:
-        """ Prepare plugin shortcuts and register them in `ShortcutsManager` """
-        pass
+    @property
+    def path(self) -> Path:
+        return self._path
 
-    def prepare_configuration_page(self) -> None:
-        """ Prepare configuration page widget """
-        pass
-
-    # Render methods
-
-    def init(self) -> None:
-        """ Initialize an object. For example, render it """
-        raise NotImplementedError("Method `init` must be implemented")
-
-    # Update methods
-
-    def update_style(self) -> None:
-        pass
-
-    def update_localization(self) -> None:
-        pass
-
-    # Getter methods
-
-    def get_description(self) -> str:
+    def description(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    def get_name(self) -> str:
+    @property
+    def name(self) -> str:
         return self.name or self.__class__.__name__
-
-    def get_version(self) -> tuple[int]:
-        return self.version
-
-    # Properties
 
     @property
     def logger(self):
         return self._logger
 
-    @property
-    def path(self) -> Path:
-        return self._path
+    def __repr__(self) -> str:
+        return f"({self.__class__.__name__}) <id: {id(self)}, name: {self.name}>"

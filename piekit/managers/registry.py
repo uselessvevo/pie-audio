@@ -28,11 +28,12 @@ class ManagersRegistry:
         manager_instance = manager_class()
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
+        self._managers_instances[manager_instance.name] = manager_instance
+        setattr(self, manager_instance.name, manager_instance)
+
         if init is True:
             manager_instance.init(*args, **kwargs)
 
-        self._managers_instances[manager_instance.name] = manager_instance
-        setattr(self, manager_instance.name, manager_instance)
         setattr(manager_instance, "ready", init)
 
     def from_config(self, config: ManagerConfig) -> None:
@@ -42,11 +43,12 @@ class ManagersRegistry:
         manager_instance = import_by_string(config.import_string)()
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
+        self._managers_instances[manager_instance.name] = manager_instance
+        setattr(self, manager_instance.name, manager_instance)
+
         if config.init is True:
             manager_instance.init(*config.args, **config.kwargs)
 
-        self._managers_instances[manager_instance.name] = manager_instance
-        setattr(self, manager_instance.name, manager_instance)
         setattr(manager_instance, "ready", config.init)
 
     def from_json(self, file: Union[str, Path]) -> None:

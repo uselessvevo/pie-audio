@@ -1,4 +1,5 @@
 import PySide6
+from PySide6.QtCore import QSettings, QCoreApplication
 from __feature__ import snake_case
 
 import os
@@ -21,19 +22,24 @@ def start_application(*args, **kwargs) -> None:
     """
     Main start-up entrypoint
     """
-    # Swapping the exception hook
-    sys.excepthook = except_hook
-
     # Adding additional magic-annotations
     Config.add_handlers(Lock, Max, Min)
     
-    # Loading configuration modules
+    # Load configuration modules
     Config.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.config"))
     Config.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.config"))
+
+    # Swapping the exception hook
+    if bool(int(Config.USE_EXCEPTION_HOOK)):
+        sys.excepthook = except_hook
 
     # Initializing the `QApplication` instance
     splash = None
     app = get_application(sys.argv)
+    app.set_application_name(Config.PIEAPP_APPLICATION_NAME)
+    app.set_application_version(Config.PIEAPP_APPLICATION_VERSION)
+    app.set_organization_name(Config.PIEAPP_ORGANIZATION_NAME)
+    app.set_organization_domain(Config.PIEAPP_ORGANIZATION_DOMAIN)
 
     # Preparing splash screen
     splash_image = Config.APP_ROOT / Config.ASSETS_FOLDER / "splash.svg"
@@ -44,11 +50,18 @@ def start_application(*args, **kwargs) -> None:
 
     app.process_events()
 
+    settings = QSettings()
+    first_run = settings.value("first_run", type=bool)
+    fully_setup = settings.value("fully_setup", type=bool)
+
     # Preparing or restoring our application's user folder
     if not check_crabs():
-        # To prepare/restore user's folder we need to use 
+        # To prepare/restore user's folder we need to use
         # only the core managers (Config.INITIAL_MANAGERS)
         restore_crabs()
+        settings.set_value("first_run", False)
+
+    if first_run or not fully_setup:
         for manager in Config.INITIAL_MANAGERS:
             Managers.from_config(manager)
 

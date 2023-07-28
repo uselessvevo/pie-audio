@@ -1,7 +1,7 @@
 """
 Default managers
 """
-import typing
+from typing import Optional, Union
 import dataclasses as dt
 
 
@@ -33,7 +33,7 @@ class SysManager:
     # ActionManager
     Actions = "actions"
 
-    # ConfigurationPageManager
+    # ConfigPageManager
     ConfigPages = "configpages"
     
 
@@ -41,23 +41,23 @@ class Section:
     """
     Configuration categories/sections
     """
+
+    # Application/root scope
+    Root = "root"
     
-    # Plugin access section
+    # Plugin section name
     Inner = "inner"
 
-    # User/site access section
+    # User/site section name
     User = "user"
     
-    # Shared/root access section
+    # Shared access section
     Shared = "shared"
-
-    # System section
-    Root = "root"
 
 
 @dt.dataclass(frozen=True, eq=False)
 class ManagerConfig:
-    import_string: typing.Optional[str]
+    import_string: Optional[str]
     init: bool = dt.field(default=False)
     args: tuple = dt.field(default_factory=tuple)
     kwargs: dict = dt.field(default_factory=dict)

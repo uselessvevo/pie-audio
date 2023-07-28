@@ -19,13 +19,9 @@ PLUGINS_FOLDER: Lock = os.getenv("PIE_PLUGINS_FOLDER", "plugins")
 
 # Configuration pages
 CONF_PAGES_FOLDER: Lock = os.getenv("PIE_CONF_PAGES_FOLDER", "app")
-CONF_PAGES_CATEGORIES: list[dict] = []
 
 # User/site plugins folder
 USER_PLUGINS_FOLDER: Lock = os.getenv("PIE_USER_PLUGINS_FOLDER", "plugins")
-
-# Components folder
-COMPONENTS_FOLDER: Lock = os.getenv("PIE_COMPONENTS_FOLDER", "components")
 
 # Containers folder
 CONTAINERS_FOLDER: Lock = os.getenv("PIE_CONTAINERS_FOLDER", "containers")
@@ -37,9 +33,10 @@ THEMES_FOLDER: Lock = os.getenv("PIE_THEMES_FOLDER", "themes")
 
 themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
 DEFAULT_THEME: Lock = themes_list[0] if themes_list else None
-ASSETS_USE_STYLE: Lock = bool(os.getenv("PIE_ASSETS_USE_STYLE", True))
+ASSETS_USE_STYLE: Lock = bool(int(os.getenv("PIE_ASSETS_USE_STYLE", True)))
 
 # Configurations
+CONFIG_FILE_NAME: Lock = "pie-config.json"
 CONFIGS_FOLDER: Lock = os.getenv("PIE_CONFIGS_FOLDER", "configs")
 USER_CONFIG_FOLDER: Lock = os.getenv("PIE_USER_CONFIGS_FOLDER", "configs")
 

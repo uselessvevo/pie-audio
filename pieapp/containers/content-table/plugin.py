@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -20,15 +20,10 @@ from api import ContentTableAPI
 
 class ContentTable(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+    ConfigAccessor, LocalesAccessor, AssetsAccessor,
 ):
     api = ContentTableAPI
     name = Container.ContentTable
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
 
     def set_columns(self, count: int, columns: tuple = None) -> None:
         self.table.set_column_count(count)
@@ -78,5 +73,5 @@ class ContentTable(
         )
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return ContentTable(*args, **kwargs)

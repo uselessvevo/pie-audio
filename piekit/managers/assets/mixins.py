@@ -1,5 +1,4 @@
-import typing
-from typing import Union
+from typing import Any, Union
 
 from PySide6.QtGui import QIcon
 
@@ -15,19 +14,19 @@ class AssetsAccessor:
 
     def get_asset(
         self,
-        key: typing.Any,
-        default: typing.Any = None,
+        key: Any,
+        default: Any = None,
         section: Union[str, Section] = Section.Shared
-    ) -> typing.Any:
-        return Managers(SysManager.Assets).get(self.section or section, key, default)
+    ) -> Any:
+        return Managers(SysManager.Assets).get(section or self.section, key, default)
 
     def get_asset_icon(
         self,
-        key: typing.Any,
-        default: typing.Any = None,
+        key: Any,
+        default: Any = None,
         section: Union[str, Section] = Section.Shared
     ):
-        return QIcon(Managers(SysManager.Assets).get(self.section or section, key, default))
+        return QIcon(Managers(SysManager.Assets).get(section or self.section, key, default))
 
     def get_plugin_icon(self) -> "QIcon":
         return QIcon(Managers(SysManager.Assets).get(self.name, Config.PLUGIN_ICON_NAME))

@@ -1,5 +1,4 @@
-import typing
-from typing import Union
+from typing import Any, Union
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
@@ -12,9 +11,9 @@ class LocalesAccessor:
 
     def get_translation(
         self,
-        key: typing.Any,
+        key: Any,
         section: Union[str, Section] = Section.Shared
-    ) -> typing.Any:
-        return Managers(SysManager.Locales).get(self.section or section, key)
+    ) -> Any:
+        return Managers(SysManager.Locales).get(section or self.section, key)
 
     getTranslation = get_translation

@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtWidgets import QDialog, QFileDialog
 
@@ -30,9 +30,6 @@ class Converter(
     ToolButtonAccessor
 ):
     name = Plugin.Converter
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
     requires = [Container.Workbench, Container.MenuBar]
 
     def init(self) -> None:
@@ -73,7 +70,6 @@ class Converter(
     @on_plugin_available(target=Container.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
-            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
             name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
@@ -83,7 +79,6 @@ class Converter(
         )
 
         self.add_tool_button(
-            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
             name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
@@ -92,7 +87,6 @@ class Converter(
         ).set_enabled(False)
 
         self.add_tool_button(
-            parent=self.get_toolbar(Container.Workbench),
             section=self.name,
             name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),
@@ -122,5 +116,5 @@ class Converter(
         )
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return Converter(*args, **kwargs)

@@ -1,4 +1,4 @@
-import typing
+from typing import Union
 
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.containers import Container
@@ -13,15 +13,10 @@ from piekit.managers.locales.mixins import LocalesAccessor
 
 class MenuBar(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
-    MenuAccessor,
+    AssetsAccessor, MenuAccessor,
+    ConfigAccessor, LocalesAccessor,
 ):
     name = Container.MenuBar
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
 
     def init(self) -> None:
         self.menu_bar = self.add_menu_bar(
@@ -46,5 +41,5 @@ class MenuBar(
         self._parent.set_menu_bar(self.menu_bar)
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return MenuBar(*args, **kwargs)

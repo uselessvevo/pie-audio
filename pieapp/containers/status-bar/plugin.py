@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-import typing
+from typing import Union
 
 from PySide6.QtWidgets import QStatusBar, QWidget
 
@@ -13,14 +13,9 @@ from piekit.managers.locales.mixins import LocalesAccessor
 
 class StatusBar(
     PiePlugin,
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+    ConfigAccessor, LocalesAccessor, AssetsAccessor,
 ):
     name = Container.StatusBar
-    version: str = "1.0.0"
-    pieapp_version: str = "1.0.0"
-    piekit_version: str = "1.0.0"
 
     def show_message(self, message: str) -> None:
         self.status_bar.show_message(message)
@@ -34,5 +29,5 @@ class StatusBar(
     showMessage = show_message
 
 
-def main(*args, **kwargs) -> typing.Any:
+def main(*args, **kwargs) -> Union[PiePlugin, None]:
     return StatusBar(*args, **kwargs)

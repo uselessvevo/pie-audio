@@ -15,9 +15,9 @@ class ToolButtonAccessor:
 
     def add_tool_button(
         self,
-        parent: QObject,
-        section: Union[str, Section],
-        name: str,
+        parent: QObject = None,
+        section: Union[str, Section] = Section.Shared,
+        name: str = None,
         text: str = None,
         tooltip: str = None,
         icon: QIcon = None,
@@ -33,6 +33,7 @@ class ToolButtonAccessor:
 
         if text:
             tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            # tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
             tool_button.set_text(text)
 
         if triggered:
