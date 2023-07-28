@@ -4,10 +4,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Union
 
-from PySide6.QtWidgets import QTreeWidgetItem
-
 from piekit.config import Config, PieException
-from piekit.utils.core import get_main_window
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.managers.base import BaseManager
