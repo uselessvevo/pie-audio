@@ -8,10 +8,11 @@ from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
 
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 
 
 class PieToolBar(QWidget):
+    """ A really simplified horizontal toolbar-like layout """
 
     def __init__(self, parent: QObject = None, name: str = None) -> None:
         super().__init__(parent)

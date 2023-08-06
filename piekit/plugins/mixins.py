@@ -1,72 +1,63 @@
+from __future__ import annotations
 from __feature__ import snake_case
 
 from typing import Union
 
-from PySide6.QtCore import Slot
-from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Slot, QObject
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from piekit.plugins.types import Error
-from piekit.plugins.plugins import PiePlugin
-from piekit.plugins.types import PluginType
-
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
-
-from piekit.widgets.messagebox import MessageBox
 from piekit.widgets.messagebox import MessageBox
 
 
-class StyleMixin:
+class ContainerRegisterMixin:
 
-    def update_style(self) -> None:
-        pass
+    def register_object(self, target: QObject, *args, **kwargs) -> None:
+        raise NotImplementedError
 
-
-class LocalizationMixin:
-
-    def update_localization(self) -> None:
-        pass
+    def remove_object(self, target: QObject, *args, **kwargs) -> None:
+        raise NotImplementedError
 
 
-class ContainerRegisterAccessor:
+class ContainerRegisterAccessorMixin:
     """
-    Main window accessor mixin
+    Container accessor
     """
 
-    def register_on(self, container_name: str, target: PiePlugin) -> None:
+    def register_on(self, parent_container: str, target: QObject, *args, **kwargs) -> None:
         """
         Register plugin on certain container by its name
         
         Args:
-            container (str): name of the container
-            target (PiePlugin): plugin instance
+            parent_container (str): name of the container we want to register on
 
         Returns:
             A container instance
         """
-        if not isinstance(target, PiePlugin):
-            raise TypeError(f"Target {target.name} is not a `PiePlugin` based instance")
+        parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
 
-        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginType.Container):
-            raise KeyError(f"Container {container_name} doesn't exist on {self.__class__.__name__}")
+        if parent_container_instance and isinstance(parent_container_instance, ContainerRegisterMixin):
+            raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManager.Plugins).get(container_name)
-        container_instance.register_target(target)
+        container_instance = Managers(SysManager.Plugins).get(parent_container)
+        container_instance.register_object(target, *args, **kwargs)
     
-    def remove_from(self, container_name: str, target: str) -> None:
+    def remove_from(self, parent_container: str, target: QObject, *args, **kwargs) -> None:
         """
         Remove/unregister plugin from the container by its name
         
         Args:
-            container (str): name of the container
-            target (str): plugin name
+            parent_container (str): name of the container we want to remove from
         """
-        if Managers(SysManager.Plugins).plugin_has_type(container_name, PluginType.Container):
-            raise KeyError(f"Container {container_name} doesn't exist on {self.__class__.__name__}")
+        parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
 
-        container_instance = Managers(SysManager.Plugins).get(container_name)
-        container_instance.remove_target(target)
+        if parent_container_instance and isinstance(parent_container_instance, ContainerRegisterMixin):
+            raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
+
+        container_instance = Managers(SysManager.Plugins).get(parent_container)
+        container_instance.remove_object(target, *args, **kwargs)
 
 
 class QuitMixin:
@@ -83,8 +74,14 @@ class QuitMixin:
             event.ignore()
 
     def close_handler(self, cancellable: bool = True) -> bool:
-        if cancellable and self.get_config("ui.show_exit_dialog", True, self.exit_dialog_section):
-            message_box = MessageBox(self)
+        show_exit_dialog = self.get_config(
+            key="ui.show_exit_dialog",
+            default=True,
+            scope=Section.Root,
+            section=self.exit_dialog_section
+        )
+        if cancellable and show_exit_dialog:
+            message_box = MessageBox(self, True)
             if message_box.clicked_button() == message_box.no_button:
                 return False
 

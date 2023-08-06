@@ -20,7 +20,7 @@ PLUGINS_FOLDER: Lock = os.getenv("PIE_PLUGINS_FOLDER", "plugins")
 # Configuration pages
 CONF_PAGES_FOLDER: Lock = os.getenv("PIE_CONF_PAGES_FOLDER", "app")
 
-# User/site plugins folder
+# User's/third-party plugins folder
 USER_PLUGINS_FOLDER: Lock = os.getenv("PIE_USER_PLUGINS_FOLDER", "plugins")
 
 # Containers folder

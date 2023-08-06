@@ -10,18 +10,18 @@ from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.containers import Container
 
-from piekit.managers.confpages.mixins import ConfigPageAccessor
+from piekit.managers.confpages.mixins import ConfigPageAccessorMixin
 from piekit.managers.confpages.structs import CustomTreeWidgetItem, ConfigPage
 
 from piekit.widgets.spacer import Spacer
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.structs import Section
-from piekit.managers.menus.mixins import MenuAccessor
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
-from piekit.managers.toolbars.mixins import ToolBarAccessor
-from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
+from piekit.managers.menus.mixins import MenuAccessorMixin
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
+from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available
 
 from PySide6.QtWidgets import QGridLayout, QDialog, QTreeWidget, QLabel, QDialogButtonBox
@@ -29,9 +29,9 @@ from PySide6.QtWidgets import QGridLayout, QDialog, QTreeWidget, QLabel, QDialog
 
 class Settings(
     PiePlugin,
-    ConfigPageAccessor,
-    ConfigAccessor, LocalesAccessor, AssetsAccessor,
-    MenuAccessor, ToolBarAccessor, ToolButtonAccessor,
+    ConfigPageAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     name = Container.Settings
     requires = [Container.MenuBar, Container.Workbench]

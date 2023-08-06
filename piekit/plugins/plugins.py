@@ -2,6 +2,7 @@ from typing import Union
 from pathlib import Path
 
 from PySide6.QtCore import Signal, QObject
+from PySide6.QtWidgets import QMainWindow
 
 from piekit.config import Config
 from piekit.utils.logger import logger
@@ -55,7 +56,7 @@ class PiePlugin(
     # Signal when exception occurred
     sig_exception_occurred = Signal(Error)
 
-    def __init__(self, parent: "QMainWindow" = None, path: Path = None) -> None:
+    def __init__(self, parent: QMainWindow = None, path: Path = None) -> None:
         # For some reason, I can't use `super().__init__()` method with `PySide`
 
         # Initialize `QObject` instance

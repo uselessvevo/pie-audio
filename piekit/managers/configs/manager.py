@@ -5,7 +5,7 @@ from typing import Union, Any
 from dotty_dict import Dotty
 
 from piekit.config import Config
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
@@ -25,13 +25,15 @@ class ConfigManager(BaseManager):
         self._observer = FileSystemObserver()
 
     def init(self) -> None:
-        # Read app/user configuration
-        self._read_root_configuration(Config.APP_ROOT / Config.USER_CONFIG_FOLDER, Section.Inner)
-        self._read_root_configuration(Config.USER_ROOT / Config.USER_CONFIG_FOLDER, Section.User)
+        # Read app/core configurations
+        self._read_root_configuration(Config.APP_ROOT / Config.CONFIGS_FOLDER, Section.Inner)
+        self._read_root_configuration(Config.USER_ROOT / Config.CONFIGS_FOLDER, Section.User)
 
-        # Read plugin configuration
+        # Read assets from built-in plugins folders
         self._read_plugins_configuration(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
         self._read_plugins_configuration(Config.APP_ROOT / Config.PLUGINS_FOLDER)
+
+        # Read configurations from user plugins folders
         self._read_plugins_configuration(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
 
     def _read_root_configuration(
@@ -70,6 +72,7 @@ class ConfigManager(BaseManager):
 
     def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})
+        self._temp_configuration = Dotty({})
         self._observer.remove_handlers(full_house=True)
 
     def get(
@@ -95,7 +98,7 @@ class ConfigManager(BaseManager):
         if temp and self._temp_configuration.get(f"{scope}.{section}"):
             return self._temp_configuration[f"{scope}.{section}.{key}"] or default
 
-        return self._configuration.get(f"{scope}.{section}.{key}") or default
+        return self._configuration.get(f"{scope}.{section}.{key}", default=default)
 
     def set(
         self,

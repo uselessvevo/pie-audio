@@ -5,29 +5,35 @@ from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDialog, QGridLayout, QPushButton
 
 from pieapp.structs.containers import Container
+from piekit.layouts.structs import Layout
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
+from pieapp.structs.workbench import WorkbenchItem
 
 from piekit.config import Config
-from piekit.managers.structs import Section
+from piekit.managers.base import BaseManager
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
+from piekit.managers.registry import Managers
+from piekit.managers.structs import Section, SysManager
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.menus.mixins import MenuAccessor
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
-from piekit.managers.toolbars.mixins import ToolBarAccessor
-from piekit.managers.toolbuttons.mixins import ToolButtonAccessor
+from piekit.managers.menus.mixins import MenuAccessorMixin
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
+from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.utils.logger import logger
 
 
 class TestPlugin(
-    PiePlugin,
-    ConfigAccessor, LocalesAccessor, AssetsAccessor,
-    MenuAccessor, ToolBarAccessor, ToolButtonAccessor,
+    PiePlugin, LayoutsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     name = Plugin.TestPlugin
     section = Plugin.TestPlugin
-    requires = [Container.MenuBar]
+    requires = [Container.MenuBar, Container.Workbench]
 
     def init(self) -> None:
         self._dialog = QDialog(self._parent)
@@ -70,18 +76,37 @@ class TestPlugin(
             item=call_dialog_button
         )
 
-        self._grid_layout = QGridLayout()
-        self._grid_layout.add_widget(self._toolbar, 0, 0)
-        self._grid_layout.add_widget(test_plugin_info_button, 1, 0)
-        self._grid_layout.add_widget(test_inner_config_button, 2, 0)
-        self._grid_layout.add_widget(test_user_config_button, 3, 0)
-        self._grid_layout.add_widget(ok_button, 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        self._main_layout = QGridLayout()
+        self._main_layout.add_widget(self._toolbar, 0, 0)
+        self._main_layout.add_widget(test_plugin_info_button, 1, 0)
+        self._main_layout.add_widget(test_inner_config_button, 2, 0)
+        self._main_layout.add_widget(test_user_config_button, 3, 0)
+        self._main_layout.add_widget(ok_button, 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        self._dialog.set_layout(self._main_layout)
 
-        self._dialog.set_layout(self._grid_layout)
+        mw_main_layout = self.get_layout(Layout.Main)
+        mw_main_layout.add_layout(self._main_layout, 0, 1, Qt.AlignmentFlag.AlignHCenter)
 
     def call(self) -> None:
         # We don't want to re-render dialog, so we're just showing it
         self._dialog.show()
+
+    @on_plugin_available(target=Container.Workbench)
+    def on_workbench_available(self) -> None:
+        self.add_tool_button(
+            section=self.name,
+            name="TestButton",
+            text=self.get_translation("Test"),
+            tooltip=self.get_translation("Test"),
+            icon=self.get_plugin_icon(),
+            triggered=self.call
+        )
+        self.add_toolbar_item(
+            section=Container.Workbench,
+            name="test-plugin-workbench-item",
+            item=self.get_tool_button(self.name, "TestButton"),
+            after=WorkbenchItem.Clear
+        )
 
     @on_plugin_available(target=Container.MenuBar)
     def on_menu_bar_available(self) -> None:
@@ -154,6 +179,24 @@ class TestPlugin(
         self.logger.debug(self.get_config("key", temp=True))
 
 
+class TestMagicManager(BaseManager):
+    name = "test-magic-manager"
+
+    def __init__(self) -> None:
+        self._logger = logger
+
+    def init(self, *args, **kwargs) -> None:
+        self._logger.debug("* Testing magic *")
+
+    def shutdown(self, *args, **kwargs):
+        self._logger.debug("No more magic...")
+
+    def reload(self):
+        self.shutdown()
+        self.init()
+
+
 def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    if Config.USE_TEST_PLUGIN:
+    if Config.TEST_PLUGIN_ENABLE:
+        Managers.from_class(TestMagicManager)
         return TestPlugin(*args, **kwargs)

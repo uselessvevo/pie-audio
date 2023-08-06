@@ -2,7 +2,7 @@ import functools
 from typing import Union
 
 from piekit.managers.structs import Scope, Section
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 
 
 def on_configuration_update(

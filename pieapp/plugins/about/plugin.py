@@ -11,19 +11,19 @@ from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.containers import Container
-from piekit.managers.menus.mixins import MenuAccessor
+from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from piekit.config import Config
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available
 
 
 class About(
     PiePlugin,
-    MenuAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+    MenuAccessorMixin,
+    LocalesAccessorMixin,
+    AssetsAccessorMixin,
 ):
     name = Plugin.About
     requires = [Container.MenuBar]

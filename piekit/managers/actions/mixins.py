@@ -7,7 +7,7 @@ from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class ActionAccessor:
+class ActionAccessorMixin:
 
     def add_action(self, section: Union[str, Section], parent: QObject, name: str = None) -> QAction:
         action = QAction(parent=parent)

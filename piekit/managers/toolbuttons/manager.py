@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QToolButton
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.managers.base import BaseManager
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 
 
 class ToolButtonManager(BaseManager):

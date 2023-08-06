@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QMenu, QMenuBar
 from piekit.widgets.menus import PieMenu
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import SysManager
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 
 
 class MenuManager(BaseManager):

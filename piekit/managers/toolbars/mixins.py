@@ -9,7 +9,7 @@ from piekit.managers.structs import SysManager, Section
 from piekit.widgets.toolbars import PieToolBar
 
 
-class ToolBarAccessor:
+class ToolBarAccessorMixin:
 
     def add_toolbar(
         self,

@@ -4,7 +4,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Union
 
-from piekit.config import Config, PieException
+from piekit.config import Config
+from piekit.exceptions import PieException
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.managers.base import BaseManager

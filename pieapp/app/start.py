@@ -1,4 +1,3 @@
-import PySide6
 from PySide6.QtCore import QSettings, QCoreApplication
 from __feature__ import snake_case
 
@@ -57,12 +56,12 @@ def start_application(*args, **kwargs) -> None:
     # Preparing or restoring our application's user folder
     if not check_crabs():
         # To prepare/restore user's folder we need to use
-        # only the core managers (Config.INITIAL_MANAGERS)
+        # only the core managers (Config.CORE_MANAGERS)
         restore_crabs()
         settings.set_value("first_run", False)
 
     if first_run or not fully_setup:
-        for manager in Config.INITIAL_MANAGERS:
+        for manager in Config.CORE_MANAGERS:
             Managers.from_config(manager)
 
         # Closing splashscreen because we don't need it here
@@ -75,12 +74,12 @@ def start_application(*args, **kwargs) -> None:
         sys.exit(app.exec())
 
     # Preparing our application
-    from pieapp.app.main import PieAudioApp
+    from pieapp.app.main import MainWindow
     app = get_application()
-    pie_app = PieAudioApp()
+    main_window = MainWindow()
 
     # Starting all managers by order
-    for manager in Config.INITIAL_MANAGERS:
+    for manager in Config.CORE_MANAGERS:
         Managers.from_config(manager)
 
     # Applying *fantasticly* good theme
@@ -94,15 +93,22 @@ def start_application(*args, **kwargs) -> None:
 
     # Closing splashscreen
     if splash:
-        splash.close()
+        splash.hide()
 
     # Start the *magic*
-    pie_app.init()
+    main_window.prepare_base_signals()
+    main_window.prepare_main_window()
 
     # Starting all managers by order
-    for manager in Config.MANAGERS:
+    for manager in Config.LAYOUT_MANAGERS:
         Managers.from_config(manager)
 
-    pie_app.show()
+    main_window.prepare_main_layout()
+    main_window.prepare_central_widget()
+
+    for manager in Config.PLUGIN_MANAGERS:
+        Managers.from_config(manager)
+
+    main_window.show()
 
     sys.exit(app.exec())

@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/pie-audio.iml" filepath="$PROJECT_DIR$/.idea/pie-audio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../spyder/.idea/spyder.iml" filepath="$PROJECT_DIR$/../spyder/.idea/spyder.iml" />
     </modules>
   </component>
 </project>
