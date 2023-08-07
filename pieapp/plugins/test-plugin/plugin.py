@@ -14,7 +14,7 @@ from piekit.config import Config
 from piekit.managers.base import BaseManager
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.registry import Managers
-from piekit.managers.structs import Section, SysManager
+from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -31,6 +31,12 @@ class TestPlugin(
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
+    """
+    This plugin made to test piekit
+    
+    TODO: Add toolbar with tabs (ribbon) to test more stuff
+    """
+    
     name = Plugin.TestPlugin
     section = Plugin.TestPlugin
     requires = [Container.MenuBar, Container.Workbench]
