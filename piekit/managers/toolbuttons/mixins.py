@@ -11,7 +11,7 @@ from piekit.managers.structs import SysManager, Section
 from piekit.config import Config
 
 
-class ToolButtonAccessor:
+class ToolButtonAccessorMixin:
 
     def add_tool_button(
         self,

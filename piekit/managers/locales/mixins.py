@@ -4,9 +4,9 @@ from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class LocalesAccessor:
+class LocalesAccessorMixin:
     """
-    Config mixin
+    ConfigManager accessor mixin
     """
 
     def get_translation(

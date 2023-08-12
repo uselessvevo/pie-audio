@@ -7,8 +7,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenuBar, QMenu
 
-from piekit.config.exceptions import PieException
-
+from piekit.exceptions import PieException
 
 INDEX_END = type("INDEX_END", (), {})
 INDEX_START = type("INDEX_START", (), {})

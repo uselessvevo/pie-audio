@@ -4,7 +4,7 @@ from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class ConfigAccessor:
+class ConfigAccessorMixin:
     """
     Config mixin made for PiePlugin based plugins/containers
     """

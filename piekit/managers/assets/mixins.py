@@ -7,7 +7,7 @@ from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class AssetsAccessor:
+class AssetsAccessorMixin:
     """
     Config mixin
     """

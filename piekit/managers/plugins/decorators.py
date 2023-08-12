@@ -2,7 +2,7 @@ import functools
 from typing import Callable, Optional
 
 from piekit.managers.structs import AllPlugins
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 
 
 def on_plugin_available(

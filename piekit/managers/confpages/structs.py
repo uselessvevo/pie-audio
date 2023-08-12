@@ -6,7 +6,7 @@ from __feature__ import snake_case
 from PySide6.QtWidgets import QWidget, QTreeWidgetItem
 from PySide6.QtCore import Signal, QObject
 
-from piekit.config import PieException
+from piekit.exceptions import PieException
 
 
 class ConfigPage(QObject):

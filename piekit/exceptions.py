@@ -7,5 +7,5 @@ class PieException(Exception):
     pass
 
 
-class PieApiException(Exception):
+class PieApiException(PieException):
     pass

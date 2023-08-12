@@ -35,6 +35,9 @@ class SysManager:
 
     # ConfigPageManager
     ConfigPages = "configpages"
+
+    # LayoutManager
+    Layouts = "layouts"
     
 
 class Section:
@@ -48,7 +51,7 @@ class Section:
     # Plugin section name
     Inner = "inner"
 
-    # User/site section name
+    # User/third-party section name
     User = "user"
     
     # Shared access section

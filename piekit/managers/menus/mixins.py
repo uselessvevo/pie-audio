@@ -9,7 +9,7 @@ from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class MenuAccessor:
+class MenuAccessorMixin:
 
     def add_menu_bar(
         self,

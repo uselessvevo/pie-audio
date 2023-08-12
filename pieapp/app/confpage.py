@@ -6,9 +6,9 @@ from piekit.widgets.spacer import Spacer
 from piekit.config.loader import Config
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from piekit.managers.confpages.structs import ConfigPage
 
@@ -20,10 +20,10 @@ from PySide6.QtWidgets import (
 )
 
 
-class MainConfigPage(
-    ConfigAccessor,
-    LocalesAccessor,
-    AssetsAccessor,
+class AppConfigPage(
+    ConfigAccessorMixin,
+    LocalesAccessorMixin,
+    AssetsAccessorMixin,
     ConfigPage
 ):
     name = Section.Root

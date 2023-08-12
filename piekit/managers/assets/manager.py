@@ -33,10 +33,12 @@ class AssetsManager(BaseManager):
         self._read_root_assets(Config.APP_ROOT, Section.Shared)
         self._read_root_assets(Config.USER_ROOT, Section.User)
 
-        # Read plugin configuration
+        # Read assets from built-in plugins folders
         self._read_plugin_assets(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
         self._read_plugin_assets(Config.APP_ROOT / Config.PLUGINS_FOLDER)
-        self._read_plugin_assets(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
+
+        # Read assets from user plugins folders
+        self._read_plugin_assets(Config.USER_ROOT / Config.PLUGINS_FOLDER)
 
     def add(self, section: Union[str, Section], file: Path) -> None:
         if not self._check_file(file):

@@ -5,13 +5,15 @@ import os
 import sys
 
 from pathlib import Path
+
 from version_parser import Version
 
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.utils.core import get_main_window
 
-from piekit.config import Config, PieException
+from piekit.config import Config
+from piekit.exceptions import PieException
 from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
@@ -46,14 +48,17 @@ class PluginManager(BaseManager):
     # BaseManager methods
 
     def init(self) -> None:
-        """ Initialize all built-in or site PiePlugins, components and user plugins """
-        parent = get_main_window()
-        if not parent:
+        """ Initialize all built-in or third-party PiePlugins, components and user plugins """
+        main_window = get_main_window()
+        if not main_window:
             raise PieException(f"Can't find an initialized QMainWindow instance")
-            
-        self._initialize_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, parent)
-        self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, parent)
-        self._initialize_from_packages(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER, parent)
+
+        # Init built-in plugins
+        self._initialize_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, main_window)
+        self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, main_window)
+
+        # Init plugins from user folder
+        self._initialize_from_packages(Config.USER_ROOT / Config.PLUGINS_FOLDER, main_window)
 
     def shutdown(self, *plugins: str, full_house: bool = False) -> None:
         """
@@ -105,7 +110,7 @@ class PluginManager(BaseManager):
             return
 
         for package in folder.iterdir():
-            if package.is_dir() and package.name not in ("__pycache__",) and parent:
+            if package.is_dir() and package.name not in ("__pycache__",):
                 self._logger.info(f"Reading package data from {package.name}")
 
                 # Plugin path: pieapp/plugins/<plugin name>
@@ -316,11 +321,4 @@ class PluginManager(BaseManager):
     def is_plugin_available(self, name: str) -> bool:
         return self._plugin_availability.get(name, False)
 
-    def plugin_has_type(self, plugin_type: PluginType, plugin_name: str) -> bool:
-        if plugin_type not in self._plugins_types_registry:
-            raise KeyError(f"Plugin type {plugin_type} not found")
-
-        return plugin_name in self._plugins_types_registry[plugin_type]
-
-    pluginHasType = plugin_has_type
     isPluginAvailable = is_plugin_available

@@ -7,7 +7,7 @@ from PySide6.QtGui import QAction
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.managers.base import BaseManager
-from piekit.config.exceptions import PieException
+from piekit.exceptions import PieException
 from piekit.utils.logger import logger
 
 

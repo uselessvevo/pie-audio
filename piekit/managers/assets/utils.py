@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import os
 import importlib
 import importlib.util
@@ -53,7 +55,7 @@ def get_palette(theme_name: str):
 def set_svg_color(file: str, color: str = "#7cd162"):
     pixmap = QPixmap(file)
     painter = QPainter(pixmap)
-    painter.set_composition_model(QPainter.CompositionMode_SourceIn)
+    painter.set_composition_mode(QPainter.CompositionMode.CompositionMode_SourceIn)
     painter.fill_rect(pixmap.rect(), QColor(color))
     painter.end()
 

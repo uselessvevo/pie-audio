@@ -10,7 +10,7 @@ ConfigPagesList = list[dict[str, ConfigPage]]
 ConfigPagesUnion = Union[ConfigPagesList, ConfigPagesDict]
 
 
-class ConfigPageAccessor:
+class ConfigPageAccessorMixin:
     """
     Configuration pages accessor. 
     Use this mixin to allow your plugin register other plugins configuration pages

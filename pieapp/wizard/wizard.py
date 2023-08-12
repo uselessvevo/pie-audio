@@ -7,9 +7,9 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QDir, QSettings
 from PySide6.QtWidgets import QFileDialog, QStyle
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from piekit.managers.structs import SysManager, Section
 from piekit.utils.core import restart_application
@@ -19,8 +19,8 @@ from piekit.config import Config
 
 
 class LocaleWizardPage(
-    ConfigAccessor,
-    LocalesAccessor,
+    ConfigAccessorMixin,
+    LocalesAccessorMixin,
     QtWidgets.QWizardPage
 ):
     section = Section.Shared
@@ -73,8 +73,8 @@ class LocaleWizardPage(
 
 
 class ThemeWizardPage(
-    ConfigAccessor,
-    LocalesAccessor,
+    ConfigAccessorMixin,
+    LocalesAccessorMixin,
     QtWidgets.QWizardPage
 ):
     section = Section.Shared
@@ -122,9 +122,9 @@ class ThemeWizardPage(
 
 
 class FfmpegWizardPage(
-    LocalesAccessor,
-    AssetsAccessor,
-    ConfigAccessor,
+    LocalesAccessorMixin,
+    AssetsAccessorMixin,
+    ConfigAccessorMixin,
     QtWidgets.QWizardPage
 ):
     section = Section.Shared
@@ -184,7 +184,7 @@ class FfmpegWizardPage(
 
 
 class FinishWizardPage(
-    LocalesAccessor,
+    LocalesAccessorMixin,
     QtWidgets.QWizardPage
 ):
     section = Section.Shared
@@ -200,7 +200,7 @@ class FinishWizardPage(
         self.set_layout(layout)
 
 
-class SetupWizard(QtWidgets.QWizard, LocalesAccessor):
+class SetupWizard(QtWidgets.QWizard, LocalesAccessorMixin):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)

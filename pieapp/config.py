@@ -1,5 +1,7 @@
 import os
 
+from PySide6.QtWidgets import QGridLayout
+
 from piekit.config.types import Lock
 from piekit.managers.structs import DirectoryType
 from piekit.managers.structs import ManagerConfig
@@ -13,6 +15,7 @@ PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
 
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
+MAIN_GRID_LAYOUT_CLASS: Lock = QGridLayout
 MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
 
 # List of excluded file formats
@@ -25,10 +28,8 @@ DEFAULT_CONFIG_FILES = [
     "ffmpeg.json",
 ]
 
-USE_TEST_PLUGIN = os.getenv("PIE_USE_TEST_PLUGIN", False)
-
 # Managers startup configuration
-INITIAL_MANAGERS: Lock = [
+CORE_MANAGERS: Lock = [
     ManagerConfig(
         import_string="piekit.managers.configs.manager.ConfigManager",
         init=True
@@ -43,8 +44,7 @@ INITIAL_MANAGERS: Lock = [
     ),
 ]
 
-MANAGERS: Lock = [
-    *INITIAL_MANAGERS,
+LAYOUT_MANAGERS: Lock = [
     ManagerConfig(
         import_string="piekit.managers.menus.manager.MenuManager",
         init=True
@@ -62,7 +62,21 @@ MANAGERS: Lock = [
         init=True
     ),
     ManagerConfig(
+        import_string="piekit.managers.layouts.manager.LayoutManager",
+        init=True
+    )
+]
+
+PLUGIN_MANAGERS = [
+    ManagerConfig(
         import_string="piekit.managers.plugins.manager.PluginManager",
         init=True
     ),
+]
+
+
+MANAGERS: Lock = [
+    *CORE_MANAGERS,
+    *LAYOUT_MANAGERS,
+    *PLUGIN_MANAGERS,
 ]

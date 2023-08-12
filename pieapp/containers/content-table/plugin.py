@@ -4,26 +4,40 @@ from typing import Union
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QTableWidget, QTableWidgetItem, 
-    QSizePolicy, QHeaderView, QLabel
+    QTableWidget, QTableWidgetItem,
+    QSizePolicy, QHeaderView, QLabel, QGridLayout
 )
 
 from pieapp.structs.containers import Container
+from piekit.layouts.structs import Layout
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.assets.mixins import AssetsAccessor
-from piekit.managers.configs.mixins import ConfigAccessor
-from piekit.managers.locales.mixins import LocalesAccessor
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from api import ContentTableAPI
 
 
 class ContentTable(
-    PiePlugin,
-    ConfigAccessor, LocalesAccessor, AssetsAccessor,
+    PiePlugin, LayoutsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
 ):
     api = ContentTableAPI
     name = Container.ContentTable
+
+    def init(self) -> None:
+        self._table_layout = QGridLayout()
+        self.get_layout(Layout.Main).add_layout(self._table_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+
+        self.table = QTableWidget()
+        # self.table.set_selection_model(QAbstractItemView.SelectionMode.NoSelection)
+        self.set_placeholder()
+        self.table.set_size_policy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding
+        )
 
     def set_columns(self, count: int, columns: tuple = None) -> None:
         self.table.set_column_count(count)
@@ -50,10 +64,10 @@ class ContentTable(
 
         # We need to clear `table_layout` to remove placeholder from it
         # But we don't need to do it in pyqt5... Yeah
-        for item in reversed(range(self._parent.table_layout.count())):
-            self._parent.table_layout.item_at(item).widget().set_parent(None)
+        for item in reversed(range(self._table_layout.count())):
+            self._table_layout.item_at(item).widget().set_parent(None)
 
-        self._parent.table_layout.add_widget(self.table, 1, 0)
+        self._table_layout.add_widget(self.table, 1, 0)
 
     def set_placeholder(self) -> None:
         placeholder = QLabel("<img src='{icon}' width=64 height=64><br>{text}".format(
@@ -61,16 +75,7 @@ class ContentTable(
             text=self.get_translation("No files selected")
         ))
         placeholder.set_alignment(Qt.AlignmentFlag.AlignCenter)
-        self._parent.table_layout.add_widget(placeholder, 1, 0)
-
-    def init(self) -> None:
-        self.table = QTableWidget()
-        # self.table.set_selection_model(QAbstractItemView.SelectionMode.NoSelection)
-        self.set_placeholder()
-        self.table.set_size_policy(
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Expanding
-        )
+        self._table_layout.add_widget(placeholder, 1, 0)
 
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:
