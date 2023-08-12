@@ -3,7 +3,6 @@ from typing import Union
 from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
 
 from piekit.config import Config
-from piekit.layouts.structs import Layout
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -28,12 +27,16 @@ class TestPluginChild(
         self._widget = QWidget(self._parent)
         self._test_button = QPushButton(self._widget)
         self._test_button.set_text("Click me")
+        self._test_button.clicked.connect(self.test_button_connect)
         self._test_button.set_icon(self.get_asset_icon(""))
         self._main_layout.add_widget(self._test_button, 0, 0)
         self._widget.set_layout(self._main_layout)
 
         # TODO: Check if it works
         self.register_on(Plugin.TestPlugin, self._widget)
+
+    def test_button_connect(self) -> None:
+        self._logger.debug(f"{self.name}'s button clicked")
 
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:

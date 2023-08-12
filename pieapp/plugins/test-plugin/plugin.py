@@ -15,6 +15,7 @@ from piekit.managers.base import BaseManager
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section
+from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -27,7 +28,7 @@ from piekit.utils.logger import logger
 
 
 class TestPlugin(
-    PiePlugin, LayoutsAccessorMixin,
+    PiePlugin, LayoutsAccessorMixin, ContainerRegisterMixin,
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
@@ -87,7 +88,7 @@ class TestPlugin(
         self._main_layout.add_widget(test_plugin_info_button, 1, 0)
         self._main_layout.add_widget(test_inner_config_button, 2, 0)
         self._main_layout.add_widget(test_user_config_button, 3, 0)
-        self._main_layout.add_widget(ok_button, 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        self._main_layout.add_widget(ok_button, 5, 0, alignment=Qt.AlignmentFlag.AlignRight)
         self._dialog.set_layout(self._main_layout)
 
         mw_main_layout = self.get_layout(Layout.Main)
@@ -96,6 +97,9 @@ class TestPlugin(
     def call(self) -> None:
         # We don't want to re-render dialog, so we're just showing it
         self._dialog.show()
+
+    def register_object(self, target: "QObject", *args, **kwargs) -> None:
+        self._main_layout.add_widget(target, 4, 0)
 
     @on_plugin_available(target=Container.Workbench)
     def on_workbench_available(self) -> None:

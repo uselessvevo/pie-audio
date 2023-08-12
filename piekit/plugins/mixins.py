@@ -37,7 +37,7 @@ class ContainerRegisterAccessorMixin:
         """
         parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
 
-        if parent_container_instance and isinstance(parent_container_instance, ContainerRegisterMixin):
+        if parent_container_instance and not isinstance(parent_container_instance, ContainerRegisterMixin):
             raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
 
         container_instance = Managers(SysManager.Plugins).get(parent_container)
