@@ -1,20 +1,21 @@
+from PySide6.QtGui import Qt
 from __feature__ import snake_case
 
-from PySide6.QtWidgets import QMessageBox, QCheckBox
+from PySide6.QtWidgets import QMessageBox, QCheckBox, QVBoxLayout, QSpacerItem
 from PySide6.QtWidgets import QPushButton
 
 from piekit.managers.structs import Section
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 
-class MessageBox(QMessageBox, LocalesAccessorMixin):
+class MessageCheckBox(QMessageBox, LocalesAccessorMixin):
     section = Section.Shared
 
-    def __init__(self, parent=None, show_check_box: bool = False) -> None:
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
 
         self.set_style_sheet("QLabel{min-width: 300px; min-height: 50}")
-        self.set_window_title(self.get_translation('Exit'))
+        self.set_window_title(self.get_translation("Exit"))
         self.set_text(self.get_translation("Are you sure you want to exit?"))
 
         self.yes_button = QPushButton()
@@ -27,8 +28,15 @@ class MessageBox(QMessageBox, LocalesAccessorMixin):
         self.add_button(self.no_button, QMessageBox.ButtonRole.NoRole)
         self.set_default_button(self.no_button)
 
-        if show_check_box:
-            check_box = QCheckBox(self.get_translation("Don't show this message again"))
-            self.set_check_box(check_box)
+        self.set_window_modality(Qt.WindowModality.NonModal)
+        self.check_box = QCheckBox(self)
+        self.set_check_box(self.check_box)
 
-        self.exec()
+    def is_checked(self) -> bool:
+        return self.check_box.is_checked()
+
+    def set_checked(self, state: bool) -> None:
+        self.check_box.set_checked(state)
+
+    def set_check_box_text(self, text: str) -> None:
+        self.check_box.set_text(text)

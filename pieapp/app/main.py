@@ -15,11 +15,11 @@ from piekit.managers.structs import Section
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.plugins.mixins import ErrorWindowMixin, QuitMixin
+from piekit.plugins.mixins import ErrorDialogMixin, QuitDialogMixin
 
 
 class MainWindow(
-    LayoutsAccessorMixin, QuitMixin, ErrorWindowMixin,
+    LayoutsAccessorMixin, QuitDialogMixin, ErrorDialogMixin,
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
     QMainWindow,
 ):

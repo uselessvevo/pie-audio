@@ -6,10 +6,11 @@ from typing import Union
 from PySide6.QtCore import Slot, QObject
 from PySide6.QtWidgets import QApplication, QMessageBox
 
+from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.plugins.types import Error
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
-from piekit.widgets.messagebox import MessageBox
+from piekit.widgets.messagebox import MessageCheckBox
 
 
 class ContainerRegisterMixin:
@@ -31,10 +32,8 @@ class ContainerRegisterAccessorMixin:
         Register plugin on certain container by its name
         
         Args:
-            parent_container (str): name of the container we want to register on
-
-        Returns:
-            A container instance
+            parent_container (str): name of the parent container
+            target (QObject): an object we want to register on `parent_container`
         """
         parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
 
@@ -49,7 +48,8 @@ class ContainerRegisterAccessorMixin:
         Remove/unregister plugin from the container by its name
         
         Args:
-            parent_container (str): name of the container we want to remove from
+            parent_container (str): name of the parent container
+            target (QObject): an object we want to remove from the `parent_container`
         """
         parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
 
@@ -60,12 +60,15 @@ class ContainerRegisterAccessorMixin:
         container_instance.remove_object(target, *args, **kwargs)
 
 
-class QuitMixin:
+class QuitDialogMixin(ConfigAccessorMixin):
     """
     Mixin that calls the MessageBox on exit. 
-    Requires `ConfigManager` and `ConfigAccessor` with specified `exit_dialog_section`
+    Requires:
+    * `ConfigAccessorMixin` with specified `exit_dialog_section` and `exit_dialog_key`
+    * `LocalesAccessorMixin`
     """
     exit_dialog_section: Union[str, Section] = Section.User
+    exit_dialog_key: str = "ui.show_exit_dialog"
 
     def close_event(self, event) -> None:
         if self.close_handler(True):
@@ -81,7 +84,13 @@ class QuitMixin:
             section=self.exit_dialog_section
         )
         if cancellable and show_exit_dialog:
-            message_box = MessageBox(self, True)
+            message_box = MessageCheckBox(parent=self)
+            message_box.set_check_box_text("Don't show this message again?")
+            message_box.exec()
+            if message_box.is_checked():
+                self.set_config(self.exit_dialog_key, False, scope=Section.Root, section=Section.User)
+                self.save_config(Section.Root, self.exit_dialog_section)
+
             if message_box.clicked_button() == message_box.no_button:
                 return False
 
@@ -91,7 +100,7 @@ class QuitMixin:
         return True
 
 
-class ErrorWindowMixin:
+class ErrorDialogMixin:
     """
     Shows an error in the message box.
     Requires `LocalesManager`
