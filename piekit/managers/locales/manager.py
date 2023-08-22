@@ -3,12 +3,12 @@ from typing import Union
 
 from piekit.utils.files import read_json
 from piekit.config import Config
-from piekit.managers.base import BaseManager
+from piekit.managers.base import PluginManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class LocaleManager(BaseManager):
+class LocaleManager(PluginManager):
     name = SysManager.Locales
 
     def __init__(self) -> None:
@@ -23,29 +23,20 @@ class LocaleManager(BaseManager):
 
     def init(self) -> None:
         # Read app/user configuration
-        self._read_root_translations(Config.APP_ROOT, Section.Shared)
-        self._read_root_translations(Config.USER_ROOT, Section.User)
+        self._roots.add(Config.APP_ROOT)
 
-        # Read plugin configuration
-        self._read_plugin_translations(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
-        self._read_plugin_translations(Config.APP_ROOT / Config.PLUGINS_FOLDER)
-        self._read_plugin_translations(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
-
-    def _read_root_translations(self, folder: Path, section: Union[str, Section] = None) -> None:
-        self._roots.add(folder)
-
-        for file in (folder / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
-            section = section if section else file.parent.name
+        for file in (Config.APP_ROOT / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
+            section = Section.Shared
             if not self._translations.get(section):
                 self._translations[section] = {}
 
             self._translations[file.stem].update(**read_json(str(file)))
 
-    def _read_plugin_translations(self, folder: Path) -> None:
-        for package in folder.iterdir():
-            self._roots.add(package)
+    def init_plugin(self, plugin_folder: Path) -> None:
+        for folder in plugin_folder.iterdir():
+            self._roots.add(folder)
 
-            for file in (package / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
+            for file in (folder / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
                 if not self._translations.get(file.name):
                     self._translations[file.stem] = {}
 

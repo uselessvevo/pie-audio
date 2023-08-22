@@ -102,7 +102,7 @@ class Settings(
 
     def _prepare_pages(self) -> None:
         pages_dict = self.get_all_confpages()
-        for item, page in pages_dict.items():
+        for page in pages_dict.values():
             root_page: ConfigPage = page["page"]
             root_page.sig_enable_apply_button.connect(
                 lambda: self._enable_apply_button(root_page.is_modified)

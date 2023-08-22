@@ -5,7 +5,7 @@ from typing import Any, Union
 from PySide6.QtGui import QIcon
 
 from piekit.managers.assets.utils import set_svg_color
-from piekit.managers.base import BaseManager
+from piekit.managers.base import PluginManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager, DirectoryType
@@ -13,7 +13,7 @@ from piekit.config import Config
 from piekit.utils.logger import logger
 
 
-class AssetsManager(BaseManager):
+class AssetsManager(PluginManager):
     name = SysManager.Assets
 
     def __init__(self) -> None:
@@ -30,36 +30,19 @@ class AssetsManager(BaseManager):
 
     def init(self) -> None:
         # Read app/user configuration
-        self._read_root_assets(Config.APP_ROOT, Section.Shared)
-        self._read_root_assets(Config.USER_ROOT, Section.User)
-
-        # Read assets from built-in plugins folders
-        self._read_plugin_assets(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
-        self._read_plugin_assets(Config.APP_ROOT / Config.PLUGINS_FOLDER)
-
-        # Read assets from user plugins folders
-        self._read_plugin_assets(Config.USER_ROOT / Config.PLUGINS_FOLDER)
-
-    def add(self, section: Union[str, Section], file: Path) -> None:
-        if not self._check_file(file):
-            self._logger.critical(f"Can't find file {file.as_posix()}")
-
-        self._add_section(section, file)
-
-    def _read_root_assets(self, folder: Path, section: Union[str, Section]) -> None:
-        for file in (folder / Config.ASSETS_FOLDER / Config.THEMES_FOLDER / self._current_theme).rglob("*.*"):
+        for file in (Config.APP_ROOT / Config.ASSETS_FOLDER / Config.THEMES_FOLDER / self._current_theme).rglob("*.*"):
             if not self._check_file(file):
                 continue
 
-            self._add_section(section, file)
+            self._add_file(Section.Shared, file)
 
-    def _read_plugin_assets(self, folder: Path) -> None:
-        for package in folder.iterdir():
-            for file in (package / Config.ASSETS_FOLDER).rglob("*.*"):
+    def init_plugin(self, plugin_folder: Path) -> None:
+        for folder in plugin_folder.iterdir():
+            for file in (folder / Config.ASSETS_FOLDER).rglob("*.*"):
                 if not self._check_file(file):
                     continue
 
-                self._add_section(package.name, file)
+                self._add_file(folder.name, file)
 
     def _check_file(self, file: Path) -> bool:
         if file.suffix in Config.ASSETS_EXCLUDED_FORMATS:
@@ -70,7 +53,7 @@ class AssetsManager(BaseManager):
 
         return True
 
-    def _add_section(self, section: Union[str, Section], file: Path) -> None:
+    def _add_file(self, section: Union[str, Section], file: Path) -> None:
         if not self._assets_dictionary.get(section):
             self._assets_dictionary[section] = {}
 
