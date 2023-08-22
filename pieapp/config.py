@@ -67,16 +67,14 @@ LAYOUT_MANAGERS: Lock = [
     )
 ]
 
-PLUGIN_MANAGERS = [
-    ManagerConfig(
-        import_string="piekit.managers.plugins.manager.PluginManager",
-        init=True
-    ),
-]
+PLUGIN_MANAGER = ManagerConfig(
+    import_string="piekit.managers.plugins.manager.PluginManager",
+    init=True
+),
 
 
 MANAGERS: Lock = [
     *CORE_MANAGERS,
     *LAYOUT_MANAGERS,
-    *PLUGIN_MANAGERS,
+    PLUGIN_MANAGER,
 ]
