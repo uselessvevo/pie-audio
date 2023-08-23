@@ -8,12 +8,12 @@ from piekit.config import Config
 from piekit.exceptions import PieException
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
-from piekit.managers.base import PluginManager
+from piekit.managers.base import PluginBaseManager
 from piekit.managers.structs import SysManager
 from piekit.managers.confpages.structs import ConfigPage
 
 
-class ConfigPageManager(PluginManager):
+class ConfigPageManager(PluginBaseManager):
     name = SysManager.ConfigPages
 
     def __init__(self) -> None:

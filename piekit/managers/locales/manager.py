@@ -3,12 +3,12 @@ from typing import Union
 
 from piekit.utils.files import read_json
 from piekit.config import Config
-from piekit.managers.base import PluginManager
+from piekit.managers.base import PluginBaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
 
-class LocaleManager(PluginManager):
+class LocaleManager(PluginBaseManager):
     name = SysManager.Locales
 
     def __init__(self) -> None:

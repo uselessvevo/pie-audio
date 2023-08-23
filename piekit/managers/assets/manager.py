@@ -5,7 +5,7 @@ from typing import Any, Union
 from PySide6.QtGui import QIcon
 
 from piekit.managers.assets.utils import set_svg_color
-from piekit.managers.base import PluginManager
+from piekit.managers.base import PluginBaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager, DirectoryType
@@ -13,7 +13,7 @@ from piekit.config import Config
 from piekit.utils.logger import logger
 
 
-class AssetsManager(PluginManager):
+class AssetsManager(PluginBaseManager):
     name = SysManager.Assets
 
     def __init__(self) -> None:
@@ -37,12 +37,11 @@ class AssetsManager(PluginManager):
             self._add_file(Section.Shared, file)
 
     def init_plugin(self, plugin_folder: Path) -> None:
-        for folder in plugin_folder.iterdir():
-            for file in (folder / Config.ASSETS_FOLDER).rglob("*.*"):
-                if not self._check_file(file):
-                    continue
+        for file in (plugin_folder / Config.ASSETS_FOLDER).rglob("*.*"):
+            if not self._check_file(file):
+                continue
 
-                self._add_file(folder.name, file)
+            self._add_file(plugin_folder.name, file)
 
     def _check_file(self, file: Path) -> bool:
         if file.suffix in Config.ASSETS_EXCLUDED_FORMATS:

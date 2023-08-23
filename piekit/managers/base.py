@@ -33,7 +33,7 @@ class BaseManager:
         return f'({self.__class__.__name__}) <id: {id(self)}>'
 
 
-class PluginManager(BaseManager):
+class PluginBaseManager(BaseManager):
 
     def init_plugin(self, plugin_folder: Path) -> None:
         raise NotImplementedError(f"Method `init_plugin` must be implemented")
@@ -42,7 +42,7 @@ class PluginManager(BaseManager):
         pass
 
     def shutdown_plugin(self) -> None:
-        raise NotImplementedError(f"Method `shutdown_plugin` must be implemented")
+        pass
 
     def on_post_shutdown(self) -> None:
         pass

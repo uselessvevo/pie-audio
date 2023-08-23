@@ -6,7 +6,7 @@ from dotty_dict import Dotty
 
 from piekit.config import Config
 from piekit.exceptions import PieException
-from piekit.managers.base import PluginManager
+from piekit.managers.base import PluginBaseManager
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.utils.files import read_json, write_json
@@ -14,7 +14,7 @@ from piekit.observers.filesystem import FileSystemObserver
 from piekit.utils.logger import logger
 
 
-class ConfigManager(PluginManager):
+class ConfigManager(PluginBaseManager):
     name = SysManager.Configs
     protected_keys = ("__FOLDER__",)
 

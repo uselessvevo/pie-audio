@@ -4,7 +4,7 @@ from pathlib import Path
 from piekit.utils.logger import logger
 from piekit.utils.files import read_json
 from piekit.utils.modules import import_by_string
-from piekit.managers.base import PluginManager, BaseManager
+from piekit.managers.base import PluginBaseManager, BaseManager
 from piekit.managers.structs import ManagerConfig
 
 
@@ -18,7 +18,7 @@ class ManagersRegistry:
         self._managers_instances: dict[str, BaseManager] = {}
 
         # Dictionary with managers that can setup plugins
-        self._plugin_managers_instances: dict[str, PluginManager] = {}
+        self._plugin_managers_instances: dict[str, PluginBaseManager] = {}
 
     def from_class(self, manager_class: Type[BaseManager], init: bool = True, *args, **kwargs) -> None:
         """
@@ -32,7 +32,7 @@ class ManagersRegistry:
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
         self._managers_instances[manager_instance.name] = manager_instance
-        if isinstance(manager_instance, PluginManager):
+        if isinstance(manager_instance, PluginBaseManager):
             self._plugin_managers_instances[manager_instance.name] = manager_instance
 
         setattr(self, manager_instance.name, manager_instance)
@@ -50,7 +50,7 @@ class ManagersRegistry:
         self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
 
         self._managers_instances[manager_instance.name] = manager_instance
-        if isinstance(manager_instance, PluginManager):
+        if isinstance(manager_instance, PluginBaseManager):
             self._plugin_managers_instances[manager_instance.name] = manager_instance
             
         setattr(self, manager_instance.name, manager_instance)
@@ -83,7 +83,7 @@ class ManagersRegistry:
         for manager_instance in managers_instances:
             self._logger.info(f"Shutting down `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
             manager_name = manager_instance.name
-            if isinstance(manager_instance, PluginManager):
+            if isinstance(manager_instance, PluginBaseManager):
                 manager_instance.shutdown_plugin()
                 manager_instance.on_post_shutdown()
 
@@ -105,8 +105,8 @@ class ManagersRegistry:
             self._logger.info(f"Destroying `{manager.__class__.__name__}`")
             delattr(self, manager)
 
-    def get_plugin_managers(self) -> list[PluginManager]:
-        return list(self._plugin_managers.values())
+    def get_plugin_managers(self) -> list[PluginBaseManager]:
+        return list(self._plugin_managers_instances.values())
 
     def __call__(self, manager: str, fallback_method: callable = None) -> BaseManager:
         """
