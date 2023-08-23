@@ -29,13 +29,23 @@ class ConfigPageManager(PluginBaseManager):
         folder = Config.APP_ROOT / Config.CONF_PAGES_FOLDER
         if (folder / "confpage.py").exists():
             confpage_module: ModuleType = import_by_path("confpage", str(folder / "confpage.py"))
-            self._collect_module_confpages(confpage_module)
+            confpage_instance = getattr(confpage_module, "main")()
+            if confpage_instance:
+                confpage_instance.init()
+                self._pages_list.append(confpage_instance)
+
+    def shutdown(self, *args, **kwargs) -> None:
+        self._pages = {}
+        self._pages_list = []
 
     def init_plugin(self, plugin_folder: Path) -> None:
         for folder in plugin_folder.iterdir():
             if (folder / "confpage.py").exists():
                 confpage_module: ModuleType = import_by_path("confpage", str(folder / "confpage.py"))
-                self._collect_module_confpages(confpage_module)
+                confpage_instance = getattr(confpage_module, "main")()
+                if confpage_instance:
+                    confpage_instance.init()
+                    self._pages_list.append(confpage_instance)
 
     def on_post_init_plugin(self, plugin_folder: Path) -> None:
         page_instances: list[ConfigPage] = list(sorted(self._pages_list, key=lambda v: v.root is None))
@@ -49,41 +59,6 @@ class ConfigPageManager(PluginBaseManager):
                 # Check if page is a child item and in its parent
                 if page_instance.name not in self._pages[page_instance.root]["children"]:
                     self._pages[page_instance.root]["children"].append(page_instance)
-
-    def shutdown(self, *args, **kwargs) -> None:
-        self._pages = {}
-        self._pages_list = []
-
-    def _collect_module_confpages(self, confpage_module: ModuleType) -> None:
-        """
-        Collect all ConfigurationPage instances from the given module
-
-        Args:
-            confpage_module (ModuleType): configuration page module instance
-        """
-        module_classes = (
-            (_, m) for _, m in
-            inspect.getmembers(confpage_module)
-            if inspect.isclass(m)
-            and m.__name__ != ConfigPage.__name__  # exclude `ConfigurationClass` class
-        )
-
-        for class_member in module_classes:
-            if issubclass(class_member[1], ConfigPage):
-                page_instance: ConfigPage = class_member[1]()
-                page_instance.sig_restart_requested.connect(
-                    lambda: self._notify_main_window_restart_request(page_instance)
-                )
-                try:
-                    self._logger.debug(f"Initializing configuration page `{page_instance.name}`")
-                    page_instance.init()
-                except Exception as e:
-                    raise PieException(
-                        f"An error has been occurred while initializing conf page {page_instance.name}\n"
-                        f"Error traceback: {e!s}"
-                    )
-                if page_instance.name not in self._pages_list:
-                    self._pages_list.append(page_instance)
 
     def _notify_main_window_restart_request(self, page_instance: ConfigPage) -> None:
         page_instance.parent().sig_restart_requested.emit(page_instance.name)

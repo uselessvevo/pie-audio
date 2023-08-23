@@ -1,3 +1,6 @@
+from typing import Union
+
+from piekit.config import Config
 from piekit.managers.confpages.structs import ConfigPage
 
 from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
@@ -26,3 +29,8 @@ class TestPluginConfigPage(ConfigPage):
 
     def cancel(self) -> None:
         print("Canceled")
+
+
+def main(*args, **kwargs) -> Union[ConfigPage, None]:
+    if Config.TEST_PLUGIN_ENABLE:
+        return TestPluginConfigPage(*args, **kwargs)
