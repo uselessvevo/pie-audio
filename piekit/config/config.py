@@ -52,6 +52,3 @@ default_locale = system_locale if system_locale in LOCALES else "en-US"
 
 DEFAULT_LOCALE: Lock = os.getenv("PIE_DEFAULT_LOCALE", default_locale)
 LOCALES_FOLDER: Lock = os.getenv("PIE_LOCALES_FOLDER", "locales")
-
-# Templates
-DEFAULT_CONFIG_FILES = []

@@ -12,7 +12,6 @@ PIEAPP_APPLICATION_NAME: Lock = "pie-audio"
 PIEAPP_APPLICATION_VERSION: Lock = "1.0.0"
 PIEAPP_ORGANIZATION_NAME: Lock = "Crab Devs."
 PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
-
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
 MAIN_GRID_LAYOUT_CLASS: Lock = QGridLayout
@@ -21,12 +20,6 @@ MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
 USE_EXCEPTION_HOOK: Lock = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
-
-DEFAULT_CONFIG_FILES = [
-    "locales.json",
-    "assets.json",
-    "ffmpeg.json",
-]
 
 # Managers startup configuration
 CORE_MANAGERS: Lock = [
@@ -71,7 +64,6 @@ PLUGIN_MANAGER = ManagerConfig(
     import_string="piekit.managers.plugins.manager.PluginManager",
     init=True
 ),
-
 
 MANAGERS: Lock = [
     *CORE_MANAGERS,
