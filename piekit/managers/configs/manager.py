@@ -6,7 +6,7 @@ from dotty_dict import Dotty
 
 from piekit.config import Config
 from piekit.exceptions import PieException
-from piekit.managers.base import BaseManager
+from piekit.managers.base import PluginBaseManager
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.utils.files import read_json, write_json
@@ -14,7 +14,7 @@ from piekit.observers.filesystem import FileSystemObserver
 from piekit.utils.logger import logger
 
 
-class ConfigManager(BaseManager):
+class ConfigManager(PluginBaseManager):
     name = SysManager.Configs
     protected_keys = ("__FOLDER__",)
 
@@ -29,13 +29,6 @@ class ConfigManager(BaseManager):
         self._read_root_configuration(Config.APP_ROOT / Config.CONFIGS_FOLDER, Section.Inner)
         self._read_root_configuration(Config.USER_ROOT / Config.CONFIGS_FOLDER, Section.User)
 
-        # Read assets from built-in plugins folders
-        self._read_plugins_configuration(Config.APP_ROOT / Config.CONTAINERS_FOLDER)
-        self._read_plugins_configuration(Config.APP_ROOT / Config.PLUGINS_FOLDER)
-
-        # Read configurations from user plugins folders
-        self._read_plugins_configuration(Config.USER_ROOT / Config.USER_PLUGINS_FOLDER)
-
     def _read_root_configuration(
         self,
         folder: Path,
@@ -48,25 +41,25 @@ class ConfigManager(BaseManager):
             )
             self._observer.add_handler(str(folder), str(folder.name))
 
-    def _read_plugins_configuration(self, plugins_folder: Path) -> None:
-        for plugin_folder in plugins_folder.iterdir():
+    def init_plugin(self, plugin_folder: Path) -> None:
+        for folder in plugin_folder.iterdir():
             # Read plugin's user configuration file
-            user_folder: Path = Config.USER_ROOT / Config.CONFIGS_FOLDER / plugin_folder.name
-            self._configuration[plugin_folder.name] = {
-                Section.Inner: {"__FOLDER__": plugin_folder},
+            user_folder: Path = Config.USER_ROOT / Config.CONFIGS_FOLDER / folder.name
+            self._configuration[folder.name] = {
+                Section.Inner: {"__FOLDER__": folder},
                 Section.User: {"__FOLDER__": user_folder}
             }
 
-            if (plugin_folder / Config.CONFIG_FILE_NAME).exists():
+            if (folder / Config.CONFIG_FILE_NAME).exists():
                 # Read plugin's inner configuration file
-                self._configuration[plugin_folder.name][Section.Inner].update({
-                    **read_json(plugin_folder / Config.CONFIG_FILE_NAME),
+                self._configuration[folder.name][Section.Inner].update({
+                    **read_json(folder / Config.CONFIG_FILE_NAME),
                 })
-                self._observer.add_handler(str(plugins_folder), str(plugins_folder.name))
+                self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
 
-            if (plugin_folder / Config.CONFIG_FILE_NAME).exists():
-                self._configuration[plugin_folder.name][Section.User].update({
-                    **read_json(plugin_folder / Config.CONFIG_FILE_NAME),
+            if (folder / Config.CONFIG_FILE_NAME).exists():
+                self._configuration[folder.name][Section.User].update({
+                    **read_json(folder / Config.CONFIG_FILE_NAME),
                 })
                 self._observer.add_handler(str(user_folder), str(user_folder.name))
 

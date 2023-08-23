@@ -17,6 +17,7 @@ from piekit.exceptions import PieException
 from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
+from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager
 
 
@@ -45,7 +46,7 @@ class PluginManager(BaseManager):
         # Dictionary with plugin name to its type
         self._plugins_types_registry: dict[PluginType, set[str]] = {k.value: set() for k in PluginType}
 
-    # BaseManager methods
+        self._plugin_managers = Managers.get_plugin_managers()
 
     def init(self) -> None:
         """ Initialize all built-in or third-party PiePlugins, components and user plugins """
@@ -71,21 +72,14 @@ class PluginManager(BaseManager):
         plugins = plugins if not full_house else self._plugins_registry.keys()
         for plugin in plugins:
             self._logger.info(f"Shutting down {plugin} from {self.__class__.__name__}")
-
             if plugin in self._plugins_registry:
                 self._shutdown_plugin(plugin)
 
-        # List of PiePlugins that depend on it
-        self._plugin_dependents: dict[str, dict[str, list[str]]] = {}
-
-        # List of the PiePlugins that the PiePlugins depends on
-        self._plugin_dependencies: dict[str, dict[str, list[str]]] = {}
-
-        # PiePlugin dictionary
-        self._plugins_registry: dict[str, PiePlugin] = {}
-
-        # PiePlugins dictionary with availability boolean status
-        self._plugin_availability: dict[str, bool] = {}
+        self._plugin_dependents = {}
+        self._plugin_dependencies = {}
+        self._plugins_registry = {}
+        self._plugin_availability = {}
+        self._plugin_managers = []
 
     def reload(self, *plugins: str, full_house: bool = False) -> None:
         """ Reload listed or all objects and components """
@@ -129,6 +123,11 @@ class PluginManager(BaseManager):
                 if (plugin_path / "config.py").exists():
                     config_module = import_by_path("config", str(plugin_path / "config.py"))
                     Config.load_module(config_module)
+
+                # Setup plugin via `PluginManager`
+                for plugin_manager in self._plugin_managers:
+                    plugin_manager.init_plugin(plugin_path)
+                    plugin_manager.on_post_init_plugin(plugin_path)
 
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)

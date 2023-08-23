@@ -1,6 +1,7 @@
 """
 Base manager
 """
+from pathlib import Path
 
 
 class BaseManager:
@@ -30,3 +31,18 @@ class BaseManager:
 
     def __repr__(self) -> str:
         return f'({self.__class__.__name__}) <id: {id(self)}>'
+
+
+class PluginBaseManager(BaseManager):
+
+    def init_plugin(self, plugin_folder: Path) -> None:
+        raise NotImplementedError(f"Method `init_plugin` must be implemented")
+
+    def on_post_init_plugin(self, plugin_folder: Path) -> None:
+        pass
+
+    def shutdown_plugin(self) -> None:
+        pass
+
+    def on_post_shutdown(self) -> None:
+        pass

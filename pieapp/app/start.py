@@ -106,8 +106,7 @@ def start_application(*args, **kwargs) -> None:
     main_window.prepare_main_layout()
     main_window.prepare_central_widget()
 
-    for manager in Config.PLUGIN_MANAGERS:
-        Managers.from_config(manager)
+    Managers.from_config(Config.PLUGIN_MANAGER)
 
     main_window.show()
 

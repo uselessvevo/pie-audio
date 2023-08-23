@@ -126,3 +126,7 @@ class AppConfigPage(
 
     def get_icon(self) -> Union[QIcon, None]:
         return self.get_asset_icon("cloud.png")
+
+
+def main(*args, **kwargs) -> Union[ConfigPage, None]:
+    return AppConfigPage(*args, **kwargs)
