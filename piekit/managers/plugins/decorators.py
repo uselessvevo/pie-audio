@@ -59,7 +59,7 @@ def on_plugin_shutdown(func: Callable = None, target: Optional[str] = None):
         raise PieException(
             "A method `on_plugin_shutdown` must have a well "
             "defined plugins keyword argument value. "
-            "For example - target=Container.Workbench"
+            "For example - target=Plugin.Workbench"
         )
 
     func.plugin_shutdown = target

@@ -4,7 +4,7 @@ from typing import Union
 
 from PySide6.QtWidgets import QStatusBar, QWidget
 
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
@@ -15,7 +15,7 @@ class StatusBar(
     PiePlugin,
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
 ):
-    name = Container.StatusBar
+    name = Plugin.StatusBar
 
     def show_message(self, message: str) -> None:
         self.status_bar.show_message(message)

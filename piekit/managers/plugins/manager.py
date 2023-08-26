@@ -54,11 +54,7 @@ class PluginManager(BaseManager):
         if not main_window:
             raise PieException(f"Can't find an initialized QMainWindow instance")
 
-        # Init built-in plugins
-        self._initialize_from_packages(Config.APP_ROOT / Config.CONTAINERS_FOLDER, main_window)
         self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, main_window)
-
-        # Init plugins from user folder
         self._initialize_from_packages(Config.USER_ROOT / Config.PLUGINS_FOLDER, main_window)
 
     def shutdown(self, *plugins: str, full_house: bool = False) -> None:

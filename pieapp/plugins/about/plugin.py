@@ -10,7 +10,7 @@ from pieapp.structs.menus import MainMenu
 from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from piekit.config import Config
@@ -26,7 +26,7 @@ class About(
     AssetsAccessorMixin,
 ):
     name = Plugin.About
-    requires = [Container.MenuBar]
+    requires = [Plugin.MenuBar]
 
     def call(self) -> None:
         self._dialog = QDialog(self._parent)
@@ -59,7 +59,7 @@ class About(
         self._dialog.set_layout(grid_layout)
         self._dialog.show()
 
-    @on_plugin_available(target=Container.MenuBar)
+    @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,

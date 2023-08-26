@@ -1,7 +1,7 @@
 from typing import Union
 
 from pieapp.structs.menus import MainMenu
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.plugins.plugins import PiePlugin
 
@@ -16,7 +16,7 @@ class MainMenuBar(
     AssetsAccessorMixin, MenuAccessorMixin,
     ConfigAccessorMixin, LocalesAccessorMixin,
 ):
-    name = Container.MenuBar
+    name = Plugin.MenuBar
 
     def init(self) -> None:
         self._menu_bar = self.add_menu_bar(

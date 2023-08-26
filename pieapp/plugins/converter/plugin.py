@@ -9,7 +9,7 @@ from piekit.managers.structs import Section
 from piekit.plugins.api.utils import get_api
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from pieapp.structs.workbench import WorkbenchItem
@@ -30,7 +30,7 @@ class Converter(
     ToolButtonAccessorMixin
 ):
     name = Plugin.Converter
-    requires = [Container.Workbench, Container.MenuBar]
+    requires = [Plugin.Workbench, Plugin.MenuBar]
 
     def init(self) -> None:
         self._dialog = QDialog(self._parent)
@@ -41,9 +41,9 @@ class Converter(
     def open_files(self) -> None:
         file_dialog = QFileDialog(self._dialog, self.get_translation("Open files"))
         selected_files = file_dialog.get_open_file_names(self._dialog)
-        get_api(Container.ContentTable, method="receive", files=selected_files[0])
+        get_api(Plugin.ContentTable, method="receive", files=selected_files[0])
 
-    @on_plugin_available(target=Container.MenuBar)
+    @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         self.menu_bar = self.get_menu_bar(Section.Shared)
 
@@ -67,7 +67,7 @@ class Converter(
             index=INDEX_END()
         )
 
-    @on_plugin_available(target=Container.Workbench)
+    @on_plugin_available(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
             section=self.name,
@@ -95,21 +95,21 @@ class Converter(
         ).set_enabled(False)
 
         self.add_toolbar_item(
-            section=Container.Workbench,
+            section=Plugin.Workbench,
             name=WorkbenchItem.Clear,
             item=self.get_tool_button(self.name, WorkbenchItem.Clear),
             before=WorkbenchItem.Spacer
         )
 
         self.add_toolbar_item(
-            section=Container.Workbench,
+            section=Plugin.Workbench,
             name=WorkbenchItem.Convert,
             item=self.get_tool_button(self.name, WorkbenchItem.Convert),
             before=WorkbenchItem.Spacer
         )
 
         self.add_toolbar_item(
-            section=Container.Workbench,
+            section=Plugin.Workbench,
             name=WorkbenchItem.OpenFiles,
             item=self.get_tool_button(self.name, WorkbenchItem.OpenFiles),
             before=WorkbenchItem.Spacer

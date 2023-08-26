@@ -6,7 +6,7 @@ from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QSizePolicy, QWidget, QGridLayout
 
 from piekit.layouts.structs import Layout
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.plugins.plugins import PiePlugin
@@ -23,7 +23,7 @@ class Workbench(
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
     ToolBarAccessorMixin, ToolButtonAccessorMixin, LayoutsAccessorMixin,
 ):
-    name = Container.Workbench
+    name = Plugin.Workbench
 
     def init(self) -> None:
         self._workbench = self.add_toolbar(name=self.name)

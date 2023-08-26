@@ -23,9 +23,6 @@ CONF_PAGES_FOLDER: Lock = os.getenv("PIE_CONF_PAGES_FOLDER", "app")
 # User's/third-party plugins folder
 USER_PLUGINS_FOLDER: Lock = os.getenv("PIE_USER_PLUGINS_FOLDER", "plugins")
 
-# Containers folder
-CONTAINERS_FOLDER: Lock = os.getenv("PIE_CONTAINERS_FOLDER", "containers")
-
 # Assets
 ASSETS_EXCLUDED_FORMATS: list = []
 ASSETS_FOLDER: Lock = os.getenv("PIE_ASSETS_FOLDER", "assets")

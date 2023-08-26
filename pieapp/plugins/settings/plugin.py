@@ -8,7 +8,7 @@ from PySide6.QtCore import Slot
 from piekit.config import Config
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 
 from piekit.managers.confpages.mixins import ConfigPageAccessorMixin
 from piekit.managers.confpages.structs import CustomTreeWidgetItem, ConfigPage
@@ -33,8 +33,8 @@ class Settings(
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
-    name = Container.Settings
-    requires = [Container.MenuBar, Container.Workbench]
+    name = Plugin.Settings
+    requires = [Plugin.MenuBar, Plugin.Workbench]
 
     def init(self) -> None:
         # Main window dialog
@@ -159,7 +159,7 @@ class Settings(
         for page in pages:
             page["page"].accept()
 
-    @on_plugin_available(target=Container.MenuBar)
+    @on_plugin_available(target=Plugin.MenuBar)
     def _on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,

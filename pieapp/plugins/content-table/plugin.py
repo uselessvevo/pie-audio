@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QSizePolicy, QHeaderView, QLabel, QGridLayout
 )
 
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from piekit.layouts.structs import Layout
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 
@@ -25,7 +25,7 @@ class ContentTable(
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
 ):
     api = ContentTableAPI
-    name = Container.ContentTable
+    name = Plugin.ContentTable
 
     def init(self) -> None:
         self._table_layout = QGridLayout()

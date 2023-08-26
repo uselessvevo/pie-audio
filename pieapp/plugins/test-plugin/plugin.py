@@ -4,7 +4,7 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDialog, QGridLayout, QPushButton
 
-from pieapp.structs.containers import Container
+from pieapp.structs.plugins import Plugin
 from piekit.layouts.structs import Layout
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
@@ -40,7 +40,7 @@ class TestPlugin(
     
     name = Plugin.TestPlugin
     section = Plugin.TestPlugin
-    requires = [Container.MenuBar, Container.Workbench]
+    requires = [Plugin.MenuBar, Plugin.Workbench]
 
     def init(self) -> None:
         self._dialog = QDialog(self._parent)
@@ -101,7 +101,7 @@ class TestPlugin(
     def register_object(self, target: "QObject", *args, **kwargs) -> None:
         self._main_layout.add_widget(target, 4, 0)
 
-    @on_plugin_available(target=Container.Workbench)
+    @on_plugin_available(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
             section=self.name,
@@ -112,13 +112,13 @@ class TestPlugin(
             triggered=self.call
         )
         self.add_toolbar_item(
-            section=Container.Workbench,
+            section=Plugin.Workbench,
             name="test-plugin-workbench-item",
             item=self.get_tool_button(self.name, "TestButton"),
             after=WorkbenchItem.Clear
         )
 
-    @on_plugin_available(target=Container.MenuBar)
+    @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         test_menu = self.add_menu(
             parent=self.get_menu_bar(Section.Shared),
