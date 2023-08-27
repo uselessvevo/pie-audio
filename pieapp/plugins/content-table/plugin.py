@@ -3,10 +3,7 @@ from __feature__ import snake_case
 from typing import Union
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QTableWidget, QTableWidgetItem,
-    QSizePolicy, QHeaderView, QLabel, QGridLayout
-)
+from PySide6.QtWidgets import QLabel, QGridLayout, QListWidget
 
 from pieapp.structs.plugins import Plugin
 from piekit.layouts.structs import Layout
@@ -18,6 +15,7 @@ from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from api import ContentTableAPI
+from components.item import ContentTableItem
 
 
 class ContentTable(
@@ -28,46 +26,18 @@ class ContentTable(
     name = Plugin.ContentTable
 
     def init(self) -> None:
-        self._table_layout = QGridLayout()
-        self.get_layout(Layout.Main).add_layout(self._table_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+        self._list_grid_layout = QGridLayout()
+        self._main_layout = self.get_layout(Layout.Main)
+        self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+        self._content_list = QListWidget()
 
-        self.table = QTableWidget()
-        # self.table.set_selection_model(QAbstractItemView.SelectionMode.NoSelection)
-        self.set_placeholder()
-        self.table.set_size_policy(
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Expanding
-        )
+    def fill_list(self, items: list[MediaFileModel]) -> None:
+        if self._content_list.is_visible():
+            self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
-    def set_columns(self, count: int, columns: tuple = None) -> None:
-        self.table.set_column_count(count)
-        self.table.set_horizontal_header_labels(columns)
-        self.table.set_row_count(count)
-
-    def set_text_alignment(self, count: int) -> None:
-        headers = self.table.horizontal_header()
-        for column in range(count):
-            headers.horizontal_header_item(column).set_text_alignment(Qt.AlignmentFlag.AlignCenter)
-
-    def set_columns_stretch(self, count: int) -> None:
-        headers = self.table.horizontal_header()
-        for column in range(count):
-            headers.set_section_resize_mode(column, QHeaderView.ResizeMode.Stretch)
-
-    def fill_table(self, data: list[dict]) -> None:
-        if not data:
-            self.logger.error("No data were provided")
-            return
-
-        for row, item in enumerate(data):
-            self.table.set_item(row, 0, QTableWidgetItem(item))
-
-        # We need to clear `table_layout` to remove placeholder from it
-        # But we don't need to do it in pyqt5... Yeah
-        for item in reversed(range(self._table_layout.count())):
-            self._table_layout.item_at(item).widget().set_parent(None)
-
-        self._table_layout.add_widget(self.table, 1, 0)
+        # self._content_list.itemDoubleClicked.connect()
+        for item in items:
+            title = f"{item}"
 
     def set_placeholder(self) -> None:
         placeholder = QLabel("<img src='{icon}' width=64 height=64><br>{text}".format(
@@ -75,7 +45,7 @@ class ContentTable(
             text=self.get_translation("No files selected")
         ))
         placeholder.set_alignment(Qt.AlignmentFlag.AlignCenter)
-        self._table_layout.add_widget(placeholder, 1, 0)
+        self._list_grid_layout.add_widget(placeholder, 1, 0)
 
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:

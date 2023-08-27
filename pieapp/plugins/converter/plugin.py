@@ -9,7 +9,6 @@ from piekit.managers.structs import Section
 from piekit.plugins.api.utils import get_api
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
-from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from pieapp.structs.workbench import WorkbenchItem

@@ -10,7 +10,6 @@ from pieapp.structs.menus import MainMenu
 from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
-from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from piekit.config import Config
@@ -44,7 +43,10 @@ class About(
         icon_label.set_pixmap(pixmap)
 
         description_label = QLabel()
-        description_label.set_text(f'{self.get_translation("Pie Audio • Audio Converter")} ({Config.PIEAPP_APPLICATION_VERSION})')
+        description_label.set_text(
+            f'{self.get_translation("Pie Audio • Audio Converter")} '
+            f'({Config.PIEAPP_APPLICATION_VERSION})'
+        )
 
         github_link_label = QLabel()
         github_link_label.set_open_external_links(True)

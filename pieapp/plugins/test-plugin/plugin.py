@@ -4,7 +4,6 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDialog, QGridLayout, QPushButton
 
-from pieapp.structs.plugins import Plugin
 from piekit.layouts.structs import Layout
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
