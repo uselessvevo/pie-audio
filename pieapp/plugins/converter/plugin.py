@@ -1,46 +1,63 @@
-from __feature__ import snake_case
-
 from typing import Union
 
-from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel, QGridLayout, QListWidget
 
 from pieapp.structs.menus import MainMenu, MainMenuItem
-from piekit.managers.structs import Section
-from piekit.plugins.api.utils import get_api
-from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
-from piekit.managers.menus.mixins import MenuAccessorMixin
-
 from pieapp.structs.workbench import WorkbenchItem
-from piekit.managers.assets.mixins import AssetsAccessorMixin
-from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.layouts.structs import Layout
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
+from piekit.managers.menus.mixins import MenuAccessorMixin
+from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.managers.structs import Section
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
-from piekit.widgets.menus import INDEX_END, INDEX_START
+
+from piekit.plugins.plugins import PiePlugin
+from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
+
+from models import MediaFile
+from controller import ContentTableController
+from components.item import ContentTableItem
+from piekit.widgets.menus import INDEX_START, INDEX_END
 
 
 class Converter(
-    PiePlugin,
-    MenuAccessorMixin,
-    LocalesAccessorMixin,
-    AssetsAccessorMixin,
-    ToolBarAccessorMixin,
-    ToolButtonAccessorMixin
+    PiePlugin, LayoutsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin
 ):
     name = Plugin.Converter
-    requires = [Plugin.Workbench, Plugin.MenuBar]
+    controller = ContentTableController
+    requires = [Plugin.MenuBar, Plugin.Workbench]
 
     def init(self) -> None:
-        self._dialog = QDialog(self._parent)
-        self._dialog.set_window_title(self.get_translation("Convert"))
-        self._dialog.set_window_icon(self.get_asset_icon("go.png"))
-        self._dialog.resize(400, 300)
+        self._list_grid_layout = QGridLayout()
+        self._main_layout = self.get_layout(Layout.Main)
+        self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+        self._content_list = QListWidget()
+        self.set_placeholder()
 
-    def open_files(self) -> None:
-        file_dialog = QFileDialog(self._dialog, self.get_translation("Open files"))
-        selected_files = file_dialog.get_open_file_names(self._dialog)
-        get_api(Plugin.ContentTable, method="receive", files=selected_files[0])
+    def fill_list(self, files: list[MediaFile]) -> None:
+        if self._content_list.is_visible():
+            self._list_grid_layout.add_widget(self._content_list, 0, 0)
+
+        # self._content_list.itemDoubleClicked.connect()
+        for file in files:
+            item = ContentTableItem(self._content_list)
+            item.set_title(file.metadata.title)
+            item.set_description(file.info.file_format.name)
+
+    def set_placeholder(self) -> None:
+        placeholder = QLabel("<img src='{icon}' width=64 height=64><br>{text}".format(
+            icon=self.get_asset("empty-box.png"),
+            text=self.get_translation("No files selected")
+        ))
+        placeholder.set_alignment(Qt.AlignmentFlag.AlignCenter)
+        self._list_grid_layout.add_widget(placeholder, 1, 0)
 
     @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
