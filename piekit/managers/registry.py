@@ -29,7 +29,7 @@ class ManagersRegistry:
         >>> Managers.init(ConfigManager, PathConfig(...), ...)
         """
         manager_instance = manager_class()
-        self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
+        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
 
         self._managers_instances[manager_instance.name] = manager_instance
         if isinstance(manager_instance, PluginBaseManager):
@@ -47,7 +47,7 @@ class ManagersRegistry:
         Initialize manager from `ManagerConfig` structure
         """
         manager_instance = import_by_string(config.import_string)()
-        self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
+        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
 
         self._managers_instances[manager_instance.name] = manager_instance
         if isinstance(manager_instance, PluginBaseManager):
@@ -81,7 +81,8 @@ class ManagersRegistry:
         managers_instances = (self._managers_instances.get(i) for i in managers or self._managers_instances.keys())
 
         for manager_instance in managers_instances:
-            self._logger.info(f"Shutting down `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
+            self._logger.info(f"Shutting down \"{manager_instance.__class__.__name__}\" "
+                              f"from \"{self.__class__.__name__}\"")
             manager_name = manager_instance.name
             if isinstance(manager_instance, PluginBaseManager):
                 manager_instance.shutdown_plugin()
@@ -95,14 +96,14 @@ class ManagersRegistry:
         managers_instances = (self._managers_instances.get(i) for i in managers)
 
         for manager_instance in managers_instances:
-            self._logger.info(f"Reloading `{manager_instance.__class__.__name__}`")
+            self._logger.info(f"Reloading \"{manager_instance.__class__.__name__}\"")
             manager_instance.reload()
 
     def destroy(self, *managers: str, full_house: bool = False):
         managers = reversed(self._managers_instances.keys()) if full_house else managers
 
         for manager in managers:
-            self._logger.info(f"Destroying `{manager.__class__.__name__}`")
+            self._logger.info(f"Destroying \"{manager.__class__.__name__}\"")
             delattr(self, manager)
 
     def get_plugin_managers(self) -> list[PluginBaseManager]:
@@ -124,7 +125,7 @@ class ManagersRegistry:
             return self.__getattribute__(manager)
         except AttributeError:
             if not fallback_method:
-                raise AttributeError(f"Manager `{manager}` not found or not initialized")
+                raise AttributeError(f"Manager \"{manager}\" not found or not initialized")
 
             fallback_method()
 

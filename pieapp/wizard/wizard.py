@@ -121,7 +121,7 @@ class ThemeWizardPage(
         return self.combo_box.current_text()
 
 
-class FfmpegWizardPage(
+class ConverterWizardPage(
     LocalesAccessorMixin,
     AssetsAccessorMixin,
     ConfigAccessorMixin,
@@ -136,7 +136,7 @@ class FfmpegWizardPage(
 
         self.line_edit_action = QAction()
         self.line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
-        self.line_edit_action.triggered.connect(self.select_ffmpeg_path)
+        self.line_edit_action.triggered.connect(self.select_ffmpeg_root_path)
 
         self.line_edit = QtWidgets.QLineEdit()
         self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
@@ -156,7 +156,7 @@ class FfmpegWizardPage(
     def is_complete(self) -> bool:
         return bool(Path(self.ffmpeg_path).exists() if self.ffmpeg_path else False) and super().is_complete()
 
-    def select_ffmpeg_path(self):
+    def select_ffmpeg_root_path(self):
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self,
             caption=self.get_translation("Select ffmpeg directory"),
@@ -168,9 +168,23 @@ class FfmpegWizardPage(
             self.set_config(
                 scope=Section.Root,
                 section=Section.User,
-                key="ffmpeg.path",
+                key="ffmpeg.root",
                 data=directory_path
             )
+
+            binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
+            for binary in binaries:
+                if not (directory_path / binary).exists():
+                    raise FileNotFoundError(f"Binary file \"{binary.stem!s}\" not found. "
+                                            f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html")
+
+                self.set_config(
+                    scope=Section.Root,
+                    section=Section.User,
+                    key=f"ffmpeg.{binary.stem!s}",
+                    data=str(directory_path / binary)
+                )
+
             self.save_config(
                 scope=Section.Root,
                 section=Section.User
@@ -222,7 +236,7 @@ class SetupWizard(QtWidgets.QWizard, LocalesAccessorMixin):
         self.pages = (
             LocaleWizardPage(self),
             ThemeWizardPage(self),
-            FfmpegWizardPage(self),
+            ConverterWizardPage(self),
             FinishWizardPage(self)
         )
 

@@ -1,5 +1,6 @@
 import datetime
 import dataclasses as dt
+from typing import Optional
 
 
 @dt.dataclass
@@ -10,36 +11,46 @@ class CoverImage:
 
 
 @dt.dataclass
-class FileFormat:
+class Codec:
     name: str
-    description: str = dt.field(default="")
+    type: str
+    long_name: str
+
+
+class ChannelsLayout:
+    mono: str = "mono"
+    stereo: str = "stereo"
 
 
 @dt.dataclass
 class FileInfo:
-    bitrate: int
+    filename: str
+    bit_rate: int
     bit_depth: int
     sample_rate: float
-    file_format: FileFormat
+    duration: float
+    codec: Codec
+    channels: int = dt.field(default=2)
+    channels_layout: ChannelsLayout = dt.field(default=ChannelsLayout.stereo)
 
 
 @dt.dataclass
 class Metadata:
     title: str
-    genre: str
-    subgenre: str
-    track_number: int
-    cover_image: CoverImage
-    primary_artist: str
-    featured_artist: str
-    publisher: str
-    additional_contributors: list[str]
-    explicit_content: bool
-    lyrics_language: str
-    lyrics_publisher: str
-    composition_owner: str
-    year_of_composition: datetime.date
-    release_language: str
+    genre: Optional[str] = None
+    subgenre: Optional[str] = None
+    track_number: Optional[int] = None
+    cover_image: Optional[CoverImage] = None
+    primary_artist: Optional[str] = None
+    publisher: Optional[str] = None
+    explicit_content: Optional[bool] = None
+    lyrics_language: Optional[str] = None
+    lyrics_publisher: Optional[str] = None
+    composition_owner: Optional[str] = None
+    release_language: Optional[str] = None
+    featured_artist: str = dt.field(default_factory=str)
+    additional_contributors: list[str] = dt.field(default_factory=list)
+    year_of_composition: datetime.date = dt.field(default=datetime.date(1999, 1, 1))
 
 
 @dt.dataclass

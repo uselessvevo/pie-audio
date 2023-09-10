@@ -1,5 +1,21 @@
 /*Tips label*/
 
+#ConverterList {
+    background-color: #353535;
+    border: 1px solid transparent;
+    border-radius: 3px;
+}
+
+#ConverterItemFormat {
+    background-color: #f5a56c;
+    border: 2px solid #f5a56c;
+    border-radius: 17px;
+}
+
+#ConverterItemDescription {
+    font-style: italic;
+}
+
 #spacer {
    background-color: transparent;
 }

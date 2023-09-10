@@ -41,7 +41,7 @@ class AppConfigPage(
         self._ffmpeg_line_edit = QLineEdit()
         self._ffmpeg_line_edit.set_object_name("SettingsLineEdit")
         self._ffmpeg_line_edit.insert(
-            self.get_config("ffmpeg.path", scope=Section.Root, section=Section.User)
+            self.get_config("ffmpeg.root", scope=Section.Root, section=Section.User)
         )
         self._ffmpeg_line_edit.add_action(
             self._ffmpeg_line_edit_action, QLineEdit.ActionPosition.TrailingPosition

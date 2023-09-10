@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 
 from piekit.utils.files import read_json
 from piekit.config import Config

@@ -57,8 +57,6 @@ class PiePlugin(
     sig_exception_occurred = Signal(Error)
 
     def __init__(self, parent: QMainWindow = None, path: Path = None) -> None:
-        # For some reason, I can't use `super().__init__()` method with `PySide`
-
         # Initialize `QObject` instance
         QObject.__init__(self, parent)
 
@@ -116,7 +114,7 @@ class PiePlugin(
         """
         Method that prepare PiePluginAPI based instance
         """
-        from piekit.plugins.api.api import PiePluginAPI
+        from piekit.plugins.api import PiePluginAPI
 
         if self.api and issubclass(self.api, PiePluginAPI):
             self.api = self.api(self)
@@ -124,15 +122,13 @@ class PiePlugin(
 
     # Properties
 
-    @property
-    def path(self) -> Path:
+    def get_path(self) -> Path:
         return self._path
 
-    def description(self) -> str:
+    def get_description(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    @property
-    def name(self) -> str:
+    def get_name(self) -> str:
         return self.name or self.__class__.__name__
 
     @property

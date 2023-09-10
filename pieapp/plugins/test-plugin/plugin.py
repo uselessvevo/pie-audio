@@ -140,7 +140,7 @@ class TestPlugin(
     # Test methods
 
     def test_set_config_fields(self) -> None:
-        self._logger.debug("Trying to change `Config.APP_ROOT/IMMUTABLE_FIELD` fields")
+        self._logger.debug("Trying to change \"Config.APP_ROOT/IMMUTABLE_FIELD\" fields")
         Config.APP_ROOT = 123
         Config.IMMUTABLE_FIELD = "New immutable value"
 

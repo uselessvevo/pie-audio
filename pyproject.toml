@@ -36,7 +36,7 @@ dependencies  = [
     "watchdog==3.0.0",
     "win32-setctime",
     "version-parser==1.0.1",
-    "attrs==23.1.0"
+    "ffmpeg-box@git+https://github.com/uselessvevo/ffmpeg-box"
 ]
 
 [project.optional-dependencies]

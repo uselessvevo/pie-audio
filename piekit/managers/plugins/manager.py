@@ -67,7 +67,7 @@ class PluginManager(BaseManager):
         """
         plugins = plugins if not full_house else self._plugins_registry.keys()
         for plugin in plugins:
-            self._logger.info(f"Shutting down {plugin} from {self.__class__.__name__}")
+            self._logger.info(f"Shutting down plugin \"{plugin}\" from {self.__class__.__name__}")
             if plugin in self._plugins_registry:
                 self._shutdown_plugin(plugin)
 
@@ -183,7 +183,7 @@ class PluginManager(BaseManager):
         self._notify_plugin_dependencies(plugin_instance.name)
 
         # Inform about that
-        self._logger.info(f"{plugin_instance.type.value.capitalize()} {plugin_instance.name} is ready!")
+        self._logger.info(f"{plugin_instance.type.value.capitalize()} {plugin_instance.name} is ready")
 
     def _notify_plugin_availability(
         self,
