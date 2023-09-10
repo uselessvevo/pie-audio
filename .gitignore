@@ -1,5 +1,5 @@
 .idea/
-.test/
+/test/
 
 TODO.md
 poetry.lock
