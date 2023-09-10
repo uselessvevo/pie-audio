@@ -27,17 +27,10 @@ classifiers = [
     "Natural Language :: English",
     "Natural Language :: Russian",
 ]
-dependencies  = [
-    "colorama>=0.4.6",
-    "loguru>=0.6.0",
-    "PySide6==6.4.3",
-    "click>=8.1.3",
-    "dotty-dict>=1.3.1",
-    "watchdog==3.0.0",
-    "win32-setctime",
-    "version-parser==1.0.1",
-    "ffmpeg-box@git+https://github.com/uselessvevo/ffmpeg-box"
-]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements/default.txt"]}
 
 [project.optional-dependencies]
 build = ["Nuitka==1.5.5"]

@@ -1,0 +1,9 @@
+colorama>=0.4.6
+loguru>=0.6.0
+PySide6==6.4.3
+click>=8.1.3
+dotty-dict>=1.3.1
+watchdog==3.0.0
+win32-setctime
+version-parser==1.0.1
+ffmpeg-python==0.2.0
