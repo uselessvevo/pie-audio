@@ -73,5 +73,5 @@ class About(
         )
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return About(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    return About(parent, plugin_path)

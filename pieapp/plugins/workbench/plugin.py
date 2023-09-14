@@ -60,5 +60,5 @@ class Workbench(
         )
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return Workbench(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    return Workbench(parent, plugin_path)

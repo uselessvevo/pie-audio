@@ -108,17 +108,14 @@ class PluginManager(BaseManager):
 
                 # Add our plugin into sys.path
                 sys.path.append(os.path.abspath(str(plugin_path)))
-                plugin_package_module = import_by_path("plugin", str(plugin_path / "__init__.py"))
+                plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
                 try:
                     self._check_versions(plugin_package_module)
                 except AttributeError as e:
                     raise PieException(str(e))
 
                 # Importing plugin module
-                plugin_module = import_by_path("plugin", str(plugin_path / "plugin.py"))
-                if (plugin_path / "config.py").exists():
-                    config_module = import_by_path("config", str(plugin_path / "config.py"))
-                    Global.load_module(config_module)
+                plugin_module = import_by_path(str(plugin_path / "plugin.py"))
 
                 # Setup plugin via `PluginManager`
                 for plugin_manager in self._plugin_managers:

@@ -31,6 +31,6 @@ class TestPluginConfigPage(ConfigPage):
         print("Canceled")
 
 
-def main(*args, **kwargs) -> Union[ConfigPage, None]:
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[ConfigPage, None]:
     if Global.TEST_PLUGIN_ENABLE:
-        return TestPluginConfigPage(*args, **kwargs)
+        return TestPluginConfigPage(parent, plugin_path)

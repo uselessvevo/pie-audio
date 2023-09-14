@@ -39,6 +39,6 @@ class TestPluginChild(
         self._logger.debug(f"{self.name}'s button clicked")
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
     if Global.TEST_PLUGIN_ENABLE:
-        return TestPluginChild(*args, **kwargs)
+        return TestPluginChild(parent, plugin_path)

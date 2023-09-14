@@ -16,6 +16,7 @@ from piekit.managers.confpages.structs import CustomTreeWidgetItem, ConfigPage
 from piekit.widgets.spacer import Spacer
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.structs import Section
+from piekit.utils.modules import import_by_path
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
@@ -172,5 +173,6 @@ class Settings(
         )
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return Settings(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    Global.load_by_path(str(plugin_path / "globals.py"))
+    return Settings(parent, plugin_path)

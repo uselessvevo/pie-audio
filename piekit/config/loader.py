@@ -4,6 +4,7 @@ from typing import Any, Type
 from types import ModuleType
 
 from piekit.config.types import AnnotatedHandler
+from piekit.utils.modules import import_by_path
 
 
 class GlobalLoader:
@@ -38,6 +39,12 @@ class GlobalLoader:
             raise e
 
         self.load_module(config_module)
+
+    def load_by_path(self, path: str) -> None:
+        """
+        A shortcut method to load module by path
+        """
+        self.load_module(import_by_path(path))
 
     def load_module(self, config_module: ModuleType) -> None:
         """

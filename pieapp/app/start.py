@@ -25,8 +25,8 @@ def start_application(*args, **kwargs) -> None:
     Global.add_handlers(Lock, Max, Min)
     
     # Load configuration modules
-    Global.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.config"))
-    Global.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.config"))
+    Global.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.globals"))
+    Global.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.globals"))
 
     # Swapping the exception hook
     if bool(int(Global.USE_EXCEPTION_HOOK)):

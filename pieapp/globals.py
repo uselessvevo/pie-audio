@@ -16,6 +16,7 @@ PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
 MAIN_GRID_LAYOUT_CLASS: Lock = QGridLayout
 MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
+TOOL_BUTTON_ICON_SIZE: Lock = (25, 25)
 
 # List of excluded file formats
 ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]

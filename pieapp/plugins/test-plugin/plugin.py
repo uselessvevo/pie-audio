@@ -24,6 +24,7 @@ from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available
 from piekit.utils.logger import logger
+from piekit.utils.modules import import_by_path
 
 
 class TestPlugin(
@@ -205,7 +206,9 @@ class TestMagicManager(BaseManager):
         self.init()
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    Global.load_by_path(str(plugin_path / "globals.py"))
+
     if Global.TEST_PLUGIN_ENABLE:
         Managers.from_class(TestMagicManager)
-        return TestPlugin(*args, **kwargs)
+        return TestPlugin(parent, plugin_path)
