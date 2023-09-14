@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from piekit.utils.files import read_json
-from piekit.config import Config
+from piekit.config import Global
 from piekit.managers.base import PluginBaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
@@ -15,16 +15,16 @@ class LocaleManager(PluginBaseManager):
             scope=Section.Root,
             section=Section.User,
             key="locale.locale",
-            default=Config.DEFAULT_LOCALE
+            default=Global.DEFAULT_LOCALE
         )
         self._roots: set[Path] = set()
         self._translations: dict[str, dict[str, str]] = {}
 
     def init(self) -> None:
         # Read app/user configuration
-        self._roots.add(Config.APP_ROOT)
+        self._roots.add(Global.APP_ROOT)
 
-        for file in (Config.APP_ROOT / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
+        for file in (Global.APP_ROOT / Global.LOCALES_FOLDER / self._locale).rglob("*.json"):
             section = Section.Shared
             if not self._translations.get(section):
                 self._translations[section] = {}
@@ -35,7 +35,7 @@ class LocaleManager(PluginBaseManager):
         for folder in plugin_folder.iterdir():
             self._roots.add(folder)
 
-            for file in (folder / Config.LOCALES_FOLDER / self._locale).rglob("*.json"):
+            for file in (folder / Global.LOCALES_FOLDER / self._locale).rglob("*.json"):
                 if not self._translations.get(file.name):
                     self._translations[file.stem] = {}
 

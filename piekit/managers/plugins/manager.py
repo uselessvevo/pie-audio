@@ -12,7 +12,7 @@ from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.utils.core import get_main_window
 
-from piekit.config import Config
+from piekit.config import Global
 from piekit.exceptions import PieException
 from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin
@@ -54,8 +54,8 @@ class PluginManager(BaseManager):
         if not main_window:
             raise PieException(f"Can't find an initialized QMainWindow instance")
 
-        self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, main_window)
-        self._initialize_from_packages(Config.USER_ROOT / Config.PLUGINS_FOLDER, main_window)
+        self._initialize_from_packages(Global.APP_ROOT / Global.PLUGINS_FOLDER, main_window)
+        self._initialize_from_packages(Global.USER_ROOT / Global.PLUGINS_FOLDER, main_window)
 
     def shutdown(self, *plugins: str, full_house: bool = False) -> None:
         """
@@ -118,7 +118,7 @@ class PluginManager(BaseManager):
                 plugin_module = import_by_path("plugin", str(plugin_path / "plugin.py"))
                 if (plugin_path / "config.py").exists():
                     config_module = import_by_path("config", str(plugin_path / "config.py"))
-                    Config.load_module(config_module)
+                    Global.load_module(config_module)
 
                 # Setup plugin via `PluginManager`
                 for plugin_manager in self._plugin_managers:
@@ -134,8 +134,8 @@ class PluginManager(BaseManager):
         """
         Check application/pieapp, piekit and plugin version
         """
-        PIEAPP_APPLICATION_VERSION = Version(Config.PIEAPP_APPLICATION_VERSION)
-        piekit_version = Version(Config.PIEKIT_VERSION)
+        PIEAPP_APPLICATION_VERSION = Version(Global.PIEAPP_APPLICATION_VERSION)
+        piekit_version = Version(Global.PIEKIT_VERSION)
 
         if not plugin_package.version:
             raise AttributeError(f"Plugin {plugin_package.name} must have `version` attribute")
@@ -144,11 +144,11 @@ class PluginManager(BaseManager):
         required_piekit_version = Version(plugin_package.piekit_version)
 
         if PIEAPP_APPLICATION_VERSION.get_major_version() != required_PIEAPP_APPLICATION_VERSION.get_major_version():
-            raise AttributeError(f"Application version ({Config.PIEAPP_APPLICATION_VERSION}) is not compatible with plugin"
+            raise AttributeError(f"Application version ({Global.PIEAPP_APPLICATION_VERSION}) is not compatible with plugin"
                                  f"{plugin_package.name} version ({plugin_package.PIEAPP_APPLICATION_VERSION})")
 
         if piekit_version != required_piekit_version:
-            raise AttributeError(f"PieKit version ({Config.PIEKIT_VERSION}) is not compatible with plugin"
+            raise AttributeError(f"PieKit version ({Global.PIEKIT_VERSION}) is not compatible with plugin"
                                  f"{plugin_package.name} version ({plugin_package.piekit_version})")
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:

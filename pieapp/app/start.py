@@ -4,7 +4,7 @@ from __feature__ import snake_case
 import os
 import sys
 
-from piekit.config import Config, Lock, Max, Min
+from piekit.config import Global, Lock, Max, Min
 from pieapp.wizard.wizard import SetupWizard
 from piekit.managers.assets.utils import get_palette, get_theme
 from piekit.managers.registry import Managers
@@ -22,26 +22,26 @@ def start_application(*args, **kwargs) -> None:
     Main start-up entrypoint
     """
     # Adding additional magic-annotations
-    Config.add_handlers(Lock, Max, Min)
+    Global.add_handlers(Lock, Max, Min)
     
     # Load configuration modules
-    Config.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.config"))
-    Config.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.config"))
+    Global.import_module(os.getenv("PIE_SYS_CONFIG_MODULE", "piekit.config.config"))
+    Global.import_module(os.getenv("PIE_APP_CONFIG_MODULE", "pieapp.config"))
 
     # Swapping the exception hook
-    if bool(int(Config.USE_EXCEPTION_HOOK)):
+    if bool(int(Global.USE_EXCEPTION_HOOK)):
         sys.excepthook = except_hook
 
     # Initializing the `QApplication` instance
     splash = None
     app = get_application(sys.argv)
-    app.set_application_name(Config.PIEAPP_APPLICATION_NAME)
-    app.set_application_version(Config.PIEAPP_APPLICATION_VERSION)
-    app.set_organization_name(Config.PIEAPP_ORGANIZATION_NAME)
-    app.set_organization_domain(Config.PIEAPP_ORGANIZATION_DOMAIN)
+    app.set_application_name(Global.PIEAPP_APPLICATION_NAME)
+    app.set_application_version(Global.PIEAPP_APPLICATION_VERSION)
+    app.set_organization_name(Global.PIEAPP_ORGANIZATION_NAME)
+    app.set_organization_domain(Global.PIEAPP_ORGANIZATION_DOMAIN)
 
     # Preparing splash screen
-    splash_image = Config.APP_ROOT / Config.ASSETS_FOLDER / "splash.svg"
+    splash_image = Global.APP_ROOT / Global.ASSETS_FOLDER / "splash.svg"
 
     if not is_debug() and splash_image.exists():
         splash = SplashScreen(str(splash_image))
@@ -61,7 +61,7 @@ def start_application(*args, **kwargs) -> None:
         settings.set_value("first_run", False)
 
     if first_run or not fully_setup:
-        for manager in Config.CORE_MANAGERS:
+        for manager in Global.CORE_MANAGERS:
             Managers.from_config(manager)
 
         # Closing splashscreen because we don't need it here
@@ -79,13 +79,13 @@ def start_application(*args, **kwargs) -> None:
     main_window = MainWindow()
 
     # Starting all managers by order
-    for manager in Config.CORE_MANAGERS:
+    for manager in Global.CORE_MANAGERS:
         Managers.from_config(manager)
 
     # Applying *fantasticly* good theme
     theme = Managers(SysManager.Assets).get_theme()
     if theme:
-        if Config.ASSETS_USE_STYLE:
+        if Global.ASSETS_USE_STYLE:
             app.set_style_sheet(get_theme(theme))
             palette = get_palette(theme)
             if palette:
@@ -100,13 +100,13 @@ def start_application(*args, **kwargs) -> None:
     main_window.prepare_main_window()
 
     # Starting all managers by order
-    for manager in Config.LAYOUT_MANAGERS:
+    for manager in Global.LAYOUT_MANAGERS:
         Managers.from_config(manager)
 
     main_window.prepare_main_layout()
     main_window.prepare_central_widget()
 
-    Managers.from_config(Config.PLUGIN_MANAGER)
+    Managers.from_config(Global.PLUGIN_MANAGER)
 
     main_window.show()
 

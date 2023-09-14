@@ -3,7 +3,7 @@ from typing import Union
 from __feature__ import snake_case
 
 from piekit.widgets.spacer import Spacer
-from piekit.config.loader import Config
+from piekit.config.loader import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -47,10 +47,10 @@ class AppConfigPage(
             self._ffmpeg_line_edit_action, QLineEdit.ActionPosition.TrailingPosition
         )
 
-        self._locales = Config.LOCALES
+        self._locales = Global.LOCALES
         self._cur_locale = self.get_config(
             key="locale.locale",
-            default=Config.DEFAULT_LOCALE,
+            default=Global.DEFAULT_LOCALE,
             scope=Section.Root,
             section=Section.User
         )
@@ -105,7 +105,7 @@ class AppConfigPage(
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self._main_widget,
             caption=self.get_translation("Select ffmpeg directory"),
-            dir=str(Config.USER_ROOT)
+            dir=str(Global.USER_ROOT)
         )
 
         directory_path = QDir.to_native_separators(ffmpeg_directory)

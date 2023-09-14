@@ -6,7 +6,7 @@ from types import ModuleType
 from piekit.config.types import AnnotatedHandler
 
 
-class ConfigLoader:
+class GlobalLoader:
     """
     Configuration modules loader
     """
@@ -88,4 +88,4 @@ class ConfigLoader:
             self.__dict__[field] = value
 
 
-Config = ConfigLoader()
+Global = GlobalLoader()

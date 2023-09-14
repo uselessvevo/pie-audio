@@ -2,7 +2,7 @@ from typing import Any, Union
 
 from PySide6.QtGui import QIcon
 
-from piekit.config import Config
+from piekit.config import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 
@@ -29,7 +29,7 @@ class AssetsAccessorMixin:
         return QIcon(Managers(SysManager.Assets).get(section or self.section, key, default))
 
     def get_plugin_icon(self) -> "QIcon":
-        return QIcon(Managers(SysManager.Assets).get(self.name, Config.PLUGIN_ICON_NAME))
+        return QIcon(Managers(SysManager.Assets).get(self.name, Global.PLUGIN_ICON_NAME))
 
     getAsset = get_asset
     getAssetIcon = get_asset_icon

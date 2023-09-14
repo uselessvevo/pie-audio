@@ -12,7 +12,7 @@ from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
-from piekit.config import Config
+from piekit.config import Global
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available
@@ -45,12 +45,12 @@ class About(
         description_label = QLabel()
         description_label.set_text(
             f'{self.get_translation("Pie Audio • Audio Converter")} '
-            f'({Config.PIEAPP_APPLICATION_VERSION})'
+            f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
 
         github_link_label = QLabel()
         github_link_label.set_open_external_links(True)
-        github_link_label.set_text(f"<a href='{Config.PIEAPP_PROJECT_URL}'>{self.get_translation('Project URL')}</a>")
+        github_link_label.set_text(f"<a href='{Global.PIEAPP_PROJECT_URL}'>{self.get_translation('Project URL')}</a>")
 
         grid_layout = QGridLayout()
         grid_layout.add_widget(icon_label, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)

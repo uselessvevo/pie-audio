@@ -6,7 +6,7 @@ from __feature__ import snake_case
 from PySide6.QtCore import QCoreApplication, QProcess
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from piekit.config import Config
+from piekit.config import Global
 from piekit.managers.registry import Managers
 from piekit.utils.files import write_json
 from piekit.widgets.errorwindow import ErrorWindow
@@ -39,19 +39,19 @@ def restart_application() -> None:
 
 def check_crabs() -> bool:
     return (
-        Config.USER_ROOT.exists()
-        or (Config.USER_ROOT / Config.CONFIGS_FOLDER).exists()
-        or (Config.USER_ROOT / Config.CONFIGS_FOLDER / Config.CONFIG_FILE_NAME).exists()
+            Global.USER_ROOT.exists()
+            or (Global.USER_ROOT / Global.CONFIGS_FOLDER).exists()
+            or (Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME).exists()
     )
 
 
 def restore_crabs() -> None:
-    if not Config.USER_ROOT.exists():
-        Config.USER_ROOT.mkdir()
-        (Config.USER_ROOT / Config.USER_CONFIG_FOLDER).mkdir()
-        (Config.USER_ROOT / Config.USER_PLUGINS_FOLDER).mkdir()
+    if not Global.USER_ROOT.exists():
+        Global.USER_ROOT.mkdir()
+        (Global.USER_ROOT / Global.USER_CONFIG_FOLDER).mkdir()
+        (Global.USER_ROOT / Global.USER_PLUGINS_FOLDER).mkdir()
         write_json(
-            file=str(Config.USER_ROOT / Config.USER_CONFIG_FOLDER / Config.CONFIG_FILE_NAME),
+            file=str(Global.USER_ROOT / Global.USER_CONFIG_FOLDER / Global.CONFIG_FILE_NAME),
             data={"crab_status": "what a crab doin?"},
             create=True
         )

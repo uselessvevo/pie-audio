@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
 
-from piekit.config import Config
+from piekit.config import Global
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -40,5 +40,5 @@ class TestPluginChild(
 
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    if Config.TEST_PLUGIN_ENABLE:
+    if Global.TEST_PLUGIN_ENABLE:
         return TestPluginChild(*args, **kwargs)

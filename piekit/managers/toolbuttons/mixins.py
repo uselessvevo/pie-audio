@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
-from piekit.config import Config
+from piekit.config import Global
 
 
 class ToolButtonAccessorMixin:
@@ -43,7 +43,7 @@ class ToolButtonAccessorMixin:
             tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
         tool_button.set_focus_policy(Qt.FocusPolicy.NoFocus)
-        tool_button.set_icon_size(QSize(*Config.TOOL_BUTTON_ICON_SIZE))
+        tool_button.set_icon_size(QSize(*Global.TOOL_BUTTON_ICON_SIZE))
 
         return Managers(SysManager.ToolButton).add_tool_button(section or Section.Shared, name, tool_button)
 

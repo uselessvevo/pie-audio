@@ -5,7 +5,7 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
 
-from piekit.config import Config
+from piekit.config import Global
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.plugins import Plugin
@@ -43,8 +43,8 @@ class Settings(
         self._dialog.set_object_name("SettingsDialog")
         self._dialog.set_window_title(self.get_translation("Settings"))
         self._dialog.set_window_icon(self.get_plugin_icon())
-        self._dialog.set_minimum_size(*Config.SETTINGS_PLUGIN_MIN_SIZE)
-        self._dialog.resize(*self.get_config("ui.window_size", Config.SETTINGS_PLUGIN_MIN_SIZE))
+        self._dialog.set_minimum_size(*Global.SETTINGS_PLUGIN_MIN_SIZE)
+        self._dialog.resize(*self.get_config("ui.window_size", Global.SETTINGS_PLUGIN_MIN_SIZE))
 
         # Page canvas and its state
         self._page_widget_grid = QGridLayout()

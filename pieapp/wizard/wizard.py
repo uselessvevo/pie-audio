@@ -15,7 +15,7 @@ from piekit.managers.structs import SysManager, Section
 from piekit.utils.core import restart_application
 
 from piekit.managers.registry import Managers
-from piekit.config import Config
+from piekit.config import Global
 
 
 class LocaleWizardPage(
@@ -29,10 +29,10 @@ class LocaleWizardPage(
         super().__init__(parent)
 
         self._parent = parent
-        self._locales = Config.LOCALES
+        self._locales = Global.LOCALES
         self._cur_locale = self.get_config(
             key="locale.locale",
-            default=Config.DEFAULT_LOCALE,
+            default=Global.DEFAULT_LOCALE,
             scope=Section.Root,
             section=Section.User
         )
@@ -160,7 +160,7 @@ class ConverterWizardPage(
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self,
             caption=self.get_translation("Select ffmpeg directory"),
-            dir=str(Config.USER_ROOT)
+            dir=str(Global.USER_ROOT)
         )
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
@@ -224,7 +224,7 @@ class SetupWizard(QtWidgets.QWizard, LocalesAccessorMixin):
         if os.name == "nt":
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                Config.PIEAPP_ORGANIZATION_DOMAIN
+                Global.PIEAPP_ORGANIZATION_DOMAIN
             )
 
         self.resize(640, 380)

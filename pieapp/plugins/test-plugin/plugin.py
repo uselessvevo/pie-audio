@@ -9,7 +9,7 @@ from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 
-from piekit.config import Config
+from piekit.config import Global
 from piekit.managers.base import BaseManager
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.registry import Managers
@@ -141,8 +141,8 @@ class TestPlugin(
 
     def test_set_config_fields(self) -> None:
         self._logger.debug("Trying to change \"Config.APP_ROOT/IMMUTABLE_FIELD\" fields")
-        Config.APP_ROOT = 123
-        Config.IMMUTABLE_FIELD = "New immutable value"
+        Global.APP_ROOT = 123
+        Global.IMMUTABLE_FIELD = "New immutable value"
 
     def test_show_inner_dialog(self) -> None:
         inner_dialog = QDialog(self._dialog)
@@ -150,7 +150,7 @@ class TestPlugin(
         inner_dialog.show()
 
     def test_plugin_info(self) -> None:
-        self.logger.debug(f"{Config.APP_ROOT=}, {Config.TEST_STR_ATTRIBUTE=}, {Config.TEST_LIST_ATTRIBUTE=}")
+        self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
         self.logger.debug(self.get_asset("cancel.png"))
         self.logger.debug(self.get_plugin_icon())
         self.logger.debug(self.get_translation("Test String"))
@@ -206,6 +206,6 @@ class TestMagicManager(BaseManager):
 
 
 def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    if Config.TEST_PLUGIN_ENABLE:
+    if Global.TEST_PLUGIN_ENABLE:
         Managers.from_class(TestMagicManager)
         return TestPlugin(*args, **kwargs)

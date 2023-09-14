@@ -4,7 +4,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Union
 
-from piekit.config import Config
+from piekit.config import Global
 from piekit.exceptions import PieException
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
@@ -26,7 +26,7 @@ class ConfigPageManager(PluginBaseManager):
         self._pages_list: list[ConfigPage] = []
 
     def init(self) -> None:
-        folder = Config.APP_ROOT / Config.CONF_PAGES_FOLDER
+        folder = Global.APP_ROOT / Global.CONF_PAGES_FOLDER
         if (folder / "confpage.py").exists():
             confpage_module: ModuleType = import_by_path("confpage", str(folder / "confpage.py"))
             confpage_instance = getattr(confpage_module, "main")()

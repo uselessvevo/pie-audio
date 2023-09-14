@@ -1,2 +1,2 @@
 from piekit.config.types import *
-from piekit.config.loader import Config
+from piekit.config.loader import Global
