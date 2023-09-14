@@ -7,9 +7,9 @@
 }
 
 #ConverterItemFormat {
-    background-color: #f5a56c;
-    border: 2px solid #f5a56c;
+    color: white;
     border-radius: 17px;
+    border: 2px solid transparent;
 }
 
 #ConverterItemDescription {

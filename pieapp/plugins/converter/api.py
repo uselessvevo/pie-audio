@@ -11,6 +11,8 @@ from dotty_dict import Dotty
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QRunnable, QObject, Signal, Slot, QThreadPool
 
+from pieapp.structs.plugins import Plugin
+from piekit.plugins.utils import get_plugin
 from piekit.utils.logger import logger
 from piekit.plugins import PiePluginAPI
 from piekit.managers.structs import Section
@@ -87,6 +89,7 @@ class ConverterAPI(
     LocalesAccessorMixin,
 ):
     def init(self) -> None:
+        self._current_files = []
         self._chunk_size = self.get_config(
             key="ffmpeg.chunk_size",
             default=10,
@@ -99,14 +102,17 @@ class ConverterAPI(
             scope=Section.Root,
             section=Section.User
         )
-        self._current_files = []
 
     def _split_by_chunks(self, files: tuple[str], n: int) -> Generator:
         for i in range(0, len(files), n):
             yield files[i:i + n]
 
-    def _fill_table(self, models_list: list[MediaFile]) -> None:
+    def _worker_started(self) -> None:
+        get_plugin(Plugin.StatusBar).show_message(self.get_translation("Loading files"))
+
+    def _worker_finished(self, models_list: list[MediaFile]) -> None:
         self._parent.fill_list(models_list)
+        get_plugin(Plugin.StatusBar).show_message(self.get_translation("Done loading files"))
 
     def open_files(self) -> None:
         selected_files = QFileDialog.get_open_file_names(caption=self.get_translation("Open files"))
@@ -121,5 +127,6 @@ class ConverterAPI(
             self._current_files.extend(filtered_chunk)
 
             worker = Worker(self._ffprobe_command, filtered_chunk)
-            worker.signals.completed.connect(self._fill_table)
+            worker.signals.started.connect(self._worker_started)
+            worker.signals.completed.connect(self._worker_finished)
             pool.start(worker)

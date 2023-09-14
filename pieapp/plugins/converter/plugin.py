@@ -48,8 +48,8 @@ class Converter(
             self._list_grid_layout.remove_item(widget)
             self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
-        for file in files:
-            widget = ConverterItemWidget(self._content_list)
+        for index, file in enumerate(files):
+            widget = ConverterItemWidget(self._content_list, index, file.info.codec.name)
             widget.set_title(file.info.filename)
             widget.set_description(f"{file.info.bit_rate}kb/s")
             widget.set_icon(file.info.codec.name)
