@@ -1,6 +1,6 @@
 import os
 
-from piekit.config import Max, Min, Lock
+from piekit.globals import Max, Min, Lock
 
 TEST_PLUGIN_ENABLE: Lock = bool(int(os.getenv("PIE_TEST_PLUGIN_ENABLE", False)))
 REGISTER_ON_MAIN_LAYOUT: Lock = bool(int(os.getenv("PIE_TEST_PLUGIN_REGISTER_ON_MW_LAYOUT", False)))

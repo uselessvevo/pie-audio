@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
 
-from piekit.config import Global
+from piekit.globals import Global
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessorMixin

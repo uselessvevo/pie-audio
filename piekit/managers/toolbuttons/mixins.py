@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QToolButton
 
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
-from piekit.config import Global
+from piekit.globals import Global
 
 
 class ToolButtonAccessorMixin:

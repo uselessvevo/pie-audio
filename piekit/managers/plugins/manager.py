@@ -12,7 +12,7 @@ from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.utils.core import get_main_window
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.exceptions import PieException
 from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin

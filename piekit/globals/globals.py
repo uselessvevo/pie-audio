@@ -2,7 +2,7 @@ import locale
 import os.path
 from pathlib import Path
 
-from piekit.config.types import Lock
+from piekit.globals.types import Lock
 
 PIEKIT_VERSION: Lock = "1.0.0"
 

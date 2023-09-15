@@ -5,7 +5,7 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
 
-from piekit.config import Global
+from piekit.globals import Global
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.plugins import Plugin

@@ -1,9 +1,11 @@
+import os
 import warnings
 import importlib
 from typing import Any, Type
 from types import ModuleType
 
-from piekit.config.types import AnnotatedHandler
+from piekit.exceptions import PieException
+from piekit.globals.types import AnnotatedHandler
 from piekit.utils.modules import import_by_path
 
 
@@ -44,6 +46,9 @@ class GlobalLoader:
         """
         A shortcut method to load module by path
         """
+        if not os.path.exists(path):
+            raise PieException(f"Can't find module \"{path}\"")
+        
         self.load_module(import_by_path(path))
 
     def load_module(self, config_module: ModuleType) -> None:

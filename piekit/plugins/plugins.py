@@ -4,7 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QMainWindow
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.utils.logger import logger
 from piekit.plugins.types import PluginType, Error
 from piekit.plugins.observer import PluginsObserverMixin

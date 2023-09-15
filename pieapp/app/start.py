@@ -4,7 +4,7 @@ from __feature__ import snake_case
 import os
 import sys
 
-from piekit.config import Global, Lock, Max, Min
+from piekit.globals import Global, Lock, Max, Min
 from pieapp.wizard.wizard import SetupWizard
 from piekit.managers.assets.utils import get_palette, get_theme
 from piekit.managers.registry import Managers
@@ -25,7 +25,7 @@ def start_application(*args, **kwargs) -> None:
     Global.add_handlers(Lock, Max, Min)
     
     # Load configuration modules
-    Global.import_module(os.getenv("PIE_SYS_GLOBALS_MODULE", "piekit.config.globals"))
+    Global.import_module(os.getenv("PIE_SYS_GLOBALS_MODULE", "piekit.globals.globals"))
     Global.import_module(os.getenv("PIE_APP_GLOBALS_MODULE", "pieapp.globals"))
 
     # Swapping the exception hook

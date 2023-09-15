@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtWidgets import QGridLayout
 
-from piekit.config.types import Lock
+from piekit.globals.types import Lock
 from piekit.managers.structs import DirectoryType
 from piekit.managers.structs import ManagerConfig
 

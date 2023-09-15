@@ -3,7 +3,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Union
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.managers.base import PluginBaseManager
@@ -45,7 +45,6 @@ class ConfigPageManager(PluginBaseManager):
                     confpage_instance.init()
                     self._pages_list.append(confpage_instance)
 
-    def on_post_init_plugin(self, plugin_folder: Path) -> None:
         page_instances: list[ConfigPage] = list(sorted(self._pages_list, key=lambda v: v.root is None))
         for page_instance in reversed(page_instances):
             # Check if page is a category root item, and it doesn't exist in `self._pages`

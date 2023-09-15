@@ -8,7 +8,7 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QMainWindow
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.layouts.layouts import MainGridLayout
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.structs import Section

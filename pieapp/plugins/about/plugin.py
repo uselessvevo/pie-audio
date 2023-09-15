@@ -12,7 +12,7 @@ from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available

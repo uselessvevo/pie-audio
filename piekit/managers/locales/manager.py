@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from piekit.utils.files import read_json
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.managers.base import PluginBaseManager
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section

@@ -1,6 +1,6 @@
 from typing import Union
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.managers.confpages.structs import ConfigPage
 
 from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout

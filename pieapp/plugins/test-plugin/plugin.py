@@ -9,7 +9,7 @@ from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.managers.base import BaseManager
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.registry import Managers

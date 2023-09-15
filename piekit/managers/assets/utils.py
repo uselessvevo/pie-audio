@@ -5,7 +5,7 @@ import importlib
 import importlib.util
 from pathlib import Path
 
-from piekit.config import Global
+from piekit.globals import Global
 from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
 
 

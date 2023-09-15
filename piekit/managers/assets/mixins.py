@@ -2,7 +2,7 @@ from typing import Any, Union
 
 from PySide6.QtGui import QIcon
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 

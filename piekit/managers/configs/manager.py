@@ -4,7 +4,7 @@ from typing import Union, Any
 
 from dotty_dict import Dotty
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.exceptions import PieException
 from piekit.managers.base import PluginBaseManager
 from piekit.managers.structs import Section

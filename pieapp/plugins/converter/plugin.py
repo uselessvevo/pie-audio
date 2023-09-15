@@ -9,6 +9,7 @@ from pieapp.structs.workbench import WorkbenchItem
 from piekit.layouts.structs import Layout
 from piekit.widgets.menus import INDEX_START, INDEX_END
 
+from piekit.globals import Global
 from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.plugins.decorators import on_plugin_available
@@ -22,6 +23,7 @@ from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 
 from api import ConverterAPI
 from models import MediaFile
+
 from components.list import ConvertListWidget
 from components.item import ConverterItemWidget
 
@@ -144,4 +146,5 @@ class Converter(
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    Global.load_by_path(str(plugin_path / "globals.py"))
     return Converter(parent, plugin_path)

@@ -6,7 +6,7 @@ from __feature__ import snake_case
 from PySide6.QtCore import QCoreApplication, QProcess
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.managers.registry import Managers
 from piekit.utils.files import write_json
 from piekit.widgets.errorwindow import ErrorWindow

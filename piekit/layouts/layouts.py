@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from piekit.config import Global
+from piekit.globals import Global
 from piekit.layouts.structs import Layout
 
 

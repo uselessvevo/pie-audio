@@ -3,7 +3,7 @@ from typing import Union
 from __feature__ import snake_case
 
 from piekit.widgets.spacer import Spacer
-from piekit.config.loader import Global
+from piekit.globals.loader import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
 from piekit.managers.assets.mixins import AssetsAccessorMixin
