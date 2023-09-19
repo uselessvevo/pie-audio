@@ -95,66 +95,101 @@ QMenuBar {
    background-color: #4a4a4a;
    color: #cccccc;
    min-height:20px;
-   min-width:80px;
-   padding:1px 1px 1px 1px;
+   min-width:50px;
+   padding: 3px 1px 3px 1px;
    font-family: Arial;
 }
 
 QMenuBar::item {
-   spacing:2px;
-   padding: 1px 1px 1px 1px;
    background:transparent;
 }
 
 QMenuBar::item:selected {
    color: #f2f2f2;
-   border: 1px solid #2d73ff;
-   background-color: #2d73ff;
 }
 
 QMenuBar::item:pressed {
    background-color: #2d73ff;
 }
 
-QMenu, QToolButton-item:checked {
+QMenu {
    background-color: #424242;
    border: 1px solid #2d73ff;
    color: #cccccc;
    font-family: Arial;
 }
 
-QMenu::item, QToolButton-item:checked {
+QMenu::item {
    padding:3px 25px 3px 25px;
    border:1px solid transparent;
 }
 
-QMenu::item:disabled, QToolButton-item:disabled {
+QMenu::item:disabled {
    color: gray;
 }
 
-QMenu::item:disabled:selected, QToolButton-item:disabled:selected {
+QMenu::item:disabled:selected {
 	color: #f2f2f2;
 }
 
-QMenu::item:selected, QToolButton-item:selected {
+QMenu::item:selected {
    color: #f2f2f2;
    background-color: #2d73ff;
 }
 
-QMenu::icon:checked, QToolButton-item:checked {
+QMenu::icon:checked {
    background-color: #2d73ff;
    border:1px solid palette(highlight);
    border-radius:2px;
 }
 
-QMenu::separator, QToolButton-item {
+QMenu::separator {
    height:1px;
    background-color: #f2f2f2;
-   margin-left:5px;
-   margin-right:5px;
 }
 
-QMenu::indicator, QToolButton-item {
+QMenu::indicator {
+   width:18px;
+   height:18px;
+}
+
+QToolButton::item:checked {
+   background-color: #424242;
+   border: 1px solid #2d73ff;
+   color: #cccccc;
+   font-family: Arial;
+}
+
+QToolButton::item:checked {
+   padding:3px 25px 3px 25px;
+   border:1px solid transparent;
+}
+
+QToolButton::item:disabled {
+   color: gray;
+}
+
+item:QToolButton::item:disabled:selected {
+	color: #f2f2f2;
+}
+
+QToolButton::item:selected {
+   color: #f2f2f2;
+   background-color: #2d73ff;
+}
+
+QToolButton::item:checked {
+   background-color: #2d73ff;
+   border:1px solid palette(highlight);
+   border-radius:2px;
+}
+
+QToolButton::item {
+   height:1px;
+   background-color: #f2f2f2;
+}
+
+QToolButton::item {
    width:18px;
    height:18px;
 }

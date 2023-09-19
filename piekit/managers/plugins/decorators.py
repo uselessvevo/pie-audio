@@ -53,7 +53,7 @@ def on_plugin_shutdown(func: Callable = None, target: Optional[str] = None):
         func(callable): The same method that was given as input.
     """
     if func is None:
-        return functools.partial(on_plugin_shutdown, plugin=target)
+        return functools.partial(on_plugin_shutdown, target=target)
 
     if target is None:
         raise PieException(
