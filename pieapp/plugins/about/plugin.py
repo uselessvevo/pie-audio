@@ -30,14 +30,14 @@ class About(
     def call(self) -> None:
         self._dialog = QDialog(self._parent)
         self._dialog.set_window_title(self.get_translation("About"))
-        self._dialog.set_window_icon(self.get_plugin_icon())
+        self._dialog.set_window_icon(self.get_plugin_svg_icon())
         self._dialog.resize(400, 300)
 
         ok_button = QPushButton(self.get_translation("Ok"))
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
-        pixmap.load(self.get_asset("cloud.png"))
+        pixmap.load(self.get_asset("cloud.svg"))
 
         icon_label = QLabel()
         icon_label.set_pixmap(pixmap)
@@ -69,7 +69,7 @@ class About(
             name="about",
             text=self.get_translation("About"),
             triggered=self.call,
-            icon=self.get_asset_icon("help.png"),
+            icon=self.get_svg_icon("help.svg"),
         )
 
 

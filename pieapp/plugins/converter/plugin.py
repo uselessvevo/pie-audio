@@ -42,7 +42,6 @@ class Converter(
         self._main_layout = self.get_layout(Layout.Main)
         self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
         self._content_list = ConvertListWidget()
-        self.set_placeholder()
 
     def fill_list(self, files: list[MediaFile]) -> None:
         if not self._content_list.is_visible():
@@ -66,13 +65,6 @@ class Converter(
             self._content_list.add_item(item)
             self._content_list.set_item_widget(item, widget)
 
-    def set_placeholder(self) -> None:
-        placeholder = QLabel("<img src='{icon}' width=64 height=64><br>{text}".format(
-            icon=self.get_asset("empty-box.png"),
-            text=self.get_translation("No files selected")
-        ))
-        placeholder.set_alignment(Qt.AlignmentFlag.AlignCenter)
-        self._list_grid_layout.add_widget(placeholder, 1, 0)
 
     @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
@@ -81,7 +73,7 @@ class Converter(
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
             text=self.get_translation("Open file"),
-            icon=self.get_asset_icon("open-file.png"),
+            icon=self.get_svg_icon("folder-open.svg"),
             index=INDEX_START(),
             triggered=self.api.open_files
         )
@@ -91,7 +83,7 @@ class Converter(
             menu=MainMenu.File,
             name=MainMenuItem.Exit,
             text=self.get_translation("Exit"),
-            icon=self.get_asset_icon("exit.png"),
+            icon=self.get_svg_icon("logout.svg"),
             triggered=self._parent.close,
             index=INDEX_END()
         )
@@ -103,8 +95,9 @@ class Converter(
             name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
             tooltip=self.get_translation("Open file"),
-            icon=self.get_asset_icon("open-folder.png"),
-            triggered=self.api.open_files
+            icon=self.get_svg_icon("folder-open.svg"),
+            triggered=self.api.open_files,
+            object_name="WorkbenchToolButton"
         )
 
         self.add_tool_button(
@@ -112,7 +105,8 @@ class Converter(
             name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
             tooltip=self.get_translation("Convert"),
-            icon=self.get_asset_icon("go.png")
+            icon=self.get_svg_icon("bolt.svg"),
+            object_name="WorkbenchToolButton"
         ).set_enabled(False)
 
         self.add_tool_button(
@@ -120,7 +114,8 @@ class Converter(
             name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),
             tooltip=self.get_translation("Clear"),
-            icon=self.get_asset_icon("recycle-bin.png")
+            icon=self.get_svg_icon("delete.svg"),
+            object_name="WorkbenchToolButton"
         ).set_enabled(False)
 
         self.add_toolbar_item(

@@ -24,7 +24,6 @@ from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_available
 from piekit.utils.logger import logger
-from piekit.utils.modules import import_by_path
 
 
 class TestPlugin(
@@ -46,7 +45,7 @@ class TestPlugin(
         self._dialog = QDialog(self._parent)
 
         self._dialog.set_window_title("Test Plugin")
-        self._dialog.set_window_icon(self.get_plugin_icon())
+        self._dialog.set_window_icon(self.get_plugin_svg_icon())
         self._dialog.resize(400, 300)
 
         ok_button = QPushButton(self.get_translation("Ok"))
@@ -55,13 +54,13 @@ class TestPlugin(
         test_plugin_info_button = QPushButton("Test plugin info")
         test_plugin_info_button.clicked.connect(self.test_plugin_info)
 
-        test_inner_config_button = QPushButton("Test inner config")
+        test_inner_config_button = QPushButton("Test restore temp config")
         test_inner_config_button.set_tool_tip("Get and set inner config")
-        test_inner_config_button.clicked.connect(self.test_inner_config)
+        test_inner_config_button.clicked.connect(self.test_restore_test_config)
 
-        test_user_config_button = QPushButton("Test user config")
+        test_user_config_button = QPushButton("Test save inner config")
         test_user_config_button.set_tool_tip("Get, set and save user config")
-        test_user_config_button.clicked.connect(self.test_user_config)
+        test_user_config_button.clicked.connect(self.test_inner_config_save)
 
         # NOTE: You can ignore `add_toolbar`, `add_tool_button` and `add_toolbar_item`
         #       And register local toolbar and tool button
@@ -73,9 +72,10 @@ class TestPlugin(
             section=f"test-plugin-toolbutton",
             name="call-dialog",
             text="Call inner dialog",
-            icon=self.get_asset_icon("go.png", section=Section.Shared),
+            icon=self.get_svg_icon("mood.svg", section=Section.Shared),
             tooltip="Call inner dialog",
-            triggered=self.test_show_inner_dialog
+            triggered=self.test_show_inner_dialog,
+            object_name="WorkbenchToolButton"
         )
         self.add_toolbar_item(
             section=f"test-plugin-toolbar",
@@ -108,8 +108,9 @@ class TestPlugin(
             name="TestButton",
             text=self.get_translation("Test"),
             tooltip=self.get_translation("Test"),
-            icon=self.get_plugin_icon(),
-            triggered=self.call
+            icon=self.get_plugin_svg_icon(),
+            triggered=self.call,
+            object_name="WorkbenchToolButton"
         )
         self.add_toolbar_item(
             section=Plugin.Workbench,
@@ -133,7 +134,7 @@ class TestPlugin(
             name="test-plugin",
             text=self.get_translation("Run test plugin"),
             triggered=self.call,
-            icon=self.get_plugin_icon(),
+            icon=self.get_plugin_svg_icon(),
         )
 
         self.get_menu_bar(Section.Shared).add_menu(test_menu)
@@ -152,24 +153,24 @@ class TestPlugin(
 
     def test_plugin_info(self) -> None:
         self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
-        self.logger.debug(self.get_asset("cancel.png"))
-        self.logger.debug(self.get_plugin_icon())
+        self.logger.debug(self.get_asset("cancel.svg"))
+        self.logger.debug(self.get_plugin_svg_icon())
         self.logger.debug(self.get_translation("Test String"))
 
-    def test_inner_config(self) -> None:
-        self.logger.debug(self.get_config("key"))
+    def test_restore_test_config(self) -> None:
         self.logger.debug("Setting new value")
         self.set_config("key", "New String Value", temp=True)
-        self.logger.debug(self.get_config("key"))
-        self.logger.debug(self.get_config("key", temp=True))
+        self.logger.debug(f"Value: {self.get_config('key')}")
+        self.logger.debug(f"Value from temp: {self.get_config('key', temp=True)}")
 
         self.logger.debug("Restoring configuration")
         self.restore_config()
 
-        self.logger.debug("Retrieving value")
+        self.logger.debug("Retrieving value from temp")
         self.logger.debug(self.get_config("key", temp=True))
+        self.logger.debug("=================================")
 
-    def test_user_config(self) -> None:
+    def test_inner_config_save(self) -> None:
         self.logger.debug(self.get_config("key"))
         self.logger.debug("Setting new value")
         self.set_config("key", str(uuid.uuid4()), temp=True)

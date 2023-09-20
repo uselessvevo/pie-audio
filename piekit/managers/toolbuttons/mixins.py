@@ -22,7 +22,8 @@ class ToolButtonAccessorMixin:
         tooltip: str = None,
         icon: QIcon = None,
         triggered: callable = None,
-        onlyIcon: bool = False,
+        only_icon: bool = False,
+        object_name: str = None
     ) -> QToolButton:
         tool_button = QToolButton(parent=parent)
         if icon:
@@ -39,8 +40,11 @@ class ToolButtonAccessorMixin:
         if triggered:
             tool_button.clicked.connect(triggered)
 
-        if onlyIcon:
+        if only_icon:
             tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
+
+        if object_name:
+            tool_button.set_object_name(object_name)
 
         tool_button.set_focus_policy(Qt.FocusPolicy.NoFocus)
         tool_button.set_icon_size(QSize(*Global.TOOL_BUTTON_ICON_SIZE))

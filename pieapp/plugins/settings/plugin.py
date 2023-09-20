@@ -16,7 +16,6 @@ from piekit.managers.confpages.structs import CustomTreeWidgetItem, ConfigPage
 from piekit.widgets.spacer import Spacer
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.structs import Section
-from piekit.utils.modules import import_by_path
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
@@ -40,10 +39,9 @@ class Settings(
     def init(self) -> None:
         # Main window dialog
         self._dialog = QDialog(self._parent)
-        self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.set_object_name("SettingsDialog")
         self._dialog.set_window_title(self.get_translation("Settings"))
-        self._dialog.set_window_icon(self.get_plugin_icon())
+        self._dialog.set_window_icon(self.get_svg_icon("settings.svg"))
         self._dialog.set_minimum_size(*Global.SETTINGS_PLUGIN_MIN_SIZE)
         self._dialog.resize(*self.get_config("ui.window_size", Global.SETTINGS_PLUGIN_MIN_SIZE))
 
@@ -168,7 +166,7 @@ class Settings(
             name="settings",
             text=self.get_translation("Settings"),
             triggered=self.call,
-            icon=self.get_plugin_icon(),
+            icon=self.get_svg_icon("settings.svg"),
             before=MainMenuItem.Exit
         )
 

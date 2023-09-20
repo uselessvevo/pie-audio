@@ -42,26 +42,25 @@ class ConfigManager(PluginBaseManager):
             self._observer.add_handler(str(folder), str(folder.name))
 
     def init_plugin(self, plugin_folder: Path) -> None:
-        for folder in plugin_folder.iterdir():
-            # Read plugin's user configuration file
-            user_folder: Path = Global.USER_ROOT / Global.CONFIGS_FOLDER / folder.name
-            self._configuration[folder.name] = {
-                Section.Inner: {"__FOLDER__": folder},
-                Section.User: {"__FOLDER__": user_folder}
-            }
+        # Read plugin's user configuration file
+        user_folder: Path = Global.USER_ROOT / Global.CONFIGS_FOLDER / plugin_folder.name
+        self._configuration[plugin_folder.name] = {
+            Section.Inner: {"__FOLDER__": plugin_folder},
+            Section.User: {"__FOLDER__": user_folder}
+        }
 
-            if (folder / Global.CONFIG_FILE_NAME).exists():
-                # Read plugin's inner configuration file
-                self._configuration[folder.name][Section.Inner].update({
-                    **read_json(folder / Global.CONFIG_FILE_NAME),
-                })
-                self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
+        if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
+            # Read plugin's inner configuration file
+            self._configuration[plugin_folder.name][Section.Inner].update({
+                **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
+            })
+            self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
 
-            if (folder / Global.CONFIG_FILE_NAME).exists():
-                self._configuration[folder.name][Section.User].update({
-                    **read_json(folder / Global.CONFIG_FILE_NAME),
-                })
-                self._observer.add_handler(str(user_folder), str(user_folder.name))
+        if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
+            self._configuration[plugin_folder.name][Section.User].update({
+                **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
+            })
+            self._observer.add_handler(str(user_folder), str(user_folder.name))
 
     def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})
@@ -120,9 +119,8 @@ class ConfigManager(PluginBaseManager):
                 temp_copy = copy.deepcopy(self._configuration[scope_config_path])
 
                 # Copy configuration into temporary configuration
-                if not self._temp_configuration.get(scope_config_path):
-                    self._temp_configuration[scope_config_path] = temp_copy
-                    self._temp_configuration[scope_config_path].update(**temp_copy)
+                self._temp_configuration[scope_config_path] = temp_copy
+                self._temp_configuration[scope_config_path].update(**temp_copy)
 
                 self._temp_configuration[data_config_path] = data
 

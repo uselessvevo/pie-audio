@@ -35,7 +35,7 @@ class AppConfigPage(
         main_grid = QGridLayout()
 
         self._ffmpeg_line_edit_action = QAction()
-        self._ffmpeg_line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
+        self._ffmpeg_line_edit_action.set_icon(self.get_svg_icon("folder.svg"))
         self._ffmpeg_line_edit_action.triggered.connect(self._ffmpeg_button_connect)
 
         self._ffmpeg_line_edit = QLineEdit()
@@ -125,7 +125,7 @@ class AppConfigPage(
         return self.get_translation("Main")
 
     def get_icon(self) -> Union[QIcon, None]:
-        return self.get_asset_icon("cloud.png")
+        return self.get_svg_icon("cloud.svg")
 
 
 def main(*args, **kwargs) -> Union[ConfigPage, None]:

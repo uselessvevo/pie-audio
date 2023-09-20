@@ -2,15 +2,12 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Union
 
-from PySide6.QtGui import QIcon
-
-from piekit.managers.assets.utils import set_svg_color
-from piekit.managers.base import PluginBaseManager
-from piekit.managers.registry import Managers
-from piekit.managers.structs import Section
-from piekit.managers.structs import SysManager, DirectoryType
 from piekit.globals import Global
 from piekit.utils.logger import logger
+from piekit.managers.structs import Section
+from piekit.managers.registry import Managers
+from piekit.managers.base import PluginBaseManager
+from piekit.managers.structs import SysManager, DirectoryType
 
 
 class AssetsManager(PluginBaseManager):
@@ -69,16 +66,11 @@ class AssetsManager(PluginBaseManager):
             self._logger.info(f"File {key} not found")
             return default
 
-    @lru_cache
-    def get_svg(self, *args, color: str = "#7cd162") -> QIcon:
-        return set_svg_color(self.get(*args), color)
-
     def get_theme(self) -> str:
         return self._current_theme
 
     def get_themes(self) -> list[str]:
         return self._themes
 
-    getSvg = get_svg
     getTheme = get_theme
     getThemes = get_themes

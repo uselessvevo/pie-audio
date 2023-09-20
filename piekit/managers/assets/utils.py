@@ -52,7 +52,10 @@ def get_palette(theme_name: str):
         return palette.get_palette()
 
 
-def set_svg_color(file: str, color: str = "#7cd162"):
+def get_svg_icon(file: str, color: str = "#7cd162") -> QIcon:
+    if not file:
+        return QIcon()
+
     pixmap = QPixmap(file)
     painter = QPainter(pixmap)
     painter.set_composition_mode(QPainter.CompositionMode.CompositionMode_SourceIn)
@@ -65,4 +68,4 @@ def set_svg_color(file: str, color: str = "#7cd162"):
 # Qt aliases
 getTheme = get_theme
 getPalette = get_palette
-setSvgColor = set_svg_color
+getSvgIcon = get_svg_icon

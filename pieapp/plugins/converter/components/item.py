@@ -1,9 +1,12 @@
 from __feature__ import snake_case
+
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QStyle
+
+from piekit.managers.assets.mixins import AssetsAccessorMixin
 
 
-class ConverterItemWidget(QWidget):
+class ConverterItemWidget(QWidget, AssetsAccessorMixin):
 
     def __init__(self, parent, index: int, file_format: str) -> None:
         super(ConverterItemWidget, self).__init__(parent=parent)
@@ -22,6 +25,26 @@ class ConverterItemWidget(QWidget):
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
 
+        menu_hbox_widget = QWidget()
+
+        pb1 = QToolButton()
+        pb1.set_object_name("ConverterMenuItemTB")
+        pb1.set_icon(self.get_svg_icon("refresh.svg"))
+
+        pb2 = QToolButton()
+        pb2.set_object_name("ConverterMenuItemTB")
+        pb2.set_icon(self.get_svg_icon("cancel.svg"))
+
+        menu_hbox = QHBoxLayout()
+        menu_hbox.set_contents_margins(1, 1, 1, 1)
+        menu_hbox.insert_stretch(-1, 1)
+        menu_hbox.add_widget(pb1, alignment=Qt.AlignmentFlag.AlignRight)
+        menu_hbox.add_widget(pb2, alignment=Qt.AlignmentFlag.AlignRight)
+
+        menu_hbox_widget.set_layout(menu_hbox)
+        menu_hbox_widget.set_object_name("ConverterMenuWidget")
+
+        self._main_vbox_layout.add_widget(menu_hbox_widget, alignment=Qt.AlignmentFlag.AlignRight)
         self._main_vbox_layout.add_widget(self._title_label)
         self._main_vbox_layout.add_widget(self._description_label)
 

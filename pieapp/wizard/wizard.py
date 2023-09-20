@@ -135,7 +135,7 @@ class ConverterWizardPage(
         self.ffmpeg_path = None
 
         self.line_edit_action = QAction()
-        self.line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
+        self.line_edit_action.set_icon(self.get_svg_icon("folder-open.svg"))
         self.line_edit_action.triggered.connect(self.select_ffmpeg_root_path)
 
         self.line_edit = QtWidgets.QLineEdit()

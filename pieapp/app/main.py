@@ -70,7 +70,7 @@ class MainWindow(
             f'{self.get_translation("Pie Audio • Audio Converter")} '
             f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
-        self.set_window_icon(self.get_asset_icon("cloud.png"))
+        self.set_window_icon(self.get_svg_icon("cloud.svg"))
 
     def prepare_main_layout(self) -> None:
         self.main_layout = MainGridLayout()

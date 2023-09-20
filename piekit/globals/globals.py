@@ -14,7 +14,7 @@ SYSTEM_ROOT: Lock = BASE_DIR / "piekit"
 
 # Plugins configuration
 # Built-in plugins folder
-PLUGIN_ICON_NAME: Lock = "app.png"
+PLUGIN_ICON_NAME: Lock = "app"
 PLUGINS_FOLDER: Lock = os.getenv("PIE_PLUGINS_FOLDER", "plugins")
 
 # Configuration pages
