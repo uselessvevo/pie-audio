@@ -1,6 +1,6 @@
 from pathlib import Path
 
-folder = Path(r"pieapp/assets/themes/choco/icons/")
+folder = Path(r"pieapp/assets/themes/dark theme/icons/")
 for file in folder.iterdir():
     if "FILL0" not in file.name:
         continue
@@ -15,4 +15,7 @@ for file in folder.iterdir():
 
     else:
         print(f"Renaming {file.name} to {new_filename}")
-        file.rename(new_filename)
+        try:
+            file.rename(folder / new_filename)
+        except Exception:
+            pass

@@ -1,6 +1,7 @@
 from typing import Union
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
 
 from pieapp.structs.menus import MainMenu, MainMenuItem
@@ -42,6 +43,19 @@ class Converter(
         self._main_layout = self.get_layout(Layout.Main)
         self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
         self._content_list = ConvertListWidget()
+        self.set_placeholder()
+
+    def set_placeholder(self) -> None:
+        pixmap_label = QLabel()
+        pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
+        pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+
+        text_label = QLabel()
+        text_label.set_text(self.get_translation("No files selected"))
+        text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+
+        self._list_grid_layout.add_widget(pixmap_label, 1, 0)
+        self._list_grid_layout.add_widget(text_label, 2, 0)
 
     def fill_list(self, files: list[MediaFile]) -> None:
         if not self._content_list.is_visible():
@@ -64,7 +78,6 @@ class Converter(
 
             self._content_list.add_item(item)
             self._content_list.set_item_widget(item, widget)
-
 
     @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
