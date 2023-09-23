@@ -37,7 +37,7 @@ class About(
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
-        pixmap.load(self.get_asset("cloud.svg"))
+        pixmap.load(self.get_asset("app.svg"))
 
         icon_label = QLabel()
         icon_label.set_pixmap(pixmap)
