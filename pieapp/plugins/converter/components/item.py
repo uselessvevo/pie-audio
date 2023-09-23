@@ -33,7 +33,7 @@ class ConverterItemWidget(QWidget, AssetsAccessorMixin):
 
         pb2 = QToolButton()
         pb2.set_object_name("ConverterMenuItemTB")
-        pb2.set_icon(self.get_svg_icon("cancel.svg"))
+        pb2.set_icon(self.get_svg_icon("close.svg"))
 
         menu_hbox = QHBoxLayout()
         menu_hbox.set_contents_margins(1, 1, 1, 1)
