@@ -46,21 +46,21 @@ class Converter(
         self.set_placeholder()
 
     def set_placeholder(self) -> None:
-        pixmap_label = QLabel()
-        pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
-        pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+        self._pixmap_label = QLabel()
+        self._pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
+        self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
-        text_label = QLabel()
-        text_label.set_text(self.get_translation("No files selected"))
-        text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+        self._text_label = QLabel()
+        self._text_label.set_text(self.get_translation("No files selected"))
+        self._text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
-        self._list_grid_layout.add_widget(pixmap_label, 1, 0)
-        self._list_grid_layout.add_widget(text_label, 2, 0)
+        self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
+        self._list_grid_layout.add_widget(self._text_label, 2, 0)
 
     def fill_list(self, files: list[MediaFile]) -> None:
         if not self._content_list.is_visible():
-            widget = self._list_grid_layout.take_at(0)
-            self._list_grid_layout.remove_item(widget)
+            self._list_grid_layout.remove_widget(self._pixmap_label)
+            self._list_grid_layout.remove_widget(self._text_label)
             self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
         for index, file in enumerate(files):
