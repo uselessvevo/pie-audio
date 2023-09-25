@@ -1,4 +1,3 @@
-from PySide6.QtCore import QObject
 from __feature__ import snake_case
 
 from PySide6.QtGui import Qt
@@ -12,7 +11,7 @@ class ConverterItemMenu(QWidget):
     def __init__(self, parent: "QObject" = None) -> None:
         super().__init__(parent)
 
-        self._items: dict[QObject] = {}
+        self._items: dict[str, QToolButton] = {}
 
         self._menu_hbox = QHBoxLayout()
         self._menu_hbox.set_contents_margins(1, 1, 1, 1)
