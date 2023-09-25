@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolBu
 
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 
-from item import ConverterItemMenu
+from .menu import ConverterItemMenu
 
 
 class ConverterItemWidget(QWidget, AssetsAccessorMixin):
@@ -35,6 +35,9 @@ class ConverterItemWidget(QWidget, AssetsAccessorMixin):
         delete_toolbutton = QToolButton()
         delete_toolbutton.set_object_name("ConverterMenuItemTB")
         delete_toolbutton.set_icon(self.get_svg_icon("delete.svg"))
+
+        self._item_menu.add_item("refresh_toolbutton", refresh_toolbutton)
+        self._item_menu.add_item("delete_toolbutton", delete_toolbutton)
 
         self._main_vbox_layout.add_widget(self._item_menu, alignment=Qt.AlignmentFlag.AlignRight)
         self._main_vbox_layout.add_widget(self._title_label)
