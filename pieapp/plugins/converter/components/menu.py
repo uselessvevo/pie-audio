@@ -1,30 +1,33 @@
 from PySide6.QtGui import QAction, Qt
-from PySide6.QtWidgets import QWidget, QSizePolicy, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QToolButton, QHBoxLayout
 
 from piekit.exceptions import PieException
 
 
 class ConverterItemMenu(QWidget):
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: "QObject" = None) -> None:
         super().__init__(parent)
 
-        self._actions: list[QAction] = []
+        self._items: list[QAction] = []
 
-        self.set_fixed_height(50)
-        self.set_contents_margins(0, 0, 0, 0)
-        self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
+        self._menu_hbox_widget = QWidget()
 
-        self._layout = QHBoxLayout()
-        self._layout.set_contents_margins(0, 0, 0, 1)
-        self._layout.set_alignment(Qt.AlignmentFlag.AlignLeft)
-        self.set_layout(self._layout)
+        self._menu_hbox = QHBoxLayout()
+        self._menu_hbox.set_contents_margins(1, 1, 1, 1)
+        self._menu_hbox.insert_stretch(-1, 1)
+
+        self._menu_hbox_widget.set_layout(self._menu_hbox)
+        self._menu_hbox_widget.set_object_name("ConverterMenuWidget")
 
         self.set_object_name("ConverterItemMenu")
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
 
-    def add_menu_action(self, name: str, action: QAction) -> None:
-        if name in self._actions:
-            raise PieException(f"Action \"{action}\"")
+    def add_item(self, name: str, item: QToolButton) -> None:
+        if name in self._items:
+            raise PieException(f"Item \"{item}\"")
 
-        self._actions[name] = action
+        item.set_object_name("ConverterMenuItemTB")
+        self._menu_hbox.add_widget(item, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self._items[name] = item

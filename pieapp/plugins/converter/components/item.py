@@ -1,9 +1,11 @@
 from __feature__ import snake_case
 
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QStyle
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton
 
 from piekit.managers.assets.mixins import AssetsAccessorMixin
+
+from item import ConverterItemMenu
 
 
 class ConverterItemWidget(QWidget, AssetsAccessorMixin):
@@ -25,26 +27,16 @@ class ConverterItemWidget(QWidget, AssetsAccessorMixin):
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
 
-        menu_hbox_widget = QWidget()
+        self._item_menu = ConverterItemMenu()
+        refresh_toolbutton = QToolButton()
+        refresh_toolbutton.set_object_name("ConverterMenuItemTB")
+        refresh_toolbutton.set_icon(self.get_svg_icon("refresh.svg"))
 
-        pb1 = QToolButton()
-        pb1.set_object_name("ConverterMenuItemTB")
-        pb1.set_icon(self.get_svg_icon("refresh.svg"))
+        delete_toolbutton = QToolButton()
+        delete_toolbutton.set_object_name("ConverterMenuItemTB")
+        delete_toolbutton.set_icon(self.get_svg_icon("delete.svg"))
 
-        pb2 = QToolButton()
-        pb2.set_object_name("ConverterMenuItemTB")
-        pb2.set_icon(self.get_svg_icon("close.svg"))
-
-        menu_hbox = QHBoxLayout()
-        menu_hbox.set_contents_margins(1, 1, 1, 1)
-        menu_hbox.insert_stretch(-1, 1)
-        menu_hbox.add_widget(pb1, alignment=Qt.AlignmentFlag.AlignRight)
-        menu_hbox.add_widget(pb2, alignment=Qt.AlignmentFlag.AlignRight)
-
-        menu_hbox_widget.set_layout(menu_hbox)
-        menu_hbox_widget.set_object_name("ConverterMenuWidget")
-
-        self._main_vbox_layout.add_widget(menu_hbox_widget, alignment=Qt.AlignmentFlag.AlignRight)
+        self._main_vbox_layout.add_widget(self._item_menu, alignment=Qt.AlignmentFlag.AlignRight)
         self._main_vbox_layout.add_widget(self._title_label)
         self._main_vbox_layout.add_widget(self._description_label)
 
