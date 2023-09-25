@@ -84,12 +84,8 @@ def start_application(*args, **kwargs) -> None:
 
     # Applying *fantasticly* good theme
     theme = Managers(SysManager.Assets).get_theme()
-    if theme:
-        if Global.ASSETS_USE_STYLE:
-            app.set_style_sheet(get_theme(theme))
-            palette = get_palette(theme)
-            if palette:
-                app.set_palette(palette)
+    if theme and Global.ASSETS_USE_STYLE:
+        app.set_style_sheet(get_theme(theme))
 
     # Closing splashscreen
     if splash:
