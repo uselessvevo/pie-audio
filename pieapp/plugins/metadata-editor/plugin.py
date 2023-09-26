@@ -17,7 +17,6 @@ class MetadataEditor(
 ):
     name = Plugin.MetadataEditor
     requires = [Plugin.Converter]
-    sig_converter_table_ready = Signal()
 
     @on_plugin_event(target=Plugin.Converter, event="converter_table_ready")
     def on_converter_table_ready(self) -> None:

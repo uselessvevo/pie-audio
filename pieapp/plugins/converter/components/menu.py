@@ -41,7 +41,7 @@ class ConverterItemMenu(QWidget):
         callback: callable
     ) -> None:
         if name in self._items:
-            raise PieException(f"Item \"{name}\"")
+            raise PieException(f"Item \"{name}\" is already registered")
 
         action = QToolButton()
         action.set_text(text)
