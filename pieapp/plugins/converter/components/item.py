@@ -54,6 +54,16 @@ class ConverterItemWidget(QWidget, AssetsAccessorMixin):
         self._item_hbox_layout.add_layout(self._main_vbox_layout, 1)
         self.set_layout(self._item_hbox_layout)
 
+    def enter_event(self, event: "QEnterEvent") -> None:
+        self._item_menu.show()
+        for item in self._item_menu.items:
+            item.set_visible(True)
+
+    def leave_event(self, event: "QEvent") -> None:
+        self._item_menu.hide()
+        for item in self._item_menu.items:
+            item.set_visible(False)
+
     def _get_file_format_color(self) -> None:
         r, g, b = 245, 165, 105
         self._file_format_label.set_style_sheet(
