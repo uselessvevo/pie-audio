@@ -6,6 +6,7 @@ import sys
 
 from pathlib import Path
 
+from PySide6.QtCore import Signal
 from version_parser import Version
 
 from piekit.utils.logger import logger
@@ -89,11 +90,11 @@ class PluginManager(BaseManager):
         """ Get PiePlugin instance by its name """
         return self._plugin_registry.get(key)
 
-    # PluginManager protected methods
+    # Prepare methods
 
     def _initialize_from_packages(
-        self, 
-        folder: "Path", 
+        self,
+        folder: "Path",
         parent: "QMainWindow" = None
     ) -> None:
         if not folder.exists():
@@ -121,7 +122,6 @@ class PluginManager(BaseManager):
                 # Setup plugin via `PluginManager`
                 for plugin_manager in self._plugin_managers:
                     plugin_manager.init_plugin(plugin_path)
-                    plugin_manager.on_post_init_plugin(plugin_path)
 
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
@@ -150,7 +150,7 @@ class PluginManager(BaseManager):
                                  f"{plugin_package.name} version ({plugin_package.piekit_version})")
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
-        self._logger.info(f"Preparing {plugin_instance.type.value} {plugin_instance.name}")
+        self._logger.info(f"Preparing plugin {plugin_instance.name}")
 
         self._update_plugin_info(
             plugin_instance.name,
@@ -162,11 +162,12 @@ class PluginManager(BaseManager):
         self._plugin_registry[plugin_instance.name] = plugin_instance
         self._plugins_types_registry[plugin_instance.type.value].add(plugin_instance.name)
 
+        public_signals = self._get_plugin_public_signals(plugin_instance)
+        for public_signal in public_signals:
+            public_signal.connect(lambda: self._notify_plugin_event(plugin_instance.name))
+
         plugin_instance.sig_plugin_ready.connect(
-            lambda: (
-                self._notify_plugin_availability(plugin_instance.name),
-                self._notify_plugin_availability_on_main(plugin_instance.name)
-            )
+            lambda: self._notify_plugin_availability(plugin_instance.name)
         )
 
         # Preparing `PiePlugin` instance
@@ -181,12 +182,32 @@ class PluginManager(BaseManager):
         self._notify_plugin_dependencies(plugin_instance.name)
 
         # Inform about that
-        self._logger.info(f"{plugin_instance.type.value.capitalize()} {plugin_instance.name} is ready")
+        self._logger.info(f"Plugin \"{plugin_instance.name}\" is ready")
 
-    def _notify_plugin_availability(
-        self,
-        name: str,
-    ) -> None:
+    @staticmethod
+    def _get_plugin_public_signals(plugin_instance: PiePlugin) -> list[Signal]:
+        signals: list[Signal] = []
+        for signal_name in dir(plugin_instance):
+            if signal_name.startswith("sig_public_"):
+                signal_instance = getattr(plugin_instance, signal_name, None)
+                if isinstance(signal_instance, Signal):
+                    signals.append(signal_instance)
+
+        return signals
+
+    # Notification methods
+
+    def _notify_plugin_event(self, name: str) -> None:
+        plugin_dependents = self._plugin_dependents.get(name, {})
+        required_plugins = plugin_dependents.get("requires", [])
+        optional_plugins = plugin_dependents.get("optional", [])
+
+        for plugin in required_plugins + optional_plugins:
+            if plugin in self._plugin_registry:
+                plugin_instance = self._plugin_registry[plugin]
+                plugin_instance.on_plugin_event(name)
+
+    def _notify_plugin_availability(self, name: str) -> None:
         """
         Notify dependent PiePlugins that our PiePlugin is available
 

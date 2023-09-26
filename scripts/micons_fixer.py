@@ -1,6 +1,6 @@
 from pathlib import Path
 
-folder = Path(r"pieapp/assets/themes/dark theme/icons/")
+folder = Path(r"../pieapp/assets/themes/dark theme/icons/")
 for file in folder.iterdir():
     if "FILL0" not in file.name:
         continue

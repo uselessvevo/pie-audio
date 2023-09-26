@@ -86,7 +86,6 @@ class ManagersRegistry:
             manager_name = manager_instance.name
             if isinstance(manager_instance, PluginBaseManager):
                 manager_instance.shutdown_plugin()
-                manager_instance.on_post_shutdown()
 
             manager_instance.shutdown(full_house=True)
             delattr(self, manager_name)

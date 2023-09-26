@@ -5,10 +5,15 @@ from piekit.managers.structs import AllPlugins
 from piekit.exceptions import PieException
 
 
-def on_plugin_available(
-    func: Callable = None,
-    target: Optional[str] = None
-) -> Callable:
+def on_plugin_event(callback: Callable = None, target: str = None, event: str = None) -> Callable:
+    if callback is None:
+        return functools.partial(on_plugin_event, target=target, event=event)
+
+    callback.event_listen = {"target": target, "event": event, "signal": f"sig_{event}"}
+    return callback
+
+
+def on_plugin_available(func: Callable = None, target: Optional[str] = None) -> Callable:
     """
     Method decorator used to handle plugin availability
 

@@ -1,11 +1,15 @@
 from typing import Any
 
+from PySide6.QtCore import QObject
+
 from piekit.plugins.plugins import PiePlugin
 
 
-class PiePluginAPI:
+class PiePluginAPI(QObject):
 
     def __init__(self, parent: PiePlugin) -> None:
+        super().__init__(parent)
+
         self._parent = parent
 
     def init(self) -> None:

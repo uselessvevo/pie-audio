@@ -1,21 +1,21 @@
 from __feature__ import snake_case
 
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 
 from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from .menu import ConverterItemMenu
 
 
-class ConverterItemWidget(QWidget, AssetsAccessorMixin):
+class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
 
-    def __init__(self, parent, index: int, file_format: str) -> None:
+    def __init__(self, parent, index: int, file_model: "MediaFile") -> None:
         super(ConverterItemWidget, self).__init__(parent=parent)
 
         # Index of item
         self._index = index
-        self._file_format = file_format
 
         self.set_object_name("ConverterItem")
 
@@ -28,16 +28,12 @@ class ConverterItemWidget(QWidget, AssetsAccessorMixin):
         self._description_label.set_object_name("ConverterItemDescription")
 
         self._item_menu = ConverterItemMenu()
-        refresh_toolbutton = QToolButton()
-        refresh_toolbutton.set_object_name("ConverterMenuItemTB")
-        refresh_toolbutton.set_icon(self.get_svg_icon("refresh.svg"))
-
-        delete_toolbutton = QToolButton()
-        delete_toolbutton.set_object_name("ConverterMenuItemTB")
-        delete_toolbutton.set_icon(self.get_svg_icon("delete.svg"))
-
-        self._item_menu.add_item("refresh_toolbutton", refresh_toolbutton)
-        self._item_menu.add_item("delete_toolbutton", delete_toolbutton)
+        self._item_menu.add_item(
+            name="delete",
+            text=self.get_translation("Delete"),
+            icon=self.get_svg_icon("delete.svg"),
+            callback=self._delete_toolbutton_connect
+        )
 
         self._main_vbox_layout.add_widget(self._item_menu, alignment=Qt.AlignmentFlag.AlignRight)
         self._main_vbox_layout.add_widget(self._title_label)
@@ -53,6 +49,15 @@ class ConverterItemWidget(QWidget, AssetsAccessorMixin):
         self._item_hbox_layout.add_widget(self._file_format_label, 0)
         self._item_hbox_layout.add_layout(self._main_vbox_layout, 1)
         self.set_layout(self._item_hbox_layout)
+
+    def _delete_toolbutton_connect(self) -> None:
+        pass
+
+    def add_menu_item(self, *args, **kwargs) -> None:
+        """
+        A proxy method to interact with `ConverterItemMenu`
+        """
+        self._item_menu.add_item(*args, **kwargs)
 
     def enter_event(self, event: "QEnterEvent") -> None:
         self._item_menu.show()

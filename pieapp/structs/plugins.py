@@ -10,5 +10,6 @@ class Plugin:
     Workbench = "workbench"
     StatusBar = "status-bar"
     Converter = "converter"
+    MetadataEditor = "converter-me"
     TestPlugin = "test-plugin"
     TestPluginChild = "test-plugin-child"

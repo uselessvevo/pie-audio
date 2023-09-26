@@ -1,6 +1,6 @@
 from typing import Union
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
 
@@ -37,15 +37,18 @@ class Converter(
     api = ConverterAPI
     name = Plugin.Converter
     requires = [Plugin.MenuBar, Plugin.Workbench]
+    sig_public_converter_table_ready = Signal()
 
     def init(self) -> None:
+        self._converter_item_widgets: list[ConverterItemWidget] = []
+
         self._list_grid_layout = QGridLayout()
         self._main_layout = self.get_layout(Layout.Main)
         self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
         self._content_list = ConvertListWidget()
-        self.set_placeholder()
+        self._set_placeholder()
 
-    def set_placeholder(self) -> None:
+    def _set_placeholder(self) -> None:
         self._pixmap_label = QLabel()
         self._pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
@@ -57,17 +60,17 @@ class Converter(
         self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
         self._list_grid_layout.add_widget(self._text_label, 2, 0)
 
-    def fill_list(self, files: list[MediaFile]) -> None:
+    def fill_list(self, file_models: list[MediaFile]) -> None:
         if not self._content_list.is_visible():
             self._list_grid_layout.remove_widget(self._pixmap_label)
             self._list_grid_layout.remove_widget(self._text_label)
             self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
-        for index, file in enumerate(files):
-            widget = ConverterItemWidget(self._content_list, index, file.info.codec.name)
-            widget.set_title(file.info.filename)
-            widget.set_description(f"{file.info.bit_rate}kb/s")
-            widget.set_icon(file.info.codec.name)
+        for index, file_model in enumerate(file_models):
+            widget = ConverterItemWidget(self._content_list, index, file_model)
+            widget.set_title(file_model.info.filename)
+            widget.set_description(f"{file_model.info.bit_rate}kb/s")
+            widget.set_icon(file_model.info.codec.name)
 
             widget_layout = QHBoxLayout()
             widget_layout.add_stretch()
@@ -78,6 +81,14 @@ class Converter(
 
             self._content_list.add_item(item)
             self._content_list.set_item_widget(item, widget)
+
+            self._converter_item_widgets.append(widget)
+
+        self.sig_public_converter_table_ready.emit()
+
+    def add_side_menu_item(self, *args, **kwargs) -> None:
+        for item in self._converter_item_widgets:
+            item.add_menu_item(*args, **kwargs)
 
     @on_plugin_available(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
