@@ -1,8 +1,6 @@
 """
 Default managers
 """
-from typing import Optional, Union
-import dataclasses as dt
 
 
 class SysManager:
@@ -56,14 +54,6 @@ class Section:
     
     # Shared access section
     Shared = "shared"
-
-
-@dt.dataclass(frozen=True, eq=False)
-class ManagerConfig:
-    import_string: Optional[str]
-    init: bool = dt.field(default=False)
-    args: tuple = dt.field(default_factory=tuple)
-    kwargs: dict = dt.field(default_factory=dict)
 
 
 AllPlugins = "__ALL__"

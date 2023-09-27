@@ -5,6 +5,7 @@ from __feature__ import snake_case
 from typing import Union
 
 from pieapp.structs.plugins import Plugin
+from piekit.globals.loader import Global
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.utils import get_plugin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -17,6 +18,16 @@ class MetadataEditor(
 ):
     name = Plugin.MetadataEditor
     requires = [Plugin.Converter]
+
+    @on_plugin_event(target=Plugin.Converter)
+    def on_converter_available(self) -> None:
+        self._dialog = QDialog(self._parent)
+        self._dialog.set_window_title(self.get_translation("About"))
+        self._dialog.set_window_icon(self.get_plugin_svg_icon())
+        self._dialog.resize(Global.DEFAULT_MIN_WINDOW_SIZE or (720, 480))
+
+    def call(self) -> None:
+        self._dialog.show()
 
     @on_plugin_event(target=Plugin.Converter, event="converter_table_ready")
     def on_converter_table_ready(self) -> None:

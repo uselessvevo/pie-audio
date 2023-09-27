@@ -59,10 +59,10 @@ class MainWindow(
         self.sig_exception_occurred.connect(self.error_handler)
 
     def prepare_main_window(self) -> None:
-        self.set_minimum_size(*Global.MAIN_WINDOW_MIN_WINDOW_SIZE)
+        self.set_minimum_size(*Global.DEFAULT_MIN_WINDOW_SIZE)
         self.resize(*self.get_config(
             key="ui.winsize",
-            default=Global.MAIN_WINDOW_MIN_WINDOW_SIZE,
+            default=Global.DEFAULT_MIN_WINDOW_SIZE,
             scope=Section.Root,
             section=Section.User
         ))

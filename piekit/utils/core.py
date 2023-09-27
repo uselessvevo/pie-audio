@@ -39,19 +39,19 @@ def restart_application() -> None:
 
 def check_crabs() -> bool:
     return (
-            Global.USER_ROOT.exists()
-            or (Global.USER_ROOT / Global.CONFIGS_FOLDER).exists()
-            or (Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME).exists()
+        Global.USER_ROOT.exists()
+        or (Global.USER_ROOT / Global.CONFIGS_FOLDER).exists()
+        or (Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME).exists()
     )
 
 
 def restore_crabs() -> None:
     if not Global.USER_ROOT.exists():
         Global.USER_ROOT.mkdir()
-        (Global.USER_ROOT / Global.USER_CONFIG_FOLDER).mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_FOLDER).mkdir()
         (Global.USER_ROOT / Global.USER_PLUGINS_FOLDER).mkdir()
         write_json(
-            file=str(Global.USER_ROOT / Global.USER_CONFIG_FOLDER / Global.CONFIG_FILE_NAME),
+            file=str(Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME),
             data={"crab_status": "what a crab doin?"},
             create=True
         )

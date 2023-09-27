@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QGridLayout
 
 from piekit.globals.types import Lock
 from piekit.managers.structs import DirectoryType
-from piekit.managers.structs import ManagerConfig
 
 
 # Application main info
@@ -15,7 +14,7 @@ PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
 MAIN_GRID_LAYOUT_CLASS: Lock = QGridLayout
-MAIN_WINDOW_MIN_WINDOW_SIZE: Lock = (720, 480)
+DEFAULT_MIN_WINDOW_SIZE: Lock = (720, 480)
 TOOL_BUTTON_ICON_SIZE: Lock = (25, 25)
 
 # List of excluded file formats
@@ -24,50 +23,17 @@ USE_EXCEPTION_HOOK: Lock = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
 
 # Managers startup configuration
 CORE_MANAGERS: Lock = [
-    ManagerConfig(
-        import_string="piekit.managers.configs.manager.ConfigManager",
-        init=True
-    ),
-    ManagerConfig(
-        import_string="piekit.managers.locales.manager.LocaleManager",
-        init=True
-    ),
-    ManagerConfig(
-        import_string="piekit.managers.assets.manager.AssetsManager",
-        init=True
-    ),
+    "piekit.managers.configs.manager.ConfigManager",
+    "piekit.managers.locales.manager.LocaleManager",
+    "piekit.managers.assets.manager.AssetsManager",
 ]
 
 LAYOUT_MANAGERS: Lock = [
-    ManagerConfig(
-        import_string="piekit.managers.menus.manager.MenuManager",
-        init=True
-    ),
-    ManagerConfig(
-        import_string="piekit.managers.toolbars.manager.ToolBarManager",
-        init=True
-    ),
-    ManagerConfig(
-        import_string="piekit.managers.toolbuttons.manager.ToolButtonManager",
-        init=True
-    ),
-    ManagerConfig(
-        import_string="piekit.managers.confpages.manager.ConfigPageManager",
-        init=True
-    ),
-    ManagerConfig(
-        import_string="piekit.managers.layouts.manager.LayoutManager",
-        init=True
-    )
+    "piekit.managers.menus.manager.MenuManager",
+    "piekit.managers.toolbars.manager.ToolBarManager",
+    "piekit.managers.toolbuttons.manager.ToolButtonManager",
+    "piekit.managers.confpages.manager.ConfigPageManager",
+    "piekit.managers.layouts.manager.LayoutManager",
 ]
 
-PLUGIN_MANAGER = ManagerConfig(
-    import_string="piekit.managers.plugins.manager.PluginManager",
-    init=True
-)
-
-MANAGERS: Lock = [
-    *CORE_MANAGERS,
-    *LAYOUT_MANAGERS,
-    PLUGIN_MANAGER,
-]
+PLUGIN_MANAGER = "piekit.managers.plugins.manager.PluginManager"
