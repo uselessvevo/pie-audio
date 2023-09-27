@@ -162,13 +162,9 @@ class PluginManager(BaseManager):
         self._plugin_registry[plugin_instance.name] = plugin_instance
         self._plugins_types_registry[plugin_instance.type.value].add(plugin_instance.name)
 
-        public_signals = self._get_plugin_public_signals(plugin_instance)
+        public_signals = self._get_plugin_signals(plugin_instance)
         for public_signal in public_signals:
             public_signal.connect(lambda: self._notify_plugin_event(plugin_instance.name))
-
-        plugin_instance.sig_plugin_ready.connect(
-            lambda: self._notify_plugin_availability(plugin_instance.name)
-        )
 
         # Preparing `PiePlugin` instance
         try:
@@ -179,16 +175,17 @@ class PluginManager(BaseManager):
         # PiePlugin is ready
         plugin_instance.sig_plugin_ready.emit()
 
-        self._notify_plugin_dependencies(plugin_instance.name)
-
         # Inform about that
         self._logger.info(f"Plugin \"{plugin_instance.name}\" is ready")
 
     @staticmethod
-    def _get_plugin_public_signals(plugin_instance: PiePlugin) -> list[Signal]:
+    def _get_plugin_signals(plugin_instance: PiePlugin) -> list[Signal]:
+        """
+        Collect signals from plugin instance that starts with `sig_` prefix
+        """
         signals: list[Signal] = []
         for signal_name in dir(plugin_instance):
-            if signal_name.startswith("sig_public_"):
+            if signal_name.startswith("sig_"):
                 signal_instance = getattr(plugin_instance, signal_name, None)
                 if isinstance(signal_instance, Signal):
                     signals.append(signal_instance)
@@ -206,45 +203,6 @@ class PluginManager(BaseManager):
             if plugin in self._plugin_registry:
                 plugin_instance = self._plugin_registry[plugin]
                 plugin_instance.on_plugin_event(name)
-
-    def _notify_plugin_availability(self, name: str) -> None:
-        """
-        Notify dependent PiePlugins that our PiePlugin is available
-
-        Args:
-            name (str): PiePlugin name
-        """
-        self._plugin_availability[name] = True
-
-        # Notify plugin dependents
-        plugin_dependents = self._plugin_dependents.get(name, {})
-        required_plugins = plugin_dependents.get("requires", [])
-        optional_plugins = plugin_dependents.get("optional", [])
-
-        for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugin_registry:
-                plugin_instance = self._plugin_registry[plugin]
-                plugin_instance.on_plugin_available(name)
-
-    def _notify_plugin_availability_on_main(self, name: str) -> None:
-        plugin_instance = self._plugin_registry.get(name)
-        if plugin_instance:
-            plugin_instance.parent().sig_plugin_ready.emit(name)
-
-    def _notify_plugin_shutdown(self, plugin_name: str):
-        """
-        Notify dependents of a plugin that is going to be unavailable
-        """
-        plugin_dependents = self._plugin_dependents.get(plugin_name, {})
-        required_plugins = plugin_dependents.get("requires", [])
-        optional_plugins = plugin_dependents.get("optional", [])
-
-        for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugin_registry:
-                if self._plugin_availability.get(plugin, False):
-                    logger.debug(f"Notifying plugin {plugin} that {plugin_name} is going to be turned off")
-                    plugin_instance = self._plugin_registry[plugin]
-                    plugin_instance.on_plugin_shutdown(plugin_name)
 
     def _shutdown_plugin(self, plugin_name: str):
         """

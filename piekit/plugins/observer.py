@@ -52,24 +52,3 @@ class PluginsObserverMixin:
         if target in self._plugin_event_listeners:
             event = self._plugin_event_listeners[target]
             event["method"]()
-
-    def on_plugin_available(self, target: str) -> None:
-        if target in self._plugin_availability_listeners:
-            method_name = self._plugin_availability_listeners[target]
-            method = getattr(self, method_name)
-            method()
-
-        # Call global plugin handler
-        if AllPlugins in self._plugin_availability_listeners:
-            method_name = self._plugin_availability_listeners[AllPlugins]
-            method = getattr(self, method_name)
-            method(target)
-
-    def on_plugin_shutdown(self, target: str) -> None:
-        if target in self._plugin_shutdown_listeners:
-            method_name = self._plugin_shutdown_listeners[target]
-            method = getattr(self, method_name)
-            method()
-
-    onPluginAvailable = on_plugin_available
-    onPluginShutdown = on_plugin_shutdown

@@ -16,7 +16,7 @@ def on_plugin_event(func: Callable = None, target: str = None, event: str = None
     Args:
         * func (callable): Method to decorate. Given by default when applying the decorator
         * target (Optional[str]): Name of the requested plugins whose availability triggers the method
-        * event (str): Name of the signal without `sig_public_` prefix
+        * event (str): Name of the signal without `sig_` prefix
 
     Returns:
         * func(callable): The same method that was given as input.
@@ -27,7 +27,7 @@ def on_plugin_event(func: Callable = None, target: str = None, event: str = None
     if func is None:
         return functools.partial(on_plugin_event, target=target, event=event)
 
-    func.event_listen = {"target": target, "signal": f"sig_public_{event}"}
+    func.event_listen = {"target": target, "signal": f"sig_{event}"}
     return func
 
 

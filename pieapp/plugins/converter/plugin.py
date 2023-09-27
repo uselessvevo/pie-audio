@@ -37,7 +37,7 @@ class Converter(
     api = ConverterAPI
     name = Plugin.Converter
     requires = [Plugin.MenuBar, Plugin.Workbench]
-    sig_public_converter_table_ready = Signal()
+    sig_converter_table_ready = Signal()
 
     def init(self) -> None:
         self._converter_item_widgets: list[ConverterItemWidget] = []
@@ -84,7 +84,7 @@ class Converter(
 
             self._converter_item_widgets.append(widget)
 
-        self.sig_public_converter_table_ready.emit()
+        self.sig_converter_table_ready.emit()
 
     def add_side_menu_item(self, *args, **kwargs) -> None:
         for item in self._converter_item_widgets:
