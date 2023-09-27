@@ -33,10 +33,10 @@ class MainWindow(
 
     # Plugin signals
     sig_plugins_ready = Signal()
-    sig_plugin_ready = Signal(str)
-    sig_plugin_loading = Signal(str)
-    sig_plugin_reloading = Signal(str)
-    sig_restart_requested = Signal(str)
+    sig_plugin_ready = Signal()
+    sig_plugin_loading = Signal()
+    sig_plugin_reloading = Signal()
+    sig_restart_requested = Signal()
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent=parent)

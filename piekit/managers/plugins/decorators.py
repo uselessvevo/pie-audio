@@ -21,10 +21,13 @@ def on_plugin_event(func: Callable = None, target: str = None, event: str = None
     Returns:
         * func(callable): The same method that was given as input.
     """
+    if not event:
+        event = "sig_plugin_ready"
+        
     if func is None:
         return functools.partial(on_plugin_event, target=target, event=event)
 
-    func.event_listen = {"target": target, "signal": f"sig_pub_{event}"}
+    func.event_listen = {"target": target, "signal": f"sig_public_{event}"}
     return func
 
 
