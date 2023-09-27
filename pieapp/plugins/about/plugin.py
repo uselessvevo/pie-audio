@@ -15,7 +15,7 @@ from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.globals import Global
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.managers.plugins.decorators import on_plugin_event
 
 
 class About(
@@ -61,7 +61,7 @@ class About(
         self._dialog.set_layout(grid_layout)
         self._dialog.show()
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,

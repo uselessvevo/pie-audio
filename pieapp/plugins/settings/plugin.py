@@ -22,7 +22,7 @@ from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.managers.plugins.decorators import on_plugin_event
 
 from PySide6.QtWidgets import QGridLayout, QDialog, QTreeWidget, QLabel, QDialogButtonBox
 
@@ -158,7 +158,7 @@ class Settings(
         for page in pages:
             page["page"].accept()
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def _on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,

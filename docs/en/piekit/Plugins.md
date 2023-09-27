@@ -13,7 +13,7 @@ from piekit.plugins.plugins import PiePlugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.managers.plugins.decorators import on_plugin_event
 
 
 class MagicPlugin(
@@ -32,7 +32,7 @@ class MagicPlugin(
     def shutdown(self) -> None:
         self.logger.info("Shutting down")
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,

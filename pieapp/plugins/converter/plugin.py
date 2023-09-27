@@ -13,7 +13,7 @@ from piekit.widgets.menus import INDEX_START, INDEX_END
 from piekit.globals import Global
 from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.managers.plugins.decorators import on_plugin_event
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
@@ -90,7 +90,7 @@ class Converter(
         for item in self._converter_item_widgets:
             item.add_menu_item(*args, **kwargs)
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,
@@ -112,7 +112,7 @@ class Converter(
             index=INDEX_END()
         )
 
-    @on_plugin_available(target=Plugin.Workbench)
+    @on_plugin_event(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
             section=self.name,

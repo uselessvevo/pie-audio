@@ -10,20 +10,20 @@ from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 
 from piekit.globals import Global
-from piekit.managers.base import BaseManager
-from piekit.managers.layouts.mixins import LayoutsAccessorMixin
-from piekit.managers.registry import Managers
+from piekit.utils.logger import logger
 from piekit.managers.structs import Section
-from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.plugins.plugins import PiePlugin
+from piekit.managers.base import BaseManager
+from piekit.managers.registry import Managers
+from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
-from piekit.utils.logger import logger
+from piekit.managers.plugins.decorators import on_plugin_event
 
 
 class TestPlugin(
@@ -101,7 +101,7 @@ class TestPlugin(
     def register_object(self, target: "QObject", *args, **kwargs) -> None:
         self._main_layout.add_widget(target, 4, 0)
 
-    @on_plugin_available(target=Plugin.Workbench)
+    @on_plugin_event(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
             section=self.name,
@@ -119,7 +119,7 @@ class TestPlugin(
             after=WorkbenchItem.Clear
         )
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         test_menu = self.add_menu(
             parent=self.get_menu_bar(Section.Shared),
