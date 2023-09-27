@@ -73,12 +73,6 @@ class PluginManager(BaseManager):
             if plugin in self._plugin_registry:
                 self._shutdown_plugin(plugin)
 
-        self._plugin_dependents = {}
-        self._plugin_dependencies = {}
-        self._plugin_registry = {}
-        self._plugin_availability = {}
-        self._plugin_managers = []
-
     def reload(self, *plugins: str, full_house: bool = False) -> None:
         """ Reload listed or all objects and components """
         self.shutdown(*plugins, full_house=full_house)
@@ -203,34 +197,6 @@ class PluginManager(BaseManager):
             if plugin in self._plugin_registry:
                 plugin_instance = self._plugin_registry[plugin]
                 plugin_instance.on_plugin_event(name)
-
-    def _shutdown_plugin(self, plugin_name: str):
-        """
-        Disconnect a plugin from its dependencies
-        """
-        plugin_instance = self._plugin_registry[plugin_name]
-        plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
-        required_plugins = plugin_dependencies.get("requires", [])
-        optional_plugins = plugin_dependencies.get("optional", [])
-
-        for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugin_registry:
-                if self._plugin_availability.get(plugin, False):
-                    logger.debug(f"Disconnecting {plugin_name} from {plugin}")
-                    plugin_instance.on_plugin_shutdown(plugin)
-
-    def _notify_plugin_dependencies(self, name: str) -> None:
-        """ Notify PiePlugins dependencies """
-        plugin_instance = self._plugin_registry[name]
-        plugin_dependencies = self._plugin_dependencies.get(name, {})
-        required_plugins = plugin_dependencies.get("requires", [])
-        optional_plugins = plugin_dependencies.get("optional", [])
-
-        for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugin_registry:
-                if self._plugin_availability.get(plugin, False):
-                    self._logger.debug(f"{plugin_instance.type.value.capitalize()} {plugin} has already loaded")
-                    plugin_instance.on_plugin_available(plugin)
 
     def _update_plugin_info(
         self,

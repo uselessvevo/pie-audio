@@ -40,7 +40,7 @@ class ManagersRegistry:
         """
         Initialize manager from `ManagerConfig` structure
         """
-        manager_instance = import_by_string(config.import_string)()
+        manager_instance = import_by_string(config)()
         self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
 
         self._managers_instances[manager_instance.name] = manager_instance
@@ -70,14 +70,12 @@ class ManagersRegistry:
         managers_instances = (self._managers_instances.get(i) for i in managers or self._managers_instances.keys())
 
         for manager_instance in managers_instances:
-            self._logger.info(f"Shutting down \"{manager_instance.__class__.__name__}\" "
-                              f"from \"{self.__class__.__name__}\"")
-            manager_name = manager_instance.name
+            self._logger.info(f"Shutting down \"{manager_instance.__class__.__name__}\"")
+
             if isinstance(manager_instance, PluginBaseManager):
                 manager_instance.shutdown_plugin()
 
             manager_instance.shutdown(full_house=True)
-            self._managers_instances.pop(manager_name)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
         managers = reversed(self._managers_instances.keys()) if full_house else managers

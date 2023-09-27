@@ -75,25 +75,11 @@ class PiePlugin(
     # Prepare methods
 
     def prepare(self) -> None:
-        # First, we need to initialize base signals
-        self.prepare_base_signals()
-
-        # PiePlugin is loading
-        self.sig_plugin_loading.emit(self.__class__.__name__)
-
         # Initializing plugin
         self.init()
 
         # Prepare PiePluginAPI
         self.init_api()
-
-    # Signals, shortcuts etc. methods
-
-    def prepare_base_signals(self):
-        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
-        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
-        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
-        self.sig_exception_occurred.connect(self._parent.error_handler)
 
     # Main methods
 

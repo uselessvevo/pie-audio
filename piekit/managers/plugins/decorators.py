@@ -22,39 +22,12 @@ def on_plugin_event(func: Callable = None, target: str = None, event: str = None
         * func(callable): The same method that was given as input.
     """
     if not event:
-        event = "sig_plugin_ready"
+        event = "plugin_ready"
         
     if func is None:
         return functools.partial(on_plugin_event, target=target, event=event)
 
     func.event_listen = {"target": target, "signal": f"sig_{event}"}
-    return func
-
-
-def on_plugin_available(func: Callable = None, target: Optional[str] = None) -> Callable:
-    """
-    Method decorator used to handle plugin availability
-
-    The methods that use this decorator must have the following signature:
-        * `def method(self)` when observing a single plugin
-        * `def method(self, target): ...` when observing multiple plugins or all plugins that were listed as dependencies
-
-    Args:
-        * func (callable): Method to decorate. Given by default when applying the decorator
-        * target (Optional[str]): Name of the requested plugins whose availability triggers the method
-
-    Returns:
-        * func (callable): The same method that was given as input.
-    """
-    if func is None:
-        return functools.partial(on_plugin_available, target=target)
-
-    if target is None:
-        # Use special `AllPlugins` identifier to signal that the function
-        # observes all plugins listed as dependencies.
-        target = AllPlugins
-
-    func.plugin_listen = target
     return func
 
 
@@ -89,5 +62,4 @@ def on_plugin_shutdown(func: Callable = None, target: Optional[str] = None):
     return func
 
 
-onPluginAvailable = on_plugin_available
 onPluginShutdown = on_plugin_shutdown

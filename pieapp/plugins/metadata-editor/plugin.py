@@ -35,7 +35,7 @@ class MetadataEditor(
         self._converter.add_side_menu_item(
             name="edit",
             text=self.get_translation("Edit"),
-            icon=self.get_svg_icon("refresh.svg"),
+            icon=self.get_svg_icon("edit.svg"),
             callback=self._edit_toolbutton_connect
         )
 

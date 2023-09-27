@@ -24,30 +24,6 @@ class PluginsObserverMixin:
                     )
                 self._plugin_event_listeners[event_listen.get("target")] = {"method": method, **event_listen}
 
-            if hasattr(method, "plugin_listen"):
-                plugin_listen = method.plugin_listen
-
-                if plugin_listen not in self.requires + self.optional:
-                    raise PieException(
-                        f"Method {method_name} of {self} is trying to watch "
-                        f"plugin {plugin_listen}, but that plugin is not "
-                        f"listed in `requires` nor `optional`."
-                    )
-
-                self._plugin_availability_listeners[plugin_listen] = method_name
-
-            if hasattr(method, "plugin_shutdown"):
-                object_shutdown = method.plugin_shutdown
-
-                if object_shutdown not in self.requires + self.optional:
-                    raise PieException(
-                        f"Method {method_name} of {self} is trying to watch "
-                        f"plugin {object_shutdown}, but that plugin is not "
-                        f"listed in `requires` nor `optional`."
-                    )
-
-                self._plugin_shutdown_listeners[object_shutdown] = method_name
-
     def on_plugin_event(self, target: str) -> None:
         if target in self._plugin_event_listeners:
             event = self._plugin_event_listeners[target]
