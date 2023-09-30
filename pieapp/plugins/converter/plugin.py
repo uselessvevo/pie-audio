@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 from typing import Union
 
 from PySide6.QtCore import Qt, Signal
@@ -8,7 +10,7 @@ from pieapp.structs.menus import MainMenu, MainMenuItem
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 from piekit.layouts.structs import Layout
-from piekit.widgets.menus import INDEX_START, INDEX_END
+from piekit.widgets.menus import INDEX_START
 
 from piekit.globals import Global
 from piekit.managers.structs import Section
@@ -100,16 +102,6 @@ class Converter(
             icon=self.get_svg_icon("folder-open.svg"),
             index=INDEX_START(),
             triggered=self.api.open_files
-        )
-
-        self.add_menu_item(
-            section=Section.Shared,
-            menu=MainMenu.File,
-            name=MainMenuItem.Exit,
-            text=self.get_translation("Exit"),
-            icon=self.get_svg_icon("logout.svg"),
-            triggered=self._parent.close,
-            index=INDEX_END()
         )
 
     @on_plugin_event(target=Plugin.Workbench)

@@ -5,10 +5,14 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QSizePolicy, QWidget, QGridLayout
 
+from pieapp.structs.menus import MainMenu, MainMenuItem
 from piekit.layouts.structs import Layout
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
+from piekit.managers.menus.mixins import MenuAccessorMixin
+from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -16,14 +20,16 @@ from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
+from piekit.widgets.menus import INDEX_END
 
 
 class Workbench(
     PiePlugin,
     ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
-    ToolBarAccessorMixin, ToolButtonAccessorMixin, LayoutsAccessorMixin,
+    ToolBarAccessorMixin, ToolButtonAccessorMixin, LayoutsAccessorMixin, MenuAccessorMixin
 ):
     name = Plugin.Workbench
+    optional = [Plugin.MenuBar]
 
     def init(self) -> None:
         self._workbench = self.add_toolbar(name=self.name)

@@ -34,7 +34,7 @@ class Settings(
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     name = Plugin.Settings
-    requires = [Plugin.MenuBar, Plugin.Workbench]
+    requires = [Plugin.MenuBar]
 
     def init(self) -> None:
         # Main window dialog
@@ -159,7 +159,7 @@ class Settings(
             page["page"].accept()
 
     @on_plugin_event(target=Plugin.MenuBar)
-    def _on_menu_bar_available(self) -> None:
+    def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,
             menu=MainMenu.File,

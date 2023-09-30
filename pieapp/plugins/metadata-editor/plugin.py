@@ -1,6 +1,5 @@
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QDialog
 from __feature__ import snake_case
+from PySide6.QtWidgets import QDialog
 
 from typing import Union
 
@@ -24,7 +23,7 @@ class MetadataEditor(
         self._dialog = QDialog(self._parent)
         self._dialog.set_window_title(self.get_translation("About"))
         self._dialog.set_window_icon(self.get_plugin_svg_icon())
-        self._dialog.resize(Global.DEFAULT_MIN_WINDOW_SIZE or (720, 480))
+        self._dialog.resize(*Global.DEFAULT_MIN_WINDOW_SIZE or (720, 480))
 
     def call(self) -> None:
         self._dialog.show()
