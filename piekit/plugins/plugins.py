@@ -4,7 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QMainWindow
 
-from piekit.config import Config
+from piekit.globals import Global
 from piekit.utils.logger import logger
 from piekit.plugins.types import PluginType, Error
 from piekit.plugins.observer import PluginsObserverMixin
@@ -20,7 +20,7 @@ class PiePlugin(
     type: PluginType = PluginType.Plugin
 
     # Icon name
-    icon: Union[None, str] = Config.PLUGIN_ICON_NAME
+    icon: Union[None, str] = Global.PLUGIN_ICON_NAME
 
     # By default, description must be written in English
     description: str = None
@@ -57,8 +57,6 @@ class PiePlugin(
     sig_exception_occurred = Signal(Error)
 
     def __init__(self, parent: QMainWindow = None, path: Path = None) -> None:
-        # For some reason, I can't use `super().__init__()` method with `PySide`
-
         # Initialize `QObject` instance
         QObject.__init__(self, parent)
 
@@ -77,25 +75,11 @@ class PiePlugin(
     # Prepare methods
 
     def prepare(self) -> None:
-        # First, we need to initialize base signals
-        self.prepare_base_signals()
-
-        # PiePlugin is loading
-        self.sig_plugin_loading.emit(self.__class__.__name__)
-
         # Initializing plugin
         self.init()
 
         # Prepare PiePluginAPI
         self.init_api()
-
-    # Signals, shortcuts etc. methods
-
-    def prepare_base_signals(self):
-        self.logger.info(f"Preparing base signals for {self.__class__.__name__}")
-        self.sig_plugin_loading.connect(self._parent.sig_plugin_loading)
-        self.sig_plugin_reloading.connect(self._parent.sig_plugin_reloading)
-        self.sig_exception_occurred.connect(self._parent.error_handler)
 
     # Main methods
 
@@ -116,7 +100,7 @@ class PiePlugin(
         """
         Method that prepare PiePluginAPI based instance
         """
-        from piekit.plugins.api.api import PiePluginAPI
+        from piekit.plugins.api import PiePluginAPI
 
         if self.api and issubclass(self.api, PiePluginAPI):
             self.api = self.api(self)
@@ -124,15 +108,13 @@ class PiePlugin(
 
     # Properties
 
-    @property
-    def path(self) -> Path:
+    def get_path(self) -> Path:
         return self._path
 
-    def description(self) -> str:
+    def get_description(self) -> str:
         return self.description or f"{self.__class__.__class__}'s description"
 
-    @property
-    def name(self) -> str:
+    def get_name(self) -> str:
         return self.name or self.__class__.__name__
 
     @property

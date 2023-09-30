@@ -6,13 +6,14 @@ import sys
 
 from pathlib import Path
 
+from PySide6.QtCore import Signal
 from version_parser import Version
 
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
 from piekit.utils.core import get_main_window
 
-from piekit.config import Config
+from piekit.globals import Global
 from piekit.exceptions import PieException
 from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin
@@ -38,7 +39,7 @@ class PluginManager(BaseManager):
         self._plugin_dependencies: dict[str, dict[str, list[str]]] = {}
 
         # PiePlugin dictionary
-        self._plugins_registry: dict[str, PiePlugin] = {}
+        self._plugin_registry: dict[str, PiePlugin] = {}
 
         # PiePlugins dictionary with availability boolean status
         self._plugin_availability: dict[str, bool] = {}
@@ -46,6 +47,7 @@ class PluginManager(BaseManager):
         # Dictionary with plugin name to its type
         self._plugins_types_registry: dict[PluginType, set[str]] = {k.value: set() for k in PluginType}
 
+        # List of managers that can setup plugins
         self._plugin_managers = Managers.get_plugin_managers()
 
     def init(self) -> None:
@@ -54,8 +56,8 @@ class PluginManager(BaseManager):
         if not main_window:
             raise PieException(f"Can't find an initialized QMainWindow instance")
 
-        self._initialize_from_packages(Config.APP_ROOT / Config.PLUGINS_FOLDER, main_window)
-        self._initialize_from_packages(Config.USER_ROOT / Config.PLUGINS_FOLDER, main_window)
+        self._initialize_from_packages(Global.APP_ROOT / Global.PLUGINS_FOLDER, main_window)
+        self._initialize_from_packages(Global.USER_ROOT / Global.PLUGINS_FOLDER, main_window)
 
     def shutdown(self, *plugins: str, full_house: bool = False) -> None:
         """
@@ -65,34 +67,28 @@ class PluginManager(BaseManager):
             plugins (objects): PiePlugin based classes
             full_house (bool): reload all managers, services from all instances
         """
-        plugins = plugins if not full_house else self._plugins_registry.keys()
+        plugins = plugins if not full_house else self._plugin_registry.keys()
         for plugin in plugins:
-            self._logger.info(f"Shutting down {plugin} from {self.__class__.__name__}")
-            if plugin in self._plugins_registry:
+            self._logger.info(f"Shutting down plugin \"{plugin}\" from {self.__class__.__name__}")
+            if plugin in self._plugin_registry:
                 self._shutdown_plugin(plugin)
-
-        self._plugin_dependents = {}
-        self._plugin_dependencies = {}
-        self._plugins_registry = {}
-        self._plugin_availability = {}
-        self._plugin_managers = []
 
     def reload(self, *plugins: str, full_house: bool = False) -> None:
         """ Reload listed or all objects and components """
         self.shutdown(*plugins, full_house=full_house)
-        for plugin in self._plugins_registry:
-            plugin_instance = self._plugins_registry.get(plugin)
+        for plugin in self._plugin_registry:
+            plugin_instance = self._plugin_registry.get(plugin)
             self._initialize_plugin(plugin_instance)
 
     def get(self, key) -> Any:
         """ Get PiePlugin instance by its name """
-        return self._plugins_registry.get(key)
+        return self._plugin_registry.get(key)
 
-    # PluginManager protected methods
+    # Prepare methods
 
     def _initialize_from_packages(
-        self, 
-        folder: "Path", 
+        self,
+        folder: "Path",
         parent: "QMainWindow" = None
     ) -> None:
         if not folder.exists():
@@ -108,22 +104,18 @@ class PluginManager(BaseManager):
 
                 # Add our plugin into sys.path
                 sys.path.append(os.path.abspath(str(plugin_path)))
-                plugin_package_module = import_by_path("plugin", str(plugin_path / "__init__.py"))
+                plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
                 try:
                     self._check_versions(plugin_package_module)
                 except AttributeError as e:
                     raise PieException(str(e))
 
                 # Importing plugin module
-                plugin_module = import_by_path("plugin", str(plugin_path / "plugin.py"))
-                if (plugin_path / "config.py").exists():
-                    config_module = import_by_path("config", str(plugin_path / "config.py"))
-                    Config.load_module(config_module)
+                plugin_module = import_by_path(str(plugin_path / "plugin.py"))
 
                 # Setup plugin via `PluginManager`
                 for plugin_manager in self._plugin_managers:
                     plugin_manager.init_plugin(plugin_path)
-                    plugin_manager.on_post_init_plugin(plugin_path)
 
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)
@@ -134,25 +126,25 @@ class PluginManager(BaseManager):
         """
         Check application/pieapp, piekit and plugin version
         """
-        PIEAPP_APPLICATION_VERSION = Version(Config.PIEAPP_APPLICATION_VERSION)
-        piekit_version = Version(Config.PIEKIT_VERSION)
+        sys_pieapp_version = Version(Global.PIEAPP_APPLICATION_VERSION)
+        sys_piekit_version = Version(Global.PIEKIT_VERSION)
 
         if not plugin_package.version:
             raise AttributeError(f"Plugin {plugin_package.name} must have `version` attribute")
 
-        required_PIEAPP_APPLICATION_VERSION = Version(plugin_package.PIEAPP_APPLICATION_VERSION)
-        required_piekit_version = Version(plugin_package.piekit_version)
+        plugin_pieapp_version = Version(plugin_package.pieapp_application_version)
+        plugin_piekit_version = Version(plugin_package.piekit_version)
 
-        if PIEAPP_APPLICATION_VERSION.get_major_version() != required_PIEAPP_APPLICATION_VERSION.get_major_version():
-            raise AttributeError(f"Application version ({Config.PIEAPP_APPLICATION_VERSION}) is not compatible with plugin"
+        if sys_pieapp_version.get_major_version() != plugin_pieapp_version.get_major_version():
+            raise AttributeError(f"Application version ({sys_pieapp_version}) is not compatible with plugin"
                                  f"{plugin_package.name} version ({plugin_package.PIEAPP_APPLICATION_VERSION})")
 
-        if piekit_version != required_piekit_version:
-            raise AttributeError(f"PieKit version ({Config.PIEKIT_VERSION}) is not compatible with plugin"
+        if sys_piekit_version != plugin_piekit_version:
+            raise AttributeError(f"PieKit version ({sys_piekit_version}) is not compatible with plugin"
                                  f"{plugin_package.name} version ({plugin_package.piekit_version})")
 
     def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
-        self._logger.info(f"Preparing {plugin_instance.type.value} {plugin_instance.name}")
+        self._logger.info(f"Preparing plugin {plugin_instance.name}")
 
         self._update_plugin_info(
             plugin_instance.name,
@@ -161,15 +153,12 @@ class PluginManager(BaseManager):
         )
 
         # Hashing PiePlugin instance
-        self._plugins_registry[plugin_instance.name] = plugin_instance
+        self._plugin_registry[plugin_instance.name] = plugin_instance
         self._plugins_types_registry[plugin_instance.type.value].add(plugin_instance.name)
 
-        plugin_instance.sig_plugin_ready.connect(
-            lambda: (
-                self._notify_plugin_availability(plugin_instance.name),
-                self._notify_plugin_availability_on_main(plugin_instance.name)
-            )
-        )
+        public_signals = self._get_plugin_signals(plugin_instance)
+        for public_signal in public_signals:
+            public_signal.connect(lambda: self._notify_plugin_event(plugin_instance.name))
 
         # Preparing `PiePlugin` instance
         try:
@@ -180,50 +169,34 @@ class PluginManager(BaseManager):
         # PiePlugin is ready
         plugin_instance.sig_plugin_ready.emit()
 
-        self._notify_plugin_dependencies(plugin_instance.name)
-
         # Inform about that
-        self._logger.info(f"{plugin_instance.type.value.capitalize()} {plugin_instance.name} is ready!")
+        self._logger.info(f"Plugin \"{plugin_instance.name}\" is ready")
 
-    def _notify_plugin_availability(
-        self,
-        name: str,
-    ) -> None:
+    @staticmethod
+    def _get_plugin_signals(plugin_instance: PiePlugin) -> list[Signal]:
         """
-        Notify dependent PiePlugins that our PiePlugin is available
-
-        Args:
-            name (str): PiePlugin name
+        Collect signals from plugin instance that starts with `sig_` prefix
         """
-        self._plugin_availability[name] = True
+        signals: list[Signal] = []
+        for signal_name in dir(plugin_instance):
+            if signal_name.startswith("sig_"):
+                signal_instance = getattr(plugin_instance, signal_name, None)
+                if isinstance(signal_instance, Signal):
+                    signals.append(signal_instance)
 
-        # Notify plugin dependents
+        return signals
+
+    # Notification methods
+
+    def _notify_plugin_event(self, name: str) -> None:
         plugin_dependents = self._plugin_dependents.get(name, {})
         required_plugins = plugin_dependents.get("requires", [])
         optional_plugins = plugin_dependents.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
-                plugin_instance = self._plugins_registry[plugin]
-                plugin_instance.on_plugin_available(name)
-
-    def _notify_plugin_availability_on_main(self, name: str) -> None:
-        plugin_instance = self._plugins_registry.get(name)
-        if plugin_instance:
-            plugin_instance.parent().sig_plugin_ready.emit(name)
-
-    def _notify_plugin_dependencies(self, name: str) -> None:
-        """ Notify PiePlugins dependencies """
-        plugin_instance = self._plugins_registry[name]
-        plugin_dependencies = self._plugin_dependencies.get(name, {})
-        required_plugins = plugin_dependencies.get("requires", [])
-        optional_plugins = plugin_dependencies.get("optional", [])
-
-        for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
-                if self._plugin_availability.get(plugin, False):
-                    self._logger.debug(f"{plugin_instance.type.value.capitalize()} {plugin} has already loaded")
-                    plugin_instance.on_plugin_available(plugin)
+            if plugin in self._plugin_registry:
+                plugin_instance = self._plugin_registry[plugin]
+                plugin_instance.on_plugin_event(name)
 
     def _update_plugin_info(
         self,
@@ -289,9 +262,9 @@ class PluginManager(BaseManager):
         optional_plugins = plugin_dependents.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
+            if plugin in self._plugin_registry:
                 if self._plugin_availability.get(plugin, False):
-                    plugin_instance: PiePlugin = self._plugins_registry[plugin]
+                    plugin_instance: PiePlugin = self._plugin_registry[plugin]
                     self._logger.debug(
                         f"Notifying {plugin_instance.type.value.capitalize()} "
                         f"that {plugin_name} is going to be turned off"
@@ -300,13 +273,13 @@ class PluginManager(BaseManager):
 
     def _shutdown_plugin(self, plugin_name: str):
         """ Shutdown a plugin from its dependencies """
-        plugin_instance: PiePlugin = self._plugins_registry[plugin_name]
+        plugin_instance: PiePlugin = self._plugin_registry[plugin_name]
         plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
         required_plugins = plugin_dependencies.get("requires", [])
         optional_plugins = plugin_dependencies.get("optional", [])
 
         for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugins_registry:
+            if plugin in self._plugin_registry:
                 if self._plugin_availability.get(plugin, False):
                     self._logger.info(f"Shutting down {plugin_name} from {plugin}")
                     plugin_instance.on_plugin_shutdown(plugin)

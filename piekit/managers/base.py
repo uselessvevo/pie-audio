@@ -38,11 +38,5 @@ class PluginBaseManager(BaseManager):
     def init_plugin(self, plugin_folder: Path) -> None:
         raise NotImplementedError(f"Method `init_plugin` must be implemented")
 
-    def on_post_init_plugin(self, plugin_folder: Path) -> None:
-        pass
-
     def shutdown_plugin(self) -> None:
-        pass
-
-    def on_post_shutdown(self) -> None:
         pass

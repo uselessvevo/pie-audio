@@ -1,4 +1,5 @@
 .idea/
+/test/
 
 TODO.md
 poetry.lock
@@ -210,3 +211,4 @@ fabric.properties
 
 # *.iml
 # modules.xml
+/lvenv/

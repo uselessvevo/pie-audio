@@ -4,27 +4,26 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDialog, QGridLayout, QPushButton
 
-from pieapp.structs.plugins import Plugin
 from piekit.layouts.structs import Layout
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
 
-from piekit.config import Config
-from piekit.managers.base import BaseManager
-from piekit.managers.layouts.mixins import LayoutsAccessorMixin
-from piekit.managers.registry import Managers
+from piekit.globals import Global
+from piekit.utils.logger import logger
 from piekit.managers.structs import Section
-from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.plugins.plugins import PiePlugin
+from piekit.managers.base import BaseManager
+from piekit.managers.registry import Managers
+from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
-from piekit.utils.logger import logger
+from piekit.managers.plugins.decorators import on_plugin_event
 
 
 class TestPlugin(
@@ -46,7 +45,7 @@ class TestPlugin(
         self._dialog = QDialog(self._parent)
 
         self._dialog.set_window_title("Test Plugin")
-        self._dialog.set_window_icon(self.get_plugin_icon())
+        self._dialog.set_window_icon(self.get_plugin_svg_icon())
         self._dialog.resize(400, 300)
 
         ok_button = QPushButton(self.get_translation("Ok"))
@@ -55,13 +54,13 @@ class TestPlugin(
         test_plugin_info_button = QPushButton("Test plugin info")
         test_plugin_info_button.clicked.connect(self.test_plugin_info)
 
-        test_inner_config_button = QPushButton("Test inner config")
+        test_inner_config_button = QPushButton("Test restore temp config")
         test_inner_config_button.set_tool_tip("Get and set inner config")
-        test_inner_config_button.clicked.connect(self.test_inner_config)
+        test_inner_config_button.clicked.connect(self.test_restore_test_config)
 
-        test_user_config_button = QPushButton("Test user config")
+        test_user_config_button = QPushButton("Test save inner config")
         test_user_config_button.set_tool_tip("Get, set and save user config")
-        test_user_config_button.clicked.connect(self.test_user_config)
+        test_user_config_button.clicked.connect(self.test_inner_config_save)
 
         # NOTE: You can ignore `add_toolbar`, `add_tool_button` and `add_toolbar_item`
         #       And register local toolbar and tool button
@@ -73,9 +72,10 @@ class TestPlugin(
             section=f"test-plugin-toolbutton",
             name="call-dialog",
             text="Call inner dialog",
-            icon=self.get_asset_icon("go.png", section=Section.Shared),
+            icon=self.get_svg_icon("mood.svg", section=Section.Shared),
             tooltip="Call inner dialog",
-            triggered=self.test_show_inner_dialog
+            triggered=self.test_show_inner_dialog,
+            object_name="WorkbenchToolButton"
         )
         self.add_toolbar_item(
             section=f"test-plugin-toolbar",
@@ -101,15 +101,16 @@ class TestPlugin(
     def register_object(self, target: "QObject", *args, **kwargs) -> None:
         self._main_layout.add_widget(target, 4, 0)
 
-    @on_plugin_available(target=Plugin.Workbench)
+    @on_plugin_event(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
             section=self.name,
             name="TestButton",
             text=self.get_translation("Test"),
             tooltip=self.get_translation("Test"),
-            icon=self.get_plugin_icon(),
-            triggered=self.call
+            icon=self.get_plugin_svg_icon(),
+            triggered=self.call,
+            object_name="WorkbenchToolButton"
         )
         self.add_toolbar_item(
             section=Plugin.Workbench,
@@ -118,7 +119,7 @@ class TestPlugin(
             after=WorkbenchItem.Clear
         )
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
         test_menu = self.add_menu(
             parent=self.get_menu_bar(Section.Shared),
@@ -133,7 +134,7 @@ class TestPlugin(
             name="test-plugin",
             text=self.get_translation("Run test plugin"),
             triggered=self.call,
-            icon=self.get_plugin_icon(),
+            icon=self.get_plugin_svg_icon(),
         )
 
         self.get_menu_bar(Section.Shared).add_menu(test_menu)
@@ -141,9 +142,9 @@ class TestPlugin(
     # Test methods
 
     def test_set_config_fields(self) -> None:
-        self._logger.debug("Trying to change `Config.APP_ROOT/IMMUTABLE_FIELD` fields")
-        Config.APP_ROOT = 123
-        Config.IMMUTABLE_FIELD = "New immutable value"
+        self._logger.debug("Trying to change \"Config.APP_ROOT/IMMUTABLE_FIELD\" fields")
+        Global.APP_ROOT = 123
+        Global.IMMUTABLE_FIELD = "New immutable value"
 
     def test_show_inner_dialog(self) -> None:
         inner_dialog = QDialog(self._dialog)
@@ -151,25 +152,25 @@ class TestPlugin(
         inner_dialog.show()
 
     def test_plugin_info(self) -> None:
-        self.logger.debug(f"{Config.APP_ROOT=}, {Config.TEST_STR_ATTRIBUTE=}, {Config.TEST_LIST_ATTRIBUTE=}")
-        self.logger.debug(self.get_asset("cancel.png"))
-        self.logger.debug(self.get_plugin_icon())
+        self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
+        self.logger.debug(self.get_asset("cancel.svg"))
+        self.logger.debug(self.get_plugin_svg_icon())
         self.logger.debug(self.get_translation("Test String"))
 
-    def test_inner_config(self) -> None:
-        self.logger.debug(self.get_config("key"))
+    def test_restore_test_config(self) -> None:
         self.logger.debug("Setting new value")
         self.set_config("key", "New String Value", temp=True)
-        self.logger.debug(self.get_config("key"))
-        self.logger.debug(self.get_config("key", temp=True))
+        self.logger.debug(f"Value: {self.get_config('key')}")
+        self.logger.debug(f"Value from temp: {self.get_config('key', temp=True)}")
 
         self.logger.debug("Restoring configuration")
         self.restore_config()
 
-        self.logger.debug("Retrieving value")
+        self.logger.debug("Retrieving value from temp")
         self.logger.debug(self.get_config("key", temp=True))
+        self.logger.debug("=================================")
 
-    def test_user_config(self) -> None:
+    def test_inner_config_save(self) -> None:
         self.logger.debug(self.get_config("key"))
         self.logger.debug("Setting new value")
         self.set_config("key", str(uuid.uuid4()), temp=True)
@@ -206,7 +207,9 @@ class TestMagicManager(BaseManager):
         self.init()
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    if Config.TEST_PLUGIN_ENABLE:
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    Global.load_by_path(str(plugin_path / "globals.py"))
+
+    if Global.TEST_PLUGIN_ENABLE:
         Managers.from_class(TestMagicManager)
-        return TestPlugin(*args, **kwargs)
+        return TestPlugin(parent, plugin_path)

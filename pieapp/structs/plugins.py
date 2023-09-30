@@ -9,7 +9,7 @@ class Plugin:
     Settings = "settings"
     Workbench = "workbench"
     StatusBar = "status-bar"
-    ContentTable = "content-table"
     Converter = "converter"
+    MetadataEditor = "converter-me"
     TestPlugin = "test-plugin"
     TestPluginChild = "test-plugin-child"

@@ -5,7 +5,7 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
 
-from piekit.config import Config
+from piekit.globals import Global
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.plugins import Plugin
@@ -22,7 +22,7 @@ from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
+from piekit.managers.plugins.decorators import on_plugin_event
 
 from PySide6.QtWidgets import QGridLayout, QDialog, QTreeWidget, QLabel, QDialogButtonBox
 
@@ -39,12 +39,11 @@ class Settings(
     def init(self) -> None:
         # Main window dialog
         self._dialog = QDialog(self._parent)
-        self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.set_object_name("SettingsDialog")
         self._dialog.set_window_title(self.get_translation("Settings"))
-        self._dialog.set_window_icon(self.get_plugin_icon())
-        self._dialog.set_minimum_size(*Config.SETTINGS_PLUGIN_MIN_SIZE)
-        self._dialog.resize(*self.get_config("ui.window_size", Config.SETTINGS_PLUGIN_MIN_SIZE))
+        self._dialog.set_window_icon(self.get_svg_icon("settings.svg"))
+        self._dialog.set_minimum_size(*Global.SETTINGS_PLUGIN_MIN_SIZE)
+        self._dialog.resize(*self.get_config("ui.window_size", Global.SETTINGS_PLUGIN_MIN_SIZE))
 
         # Page canvas and its state
         self._page_widget_grid = QGridLayout()
@@ -159,7 +158,7 @@ class Settings(
         for page in pages:
             page["page"].accept()
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    @on_plugin_event(target=Plugin.MenuBar)
     def _on_menu_bar_available(self) -> None:
         self.add_menu_item(
             section=Section.Shared,
@@ -167,10 +166,11 @@ class Settings(
             name="settings",
             text=self.get_translation("Settings"),
             triggered=self.call,
-            icon=self.get_plugin_icon(),
+            icon=self.get_svg_icon("settings.svg"),
             before=MainMenuItem.Exit
         )
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return Settings(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    Global.load_by_path(str(plugin_path / "globals.py"))
+    return Settings(parent, plugin_path)

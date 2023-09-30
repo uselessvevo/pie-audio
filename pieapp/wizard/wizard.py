@@ -15,7 +15,7 @@ from piekit.managers.structs import SysManager, Section
 from piekit.utils.core import restart_application
 
 from piekit.managers.registry import Managers
-from piekit.config import Config
+from piekit.globals import Global
 
 
 class LocaleWizardPage(
@@ -29,10 +29,10 @@ class LocaleWizardPage(
         super().__init__(parent)
 
         self._parent = parent
-        self._locales = Config.LOCALES
+        self._locales = Global.LOCALES
         self._cur_locale = self.get_config(
             key="locale.locale",
-            default=Config.DEFAULT_LOCALE,
+            default=Global.DEFAULT_LOCALE,
             scope=Section.Root,
             section=Section.User
         )
@@ -121,7 +121,7 @@ class ThemeWizardPage(
         return self.combo_box.current_text()
 
 
-class FfmpegWizardPage(
+class ConverterWizardPage(
     LocalesAccessorMixin,
     AssetsAccessorMixin,
     ConfigAccessorMixin,
@@ -135,8 +135,8 @@ class FfmpegWizardPage(
         self.ffmpeg_path = None
 
         self.line_edit_action = QAction()
-        self.line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
-        self.line_edit_action.triggered.connect(self.select_ffmpeg_path)
+        self.line_edit_action.set_icon(self.get_svg_icon("folder-open.svg"))
+        self.line_edit_action.triggered.connect(self.select_ffmpeg_root_path)
 
         self.line_edit = QtWidgets.QLineEdit()
         self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
@@ -156,11 +156,11 @@ class FfmpegWizardPage(
     def is_complete(self) -> bool:
         return bool(Path(self.ffmpeg_path).exists() if self.ffmpeg_path else False) and super().is_complete()
 
-    def select_ffmpeg_path(self):
+    def select_ffmpeg_root_path(self):
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self,
             caption=self.get_translation("Select ffmpeg directory"),
-            dir=str(Config.USER_ROOT)
+            dir=str(Global.USER_ROOT)
         )
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
@@ -168,9 +168,23 @@ class FfmpegWizardPage(
             self.set_config(
                 scope=Section.Root,
                 section=Section.User,
-                key="ffmpeg.path",
+                key="ffmpeg.root",
                 data=directory_path
             )
+
+            binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
+            for binary in binaries:
+                if not (directory_path / binary).exists():
+                    raise FileNotFoundError(f"Binary file \"{binary.stem!s}\" not found. "
+                                            f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html")
+
+                self.set_config(
+                    scope=Section.Root,
+                    section=Section.User,
+                    key=f"ffmpeg.{binary.stem!s}",
+                    data=str(directory_path / binary)
+                )
+
             self.save_config(
                 scope=Section.Root,
                 section=Section.User
@@ -210,7 +224,7 @@ class SetupWizard(QtWidgets.QWizard, LocalesAccessorMixin):
         if os.name == "nt":
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                Config.PIEAPP_ORGANIZATION_DOMAIN
+                Global.PIEAPP_ORGANIZATION_DOMAIN
             )
 
         self.resize(640, 380)
@@ -222,7 +236,7 @@ class SetupWizard(QtWidgets.QWizard, LocalesAccessorMixin):
         self.pages = (
             LocaleWizardPage(self),
             ThemeWizardPage(self),
-            FfmpegWizardPage(self),
+            ConverterWizardPage(self),
             FinishWizardPage(self)
         )
 

@@ -5,7 +5,6 @@ from piekit.utils.logger import logger
 from piekit.utils.files import read_json
 from piekit.utils.modules import import_by_string
 from piekit.managers.base import PluginBaseManager, BaseManager
-from piekit.managers.structs import ManagerConfig
 
 
 class ManagersRegistry:
@@ -20,7 +19,7 @@ class ManagersRegistry:
         # Dictionary with managers that can setup plugins
         self._plugin_managers_instances: dict[str, PluginBaseManager] = {}
 
-    def from_class(self, manager_class: Type[BaseManager], init: bool = True, *args, **kwargs) -> None:
+    def from_class(self, manager_class: Type[Union[BaseManager, PluginBaseManager]]) -> None:
         """
         Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
         For example:
@@ -29,36 +28,26 @@ class ManagersRegistry:
         >>> Managers.init(ConfigManager, PathConfig(...), ...)
         """
         manager_instance = manager_class()
-        self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
+        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
 
         self._managers_instances[manager_instance.name] = manager_instance
         if isinstance(manager_instance, PluginBaseManager):
             self._plugin_managers_instances[manager_instance.name] = manager_instance
 
-        setattr(self, manager_instance.name, manager_instance)
+        manager_instance.init()
 
-        if init is True:
-            manager_instance.init(*args, **kwargs)
-
-        setattr(manager_instance, "ready", init)
-
-    def from_config(self, config: ManagerConfig) -> None:
+    def from_config(self, config: str) -> None:
         """
         Initialize manager from `ManagerConfig` structure
         """
-        manager_instance = import_by_string(config.import_string)()
-        self._logger.info(f"Initializing `{manager_instance.__class__.__name__}`")
+        manager_instance = import_by_string(config)()
+        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
 
         self._managers_instances[manager_instance.name] = manager_instance
         if isinstance(manager_instance, PluginBaseManager):
             self._plugin_managers_instances[manager_instance.name] = manager_instance
             
-        setattr(self, manager_instance.name, manager_instance)
-
-        if config.init is True:
-            manager_instance.init(*config.args, **config.kwargs)
-
-        setattr(manager_instance, "ready", config.init)
+        manager_instance.init()
 
     def from_json(self, file: Union[str, Path]) -> None:
         """
@@ -70,7 +59,7 @@ class ManagersRegistry:
         For example: `[{"import_string": string, "init": boolean}, ...]`
         """
         file_data = read_json(file)
-        file_data = tuple(ManagerConfig(import_string=f["import"], init=file["init"]) for f in file_data)
+        file_data = tuple(fd["import"] for fd in file_data)
 
         for config in file_data:
             self.from_config(config)
@@ -81,29 +70,27 @@ class ManagersRegistry:
         managers_instances = (self._managers_instances.get(i) for i in managers or self._managers_instances.keys())
 
         for manager_instance in managers_instances:
-            self._logger.info(f"Shutting down `{manager_instance.__class__.__name__}` from `{self.__class__.__name__}`")
-            manager_name = manager_instance.name
+            self._logger.info(f"Shutting down \"{manager_instance.__class__.__name__}\"")
+
             if isinstance(manager_instance, PluginBaseManager):
                 manager_instance.shutdown_plugin()
-                manager_instance.on_post_shutdown()
 
             manager_instance.shutdown(full_house=True)
-            delattr(self, manager_name)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
         managers = reversed(self._managers_instances.keys()) if full_house else managers
         managers_instances = (self._managers_instances.get(i) for i in managers)
 
         for manager_instance in managers_instances:
-            self._logger.info(f"Reloading `{manager_instance.__class__.__name__}`")
+            self._logger.info(f"Reloading \"{manager_instance.__class__.__name__}\"")
             manager_instance.reload()
 
     def destroy(self, *managers: str, full_house: bool = False):
         managers = reversed(self._managers_instances.keys()) if full_house else managers
 
         for manager in managers:
-            self._logger.info(f"Destroying `{manager.__class__.__name__}`")
-            delattr(self, manager)
+            self._logger.info(f"Destroying \"{manager.__class__.__name__}\"")
+            self._managers_instances.pop(manager)
 
     def get_plugin_managers(self) -> list[PluginBaseManager]:
         return list(self._plugin_managers_instances.values())
@@ -121,10 +108,10 @@ class ManagersRegistry:
             BaseManager instance
         """
         try:
-            return self.__getattribute__(manager)
+            return self._managers_instances[manager]
         except AttributeError:
             if not fallback_method:
-                raise AttributeError(f"Manager `{manager}` not found or not initialized")
+                raise AttributeError(f"Manager \"{manager}\" not found or not initialized")
 
             fallback_method()
 

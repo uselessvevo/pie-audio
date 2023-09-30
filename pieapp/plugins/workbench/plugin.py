@@ -36,8 +36,9 @@ class Workbench(
             name=WorkbenchItem.Exit,
             text=self.get_translation("Exit"),
             tooltip=self.get_translation("Exit"),
-            icon=self.get_asset_icon("exit.png"),
-            triggered=self._parent.close
+            icon=self.get_svg_icon("logout.svg"),
+            triggered=self._parent.close,
+            object_name="WorkbenchToolButton"
         )
 
         spacer = QWidget()
@@ -60,5 +61,5 @@ class Workbench(
         )
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return Workbench(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    return Workbench(parent, plugin_path)

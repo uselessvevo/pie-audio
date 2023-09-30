@@ -3,7 +3,7 @@ from typing import Union
 from __feature__ import snake_case
 
 from piekit.widgets.spacer import Spacer
-from piekit.config.loader import Config
+from piekit.globals.loader import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -35,22 +35,22 @@ class AppConfigPage(
         main_grid = QGridLayout()
 
         self._ffmpeg_line_edit_action = QAction()
-        self._ffmpeg_line_edit_action.set_icon(self.get_asset_icon("open-folder.png"))
+        self._ffmpeg_line_edit_action.set_icon(self.get_svg_icon("folder.svg"))
         self._ffmpeg_line_edit_action.triggered.connect(self._ffmpeg_button_connect)
 
         self._ffmpeg_line_edit = QLineEdit()
         self._ffmpeg_line_edit.set_object_name("SettingsLineEdit")
         self._ffmpeg_line_edit.insert(
-            self.get_config("ffmpeg.path", scope=Section.Root, section=Section.User)
+            self.get_config("ffmpeg.root", scope=Section.Root, section=Section.User)
         )
         self._ffmpeg_line_edit.add_action(
             self._ffmpeg_line_edit_action, QLineEdit.ActionPosition.TrailingPosition
         )
 
-        self._locales = Config.LOCALES
+        self._locales = Global.LOCALES
         self._cur_locale = self.get_config(
             key="locale.locale",
-            default=Config.DEFAULT_LOCALE,
+            default=Global.DEFAULT_LOCALE,
             scope=Section.Root,
             section=Section.User
         )
@@ -105,7 +105,7 @@ class AppConfigPage(
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self._main_widget,
             caption=self.get_translation("Select ffmpeg directory"),
-            dir=str(Config.USER_ROOT)
+            dir=str(Global.USER_ROOT)
         )
 
         directory_path = QDir.to_native_separators(ffmpeg_directory)
@@ -125,7 +125,7 @@ class AppConfigPage(
         return self.get_translation("Main")
 
     def get_icon(self) -> Union[QIcon, None]:
-        return self.get_asset_icon("cloud.png")
+        return self.get_svg_icon("cloud.svg")
 
 
 def main(*args, **kwargs) -> Union[ConfigPage, None]:

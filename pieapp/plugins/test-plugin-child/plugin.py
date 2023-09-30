@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
 
-from piekit.config import Config
+from piekit.globals import Global
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
@@ -28,7 +28,7 @@ class TestPluginChild(
         self._test_button = QPushButton(self._widget)
         self._test_button.set_text("Click me")
         self._test_button.clicked.connect(self.test_button_connect)
-        self._test_button.set_icon(self.get_asset_icon(""))
+        self._test_button.set_icon(self.get_svg_icon("delete.svg"))
         self._main_layout.add_widget(self._test_button, 0, 0)
         self._widget.set_layout(self._main_layout)
 
@@ -39,6 +39,6 @@ class TestPluginChild(
         self._logger.debug(f"{self.name}'s button clicked")
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    if Config.TEST_PLUGIN_ENABLE:
-        return TestPluginChild(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    if Global.TEST_PLUGIN_ENABLE:
+        return TestPluginChild(parent, plugin_path)

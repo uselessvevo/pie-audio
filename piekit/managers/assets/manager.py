@@ -2,15 +2,12 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Union
 
-from PySide6.QtGui import QIcon
-
-from piekit.managers.assets.utils import set_svg_color
-from piekit.managers.base import PluginBaseManager
-from piekit.managers.registry import Managers
-from piekit.managers.structs import Section
-from piekit.managers.structs import SysManager, DirectoryType
-from piekit.config import Config
+from piekit.globals import Global
 from piekit.utils.logger import logger
+from piekit.managers.structs import Section
+from piekit.managers.registry import Managers
+from piekit.managers.base import PluginBaseManager
+from piekit.managers.structs import SysManager, DirectoryType
 
 
 class AssetsManager(PluginBaseManager):
@@ -21,7 +18,7 @@ class AssetsManager(PluginBaseManager):
         self._assets_dictionary: dict[str, dict[str, Path]] = {}
         self._current_theme = Managers(SysManager.Configs).get(Section.Root, Section.User, "assets.theme")
 
-        assets_folder: Path = Config.APP_ROOT / Config.ASSETS_FOLDER / Config.THEMES_FOLDER
+        assets_folder: Path = Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER
         theme_folders = list(i.name for i in assets_folder.iterdir() if i.is_dir())
         self._themes: list[str] = theme_folders
 
@@ -30,24 +27,24 @@ class AssetsManager(PluginBaseManager):
 
     def init(self) -> None:
         # Read app/user configuration
-        for file in (Config.APP_ROOT / Config.ASSETS_FOLDER / Config.THEMES_FOLDER / self._current_theme).rglob("*.*"):
+        for file in (Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme).rglob("*.*"):
             if not self._check_file(file):
                 continue
 
             self._add_file(Section.Shared, file)
 
     def init_plugin(self, plugin_folder: Path) -> None:
-        for file in (plugin_folder / Config.ASSETS_FOLDER).rglob("*.*"):
+        for file in (plugin_folder / Global.ASSETS_FOLDER).rglob("*.*"):
             if not self._check_file(file):
                 continue
 
             self._add_file(plugin_folder.name, file)
 
     def _check_file(self, file: Path) -> bool:
-        if file.suffix in Config.ASSETS_EXCLUDED_FORMATS:
+        if file.suffix in Global.ASSETS_EXCLUDED_FORMATS:
             return False
 
-        if file.is_dir() and DirectoryType in Config.ASSETS_EXCLUDED_FORMATS:
+        if file.is_dir() and DirectoryType in Global.ASSETS_EXCLUDED_FORMATS:
             return False
 
         return True
@@ -69,16 +66,11 @@ class AssetsManager(PluginBaseManager):
             self._logger.info(f"File {key} not found")
             return default
 
-    @lru_cache
-    def get_svg(self, *args, color: str = "#7cd162") -> QIcon:
-        return set_svg_color(self.get(*args), color)
-
     def get_theme(self) -> str:
         return self._current_theme
 
     def get_themes(self) -> list[str]:
         return self._themes
 
-    getSvg = get_svg
     getTheme = get_theme
     getThemes = get_themes

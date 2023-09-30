@@ -1,5 +1,21 @@
 /*Tips label*/
 
+#ConverterList {
+    background-color: #353535;
+    border: 1px solid transparent;
+    border-radius: 3px;
+}
+
+#ConverterItemFormat {
+    color: white;
+    border-radius: 17px;
+    border: 2px solid transparent;
+}
+
+#ConverterItemDescription {
+    font-style: italic;
+}
+
 #spacer {
    background-color: transparent;
 }
@@ -79,66 +95,157 @@ QMenuBar {
    background-color: #4a4a4a;
    color: #cccccc;
    min-height:20px;
-   min-width:80px;
-   padding:1px 1px 1px 1px;
+   min-width:50px;
+   padding: 3px 1px 3px 1px;
    font-family: Arial;
 }
 
 QMenuBar::item {
-   spacing:2px;
-   padding: 1px 1px 1px 1px;
    background:transparent;
 }
 
 QMenuBar::item:selected {
    color: #f2f2f2;
-   border: 1px solid #2d73ff;
-   background-color: #2d73ff;
 }
 
 QMenuBar::item:pressed {
    background-color: #2d73ff;
 }
 
-QMenu, QToolButton-item:checked {
+QMenu {
    background-color: #424242;
    border: 1px solid #2d73ff;
    color: #cccccc;
    font-family: Arial;
 }
 
-QMenu::item, QToolButton-item:checked {
+QMenu::item {
    padding:3px 25px 3px 25px;
    border:1px solid transparent;
 }
 
-QMenu::item:disabled, QToolButton-item:disabled {
+QMenu::item:disabled {
    color: gray;
 }
 
-QMenu::item:disabled:selected, QToolButton-item:disabled:selected {
+QMenu::item:disabled:selected {
 	color: #f2f2f2;
 }
 
-QMenu::item:selected, QToolButton-item:selected {
+QMenu::item:selected {
    color: #f2f2f2;
    background-color: #2d73ff;
 }
 
-QMenu::icon:checked, QToolButton-item:checked {
+QMenu::icon:checked {
    background-color: #2d73ff;
    border:1px solid palette(highlight);
    border-radius:2px;
 }
 
-QMenu::separator, QToolButton-item {
+QMenu::separator {
    height:1px;
    background-color: #f2f2f2;
-   margin-left:5px;
-   margin-right:5px;
 }
 
-QMenu::indicator, QToolButton-item {
+QMenu::indicator {
+   width:18px;
+   height:18px;
+}
+
+#ConverterMenuWidget {
+    background-color: #424242;
+    border-radius: 1px;
+}
+
+#ConverterMenuItemTB {
+    background-color: transparent;
+    border: 1px solid #424242;
+}
+
+#ConverterMenuItemTB::item:checked {
+   background-color: #424242;
+   border: 1px solid #2d73ff;
+   color: #cccccc;
+   font-family: Arial;
+}
+
+#ConverterMenuItemTB::item:checked {
+   padding: 3px 25px 3px 25px;
+   border:1px solid transparent;
+}
+
+#ConverterMenuItemTB::item:disabled {
+   color: gray;
+}
+
+#ConverterMenuItemTB::item:disabled:selected {
+	color: #f2f2f2;
+}
+
+#ConverterMenuItemTB::item:selected {
+   color: #f2f2f2;
+   background-color: #2d73ff;
+}
+
+#ConverterMenuItemTB::item:checked {
+   background-color: #2d73ff;
+   border:1px solid palette(highlight);
+   border-radius:2px;
+}
+
+#ConverterMenuItemTB::item {
+   height:1px;
+   background-color: #f2f2f2;
+}
+
+#ConverterMenuItemTB::item {
+   width:18px;
+   height:18px;
+}
+
+#WorkbenchToolButton::item:checked {
+   background-color: #424242;
+   border: 1px solid #2d73ff;
+   color: #cccccc;
+   font-family: Arial;
+}
+
+#WorkbenchToolButton::item:checked {
+   padding:3px 25px 3px 25px;
+   border:1px solid transparent;
+}
+
+#WorkbenchToolButton::item:disabled {
+   color: gray;
+}
+
+#WorkbenchToolButton:disabled {
+   color: gray;
+   background-color: #424242;
+}
+
+#WorkbenchToolButton::item:disabled:selected {
+	color: #f2f2f2;
+}
+
+#WorkbenchToolButton::item:selected {
+   color: #f2f2f2;
+   background-color: #2d73ff;
+}
+
+#WorkbenchToolButton::item:checked {
+   background-color: #2d73ff;
+   border:1px solid palette(highlight);
+   border-radius:2px;
+}
+
+#WorkbenchToolButton::item {
+   height:1px;
+   background-color: #f2f2f2;
+}
+
+#WorkbenchToolButton::item {
    width:18px;
    height:18px;
 }
@@ -309,9 +416,9 @@ QRadioButton::indicator {
    height:18px;
 }
 
-/* QToolButton */
+/* #WorkbenchToolButton */
 
-QToolButton {
+#WorkbenchToolButton {
    background-color: transparent;
    border-radius: 2px;
    border: 1px #2d73ff;
@@ -324,30 +431,30 @@ QToolButton {
    font-family: Arial;
 }
 
-QToolButton::menu-indicator
+#WorkbenchToolButton::menu-indicator
 {
     image: none;
     /*subcontrol-origin:   padding;*/
     /*subcontrol-position: bottom center;*/
 }
 
-QToolButton::focus {
+#WorkbenchToolButton::focus {
    color: #f2f2f2;
    background-color: #2d73ff;
 }
 
-QToolButton::hover {
+#WorkbenchToolButton::hover {
    color: #f2f2f2;
    /*border:1px solid #2d73ff;*/
    background-color: #2d73ff;
 }
 
-QToolButton::pressed {
+#WorkbenchToolButton::pressed {
    color: #f2f2f2;
    background-color: #2d73ff; /*216bff*/
 }
 
-QToolButton::checked {
+#WorkbenchToolButton::checked {
    background-color: #494949;
 }
 
@@ -551,8 +658,8 @@ QSizeGrip {
 
 /* QToolBar */
 
-/* QToolButton */
-QToolButton::menu-indicator{ image: none; }
-QToolButton { background-color: transparent; }
-QToolButton:hover { background-color: #2d73ff; }
-QToolButton:pressed { background-color: #2d73ff; }
+/* #WorkbenchToolButton */
+#WorkbenchToolButton::menu-indicator{ image: none; }
+#WorkbenchToolButton { background-color: transparent; }
+#WorkbenchToolButton:hover { background-color: #2d73ff; }
+#WorkbenchToolButton:pressed { background-color: #2d73ff; }

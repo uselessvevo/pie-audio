@@ -41,5 +41,5 @@ class MainMenuBar(
         self._parent.set_menu_bar(self._menu_bar)
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return MainMenuBar(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    return MainMenuBar(parent, plugin_path)

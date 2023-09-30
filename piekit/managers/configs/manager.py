@@ -4,7 +4,7 @@ from typing import Union, Any
 
 from dotty_dict import Dotty
 
-from piekit.config import Config
+from piekit.globals import Global
 from piekit.exceptions import PieException
 from piekit.managers.base import PluginBaseManager
 from piekit.managers.structs import Section
@@ -26,8 +26,8 @@ class ConfigManager(PluginBaseManager):
 
     def init(self) -> None:
         # Read app/core configurations
-        self._read_root_configuration(Config.APP_ROOT / Config.CONFIGS_FOLDER, Section.Inner)
-        self._read_root_configuration(Config.USER_ROOT / Config.CONFIGS_FOLDER, Section.User)
+        self._read_root_configuration(Global.APP_ROOT / Global.CONFIGS_FOLDER, Section.Inner)
+        self._read_root_configuration(Global.USER_ROOT / Global.CONFIGS_FOLDER, Section.User)
 
     def _read_root_configuration(
         self,
@@ -35,33 +35,32 @@ class ConfigManager(PluginBaseManager):
         section: Union[str, Section] = None
     ) -> None:
         self._configuration[Section.Root] = {section: {"__FOLDER__": folder}}
-        if (folder / Config.CONFIG_FILE_NAME).exists():
+        if (folder / Global.CONFIG_FILE_NAME).exists():
             self._configuration[Section.Root][section].update(
-                **read_json(str(folder / Config.CONFIG_FILE_NAME))
+                **read_json(str(folder / Global.CONFIG_FILE_NAME))
             )
             self._observer.add_handler(str(folder), str(folder.name))
 
     def init_plugin(self, plugin_folder: Path) -> None:
-        for folder in plugin_folder.iterdir():
-            # Read plugin's user configuration file
-            user_folder: Path = Config.USER_ROOT / Config.CONFIGS_FOLDER / folder.name
-            self._configuration[folder.name] = {
-                Section.Inner: {"__FOLDER__": folder},
-                Section.User: {"__FOLDER__": user_folder}
-            }
+        # Read plugin's user configuration file
+        user_folder: Path = Global.USER_ROOT / Global.CONFIGS_FOLDER / plugin_folder.name
+        self._configuration[plugin_folder.name] = {
+            Section.Inner: {"__FOLDER__": plugin_folder},
+            Section.User: {"__FOLDER__": user_folder}
+        }
 
-            if (folder / Config.CONFIG_FILE_NAME).exists():
-                # Read plugin's inner configuration file
-                self._configuration[folder.name][Section.Inner].update({
-                    **read_json(folder / Config.CONFIG_FILE_NAME),
-                })
-                self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
+        if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
+            # Read plugin's inner configuration file
+            self._configuration[plugin_folder.name][Section.Inner].update({
+                **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
+            })
+            self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
 
-            if (folder / Config.CONFIG_FILE_NAME).exists():
-                self._configuration[folder.name][Section.User].update({
-                    **read_json(folder / Config.CONFIG_FILE_NAME),
-                })
-                self._observer.add_handler(str(user_folder), str(user_folder.name))
+        if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
+            self._configuration[plugin_folder.name][Section.User].update({
+                **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
+            })
+            self._observer.add_handler(str(user_folder), str(user_folder.name))
 
     def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})
@@ -120,9 +119,8 @@ class ConfigManager(PluginBaseManager):
                 temp_copy = copy.deepcopy(self._configuration[scope_config_path])
 
                 # Copy configuration into temporary configuration
-                if not self._temp_configuration.get(scope_config_path):
-                    self._temp_configuration[scope_config_path] = temp_copy
-                    self._temp_configuration[scope_config_path].update(**temp_copy)
+                self._temp_configuration[scope_config_path] = temp_copy
+                self._temp_configuration[scope_config_path].update(**temp_copy)
 
                 self._temp_configuration[data_config_path] = data
 
@@ -186,7 +184,7 @@ class ConfigManager(PluginBaseManager):
         else:
             configuration_data = copy.deepcopy(self._configuration[scope_config_path])
 
-        file_path: Path = configuration_data.get("__FOLDER__") / Config.CONFIG_FILE_NAME
+        file_path: Path = configuration_data.get("__FOLDER__") / Global.CONFIG_FILE_NAME
 
         if not file_path.exists() and create:
             file_path.touch()

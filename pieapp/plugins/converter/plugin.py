@@ -1,60 +1,105 @@
-from __feature__ import snake_case
-
 from typing import Union
 
-from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
 
 from pieapp.structs.menus import MainMenu, MainMenuItem
-from piekit.managers.structs import Section
-from piekit.plugins.api.utils import get_api
-from piekit.plugins.plugins import PiePlugin
 from pieapp.structs.plugins import Plugin
-from pieapp.structs.plugins import Plugin
-from piekit.managers.menus.mixins import MenuAccessorMixin
-
 from pieapp.structs.workbench import WorkbenchItem
+from piekit.layouts.structs import Layout
+from piekit.widgets.menus import INDEX_START, INDEX_END
+
+from piekit.globals import Global
+from piekit.managers.structs import Section
+from piekit.plugins.plugins import PiePlugin
+from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_available
-from piekit.widgets.menus import INDEX_END, INDEX_START
+
+from api import ConverterAPI
+from models import MediaFile
+
+from components.list import ConvertListWidget
+from components.item import ConverterItemWidget
 
 
 class Converter(
-    PiePlugin,
-    MenuAccessorMixin,
-    LocalesAccessorMixin,
-    AssetsAccessorMixin,
-    ToolBarAccessorMixin,
-    ToolButtonAccessorMixin
+    PiePlugin, LayoutsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin
 ):
+    api = ConverterAPI
     name = Plugin.Converter
-    requires = [Plugin.Workbench, Plugin.MenuBar]
+    requires = [Plugin.MenuBar, Plugin.Workbench]
+    sig_converter_table_ready = Signal()
 
     def init(self) -> None:
-        self._dialog = QDialog(self._parent)
-        self._dialog.set_window_title(self.get_translation("Convert"))
-        self._dialog.set_window_icon(self.get_asset_icon("go.png"))
-        self._dialog.resize(400, 300)
+        self._converter_item_widgets: list[ConverterItemWidget] = []
 
-    def open_files(self) -> None:
-        file_dialog = QFileDialog(self._dialog, self.get_translation("Open files"))
-        selected_files = file_dialog.get_open_file_names(self._dialog)
-        get_api(Plugin.ContentTable, method="receive", files=selected_files[0])
+        self._list_grid_layout = QGridLayout()
+        self._main_layout = self.get_layout(Layout.Main)
+        self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+        self._content_list = ConvertListWidget()
+        self._set_placeholder()
 
-    @on_plugin_available(target=Plugin.MenuBar)
+    def _set_placeholder(self) -> None:
+        self._pixmap_label = QLabel()
+        self._pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
+        self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+
+        self._text_label = QLabel()
+        self._text_label.set_text(self.get_translation("No files selected"))
+        self._text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+
+        self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
+        self._list_grid_layout.add_widget(self._text_label, 2, 0)
+
+    def fill_list(self, file_models: list[MediaFile]) -> None:
+        if not self._content_list.is_visible():
+            self._list_grid_layout.remove_widget(self._pixmap_label)
+            self._list_grid_layout.remove_widget(self._text_label)
+            self._list_grid_layout.add_widget(self._content_list, 0, 0)
+
+        for index, file_model in enumerate(file_models):
+            widget = ConverterItemWidget(self._content_list, index, file_model)
+            widget.set_title(file_model.info.filename)
+            widget.set_description(f"{file_model.info.bit_rate}kb/s")
+            widget.set_icon(file_model.info.codec.name)
+
+            widget_layout = QHBoxLayout()
+            widget_layout.add_stretch()
+            widget_layout.add_widget(widget)
+
+            item = QListWidgetItem()
+            item.set_size_hint(widget.size_hint())
+
+            self._content_list.add_item(item)
+            self._content_list.set_item_widget(item, widget)
+
+            self._converter_item_widgets.append(widget)
+
+        self.sig_converter_table_ready.emit()
+
+    def add_side_menu_item(self, *args, **kwargs) -> None:
+        for item in self._converter_item_widgets:
+            item.add_menu_item(*args, **kwargs)
+
+    @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
-        self.menu_bar = self.get_menu_bar(Section.Shared)
-
         self.add_menu_item(
             section=Section.Shared,
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
             text=self.get_translation("Open file"),
-            icon=self.get_asset_icon("open-file.png"),
+            icon=self.get_svg_icon("folder-open.svg"),
             index=INDEX_START(),
-            triggered=self.open_files
+            triggered=self.api.open_files
         )
 
         self.add_menu_item(
@@ -62,20 +107,21 @@ class Converter(
             menu=MainMenu.File,
             name=MainMenuItem.Exit,
             text=self.get_translation("Exit"),
-            icon=self.get_asset_icon("exit.png"),
+            icon=self.get_svg_icon("logout.svg"),
             triggered=self._parent.close,
             index=INDEX_END()
         )
 
-    @on_plugin_available(target=Plugin.Workbench)
+    @on_plugin_event(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
         self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
             tooltip=self.get_translation("Open file"),
-            icon=self.get_asset_icon("open-folder.png"),
-            triggered=self.open_files
+            icon=self.get_svg_icon("folder-open.svg"),
+            triggered=self.api.open_files,
+            object_name="WorkbenchToolButton"
         )
 
         self.add_tool_button(
@@ -83,7 +129,8 @@ class Converter(
             name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
             tooltip=self.get_translation("Convert"),
-            icon=self.get_asset_icon("go.png")
+            icon=self.get_svg_icon("bolt.svg"),
+            object_name="WorkbenchToolButton"
         ).set_enabled(False)
 
         self.add_tool_button(
@@ -91,7 +138,8 @@ class Converter(
             name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),
             tooltip=self.get_translation("Clear"),
-            icon=self.get_asset_icon("recycle-bin.png")
+            icon=self.get_svg_icon("delete.svg"),
+            object_name="WorkbenchToolButton"
         ).set_enabled(False)
 
         self.add_toolbar_item(
@@ -116,5 +164,6 @@ class Converter(
         )
 
 
-def main(*args, **kwargs) -> Union[PiePlugin, None]:
-    return Converter(*args, **kwargs)
+def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+    Global.load_by_path(str(plugin_path / "globals.py"))
+    return Converter(parent, plugin_path)

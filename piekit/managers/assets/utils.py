@@ -5,7 +5,7 @@ import importlib
 import importlib.util
 from pathlib import Path
 
-from piekit.config import Config
+from piekit.globals import Global
 from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
 
 
@@ -13,7 +13,7 @@ def get_theme(theme_name: str) -> str:
     """
     Parse and get stylesheet
     """
-    themes_root = Config.APP_ROOT / Config.ASSETS_FOLDER / 'themes'
+    themes_root = Global.APP_ROOT / Global.ASSETS_FOLDER / 'themes'
     theme_name = themes_root / theme_name
     themes_list: list[Path] = list(i for i in themes_root.glob('*') if i.is_dir())
     stylesheet: str = ''
@@ -40,7 +40,7 @@ def get_palette(theme_name: str):
     Returns:
         palette (module): app.setPalette(palette.getPalette())
     """
-    theme_folder = Config.APP_ROOT / Config.ASSETS_FOLDER / "themes" / theme_name
+    theme_folder = Global.APP_ROOT / Global.ASSETS_FOLDER / "themes" / theme_name
 
     if theme_folder.exists():
         spec = importlib.util.spec_from_file_location(
@@ -52,7 +52,10 @@ def get_palette(theme_name: str):
         return palette.get_palette()
 
 
-def set_svg_color(file: str, color: str = "#7cd162"):
+def get_svg_icon(file: str, color: str = "#7cd162") -> QIcon:
+    if not file:
+        return QIcon()
+
     pixmap = QPixmap(file)
     painter = QPainter(pixmap)
     painter.set_composition_mode(QPainter.CompositionMode.CompositionMode_SourceIn)
@@ -65,4 +68,4 @@ def set_svg_color(file: str, color: str = "#7cd162"):
 # Qt aliases
 getTheme = get_theme
 getPalette = get_palette
-setSvgColor = set_svg_color
+getSvgIcon = get_svg_icon

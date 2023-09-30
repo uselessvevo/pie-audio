@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../ffbox/.idea/ffbox.iml" filepath="$PROJECT_DIR$/../ffbox/.idea/ffbox.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pie-audio.iml" filepath="$PROJECT_DIR$/.idea/pie-audio.iml" />
     </modules>
   </component>
