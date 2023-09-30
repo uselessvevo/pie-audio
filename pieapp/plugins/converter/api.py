@@ -79,8 +79,8 @@ class Worker(QRunnable):
 
             self.signals.completed.emit(probe_results)
 
-        except Exception as e:
-            self._logger.critical(str(e))
+        except ffmpeg.Error as e:
+            self._logger.critical(e.stderr)
 
 
 class ConverterAPI(
@@ -119,10 +119,10 @@ class ConverterAPI(
         if not selected_files:
             return
 
-        chunks = self._split_by_chunks(selected_files[0], self._chunk_size)
+        # chunks = self._split_by_chunks(selected_files[0], self._chunk_size)
         pool = QThreadPool.global_instance()
 
-        for chunk in chunks:
+        for chunk in selected_files:
             filtered_chunk = [i for i in chunk if i not in self._current_files]
             self._current_files.extend(filtered_chunk)
 

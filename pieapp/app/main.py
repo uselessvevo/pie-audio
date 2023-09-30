@@ -67,7 +67,7 @@ class MainWindow(
             section=Section.User
         ))
         self.set_window_title(
-            f'{self.get_translation("Pie Audio • Audio Converter")} '
+            f'{self.get_translation("Pie Audio • Simple Audio Editor")} '
             f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
         self.set_window_icon(self.get_svg_icon("cloud.svg"))

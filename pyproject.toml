@@ -1,7 +1,7 @@
 [project]
 name = "pie-audio"
 version = "0.1.0"
-description = "An experimental audio converter"
+description = "A simple audio editor"
 authors = [
     {name = "Ivanov Cyril", email = "jcommander13@yandex.ru"}
 ]

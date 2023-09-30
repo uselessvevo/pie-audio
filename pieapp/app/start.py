@@ -82,6 +82,14 @@ def start_application(*args, **kwargs) -> None:
     for manager in Global.CORE_MANAGERS:
         Managers.from_config(manager)
 
+    theme = Managers(SysManager.Assets).get_theme()
+    if theme:
+        if Global.ASSETS_USE_STYLE:
+            app.set_style_sheet(get_theme(theme))
+            palette = get_palette(theme)
+            if palette:
+                app.set_palette(palette)
+
     # Applying *fantasticly* good theme
     theme = Managers(SysManager.Assets).get_theme()
     if theme and Global.ASSETS_USE_STYLE:

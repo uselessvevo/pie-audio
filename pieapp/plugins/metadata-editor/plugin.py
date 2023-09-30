@@ -36,7 +36,8 @@ class MetadataEditor(
             name="edit",
             text=self.get_translation("Edit"),
             icon=self.get_svg_icon("edit.svg"),
-            callback=self._edit_toolbutton_connect
+            callback=self._edit_toolbutton_connect,
+            before="delete"
         )
 
     def _edit_toolbutton_connect(self) -> None:

@@ -44,7 +44,7 @@ class About(
 
         description_label = QLabel()
         description_label.set_text(
-            f'{self.get_translation("Pie Audio • Audio Converter")} '
+            f'{self.get_translation("Pie Audio • Simple Audio Editor")} '
             f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
 
