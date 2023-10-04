@@ -6,8 +6,13 @@
     border-radius: 3px;
 }
 
+#ConverterItemTitle {
+    font-size: 14px;
+}
+
 #ConverterItemFormat {
     color: white;
+    font-size: 18px;
     border-radius: 17px;
     border: 2px solid transparent;
 }

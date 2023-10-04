@@ -1,7 +1,10 @@
+from PySide6.QtCore import Slot
 from __feature__ import snake_case
 from PySide6.QtWidgets import QDialog
 
 from typing import Union
+
+from pieapp.plugins.converter.models import MediaFile
 
 from pieapp.structs.plugins import Plugin
 from piekit.globals.loader import Global
@@ -35,11 +38,12 @@ class MetadataEditor(
             name="edit",
             text=self.get_translation("Edit"),
             icon=self.get_svg_icon("edit.svg"),
-            callback=self._edit_toolbutton_connect,
+            callback=self._edit_file_button_connect,
             before="delete"
         )
 
-    def _edit_toolbutton_connect(self) -> None:
+    @Slot(int, MediaFile)
+    def _edit_file_button_connect(self) -> None:
         pass
 
 

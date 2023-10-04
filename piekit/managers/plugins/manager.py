@@ -157,8 +157,11 @@ class PluginManager(BaseManager):
         self._plugins_types_registry[plugin_instance.type.value].add(plugin_instance.name)
 
         plugin_signals = self._get_plugin_signals(plugin_instance)
-        for plugin_signal in plugin_signals:
-            plugin_signal.connect(lambda: self._notify_plugin_event(plugin_instance.name))
+        for signal_name in plugin_signals:
+            signal_instance = getattr(plugin_instance, signal_name)
+            signal_instance.connect(lambda: self._notify_plugin_event(
+                plugin_instance.name, set(map(lambda v: v.replace("sig_", ""), plugin_signals))
+            ))
 
         plugin_instance.sig_plugin_ready.connect(lambda: self._notify_plugin_availability(plugin_instance.name))
 
@@ -176,22 +179,22 @@ class PluginManager(BaseManager):
         # Inform about that
         self._logger.info(f"Plugin \"{plugin_instance.name}\" is ready")
 
-    def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[Signal]:
+    def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[str]:
         """
-        Collect signals from plugin instance that starts with `sig_` prefix
+        Collect signals names from plugin instance that starts with `sig_` prefix
         """
-        signals: list[Signal] = []
+        signals: list[str] = []
         for signal_name in dir(plugin_instance):
             if signal_name.startswith("sig_") and signal_name != "sig_plugin_ready":
                 signal_instance = getattr(plugin_instance, signal_name, None)
                 if isinstance(signal_instance, Signal):
-                    signals.append(signal_instance)
+                    signals.append(signal_name)
 
         return signals
 
     # Notification methods
 
-    def _notify_plugin_event(self, name: str) -> None:
+    def _notify_plugin_event(self, name: str, signals: set[str] = None) -> None:
         plugin_dependents = self._plugin_dependents.get(name, {})
         required_plugins = plugin_dependents.get("requires", [])
         optional_plugins = plugin_dependents.get("optional", [])
@@ -199,7 +202,8 @@ class PluginManager(BaseManager):
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugin_registry:
                 plugin_instance = self._plugin_registry[plugin]
-                plugin_instance.on_plugin_event(name)
+                for signal in signals:
+                    plugin_instance.on_plugin_event(name, signal)
 
     def _notify_plugin_availability(
         self,

@@ -1,3 +1,4 @@
+from PySide6.QtCore import QSize
 from __feature__ import snake_case
 
 from typing import Union
@@ -16,15 +17,15 @@ class ConverterItemMenu(QWidget):
         self._items_list: list[tuple[str, QToolButton]] = []
 
         self._menu_hbox = QHBoxLayout()
-        self._menu_hbox.set_contents_margins(1, 1, 1, 1)
+        self._menu_hbox.set_contents_margins(5, 5, 5, 5)
         self._menu_hbox.insert_stretch(-1, 1)
 
         self.set_layout(self._menu_hbox)
         self.set_object_name("ConverterMenuWidget")
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
-        self._menu_size_policy = self.size_policy()
-        self._menu_size_policy.set_retain_size_when_hidden(True)
-        self.set_size_policy(self._menu_size_policy)
+        menu_size_policy = self.size_policy()
+        menu_size_policy.set_retain_size_when_hidden(True)
+        self.set_size_policy(menu_size_policy)
         self.hide()
 
     @property
@@ -48,6 +49,7 @@ class ConverterItemMenu(QWidget):
         tool_button.set_icon(icon)
         tool_button.triggered.connect(callback)
         tool_button.set_object_name("ConverterMenuItemTB")
+        tool_button.set_icon_size(QSize(14, 14))
 
         self._items_dict[name] = tool_button
 

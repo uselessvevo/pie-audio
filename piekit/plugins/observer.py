@@ -7,7 +7,7 @@ from piekit.exceptions import PieException
 class PluginsObserverMixin:
 
     def __init__(self) -> None:
-        self._plugin_event_listeners = {}
+        self._plugin_event_listeners: dict[str, dict] = {}
 
         for method_name in dir(self):
             method = getattr(self, method_name, None)
@@ -27,3 +27,7 @@ class PluginsObserverMixin:
         if target in self._plugin_event_listeners:
             event = self._plugin_event_listeners[target]
             event["method"]()
+
+    @property
+    def subscribed_events(self) -> set[str]:
+        return set(self._plugin_event_listeners.keys())

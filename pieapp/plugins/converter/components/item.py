@@ -40,8 +40,9 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
         self._main_vbox_layout.add_widget(self._description_label)
 
         self._item_hbox_layout = QHBoxLayout()
+        self._item_hbox_layout.set_contents_margins(12, 10, 10, 10)
         self._file_format_label = QLabel()
-        self._file_format_label.set_fixed_size(34, 34)
+        self._file_format_label.set_fixed_size(48, 48)
         self._file_format_label.set_object_name("ConverterItemFormat")
         self._file_format_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
         self._get_file_format_color()
