@@ -1,6 +1,7 @@
 """
 ContentTable API
 """
+
 from __feature__ import snake_case
 
 import ffmpeg
@@ -19,7 +20,7 @@ from piekit.managers.structs import Section
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
-from models import MediaFile, Metadata, FileInfo, Codec
+from pieapp.structs.media import MediaFile, Metadata, FileInfo, Codec
 
 
 class Signals(QObject):
@@ -43,7 +44,7 @@ class Worker(QRunnable):
         """ Call the `subprocess.Popen` to execute ffprobe """
         try:
             probe_results: list[MediaFile] = []
-            for file in self._chunk:
+            for index, file in enumerate(self._chunk):
                 probe_result = Dotty(ffmpeg.probe(file, self._command))
                 if probe_result:
                     probe_result["stream"] = probe_result["streams"][0]
@@ -72,6 +73,7 @@ class Worker(QRunnable):
                         codec=codec,
                     )
                     media_file = MediaFile(
+                        index=index,
                         info=info,
                         metadata=metadata
                     )

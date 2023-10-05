@@ -1,10 +1,8 @@
-from __feature__ import snake_case
-
 from typing import Union
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
+from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem, QToolButton
 
 from pieapp.structs.menus import MainMenu, MainMenuItem
 from pieapp.structs.plugins import Plugin
@@ -25,7 +23,7 @@ from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 
 from api import ConverterAPI
-from models import MediaFile
+from pieapp.structs.media import MediaFile
 
 from components.list import ConvertListWidget
 from components.item import ConverterItemWidget
@@ -69,7 +67,7 @@ class Converter(
             self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
         for index, file_model in enumerate(file_models):
-            widget = ConverterItemWidget(self._content_list, index, file_model)
+            widget = ConverterItemWidget(self._content_list, file_model)
             widget.set_title(file_model.info.filename)
             widget.set_description(f"{file_model.info.bit_rate}kb/s")
             widget.set_icon(file_model.info.codec.name)

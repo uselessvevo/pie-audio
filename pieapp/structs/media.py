@@ -55,5 +55,6 @@ class Metadata:
 
 @dt.dataclass
 class MediaFile:
+    index: int
     info: FileInfo
     metadata: Metadata

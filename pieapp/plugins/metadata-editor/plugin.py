@@ -1,10 +1,10 @@
-from PySide6.QtCore import Slot
 from __feature__ import snake_case
+
 from PySide6.QtWidgets import QDialog
 
 from typing import Union
 
-from pieapp.plugins.converter.models import MediaFile
+from pieapp.structs.media import MediaFile
 
 from pieapp.structs.plugins import Plugin
 from piekit.globals.loader import Global
@@ -42,9 +42,8 @@ class MetadataEditor(
             before="delete"
         )
 
-    @Slot(int, MediaFile)
-    def _edit_file_button_connect(self) -> None:
-        pass
+    def _edit_file_button_connect(self, model: MediaFile) -> None:
+        self._dialog.show()
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
