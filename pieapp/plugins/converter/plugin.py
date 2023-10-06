@@ -60,17 +60,17 @@ class Converter(
         self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
         self._list_grid_layout.add_widget(self._text_label, 2, 0)
 
-    def fill_list(self, file_models: list[MediaFile]) -> None:
+    def fill_list(self, media_files: list[MediaFile]) -> None:
         if not self._content_list.is_visible():
             self._list_grid_layout.remove_widget(self._pixmap_label)
             self._list_grid_layout.remove_widget(self._text_label)
             self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
-        for index, file_model in enumerate(file_models):
-            widget = ConverterItemWidget(self._content_list, file_model)
-            widget.set_title(file_model.info.filename)
-            widget.set_description(f"{file_model.info.bit_rate}kb/s")
-            widget.set_icon(file_model.info.codec.name)
+        for index, media_file in enumerate(media_files):
+            widget = ConverterItemWidget(self._content_list, media_file)
+            widget.set_title(media_file.info.filename)
+            widget.set_description(f"{media_file.info.bit_rate}kb/s")
+            widget.set_icon(media_file.info.codec.name)
 
             widget_layout = QHBoxLayout()
             widget_layout.add_stretch()

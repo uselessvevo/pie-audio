@@ -12,10 +12,10 @@ from piekit.exceptions import PieException
 
 class ConverterItemMenu(QWidget):
 
-    def __init__(self, parent: "QObject" = None, file_model: MediaFile = None) -> None:
+    def __init__(self, parent: "QObject" = None, media_file: MediaFile = None) -> None:
         super().__init__(parent)
 
-        self._file_model = file_model
+        self._media_file = media_file
 
         self._items_dict: dict[str, QToolButton] = {}
         self._items_list: list[tuple[str, QToolButton]] = []
@@ -31,10 +31,6 @@ class ConverterItemMenu(QWidget):
         menu_size_policy.set_retain_size_when_hidden(True)
         self.set_size_policy(menu_size_policy)
         self.hide()
-
-    @property
-    def file_model(self) -> MediaFile:
-        return self._file_model
 
     @property
     def items(self) -> list[QToolButton]:
@@ -57,7 +53,7 @@ class ConverterItemMenu(QWidget):
         tool_button.set_icon(icon)
         tool_button.set_icon_size(QSize(14, 14))
         tool_button.set_object_name("ConverterMenuItemTB")
-        tool_button.clicked.connect(lambda: callback(self._file_model))
+        tool_button.clicked.connect(lambda: callback(self._media_file))
 
         self._items_dict[name] = tool_button
 

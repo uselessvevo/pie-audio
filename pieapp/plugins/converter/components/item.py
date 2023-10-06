@@ -12,11 +12,13 @@ from .menu import ConverterItemMenu
 
 class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
 
-    def __init__(self, parent, file_model: "MediaFile") -> None:
+    def __init__(self, parent, media_file: "MediaFile") -> None:
         super(ConverterItemWidget, self).__init__(parent=parent)
 
+        self._parent = parent
+
         # Index of item
-        self._file_model = file_model
+        self._media_file = media_file
 
         self.set_object_name("ConverterItem")
 
@@ -28,7 +30,7 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
 
-        self._item_menu = ConverterItemMenu(self, file_model)
+        self._item_menu = ConverterItemMenu(self, media_file)
         self._item_menu.add_item(
             name="delete",
             text=self.get_translation("Delete"),
@@ -52,15 +54,7 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
         self._item_hbox_layout.add_layout(self._main_vbox_layout, 1)
         self.set_layout(self._item_hbox_layout)
 
-    @property
-    def file_model(self) -> MediaFile:
-        return self._file_model
-
-    @property
-    def item_menu(self) -> ConverterItemMenu:
-        return self._item_menu
-
-    def _delete_toolbutton_connect(self) -> None:
+    def _delete_toolbutton_connect(self, media_file: MediaFile) -> None:
         pass
 
     def add_menu_item(self, *args, **kwargs) -> QToolButton:
