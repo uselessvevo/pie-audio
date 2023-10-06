@@ -163,21 +163,15 @@ class PluginManager(BaseManager):
                 plugin_instance.name, set(map(lambda v: v.replace("sig_", ""), plugin_signals))
             ))
 
-        plugin_instance.sig_plugin_ready.connect(lambda: self._notify_plugin_availability(plugin_instance.name))
+        plugin_instance.sig_plugin_ready.connect(lambda: (
+            self._notify_plugin_dependencies(plugin_instance.name),
+            self._notify_plugin_availability(plugin_instance.name)
+        ))
 
-        # Preparing `PiePlugin` instance
         try:
             plugin_instance.prepare()
         except Exception as e:
             raise PieException(str(e))
-
-        # PiePlugin is ready
-        plugin_instance.sig_plugin_ready.emit()
-
-        self._notify_plugin_dependencies(plugin_instance.name)
-
-        # Inform about that
-        self._logger.info(f"Plugin \"{plugin_instance.name}\" is ready")
 
     def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[str]:
         """

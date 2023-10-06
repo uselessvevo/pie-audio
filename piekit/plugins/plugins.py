@@ -81,6 +81,9 @@ class PiePlugin(
         # Prepare PiePluginAPI
         self.init_api()
 
+        # Notify that our plugin is ready
+        self.sig_plugin_ready.emit()
+
     # Main methods
 
     def init(self) -> None:
