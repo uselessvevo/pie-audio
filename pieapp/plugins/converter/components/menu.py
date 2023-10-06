@@ -45,6 +45,17 @@ class ConverterItemMenu(QWidget):
         before: str = None,
         after: str = None,
     ) -> QToolButton:
+        """
+        This method allows us to register a tool button on the shorcuts menu
+
+        Args:
+            * name (str): Button name
+            * text (str): Text displayed on tool button
+            * icon (QIcon): Icon displayed on tool button
+            * callback (callable|None): Method to call on button click event. Requires `media_file:<MediaFile>`
+            * before (str): Display a button before passed button
+            * after (str): Display a button after passed button
+        """
         if name in self._items_dict:
             raise PieException(f"Item \"{name}\" is already registered")
 

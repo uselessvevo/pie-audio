@@ -57,11 +57,19 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
     def _delete_toolbutton_connect(self, media_file: MediaFile) -> None:
         pass
 
-    def add_menu_item(self, *args, **kwargs) -> QToolButton:
+    def add_menu_item(
+        self,
+        name: str,
+        text: str,
+        icon: "QIcon",
+        callback: callable = None,
+        before: str = None,
+        after: str = None,
+    ) -> QToolButton:
         """
         A proxy method to interact with `ConverterItemMenu`
         """
-        return self._item_menu.add_item(*args, **kwargs)
+        return self._item_menu.add_item(name, text, icon, callback, before, after)
 
     def enter_event(self, event: "QEnterEvent") -> None:
         self._item_menu.show()

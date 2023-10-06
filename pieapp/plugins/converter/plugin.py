@@ -86,9 +86,17 @@ class Converter(
 
         self.sig_converter_table_ready.emit()
 
-    def add_side_menu_item(self, *args, **kwargs) -> None:
+    def add_side_menu_item(
+        self,
+        name: str,
+        text: str,
+        icon: QIcon,
+        callback: callable = None,
+        before: str = None,
+        after: str = None,
+    ) -> None:
         for item in self._converter_item_widgets:
-            item.add_menu_item(*args, **kwargs)
+            item.add_menu_item(name, text, icon, callback, before, after)
 
     @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
