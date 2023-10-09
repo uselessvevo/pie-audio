@@ -23,7 +23,7 @@ class ToolButtonAccessorMixin:
         icon: QIcon = None,
         triggered: callable = None,
         only_icon: bool = False,
-        object_name: str = None
+        object_name: str = "WorkbenchToolButton"
     ) -> QToolButton:
         tool_button = QToolButton(parent=parent)
         if icon:
@@ -33,8 +33,8 @@ class ToolButtonAccessorMixin:
             tool_button.set_tool_tip(tooltip)
 
         if text:
-            tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-            # tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
+            # tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
             tool_button.set_text(text)
 
         if triggered:

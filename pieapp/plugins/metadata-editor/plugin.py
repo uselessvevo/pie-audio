@@ -34,7 +34,7 @@ class MetadataEditor(
     @on_plugin_event(target=Plugin.Converter, event="converter_table_ready")
     def on_converter_table_ready(self) -> None:
         self._converter = get_plugin(Plugin.Converter)
-        self._converter.add_side_menu_item(
+        self._converter.add_quick_action(
             name="edit",
             text=self.get_translation("Edit"),
             icon=self.get_svg_icon("edit.svg"),
@@ -42,7 +42,7 @@ class MetadataEditor(
             before="delete"
         )
 
-    def _edit_file_button_connect(self, model: MediaFile) -> None:
+    def _edit_file_button_connect(self, media_file: MediaFile) -> None:
         self._dialog.show()
 
 

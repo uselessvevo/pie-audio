@@ -26,7 +26,7 @@ class PieToolBar(QWidget):
         self._keys: list[Any] = list(self._items.keys())
 
         self.set_fixed_height(50)
-        self.set_contents_margins(0, 0, 0, 0)
+        self.set_contents_margins(10, 0, 10, 0)
         self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
         self._layout = QHBoxLayout()

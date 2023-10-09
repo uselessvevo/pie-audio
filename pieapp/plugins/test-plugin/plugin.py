@@ -74,8 +74,7 @@ class TestPlugin(
             text="Call inner dialog",
             icon=self.get_svg_icon("mood.svg", section=Section.Shared),
             tooltip="Call inner dialog",
-            triggered=self.test_show_inner_dialog,
-            object_name="WorkbenchToolButton"
+            triggered=self.test_show_inner_dialog
         )
         self.add_toolbar_item(
             section=f"test-plugin-toolbar",
@@ -109,8 +108,7 @@ class TestPlugin(
             text=self.get_translation("Test"),
             tooltip=self.get_translation("Test"),
             icon=self.get_plugin_svg_icon(),
-            triggered=self.call,
-            object_name="WorkbenchToolButton"
+            triggered=self.call
         )
         self.add_toolbar_item(
             section=Plugin.Workbench,

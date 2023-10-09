@@ -1,8 +1,8 @@
-from typing import Union
+from typing import Union, Generator
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem, QToolButton
+from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem, QToolButton, QAbstractItemView
 
 from pieapp.structs.menus import MainMenu, MainMenuItem
 from pieapp.structs.plugins import Plugin
@@ -25,7 +25,7 @@ from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from api import ConverterAPI
 from pieapp.structs.media import MediaFile
 
-from components.list import ConvertListWidget
+from components.list import ConverterListWidget
 from components.item import ConverterItemWidget
 
 
@@ -42,10 +42,18 @@ class Converter(
     def init(self) -> None:
         self._converter_item_widgets: list[ConverterItemWidget] = []
 
+        # Setup grid layouts
         self._list_grid_layout = QGridLayout()
         self._main_layout = self.get_layout(Layout.Main)
         self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
-        self._content_list = ConvertListWidget()
+
+        # Setup content list
+        self._content_list = ConverterListWidget()
+        self._content_list.set_focus_policy(Qt.FocusPolicy.NoFocus)
+        self._content_list.set_selection_behavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self._content_list.set_selection_mode(QAbstractItemView.SelectionMode.SingleSelection)
+
+        # Setup placeholder
         self._set_placeholder()
 
     def _set_placeholder(self) -> None:
@@ -60,7 +68,26 @@ class Converter(
         self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
         self._list_grid_layout.add_widget(self._text_label, 2, 0)
 
+    def _clear_content_list(self) -> None:
+        self._converter_item_widgets = []
+        self._content_list.clear()
+        self._content_list.set_visible(False)
+        self._list_grid_layout.remove_widget(self._content_list)
+        self._set_placeholder()
+        self.api.clear_files()
+
+        for item in self._converter_item_widgets:
+            del item
+
+    def _delete_tool_button_connect(self, media_file: MediaFile) -> None:
+        selected_index = self._content_list.selected_indexes()[0]
+        self._content_list.take_item(selected_index.row())
+        del self._converter_item_widgets[selected_index.row()]
+
     def fill_list(self, media_files: list[MediaFile]) -> None:
+        if not media_files:
+            return
+
         if not self._content_list.is_visible():
             self._list_grid_layout.remove_widget(self._pixmap_label)
             self._list_grid_layout.remove_widget(self._text_label)
@@ -72,6 +99,13 @@ class Converter(
             widget.set_description(f"{media_file.info.bit_rate}kb/s")
             widget.set_icon(media_file.info.codec.name)
 
+            widget.add_quick_action(
+                name="delete",
+                text=self.get_translation("Delete"),
+                icon=self.get_svg_icon("delete.svg"),
+                callback=self._delete_tool_button_connect
+            )
+
             widget_layout = QHBoxLayout()
             widget_layout.add_stretch()
             widget_layout.add_widget(widget)
@@ -79,14 +113,25 @@ class Converter(
             item = QListWidgetItem()
             item.set_size_hint(widget.size_hint())
 
+            # A really nasty hack to get item `row` inside `QWidgetItem`
+            widget.set_list_widget(item)
+
             self._content_list.add_item(item)
             self._content_list.set_item_widget(item, widget)
 
             self._converter_item_widgets.append(widget)
 
+        clear_button = self.get_tool_button(self.name, WorkbenchItem.Clear)
+        if clear_button:
+            clear_button.set_disabled(False)
+
         self.sig_converter_table_ready.emit()
 
-    def add_side_menu_item(
+    def disable_side_menu_items(self) -> None:
+        for item in self._converter_item_widgets:
+            item.set_items_disabled()
+
+    def add_quick_action(
         self,
         name: str,
         text: str,
@@ -96,7 +141,7 @@ class Converter(
         after: str = None,
     ) -> None:
         for item in self._converter_item_widgets:
-            item.add_menu_item(name, text, icon, callback, before, after)
+            item.add_quick_action(name, text, icon, callback, before, after)
 
     @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
@@ -118,8 +163,7 @@ class Converter(
             text=self.get_translation("Open file"),
             tooltip=self.get_translation("Open file"),
             icon=self.get_svg_icon("folder-open.svg"),
-            triggered=self.api.open_files,
-            object_name="WorkbenchToolButton"
+            triggered=self.api.open_files
         )
 
         self.add_tool_button(
@@ -127,38 +171,37 @@ class Converter(
             name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
             tooltip=self.get_translation("Convert"),
-            icon=self.get_svg_icon("bolt.svg"),
-            object_name="WorkbenchToolButton"
+            icon=self.get_svg_icon("bolt.svg")
         ).set_enabled(False)
 
-        self.add_tool_button(
+        clear_tool_button = self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),
             tooltip=self.get_translation("Clear"),
-            icon=self.get_svg_icon("delete.svg"),
-            object_name="WorkbenchToolButton"
-        ).set_enabled(False)
+            icon=self.get_svg_icon("delete.svg")
+        )
+        clear_tool_button.set_enabled(False)
+        clear_tool_button.clicked.connect(self._clear_content_list)
 
         self.add_toolbar_item(
             section=Plugin.Workbench,
-            name=WorkbenchItem.Clear,
-            item=self.get_tool_button(self.name, WorkbenchItem.Clear),
-            before=WorkbenchItem.Spacer
+            name=WorkbenchItem.OpenFiles,
+            item=self.get_tool_button(self.name, WorkbenchItem.OpenFiles),
         )
 
         self.add_toolbar_item(
             section=Plugin.Workbench,
             name=WorkbenchItem.Convert,
             item=self.get_tool_button(self.name, WorkbenchItem.Convert),
-            before=WorkbenchItem.Spacer
+            after=WorkbenchItem.OpenFiles
         )
 
         self.add_toolbar_item(
             section=Plugin.Workbench,
-            name=WorkbenchItem.OpenFiles,
-            item=self.get_tool_button(self.name, WorkbenchItem.OpenFiles),
-            before=WorkbenchItem.Spacer
+            name=WorkbenchItem.Clear,
+            item=self.get_tool_button(self.name, WorkbenchItem.Clear),
+            after=WorkbenchItem.Convert
         )
 
 

@@ -158,57 +158,6 @@ QMenu::indicator {
    height:18px;
 }
 
-#ConverterMenuWidget {
-    background-color: #424242;
-    border-radius: 1px;
-}
-
-#ConverterMenuItemTB {
-    background-color: transparent;
-    border: 1px solid #424242;
-}
-
-#ConverterMenuItemTB::item:checked {
-   background-color: #424242;
-   border: 1px solid #2d73ff;
-   color: #cccccc;
-   font-family: Arial;
-}
-
-#ConverterMenuItemTB::item:checked {
-   padding: 3px 25px 3px 25px;
-   border:1px solid transparent;
-}
-
-#ConverterMenuItemTB::item:disabled {
-   color: gray;
-}
-
-#ConverterMenuItemTB::item:disabled:selected {
-	color: #f2f2f2;
-}
-
-#ConverterMenuItemTB::item:selected {
-   color: #f2f2f2;
-   background-color: #2d73ff;
-}
-
-#ConverterMenuItemTB::item:checked {
-   background-color: #2d73ff;
-   border:1px solid palette(highlight);
-   border-radius:2px;
-}
-
-#ConverterMenuItemTB::item {
-   height:1px;
-   background-color: #f2f2f2;
-}
-
-#ConverterMenuItemTB::item {
-   width:18px;
-   height:18px;
-}
-
 #WorkbenchToolButton::item:checked {
    background-color: #424242;
    border: 1px solid #2d73ff;
@@ -429,8 +378,8 @@ QRadioButton::indicator {
    border: 1px #2d73ff;
    margin: 2px 2px 2px 2px;
    color: #cccccc;
-   min-height:20px;
-   min-width:80px;
+   /*min-height:20px;*/
+   /*min-width:80px;*/
    padding:1px 3px 1px 3px;
    outline:none;
    font-family: Arial;
@@ -660,6 +609,37 @@ QSizeGrip {
    background-color: solid #cccccc;
 }
 
+QListWidget::item:hover,
+QListWidget::item:disabled:hover,
+QListWidget::item,
+QListWidget::item:selected
+{
+    background: transparent;
+    border: none;
+}
+
+QListWidget::item:hover:!active
+{
+    border: none;
+    background: rgba(43, 43, 43, 50%);
+}
+
+#ConverterItemQuickActions {
+    border-radius: 2px;
+    background-color: #424242;
+}
+
+#ConverterItemQuickActions,
+#ConverterMenuItemTB {
+    border: none;
+    background-color: #434343;
+}
+
+#ConverterItemQuickActions:disabled,
+#ConverterMenuItemTB:disabled {
+    border: none;
+    background-color: #303030;
+}
 
 /* QToolBar */
 

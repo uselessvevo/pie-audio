@@ -44,7 +44,7 @@ class Worker(QRunnable):
         """ Call the `subprocess.Popen` to execute ffprobe """
         try:
             probe_results: list[MediaFile] = []
-            for index, file in enumerate(self._chunk):
+            for file in self._chunk:
                 probe_result = Dotty(ffmpeg.probe(file, self._command))
                 if probe_result:
                     probe_result["stream"] = probe_result["streams"][0]
@@ -73,7 +73,6 @@ class Worker(QRunnable):
                         codec=codec,
                     )
                     media_file = MediaFile(
-                        index=index,
                         info=info,
                         metadata=metadata
                     )
@@ -115,6 +114,9 @@ class ConverterAPI(
     def _worker_finished(self, models_list: list[MediaFile]) -> None:
         self._parent.fill_list(models_list)
         get_plugin(Plugin.StatusBar).show_message(self.get_translation("Done loading files"))
+
+    def clear_files(self) -> None:
+        self._current_files = []
 
     def open_files(self) -> None:
         selected_files = QFileDialog.get_open_file_names(caption=self.get_translation("Open files"))

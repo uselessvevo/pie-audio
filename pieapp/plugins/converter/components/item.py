@@ -1,18 +1,19 @@
 from __feature__ import snake_case
 
-from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton
+from PySide6.QtGui import Qt, QIcon
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QListWidgetItem
 from pieapp.structs.media import MediaFile
 
 from piekit.managers.assets.mixins import AssetsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
-from .menu import ConverterItemMenu
+from .list import ConverterListWidget
+from .menu import ConverterItemQuickActions
 
 
 class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
 
-    def __init__(self, parent, media_file: "MediaFile") -> None:
+    def __init__(self, parent: ConverterListWidget, media_file: "MediaFile") -> None:
         super(ConverterItemWidget, self).__init__(parent=parent)
 
         self._parent = parent
@@ -30,13 +31,7 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
 
-        self._item_menu = ConverterItemMenu(self, media_file)
-        self._item_menu.add_item(
-            name="delete",
-            text=self.get_translation("Delete"),
-            icon=self.get_svg_icon("delete.svg"),
-            callback=self._delete_toolbutton_connect
-        )
+        self._item_menu = ConverterItemQuickActions(self, media_file)
 
         self._main_vbox_layout.add_widget(self._item_menu, alignment=Qt.AlignmentFlag.AlignRight)
         self._main_vbox_layout.add_widget(self._title_label)
@@ -54,31 +49,37 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
         self._item_hbox_layout.add_layout(self._main_vbox_layout, 1)
         self.set_layout(self._item_hbox_layout)
 
-    def _delete_toolbutton_connect(self, media_file: MediaFile) -> None:
-        pass
+    def set_items_disabled(self) -> None:
+        self._item_menu.set_disabled(True)
+        for item in self._item_menu.get_items():
+            item.set_disabled(True)
 
-    def add_menu_item(
+    def add_quick_action(
         self,
         name: str,
         text: str,
-        icon: "QIcon",
+        icon: QIcon,
         callback: callable = None,
         before: str = None,
         after: str = None,
-    ) -> QToolButton:
+    ) -> None:
         """
         A proxy method to interact with `ConverterItemMenu`
         """
-        return self._item_menu.add_item(name, text, icon, callback, before, after)
+        self._item_menu.add_item(name, text, icon, callback, before, after)
+
+    def set_list_widget(self, item: QListWidgetItem) -> None:
+        self._list_widget = item
 
     def enter_event(self, event: "QEnterEvent") -> None:
         self._item_menu.show()
-        for item in self._item_menu.items:
+        self._parent.set_current_row(self._parent.row(self._list_widget))
+        for item in self._item_menu.get_items():
             item.set_visible(True)
 
     def leave_event(self, event: "QEvent") -> None:
         self._item_menu.hide()
-        for item in self._item_menu.items:
+        for item in self._item_menu.get_items():
             item.set_visible(False)
 
     def _get_file_format_color(self) -> None:

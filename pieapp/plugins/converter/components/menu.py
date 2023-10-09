@@ -7,10 +7,8 @@ from PySide6.QtGui import Qt, QIcon
 from PySide6.QtWidgets import QWidget, QToolButton, QHBoxLayout
 from pieapp.structs.media import MediaFile
 
-from piekit.exceptions import PieException
 
-
-class ConverterItemMenu(QWidget):
+class ConverterItemQuickActions(QWidget):
 
     def __init__(self, parent: "QObject" = None, media_file: MediaFile = None) -> None:
         super().__init__(parent)
@@ -20,20 +18,19 @@ class ConverterItemMenu(QWidget):
         self._items_dict: dict[str, QToolButton] = {}
         self._items_list: list[tuple[str, QToolButton]] = []
 
-        self._menu_hbox = QHBoxLayout()
+        self._menu_hbox = QHBoxLayout(self)
         self._menu_hbox.set_contents_margins(5, 5, 5, 5)
         self._menu_hbox.insert_stretch(-1, 1)
 
         self.set_layout(self._menu_hbox)
-        self.set_object_name("ConverterMenuWidget")
+        self.set_object_name("ConverterItemQuickActions")
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
         menu_size_policy = self.size_policy()
         menu_size_policy.set_retain_size_when_hidden(True)
         self.set_size_policy(menu_size_policy)
         self.hide()
 
-    @property
-    def items(self) -> list[QToolButton]:
+    def get_items(self) -> list[QToolButton]:
         return list(self._items_dict.values())
 
     def add_item(
@@ -44,7 +41,7 @@ class ConverterItemMenu(QWidget):
         callback: callable = None,
         before: str = None,
         after: str = None,
-    ) -> QToolButton:
+    ) -> None:
         """
         This method allows us to register a tool button on the shorcuts menu
 
@@ -56,9 +53,6 @@ class ConverterItemMenu(QWidget):
             * before (str): Display a button before passed button
             * after (str): Display a button after passed button
         """
-        if name in self._items_dict:
-            raise PieException(f"Item \"{name}\" is already registered")
-
         tool_button = QToolButton()
         tool_button.set_text(text)
         tool_button.set_icon(icon)
@@ -80,5 +74,3 @@ class ConverterItemMenu(QWidget):
         else:
             self._items_list.append((name, tool_button))
             self._menu_hbox.add_widget(tool_button, alignment=Qt.AlignmentFlag.AlignRight)
-
-        return tool_button

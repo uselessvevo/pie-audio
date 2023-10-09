@@ -39,8 +39,7 @@ class Workbench(
             text=self.get_translation("Exit"),
             tooltip=self.get_translation("Exit"),
             icon=self.get_svg_icon("logout.svg"),
-            triggered=self._parent.close,
-            object_name="WorkbenchToolButton"
+            triggered=self._parent.close
         )
 
         spacer = QWidget()
@@ -48,18 +47,6 @@ class Workbench(
         spacer.set_size_policy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Expanding
-        )
-
-        self.add_toolbar_item(
-            section=self.name,
-            name=WorkbenchItem.Spacer,
-            item=spacer
-        )
-
-        self.add_toolbar_item(
-            section=self.name,
-            name=WorkbenchItem.Exit,
-            item=self.get_tool_button(self.name, WorkbenchItem.Exit)
         )
 
 
