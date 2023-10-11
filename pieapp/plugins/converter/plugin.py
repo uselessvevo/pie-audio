@@ -1,6 +1,6 @@
 from typing import Union, Generator
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, Slot, QModelIndex
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem, QToolButton, QAbstractItemView
 
@@ -52,11 +52,10 @@ class Converter(
         self._content_list.set_focus_policy(Qt.FocusPolicy.NoFocus)
         self._content_list.set_selection_behavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self._content_list.set_selection_mode(QAbstractItemView.SelectionMode.SingleSelection)
+        self._content_list.itemChanged.connect(self._content_list_item_removed)
+        self._content_list.model().rowsRemoved.connect(self._content_list_item_removed)
 
         # Setup placeholder
-        self._set_placeholder()
-
-    def _set_placeholder(self) -> None:
         self._pixmap_label = QLabel()
         self._pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
@@ -65,33 +64,44 @@ class Converter(
         self._text_label.set_text(self.get_translation("No files selected"))
         self._text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
+        # Setup placeholder
+        self._set_placeholder()
+
+    # Private/protected methods
+
+    def _content_list_item_removed(self) -> None:
+        if self._content_list.count() == 0:
+            self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
+
+    def _set_placeholder(self) -> None:
         self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
         self._list_grid_layout.add_widget(self._text_label, 2, 0)
+
+    def _clear_placeholder(self) -> None:
+        self._list_grid_layout.remove_widget(self._text_label)
+        self._list_grid_layout.remove_widget(self._pixmap_label)
 
     def _clear_content_list(self) -> None:
         self._converter_item_widgets = []
         self._content_list.clear()
-        self._content_list.set_visible(False)
         self._list_grid_layout.remove_widget(self._content_list)
         self._set_placeholder()
         self.api.clear_files()
-
-        for item in self._converter_item_widgets:
-            del item
+        self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
 
     def _delete_tool_button_connect(self, media_file: MediaFile) -> None:
         selected_index = self._content_list.selected_indexes()[0]
         self._content_list.take_item(selected_index.row())
         del self._converter_item_widgets[selected_index.row()]
 
+    # Public methods
+
     def fill_list(self, media_files: list[MediaFile]) -> None:
         if not media_files:
             return
 
-        if not self._content_list.is_visible():
-            self._list_grid_layout.remove_widget(self._pixmap_label)
-            self._list_grid_layout.remove_widget(self._text_label)
-            self._list_grid_layout.add_widget(self._content_list, 0, 0)
+        self._clear_placeholder()
+        self._list_grid_layout.add_widget(self._content_list, 0, 0)
 
         for index, media_file in enumerate(media_files):
             widget = ConverterItemWidget(self._content_list, media_file)
@@ -121,9 +131,7 @@ class Converter(
 
             self._converter_item_widgets.append(widget)
 
-        clear_button = self.get_tool_button(self.name, WorkbenchItem.Clear)
-        if clear_button:
-            clear_button.set_disabled(False)
+        self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(False)
 
         self.sig_converter_table_ready.emit()
 
