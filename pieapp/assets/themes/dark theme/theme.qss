@@ -100,7 +100,7 @@ QMenuBar {
    background-color: #4a4a4a;
    color: #cccccc;
    min-height:20px;
-   min-width:50px;
+   min-width:30px;
    padding: 3px 1px 3px 1px;
    font-family: Arial;
 }
@@ -158,6 +158,8 @@ QMenu::indicator {
    height:18px;
 }
 
+/* #WorkbenchToolButton */
+
 #WorkbenchToolButton::item:checked {
    background-color: #424242;
    border: 1px solid #2d73ff;
@@ -203,6 +205,23 @@ QMenu::indicator {
    width:18px;
    height:18px;
 }
+
+#WorkbenchToolButton::menu-indicator{
+    image: none;
+}
+
+#WorkbenchToolButton {
+    background-color: transparent;
+}
+
+#WorkbenchToolButton:hover {
+    background-color: #2d73ff;
+}
+
+#WorkbenchToolButton:pressed {
+    background-color: #2d73ff;
+}
+
 
 /* QLineEdit */
 
@@ -640,11 +659,3 @@ QListWidget::item:hover:!active
     border: none;
     background-color: #303030;
 }
-
-/* QToolBar */
-
-/* #WorkbenchToolButton */
-#WorkbenchToolButton::menu-indicator{ image: none; }
-#WorkbenchToolButton { background-color: transparent; }
-#WorkbenchToolButton:hover { background-color: #2d73ff; }
-#WorkbenchToolButton:pressed { background-color: #2d73ff; }
