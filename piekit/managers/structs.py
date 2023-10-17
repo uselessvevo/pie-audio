@@ -11,7 +11,7 @@ class SysManager:
     Locales = "locales"
     
     # AssetsManager
-    Assets = "assets"
+    Icons = "assets"
 
     # ShortcutsManager
     Shortcuts = "shortcuts"

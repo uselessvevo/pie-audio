@@ -14,7 +14,7 @@ SYSTEM_ROOT: Lock = BASE_DIR / "piekit"
 
 # Plugins configuration
 # Built-in plugins folder
-PLUGIN_ICON_NAME: Lock = "app"
+DEFAULT_PLUGIN_ICON_NAME: Lock = "app"
 PLUGINS_FOLDER: Lock = "plugins"
 
 # Configuration pages
@@ -30,7 +30,7 @@ THEMES_FOLDER: Lock = "themes"
 
 themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
 DEFAULT_THEME: Lock = themes_list[0] if themes_list else None
-ASSETS_USE_STYLE: Lock = bool(int(True))
+ASSETS_USE_STYLE: Lock = bool(int(os.getenv("PIE_ASSETS_USE_STYLE", False)))
 
 # Configurations
 CONFIG_FILE_NAME: Lock = "config.json"

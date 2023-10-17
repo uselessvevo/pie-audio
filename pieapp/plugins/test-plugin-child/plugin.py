@@ -5,13 +5,13 @@ from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
 from piekit.globals import Global
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.plugins.mixins import ContainerRegisterAccessorMixin
 
 
 class TestPluginChild(
     PiePlugin, 
-    AssetsAccessorMixin, 
+    IconAccessorMixin,
     ContainerRegisterAccessorMixin
 ):
     """

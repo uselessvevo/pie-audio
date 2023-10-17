@@ -7,7 +7,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QDir, QSettings
 from PySide6.QtWidgets import QFileDialog, QStyle
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
@@ -84,12 +84,12 @@ class ThemeWizardPage(
 
         self.combo_box = QtWidgets.QComboBox()
         self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
-        self.combo_box.add_items(Managers(SysManager.Assets).get_themes())
+        self.combo_box.add_items(Managers(SysManager.Icons).get_themes())
         self.combo_box.currentIndexChanged.connect(self.get_result)
 
         self._cur_theme = self.get_config(
             key="assets.theme",
-            default=Managers(SysManager.Assets).get_theme(),
+            default=Managers(SysManager.Icons).get_theme(),
             scope=Section.Root,
             section=Section.User
         )
@@ -123,7 +123,7 @@ class ThemeWizardPage(
 
 class ConverterWizardPage(
     LocalesAccessorMixin,
-    AssetsAccessorMixin,
+    IconAccessorMixin,
     ConfigAccessorMixin,
     QtWidgets.QWizardPage
 ):

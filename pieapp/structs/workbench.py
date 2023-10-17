@@ -10,3 +10,4 @@ class WorkbenchItem:
     Settings = "settings"
     Spacer = "spacer"
     Exit = "exit"
+    Search = "search"

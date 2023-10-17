@@ -6,7 +6,7 @@ from typing import Union, Any
 
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
+from PySide6.QtWidgets import QHBoxLayout, QWidget
 
 from piekit.exceptions import PieException
 
@@ -24,10 +24,6 @@ class PieToolBar(QWidget):
         self._items: OrderedDict[str, QObject] = OrderedDict({})
 
         self._keys: list[Any] = list(self._items.keys())
-
-        self.set_fixed_height(50)
-        self.set_contents_margins(10, 0, 10, 0)
-        self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
         self._layout = QHBoxLayout()
         self._layout.set_contents_margins(0, 0, 0, 1)

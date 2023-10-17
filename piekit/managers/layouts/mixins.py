@@ -1,14 +1,21 @@
-from typing import Any
+from __feature__ import snake_case
 
-from piekit.layouts.layouts import BaseLayout
+from functools import partial
+
+from PySide6.QtWidgets import QWidget, QLayout
+
+from piekit.exceptions import PieException
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager
 
 
 class LayoutsAccessorMixin:
 
-    def register_layout(self, layout: BaseLayout) -> None:
-        Managers(SysManager.Layouts).register_layout(layout)
+    def add_layout(self, name: str, layout: QLayout) -> QLayout:
+        return Managers(SysManager.Layouts).add_layout(name, layout)
 
-    def get_layout(self, name: str) -> Any:
+    def get_layout(self, name: str) -> QLayout:
         return Managers(SysManager.Layouts).get_layout(name)
+
+    def remove_layout(self, name: str) -> None:
+        Managers(SysManager.Layouts).remove_layout(name)

@@ -52,7 +52,7 @@ def get_palette(theme_name: str):
         return palette.get_palette()
 
 
-def get_svg_icon(file: str, color: str = "#7cd162") -> QIcon:
+def as_svg(file: str, color: str = "#7cd162") -> QIcon:
     if not file:
         return QIcon()
 
@@ -68,4 +68,4 @@ def get_svg_icon(file: str, color: str = "#7cd162") -> QIcon:
 # Qt aliases
 getTheme = get_theme
 getPalette = get_palette
-getSvgIcon = get_svg_icon
+getSvgIcon = as_svg

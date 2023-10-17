@@ -6,7 +6,7 @@ from piekit.widgets.spacer import Spacer
 from piekit.globals.loader import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 class AppConfigPage(
     ConfigAccessorMixin,
     LocalesAccessorMixin,
-    AssetsAccessorMixin,
+    IconAccessorMixin,
     ConfigPage
 ):
     name = Section.Root
@@ -62,7 +62,7 @@ class AppConfigPage(
         self._locales_cbox.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
         self._locales_cbox.currentIndexChanged.connect(self._locales_cbox_connect)
 
-        themes = Managers(SysManager.Assets).get_themes()
+        themes = Managers(SysManager.Icons).get_themes()
         self._theme_cbox = QComboBox()
         self._theme_cbox.add_items(themes)
         self._theme_cbox.set_current_text(self.get_config(

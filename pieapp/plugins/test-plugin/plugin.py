@@ -4,7 +4,7 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDialog, QGridLayout, QPushButton
 
-from piekit.layouts.structs import Layout
+from pieapp.structs.layouts import Layout
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
@@ -17,18 +17,19 @@ from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.widgets.spacer import Spacer
 
 
 class TestPlugin(
     PiePlugin, LayoutsAccessorMixin, ContainerRegisterMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     """
@@ -45,7 +46,7 @@ class TestPlugin(
         self._dialog = QDialog(self._parent)
 
         self._dialog.set_window_title("Test Plugin")
-        self._dialog.set_window_icon(self.get_plugin_svg_icon())
+        self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(400, 300)
 
         ok_button = QPushButton(self.get_translation("Ok"))
@@ -77,7 +78,7 @@ class TestPlugin(
             triggered=self.test_show_inner_dialog
         )
         self.add_toolbar_item(
-            section=f"test-plugin-toolbar",
+            toolbar=f"test-plugin-toolbar",
             name="show-inner-dialog",
             item=call_dialog_button
         )
@@ -102,19 +103,24 @@ class TestPlugin(
 
     @on_plugin_event(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
+        self.add_toolbar_item(
+            toolbar=Plugin.Workbench,
+            name=WorkbenchItem.Spacer,
+            item=Spacer()
+        )
         self.add_tool_button(
             section=self.name,
             name="TestButton",
             text=self.get_translation("Test"),
             tooltip=self.get_translation("Test"),
-            icon=self.get_plugin_svg_icon(),
+            icon=self.get_plugin_icon(),
             triggered=self.call
         )
         self.add_toolbar_item(
-            section=Plugin.Workbench,
+            toolbar=Plugin.Workbench,
             name="test-plugin-workbench-item",
             item=self.get_tool_button(self.name, "TestButton"),
-            after=WorkbenchItem.Clear
+            after=WorkbenchItem.Spacer
         )
 
     @on_plugin_event(target=Plugin.MenuBar)
@@ -132,7 +138,7 @@ class TestPlugin(
             name="test-plugin",
             text=self.get_translation("Run test plugin"),
             triggered=self.call,
-            icon=self.get_plugin_svg_icon(),
+            icon=self.get_plugin_icon(),
         )
 
         self.get_menu_bar(Section.Shared).add_menu(test_menu)
@@ -151,8 +157,8 @@ class TestPlugin(
 
     def test_plugin_info(self) -> None:
         self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
-        self.logger.debug(self.get_asset("cancel.svg"))
-        self.logger.debug(self.get_plugin_svg_icon())
+        self.logger.debug(self.get_icon_path("cancel.svg"))
+        self.logger.debug(self.get_plugin_icon())
         self.logger.debug(self.get_translation("Test String"))
 
     def test_restore_test_config(self) -> None:
@@ -186,6 +192,9 @@ class TestPlugin(
         self.logger.debug("Retrieving saved value")
         self.logger.debug(self.get_config("key"))
         self.logger.debug(self.get_config("key", temp=True))
+
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("app.svg", section=self.name)
 
 
 class TestMagicManager(BaseManager):

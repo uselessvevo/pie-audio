@@ -10,8 +10,8 @@ from piekit.managers.base import PluginBaseManager
 from piekit.managers.structs import SysManager, DirectoryType
 
 
-class AssetsManager(PluginBaseManager):
-    name = SysManager.Assets
+class IconManager(PluginBaseManager):
+    name = SysManager.Icons
 
     def __init__(self) -> None:
         self._logger = logger

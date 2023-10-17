@@ -1,13 +1,13 @@
-from typing import Union, Generator
+from typing import Union
 
-from PySide6.QtCore import Qt, Signal, Slot, QModelIndex
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem, QToolButton, QAbstractItemView
+from PySide6.QtCore import Qt, Signal, QSortFilterProxyModel, Slot
+from PySide6.QtGui import QIcon, QShortcut, QKeySequence
+from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
 
 from pieapp.structs.menus import MainMenu, MainMenuItem
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.workbench import WorkbenchItem
-from piekit.layouts.structs import Layout
+from pieapp.structs.layouts import Layout
 from piekit.widgets.menus import INDEX_START
 
 from piekit.globals import Global
@@ -15,24 +15,26 @@ from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.plugins.decorators import on_plugin_event
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
+from piekit.managers.shortcuts.mixins import ShortcutAccessorMixin
 
 from api import ConverterAPI
 from pieapp.structs.media import MediaFile
 
 from components.list import ConverterListWidget
 from components.item import ConverterItemWidget
+from components.search import ConverterSearch
 
 
 class Converter(
-    PiePlugin, LayoutsAccessorMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
-    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin
+    PiePlugin, LayoutsAccessorMixin, ShortcutAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
+    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     api = ConverterAPI
     name = Plugin.Converter
@@ -47,17 +49,21 @@ class Converter(
         self._main_layout = self.get_layout(Layout.Main)
         self._main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
 
+        # Setup search field
+        self._search = ConverterSearch()
+        self._search.set_hidden(True)
+        self._search.textChanged.connect(self.on_search_text_changed)
+
         # Setup content list
-        self._content_list = ConverterListWidget()
-        self._content_list.set_focus_policy(Qt.FocusPolicy.NoFocus)
-        self._content_list.set_selection_behavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self._content_list.set_selection_mode(QAbstractItemView.SelectionMode.SingleSelection)
-        self._content_list.itemChanged.connect(self._content_list_item_removed)
-        self._content_list.model().rowsRemoved.connect(self._content_list_item_removed)
+        self._content_list = ConverterListWidget(
+            change_callback=self._content_list_item_removed,
+            remove_callback=self._content_list_item_removed
+        )
+        self.add_shortcut("converter-toggle-search", "Ctrl+F", self._toggle_search, self._content_list)
 
         # Setup placeholder
         self._pixmap_label = QLabel()
-        self._pixmap_label.set_pixmap(QIcon(self.get_asset_icon("package.svg", section=self.name)).pixmap(100))
+        self._pixmap_label.set_pixmap(QIcon(self.get_icon_path("package.svg", section=self.name)).pixmap(100))
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._text_label = QLabel()
@@ -70,38 +76,74 @@ class Converter(
     # Private/protected methods
 
     def _content_list_item_removed(self) -> None:
+        """
+        Disable `clear` button on empty `content_list`
+        """
         if self._content_list.count() == 0:
             self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
 
     def _set_placeholder(self) -> None:
+        """
+        Show placeholder
+        """
         self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
         self._list_grid_layout.add_widget(self._text_label, 2, 0)
 
     def _clear_placeholder(self) -> None:
+        """
+        Remove placeholder
+        """
         self._list_grid_layout.remove_widget(self._text_label)
         self._list_grid_layout.remove_widget(self._pixmap_label)
 
     def _clear_content_list(self) -> None:
+        """
+        Clear content list, remove it from the `list_grid_layout` and disable clear button
+        """
         self._converter_item_widgets = []
         self._content_list.clear()
+
+        self._list_grid_layout.remove_widget(self._search)
         self._list_grid_layout.remove_widget(self._content_list)
         self._set_placeholder()
+
         self.api.clear_files()
         self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
 
-    def _delete_tool_button_connect(self, media_file: MediaFile) -> None:
+    def _delete_tool_button_connect(self, _: MediaFile) -> None:
         selected_index = self._content_list.selected_indexes()[0]
         self._content_list.take_item(selected_index.row())
         del self._converter_item_widgets[selected_index.row()]
 
     # Public methods
 
+    def _toggle_search(self) -> None:
+        self._search.set_hidden(not self._search.is_hidden())
+        self._search.set_focus()
+
+    @Slot(str)
+    def on_search_text_changed(self, text: str) -> None:
+        """
+        Filter `content_list` by text
+        """
+        for row in range(self._content_list.count()):
+            item = self._content_list.item(row)
+            widget = self._content_list.item_widget(item)
+            if text:
+                item.set_hidden(not (text.lower() in widget.media_file.info.filename.lower()))
+            else:
+                item.set_hidden(False)
+
     def fill_list(self, media_files: list[MediaFile]) -> None:
+        """
+        Fill list from the `ConverterAPI`
+        """
         if not media_files:
             return
 
         self._clear_placeholder()
-        self._list_grid_layout.add_widget(self._content_list, 0, 0)
+        self._list_grid_layout.add_widget(self._search, 0, 0)
+        self._list_grid_layout.add_widget(self._content_list, 1, 0)
 
         for index, media_file in enumerate(media_files):
             widget = ConverterItemWidget(self._content_list, media_file)
@@ -132,7 +174,6 @@ class Converter(
             self._converter_item_widgets.append(widget)
 
         self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(False)
-
         self.sig_converter_table_ready.emit()
 
     def disable_side_menu_items(self) -> None:
@@ -148,11 +189,17 @@ class Converter(
         before: str = None,
         after: str = None,
     ) -> None:
+        """
+        A proxy method to add an item on the "quick action menu"
+        """
         for item in self._converter_item_widgets:
             item.add_quick_action(name, text, icon, callback, before, after)
 
     @on_plugin_event(target=Plugin.MenuBar)
     def on_menu_bar_available(self) -> None:
+        """
+        Add open file element in the "File" menu
+        """
         self.add_menu_item(
             section=Section.Shared,
             menu=MainMenu.File,
@@ -165,12 +212,15 @@ class Converter(
 
     @on_plugin_event(target=Plugin.Workbench)
     def on_workbench_available(self) -> None:
+        """
+        Add tool button on the `Workbench`
+        """
         self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
             tooltip=self.get_translation("Open file"),
-            icon=self.get_svg_icon("folder-open.svg"),
+            icon=self.get_svg_icon("folder.svg"),
             triggered=self.api.open_files
         )
 
@@ -193,20 +243,20 @@ class Converter(
         clear_tool_button.clicked.connect(self._clear_content_list)
 
         self.add_toolbar_item(
-            section=Plugin.Workbench,
+            toolbar=Plugin.Workbench,
             name=WorkbenchItem.OpenFiles,
             item=self.get_tool_button(self.name, WorkbenchItem.OpenFiles),
         )
 
         self.add_toolbar_item(
-            section=Plugin.Workbench,
+            toolbar=Plugin.Workbench,
             name=WorkbenchItem.Convert,
             item=self.get_tool_button(self.name, WorkbenchItem.Convert),
             after=WorkbenchItem.OpenFiles
         )
 
         self.add_toolbar_item(
-            section=Plugin.Workbench,
+            toolbar=Plugin.Workbench,
             name=WorkbenchItem.Clear,
             item=self.get_tool_button(self.name, WorkbenchItem.Clear),
             after=WorkbenchItem.Convert
