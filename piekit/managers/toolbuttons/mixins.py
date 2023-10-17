@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QToolButton
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager, Section
 from piekit.globals import Global
+from piekit.widgets.toolbutton import create_tool_button
 
 
 class ToolButtonAccessorMixin:
@@ -25,30 +26,11 @@ class ToolButtonAccessorMixin:
         only_icon: bool = False,
         object_name: str = "WorkbenchToolButton"
     ) -> QToolButton:
-        tool_button = QToolButton(parent=parent)
-        if icon:
-            tool_button.set_icon(icon)
-
-        if tooltip:
-            tool_button.set_tool_tip(tooltip)
-
-        if text:
-            # tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-            tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
-            tool_button.set_text(text)
-
-        if triggered:
-            tool_button.clicked.connect(triggered)
-
-        if only_icon:
-            tool_button.set_tool_button_style(Qt.ToolButtonStyle.ToolButtonIconOnly)
-
-        if object_name:
-            tool_button.set_object_name(object_name)
-
-        tool_button.set_focus_policy(Qt.FocusPolicy.NoFocus)
-        tool_button.set_icon_size(QSize(*Global.TOOL_BUTTON_ICON_SIZE))
-
+        tool_button = create_tool_button(
+            parent=parent, text=text, tooltip=tooltip,
+            icon=icon, triggered=triggered, only_icon=only_icon,
+            icon_size=Global.TOOL_BUTTON_ICON_SIZE, object_name=object_name
+        )
         return Managers(SysManager.ToolButton).add_tool_button(section or Section.Shared, name, tool_button)
 
     def get_tool_buttons(self, section: str, *names: str) -> list[QObject]:

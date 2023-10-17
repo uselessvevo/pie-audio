@@ -21,16 +21,16 @@ class ToolBarAccessorMixin:
 
     def add_toolbar_item(
         self,
-        section: str = None,
+        toolbar: str = None,
         name: str = None,
         item: Union[QWidget, QAction] = None,
         after: str = None,
         before: str = None
     ) -> Union[QAction, QWidget]:
         manager = Managers(SysManager.ToolBars)
-        toolbar: PieToolBar = manager.get_toolbar(section)
-        toolbar.add_toolbar_item(name, item, after, before)
-        return manager.add_item(section or Section.Shared, name, item)
+        toolbar_instance: PieToolBar = manager.get_toolbar(toolbar)
+        toolbar_instance.add_toolbar_item(name, item, after, before)
+        return manager.add_item(toolbar or Section.Shared, name, item)
 
     def get_toolbar_item(self, section: str, name: str) -> QWidget:
         return Managers(SysManager.ToolBars).get_item(section, name)

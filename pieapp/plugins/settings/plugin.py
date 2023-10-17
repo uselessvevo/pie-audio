@@ -17,7 +17,7 @@ from piekit.widgets.spacer import Spacer
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.structs import Section
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
@@ -30,7 +30,7 @@ from PySide6.QtWidgets import QGridLayout, QDialog, QTreeWidget, QLabel, QDialog
 class Settings(
     PiePlugin,
     ConfigPageAccessorMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     name = Plugin.Settings
@@ -41,7 +41,7 @@ class Settings(
         self._dialog = QDialog(self._parent)
         self._dialog.set_object_name("SettingsDialog")
         self._dialog.set_window_title(self.get_translation("Settings"))
-        self._dialog.set_window_icon(self.get_svg_icon("settings.svg"))
+        self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.set_minimum_size(*Global.SETTINGS_PLUGIN_MIN_SIZE)
         self._dialog.resize(*self.get_config("ui.window_size", Global.SETTINGS_PLUGIN_MIN_SIZE))
 
@@ -169,6 +169,9 @@ class Settings(
             icon=self.get_svg_icon("settings.svg"),
             before=MainMenuItem.Exit
         )
+
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("app.svg", section=self.name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:

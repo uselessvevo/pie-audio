@@ -5,13 +5,12 @@ To create your own manager you need next things:
 * Create a plugin folder in the project or in the `.crabs` user folder.
 * Create `plugin.py` module
 
-
 ```py
 from pieapp.structs.plugins import Plugin
 
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_event
 
@@ -19,14 +18,14 @@ from piekit.managers.plugins.decorators import on_plugin_event
 class MagicPlugin(
     PiePlugin,
     MenuAccessorMixin,
-    AssetsAccessorMixin,
+    IconAccessorMixin,
     LocalesAccessorMixin,
 ):
     name = Plugin.About
     requires = [Plugin.MenuBar]
 
     def init(self) -> None:
-        self.logger.info(f"{self.get_asset('asset name.svg')=}")
+        self.logger.info(f"{self.get_icon_path('asset name.svg')=}")
         self.logger.info(f"{self.get_translation('About')=}")
 
     def shutdown(self) -> None:

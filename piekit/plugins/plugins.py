@@ -1,4 +1,3 @@
-from typing import Union
 from pathlib import Path
 
 from PySide6.QtCore import Signal, QObject
@@ -18,12 +17,6 @@ class PiePlugin(
 
     # Plugin type
     type: PluginType = PluginType.Plugin
-
-    # Icon name
-    icon: Union[None, str] = Global.PLUGIN_ICON_NAME
-
-    # By default, description must be written in English
-    description: str = None
 
     # Plugin codename
     name: str
@@ -103,26 +96,23 @@ class PiePlugin(
         """
         Method that prepare PiePluginAPI based instance
         """
-        from piekit.plugins.api import PiePluginAPI
-
-        if self.api and issubclass(self.api, PiePluginAPI):
+        if self.api:
             self.api = self.api(self)
             self.api.init()
 
     # Properties
 
+    def get_name(self) -> str:
+        return self.name
+
     def get_path(self) -> Path:
         return self._path
 
     def get_description(self) -> str:
-        return self.description or f"{self.__class__.__class__}'s description"
+        return f"{self.name.capitalize()} description"
 
-    def get_name(self) -> str:
-        return self.name or self.__class__.__name__
-
-    @property
-    def logger(self):
-        return self._logger
+    def get_plugin_icon(self) -> "QIcon":
+        raise NotImplementedError("A plugin icon must be defined")
 
     def __repr__(self) -> str:
         return f"({self.__class__.__name__}) <id: {id(self)}, name: {self.name}>"

@@ -6,7 +6,7 @@ from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.plugins.plugins import PiePlugin
 
 from piekit.managers.structs import Section
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.widgets.menus import INDEX_END
@@ -14,7 +14,7 @@ from piekit.widgets.menus import INDEX_END
 
 class MainMenuBar(
     PiePlugin,
-    AssetsAccessorMixin, MenuAccessorMixin,
+    IconAccessorMixin, MenuAccessorMixin,
     ConfigAccessorMixin, LocalesAccessorMixin,
 ):
     name = Plugin.MenuBar

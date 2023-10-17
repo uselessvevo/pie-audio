@@ -6,7 +6,7 @@ import sys
 
 from piekit.globals import Global, Lock, Max, Min
 from pieapp.wizard.wizard import SetupWizard
-from piekit.managers.assets.utils import get_palette, get_theme
+from piekit.managers.icons.utils import get_palette, get_theme
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager
 from piekit.utils.modules import is_debug
@@ -82,7 +82,7 @@ def start_application(*args, **kwargs) -> None:
     for manager in Global.CORE_MANAGERS:
         Managers.from_config(manager)
 
-    theme = Managers(SysManager.Assets).get_theme()
+    theme = Managers(SysManager.Icons).get_theme()
     if theme:
         if Global.ASSETS_USE_STYLE:
             app.set_style_sheet(get_theme(theme))
@@ -91,7 +91,7 @@ def start_application(*args, **kwargs) -> None:
                 app.set_palette(palette)
 
     # Applying *fantasticly* good theme
-    theme = Managers(SysManager.Assets).get_theme()
+    theme = Managers(SysManager.Icons).get_theme()
     if theme and Global.ASSETS_USE_STYLE:
         app.set_style_sheet(get_theme(theme))
 

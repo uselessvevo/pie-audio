@@ -13,7 +13,7 @@ from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from piekit.globals import Global
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_event
 
@@ -22,7 +22,7 @@ class About(
     PiePlugin,
     MenuAccessorMixin,
     LocalesAccessorMixin,
-    AssetsAccessorMixin,
+    IconAccessorMixin,
 ):
     name = Plugin.About
     requires = [Plugin.MenuBar]
@@ -30,14 +30,14 @@ class About(
     def call(self) -> None:
         self._dialog = QDialog(self._parent)
         self._dialog.set_window_title(self.get_translation("About"))
-        self._dialog.set_window_icon(self.get_plugin_svg_icon())
+        self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(400, 300)
 
         ok_button = QPushButton(self.get_translation("Ok"))
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
-        pixmap.load(self.get_asset("app.svg"))
+        pixmap.load(self.get_icon_path("app.svg"))
 
         icon_label = QLabel()
         icon_label.set_pixmap(pixmap)
@@ -71,6 +71,9 @@ class About(
             triggered=self.call,
             icon=self.get_svg_icon("help.svg"),
         )
+
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("app.svg", section=self.name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:

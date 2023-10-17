@@ -171,7 +171,7 @@ class PluginManager(BaseManager):
         try:
             plugin_instance.prepare()
         except Exception as e:
-            raise PieException(str(e))
+            raise e
 
     def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[str]:
         """

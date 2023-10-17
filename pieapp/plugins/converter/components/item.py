@@ -4,19 +4,20 @@ from PySide6.QtGui import Qt, QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QListWidgetItem
 from pieapp.structs.media import MediaFile
 
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from .list import ConverterListWidget
 from .menu import ConverterItemQuickActions
 
 
-class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
+class ConverterItemWidget(QWidget, LocalesAccessorMixin, IconAccessorMixin):
 
     def __init__(self, parent: ConverterListWidget, media_file: "MediaFile") -> None:
         super(ConverterItemWidget, self).__init__(parent=parent)
 
         self._parent = parent
+        self._list_widget = None
 
         # Index of item
         self._media_file = media_file
@@ -48,6 +49,10 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, AssetsAccessorMixin):
         self._item_hbox_layout.add_widget(self._file_format_label, 0)
         self._item_hbox_layout.add_layout(self._main_vbox_layout, 1)
         self.set_layout(self._item_hbox_layout)
+
+    @property
+    def media_file(self) -> MediaFile:
+        return self._media_file
 
     def set_items_disabled(self) -> None:
         self._item_menu.set_disabled(True)

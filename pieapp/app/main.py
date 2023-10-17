@@ -1,18 +1,16 @@
 from __feature__ import snake_case
 
-from PySide6.QtGui import Qt
-
 import os
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QMainWindow, QGridLayout
 
 from piekit.globals import Global
-from piekit.layouts.layouts import MainGridLayout
+from pieapp.structs.layouts import Layout
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.structs import Section
-from piekit.managers.assets.mixins import AssetsAccessorMixin
+from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.plugins.mixins import ErrorDialogMixin, QuitDialogMixin
@@ -20,7 +18,7 @@ from piekit.plugins.mixins import ErrorDialogMixin, QuitDialogMixin
 
 class MainWindow(
     LayoutsAccessorMixin, QuitDialogMixin, ErrorDialogMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, AssetsAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
     QMainWindow,
 ):
     # Accessors section
@@ -73,12 +71,12 @@ class MainWindow(
         self.set_window_icon(self.get_svg_icon("cloud.svg"))
 
     def prepare_main_layout(self) -> None:
-        self.main_layout = MainGridLayout()
+        self.main_layout = QGridLayout()
         self.main_layout.set_spacing(0)
         self.main_layout.set_contents_margins(0, 0, 0, 0)
         self.main_layout.set_alignment(Qt.AlignmentFlag.AlignHCenter)
         self.set_layout(self.main_layout)
-        self.register_layout(self.main_layout)
+        self.add_layout(Layout.Main, self.main_layout)
 
     def prepare_central_widget(self):
         widget = QtWidgets.QLabel()
