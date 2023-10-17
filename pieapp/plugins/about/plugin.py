@@ -29,6 +29,7 @@ class About(
 
     def call(self) -> None:
         self._dialog = QDialog(self._parent)
+        self._dialog.set_modal(True)
         self._dialog.set_window_title(self.get_translation("About"))
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(400, 300)

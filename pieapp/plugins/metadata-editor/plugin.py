@@ -1,7 +1,6 @@
-from PySide6.QtGui import Qt
 from __feature__ import snake_case
 
-from PySide6.QtWidgets import QDialog, QTableWidget, QTableWidgetItem, QItemDelegate, QStyledItemDelegate, QGridLayout
+from PySide6.QtWidgets import QDialog, QTableWidget, QStyledItemDelegate, QGridLayout
 
 from typing import Union
 
@@ -31,9 +30,10 @@ class MetadataEditor(
     @on_plugin_event(target=Plugin.Converter)
     def on_converter_available(self) -> None:
         self._dialog = QDialog(self._parent)
+        self._dialog.set_modal(True)
         self._dialog.set_window_title(self.get_translation("Edit metadata"))
         self._dialog.set_window_icon(self.get_plugin_icon())
-        self._dialog.resize(*Global.DEFAULT_MIN_WINDOW_SIZE or (720, 480))
+        self._dialog.resize(*Global.DEFAULT_MIN_WINDOW_SIZE or (720, 450))
 
         self._main_grid_layout = QGridLayout()
         self._table_widget = QTableWidget()

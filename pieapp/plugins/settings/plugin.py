@@ -39,6 +39,7 @@ class Settings(
     def init(self) -> None:
         # Main window dialog
         self._dialog = QDialog(self._parent)
+        self._dialog.set_modal(True)
         self._dialog.set_object_name("SettingsDialog")
         self._dialog.set_window_title(self.get_translation("Settings"))
         self._dialog.set_window_icon(self.get_plugin_icon())

@@ -1,7 +1,7 @@
 from typing import Union
 
-from PySide6.QtCore import Qt, Signal, QSortFilterProxyModel, Slot
-from PySide6.QtGui import QIcon, QShortcut, QKeySequence
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
 
 from pieapp.structs.menus import MainMenu, MainMenuItem

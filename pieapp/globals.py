@@ -14,7 +14,7 @@ PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
 MAIN_GRID_LAYOUT_CLASS: Lock = QGridLayout
-DEFAULT_MIN_WINDOW_SIZE: Lock = (720, 500)
+DEFAULT_MIN_WINDOW_SIZE: Lock = (680, 450)
 TOOL_BUTTON_ICON_SIZE: Lock = (24, 24)
 
 # List of excluded file formats
