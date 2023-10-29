@@ -10,7 +10,7 @@ from pieapp.structs.plugins import Plugin
 
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_event
 
@@ -18,7 +18,7 @@ from piekit.managers.plugins.decorators import on_plugin_event
 class MagicPlugin(
     PiePlugin,
     MenuAccessorMixin,
-    IconAccessorMixin,
+    ThemeAccessorMixin,
     LocalesAccessorMixin,
 ):
     name = Plugin.About

@@ -1,0 +1,9 @@
+{
+  "icons": {},
+  "colors": {
+    "#ConverterList.backgroundColor": "#353535",
+    "#ConverterList.border": "1px solid transparent",
+    "#ConverterList.borderRadius": "3px",
+    "#ConverterItemTitle.fontSize": "14px"
+  }
+}

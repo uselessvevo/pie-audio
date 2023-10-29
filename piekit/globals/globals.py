@@ -24,11 +24,13 @@ CONF_PAGES_FOLDER: Lock = "app"
 USER_PLUGINS_FOLDER: Lock = "plugins"
 
 # Assets
-ASSETS_EXCLUDED_FORMATS: list = []
 ASSETS_FOLDER: Lock = "assets"
 THEMES_FOLDER: Lock = "themes"
 
-themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
+# Icons
+ICONS_ALLOWED_FORMATS = [".svg", ".png", ".ico"]
+
+themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER / THEMES_FOLDER).rglob("*") if i.is_dir())
 DEFAULT_THEME: Lock = themes_list[0] if themes_list else None
 ASSETS_USE_STYLE: Lock = bool(int(os.getenv("PIE_ASSETS_USE_STYLE", True)))
 

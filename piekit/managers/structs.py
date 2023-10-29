@@ -11,7 +11,7 @@ class SysManager:
     Locales = "locales"
     
     # AssetsManager
-    Icons = "assets"
+    Themes = "assets"
 
     # ShortcutsManager
     Shortcuts = "shortcuts"
@@ -57,4 +57,3 @@ class Section:
 
 
 AllPlugins = "__ALL__"
-DirectoryType = type("DirectoryType", (), {})

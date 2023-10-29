@@ -7,6 +7,7 @@ from PySide6.QtCore import Slot, QObject
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.plugins.types import Error
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
@@ -60,7 +61,7 @@ class ContainerRegisterAccessorMixin:
         container_instance.remove_object(target, *args, **kwargs)
 
 
-class QuitDialogMixin(ConfigAccessorMixin):
+class QuitDialogMixin(ConfigAccessorMixin, LocalesAccessorMixin):
     """
     Mixin that calls the MessageBox on exit. 
     Requires:
@@ -85,7 +86,7 @@ class QuitDialogMixin(ConfigAccessorMixin):
         )
         if cancellable and show_exit_dialog:
             message_box = MessageCheckBox(parent=self)
-            message_box.set_check_box_text("Don't show this message again?")
+            message_box.set_check_box_text(self.get_translation("Don't show this message again?"))
             message_box.exec()
             if message_box.is_checked():
                 self.set_config(self.exit_dialog_key, False, scope=Section.Root, section=Section.User)

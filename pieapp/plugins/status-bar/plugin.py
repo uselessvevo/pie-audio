@@ -6,14 +6,14 @@ from PySide6.QtWidgets import QStatusBar, QWidget
 
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 
 class StatusBar(
     PiePlugin,
-    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, ThemeAccessorMixin,
 ):
     name = Plugin.StatusBar
 

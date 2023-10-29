@@ -7,7 +7,6 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QDir, QSettings
 from PySide6.QtWidgets import QFileDialog, QStyle
-from piekit.managers.icons.mixins import IconAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
@@ -84,12 +83,12 @@ class ThemeWizardPage(
 
         self.combo_box = QtWidgets.QComboBox()
         self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
-        self.combo_box.add_items(Managers(SysManager.Icons).get_themes())
+        self.combo_box.add_items(Managers(SysManager.Themes).get_themes())
         self.combo_box.currentIndexChanged.connect(self.get_result)
 
         self._cur_theme = self.get_config(
             key="assets.theme",
-            default=Managers(SysManager.Icons).get_theme(),
+            default=Managers(SysManager.Themes).get_theme(),
             scope=Section.Root,
             section=Section.User
         )
@@ -123,7 +122,6 @@ class ThemeWizardPage(
 
 class ConverterWizardPage(
     LocalesAccessorMixin,
-    IconAccessorMixin,
     ConfigAccessorMixin,
     QtWidgets.QWizardPage
 ):
@@ -135,7 +133,7 @@ class ConverterWizardPage(
         self.ffmpeg_path = None
 
         self.line_edit_action = QAction()
-        self.line_edit_action.set_icon(self.get_svg_icon("folder-open.svg"))
+        self.line_edit_action.set_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DirIcon))
         self.line_edit_action.triggered.connect(self.select_ffmpeg_root_path)
 
         self.line_edit = QtWidgets.QLineEdit()

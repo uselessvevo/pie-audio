@@ -6,7 +6,7 @@ from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.plugins.plugins import PiePlugin
 
 from piekit.managers.structs import Section
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.widgets.menus import INDEX_END
@@ -14,7 +14,7 @@ from piekit.widgets.menus import INDEX_END
 
 class MainMenuBar(
     PiePlugin,
-    IconAccessorMixin, MenuAccessorMixin,
+    ThemeAccessorMixin, MenuAccessorMixin,
     ConfigAccessorMixin, LocalesAccessorMixin,
 ):
     name = Plugin.MenuBar
@@ -41,7 +41,7 @@ class MainMenuBar(
             menu=MainMenu.File,
             name=MainMenuItem.Exit,
             text=self.get_translation("Exit"),
-            icon=self.get_svg_icon("logout.svg"),
+            icon=self.get_svg_icon("icons/logout.svg"),
             triggered=self._parent.close,
             index=INDEX_END()
         )

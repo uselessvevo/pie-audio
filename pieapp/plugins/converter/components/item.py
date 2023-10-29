@@ -4,14 +4,14 @@ from PySide6.QtGui import Qt, QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QListWidgetItem
 from pieapp.structs.media import MediaFile
 
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
 from .list import ConverterListWidget
 from .menu import ConverterItemQuickActions
 
 
-class ConverterItemWidget(QWidget, LocalesAccessorMixin, IconAccessorMixin):
+class ConverterItemWidget(QWidget, LocalesAccessorMixin, ThemeAccessorMixin):
 
     def __init__(self, parent: ConverterListWidget, media_file: "MediaFile") -> None:
         super(ConverterItemWidget, self).__init__(parent=parent)

@@ -15,7 +15,7 @@ from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.plugins.decorators import on_plugin_event
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
@@ -33,7 +33,7 @@ from components.search import ConverterSearch
 
 class Converter(
     PiePlugin, LayoutsAccessorMixin, ShortcutAccessorMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, ThemeAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     api = ConverterAPI
@@ -63,7 +63,7 @@ class Converter(
 
         # Setup placeholder
         self._pixmap_label = QLabel()
-        self._pixmap_label.set_pixmap(QIcon(self.get_icon_path("package.svg", section=self.name)).pixmap(100))
+        self._pixmap_label.set_pixmap(QIcon(self.get_icon_path("icons/package.svg", section=self.name)).pixmap(100))
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._text_label = QLabel()
@@ -154,7 +154,7 @@ class Converter(
             widget.add_quick_action(
                 name="delete",
                 text=self.get_translation("Delete"),
-                icon=self.get_svg_icon("delete.svg"),
+                icon=self.get_svg_icon("icons/delete.svg"),
                 callback=self._delete_tool_button_connect
             )
 
@@ -205,7 +205,7 @@ class Converter(
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
             text=self.get_translation("Open file"),
-            icon=self.get_svg_icon("folder-open.svg"),
+            icon=self.get_svg_icon("icons/folder-open.svg"),
             index=INDEX_START(),
             triggered=self.api.open_files
         )
@@ -220,7 +220,7 @@ class Converter(
             name=WorkbenchItem.OpenFiles,
             text=self.get_translation("Open file"),
             tooltip=self.get_translation("Open file"),
-            icon=self.get_svg_icon("folder.svg"),
+            icon=self.get_svg_icon("icons/folder.svg"),
             triggered=self.api.open_files
         )
 
@@ -229,7 +229,7 @@ class Converter(
             name=WorkbenchItem.Convert,
             text=self.get_translation("Convert"),
             tooltip=self.get_translation("Convert"),
-            icon=self.get_svg_icon("bolt.svg")
+            icon=self.get_svg_icon("icons/bolt.svg")
         ).set_enabled(False)
 
         clear_tool_button = self.add_tool_button(
@@ -237,7 +237,7 @@ class Converter(
             name=WorkbenchItem.Clear,
             text=self.get_translation("Clear"),
             tooltip=self.get_translation("Clear"),
-            icon=self.get_svg_icon("delete.svg")
+            icon=self.get_svg_icon("icons/delete.svg")
         )
         clear_tool_button.set_enabled(False)
         clear_tool_button.clicked.connect(self._clear_content_list)

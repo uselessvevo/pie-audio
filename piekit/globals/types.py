@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-import abc
+import inspect
+import sys
 from typing import Any, Type
-
-__all__ = ("Lock", "Max", "Min")
 
 
 class AnnotatedHandler:
 
-    @abc.abstractmethod
     def set(self, field: str, value: Any) -> Any:
-        pass
+        raise NotImplementedError("Method \"set\" must be implemented")
 
-    @abc.abstractmethod
     def get(self, field: str) -> Any:
-        pass
+        raise NotImplementedError("Method \"get\" must be implemented")
 
 
 class LockHandler(AnnotatedHandler):
@@ -76,6 +73,10 @@ class MinHandler(AnnotatedHandler):
         return cls
 
 
+# Define these aliases to ignore linter errors
 Max = type("Max", (MaxHandler,), {})
 Min = type("Min", (MinHandler,), {})
 Lock = type("Lock", (LockHandler,), {})
+
+
+__all__ = list(i[0] for i in inspect.getmembers(sys.modules[__name__], inspect.isclass) if not i[0].endswith("Handler"))

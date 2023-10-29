@@ -17,7 +17,7 @@ from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers
 from piekit.plugins.mixins import ContainerRegisterMixin
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
@@ -29,7 +29,7 @@ from piekit.widgets.spacer import Spacer
 
 class TestPlugin(
     PiePlugin, LayoutsAccessorMixin, ContainerRegisterMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, ThemeAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     """
@@ -73,7 +73,7 @@ class TestPlugin(
             section=f"test-plugin-toolbutton",
             name="call-dialog",
             text="Call inner dialog",
-            icon=self.get_svg_icon("mood.svg", section=Section.Shared),
+            icon=self.get_svg_icon("icons/mood.svg", section=Section.Shared),
             tooltip="Call inner dialog",
             triggered=self.test_show_inner_dialog
         )
@@ -157,7 +157,7 @@ class TestPlugin(
 
     def test_plugin_info(self) -> None:
         self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
-        self.logger.debug(self.get_icon_path("cancel.svg"))
+        self.logger.debug(self.get_icon_path("icons/cancel.svg"))
         self.logger.debug(self.get_plugin_icon())
         self.logger.debug(self.get_translation("Test String"))
 
@@ -194,7 +194,7 @@ class TestPlugin(
         self.logger.debug(self.get_config("key", temp=True))
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("app.svg", section=self.name)
+        return self.get_svg_icon("icons/app.svg", section=self.name)
 
 
 class TestMagicManager(BaseManager):

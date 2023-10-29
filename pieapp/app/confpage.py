@@ -6,7 +6,7 @@ from piekit.widgets.spacer import Spacer
 from piekit.globals.loader import Global
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 
@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 class AppConfigPage(
     ConfigAccessorMixin,
     LocalesAccessorMixin,
-    IconAccessorMixin,
+    ThemeAccessorMixin,
     ConfigPage
 ):
     name = Section.Root
@@ -35,7 +35,7 @@ class AppConfigPage(
         main_grid = QGridLayout()
 
         self._ffmpeg_line_edit_action = QAction()
-        self._ffmpeg_line_edit_action.set_icon(self.get_svg_icon("folder.svg"))
+        self._ffmpeg_line_edit_action.set_icon(self.get_svg_icon("icons/folder.svg"))
         self._ffmpeg_line_edit_action.triggered.connect(self._ffmpeg_button_connect)
 
         self._ffmpeg_line_edit = QLineEdit()
@@ -62,13 +62,13 @@ class AppConfigPage(
         self._locales_cbox.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
         self._locales_cbox.currentIndexChanged.connect(self._locales_cbox_connect)
 
-        themes = Managers(SysManager.Icons).get_themes()
+        themes = self.get_themes()
         self._theme_cbox = QComboBox()
         self._theme_cbox.add_items(themes)
         self._theme_cbox.set_current_text(self.get_config(
             "assets.theme", scope=Section.Root, section=Section.User
         ))
-        # self.themeCBox.currentIndexChanged.connect(self.themeCBoxConnect)
+        self._theme_cbox.currentIndexChanged.connect(self._theme_cbox_connect)
 
         main_grid.add_widget(QLabel(self.get_translation("Language")), 0, 0, 1, 1)
         main_grid.add_widget(self._locales_cbox, 0, 1, 1, 1)
@@ -87,7 +87,13 @@ class AppConfigPage(
 
     def _theme_cbox_connect(self) -> None:
         new_theme = self._theme_cbox.current_text()
-        self.set_config("assets.theme", new_theme, section=Section.User, temp=True)
+        self.set_config(
+            scope=Section.Root,
+            section=Section.User,
+            key="assets.theme",
+            data=new_theme,
+            temp=True
+        )
         self.set_modified(True)
 
     def _locales_cbox_connect(self) -> None:
@@ -125,7 +131,7 @@ class AppConfigPage(
         return self.get_translation("Main")
 
     def get_icon(self) -> Union[QIcon, None]:
-        return self.get_svg_icon("cloud.svg")
+        return self.get_svg_icon("icons/cloud.svg")
 
 
 def main(*args, **kwargs) -> Union[ConfigPage, None]:

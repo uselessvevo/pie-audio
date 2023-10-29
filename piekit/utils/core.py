@@ -12,7 +12,7 @@ from piekit.utils.files import write_json
 from piekit.widgets.errorwindow import ErrorWindow
 
 
-def get_application(*args, **kwargs):
+def get_application(*args, **kwargs) -> QApplication:
     app = QApplication.instance()
     if app is None:
         if not args:

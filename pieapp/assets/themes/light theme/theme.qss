@@ -1,0 +1,15 @@
+QMainWindow {
+    /*background-color: #eeeeee;*/
+}
+
+QToolTip {
+    border: 1px solid #505050;
+    background-color: #eeeeee;
+    border-radius: 2px;
+}
+
+QMenuBar {
+    min-height: 20px;
+    min-width: 30px;
+    padding: 3px 1px 3px 1px;
+}
