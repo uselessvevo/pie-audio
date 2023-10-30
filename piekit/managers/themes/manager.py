@@ -28,7 +28,6 @@ class ThemeManager(PluginBaseManager):
 
         # Registries
         self._icons: dict[str, dict[str, Path]] = {}
-        self._icons_props: dict[str, str] = {}
         self._stylesheet: str = ""
         self._stylesheet_props: dict[str, str] = {}
 
@@ -68,7 +67,7 @@ class ThemeManager(PluginBaseManager):
         """
         Load theme and icons in the plugin folder
 
-        If `current_theme` folder doesn't exists manager will load icons from "assets" folder
+        If `current_theme` folder doesn't exist manager will load icons from "assets" folder
         
         Args:
             plugin_folder (pathlib.Path): Plugin folder
@@ -127,10 +126,15 @@ class ThemeManager(PluginBaseManager):
                 match_list = pattern.findall(line)
                 for match in match_list:
                     if match in self._stylesheet_props:
-                        line = match.replace(match, self._stylesheet_props.get(match))
+                        line = line.replace(match, self._stylesheet_props.get(match))
+                        line = line.replace("@", "")
                 self._stylesheet += line
 
     def _load_style_sheet(self, theme_folder: Path) -> None:
+        theme_file = theme_folder / "theme.json"
+        if not theme_file.exists():
+            return
+
         theme_conf = read_json(theme_folder / "theme.json")
         if theme_conf.get("template") and theme_conf.get("properties"):
             props_data = theme_conf.get("properties")
