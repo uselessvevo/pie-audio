@@ -18,14 +18,6 @@ from piekit.managers.base import PluginBaseManager
 
 
 class ThemeManager(PluginBaseManager):
-    """
-    Theme package structure:
-        <theme name>:
-        * <icons folder>
-        * <fonts folder>
-        * props.json - theme properties: colors and icons accent
-        * template.qss - style sheet template file
-    """
     name = SysManager.Themes
 
     def __init__(self) -> None:
@@ -43,6 +35,13 @@ class ThemeManager(PluginBaseManager):
     def init(self) -> None:
         """
         Load root theme files
+
+        Theme package structure:
+            <theme name>:
+            * <icons folder>
+            * <fonts folder>
+            * props.json - theme properties: colors and icons accent
+            * template.qss - style sheet template file
         """
         self._current_theme = Managers(SysManager.Configs).get(
             scope=Section.Root,
@@ -66,6 +65,14 @@ class ThemeManager(PluginBaseManager):
         self._load_palette(theme_folder)
 
     def init_plugin(self, plugin_folder: Path) -> None:
+        """
+        Load theme and icons in the plugin folder
+
+        If `current_theme` folder doesn't exists manager will load icons from "assets" folder
+        
+        Args:
+            plugin_folder (pathlib.Path): Plugin folder
+        """
         theme_folder = plugin_folder / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
         if theme_folder.exists():
             icons_folder = theme_folder
@@ -110,11 +117,32 @@ class ThemeManager(PluginBaseManager):
 
         return True
 
+    def _parse_template(self, template_file: Path) -> None:
+        """
+        Parse template file
+        """
+        pattern = re.compile(r"@([A-Za-z0-9-]+)")
+        with open(str(template_file)) as lines:
+            for line in lines:
+                match_list = pattern.findall(line)
+                for match in match_list:
+                    if match in self._stylesheet_props:
+                        line = match.replace(match, self._stylesheet_props.get(match))
+                self._stylesheet += line
+
     def _load_style_sheet(self, theme_folder: Path) -> None:
-        theme_file = theme_folder / "theme.qss"
-        if theme_file.exists():
-            style_sheet = theme_file.read_text(encoding="utf-8")
-            self._stylesheet += style_sheet
+        theme_conf = read_json(theme_folder / "theme.json")
+        if theme_conf.get("template") and theme_conf.get("properties"):
+            props_data = theme_conf.get("properties")
+            self._stylesheet_props.update(**props_data)
+            self._parse_template(theme_folder / theme_conf["template"])
+        elif theme_conf.get("theme"):
+            theme_file = theme_folder / theme_conf.get("theme")
+            if theme_file.exists():
+                style_sheet = theme_file.read_text(encoding="utf-8")
+                self._stylesheet += style_sheet
+        else:
+            self._logger.critical(f"Can't load theme: specify `template` or `theme` fields")
 
     def _load_palette(self, theme_folder: Path) -> None:
         palette_file = theme_folder / "palette.py"

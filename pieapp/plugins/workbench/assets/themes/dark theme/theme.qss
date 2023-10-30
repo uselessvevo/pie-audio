@@ -1,3 +1,7 @@
+#workbench {
+    background-color: #4a4a4a;
+}
+
 #WorkbenchToolButton::item:checked {
    background-color: #424242;
    border: 1px solid #2d73ff;

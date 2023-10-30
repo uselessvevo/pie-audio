@@ -1,0 +1,55 @@
+{
+    "template": "template.qss",
+    "properties": {
+        "mainWindowBackgroundColor": "",
+        "mainWindowSeparatorWidth": "6px",
+        "mainWindowSeparatorHeight": "5px",
+        "mainWindowSeparatorPadding": "2px",
+        "mainWindowSeparatorBackgroundColor": "#191919",
+
+        "dialogBackgroundColor": "#424242",
+        
+        "toolTipColor": "#ffffff",
+        "toolTipBackgroundColor": "#353535",
+        "toolTipBorder": "1px solid #505050",
+        "toolTipBorderRadius": "1px",
+
+        "menuBarBackgroundColor": "#4a4a4a",
+        "menuBarColor": "#cccccc",
+        "menuBarMinHeight": "20px",
+        "menuBarMinWidth": "30px",
+        "menuBarPadding": "3px 1px 3px 1px",
+        "menuBarFontFamily": "Arial",
+
+        "menuBarItemBackgroundColor": "transparent",
+        "menuBarItemSelectedColor": "#f2f2f2",
+        "menuBarItemPressedBackgroundColor": "#2d73ff",
+
+        "menuBackgroundColor": "#424242",
+        "menuColor": "#cccccc",
+        "menuBorder": "1px solid #2d73ff",
+        "menuFontFamily": "Arial",
+
+        "menuItemPadding": "3px 25px 3px 25px",
+        "menuItemBorder": "1px solid transparent",
+
+        "menuItemSelectedColor": "#f2f2f2",
+
+        "menuItemCheckedBackgroundColor": "#2d73ff",
+        "menuItemCheckedBorder": "1px solid palette(highlight)",
+        "menuItemCheckedBorderRadius": "2px",
+        
+        "menuItemDisabledColor": "gray",
+        "menuItemDisabledSelectedColor": "#f2f2f2",
+
+        "menuItemIconCheckedBackgroundColor": "#2d73ff",
+        "menuItemIconCheckedBorder": "1px solid palette(highlight)",
+        "menuItemIconCheckedBorderRadius": "2px",
+
+        "menuSeparatorHeight": "1px",
+        "menuSeparatorBackgroundColor": "#f2f2f2",
+
+        "menuIndicatorWidth": "18px",
+        "menuIndicatorHeight": "18px"
+    }
+}

@@ -1,0 +1,50 @@
+QMainWindow {
+   background-color: @mainWindowBackgroundColor;
+}
+
+QMainWindow::separator {
+   width: @mainWindowBackgroundColor;
+   height: @mainWindowSeparatorHeight;
+   padding: @mainWindowSeparatorPadding;
+   background: @mainWindowSeparatorBackgroundColor;
+}
+
+QDialog {
+    background-color: @dialogBackgroundColor
+}
+
+QToolTip {
+   color: @toolTipColor;
+   background-color: @toolTipBackgroundColor;
+   border: @toolTipBorder;
+   border-radius: @toolTipBorderRadius;
+}
+
+QMenuBar {
+   background-color: @menuBarBackgroundColor;
+   color: @menuBarColor;
+   min-height: @menuBarMinHeight;
+   min-width: @menuBarMinWidth;
+   padding: @menuBarPadding;
+   font-family: @menuBarFontFamily;
+}
+
+/*QMenuBar and QMenu*/
+QMenuBar::item {
+   background-color: @menuBarItemBackgroundColor;
+}
+
+QMenuBar::item:selected {
+   color: @menuBarItemSelectedColor;
+}
+
+QMenuBar::item:pressed {
+   background-color: @menuBarItemPressedBackgroundColor;
+}
+
+QMenu {
+   color: #cccccc;
+   background-color: @menuBackgroundColor;
+   border: @menuBorder;
+   font-family: @menuFontFamily;
+}
