@@ -67,14 +67,14 @@ class ThemeManager(PluginBaseManager):
         """
         Load theme and icons in the plugin folder
 
-        If `current_theme` folder doesn't exist manager will load icons from "assets" folder
+        If `current_theme` folder doesn't exist manager will load icons from "flat" assets folder
         
         Args:
             plugin_folder (pathlib.Path): Plugin folder
         """
         theme_folder = plugin_folder / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
         if theme_folder.exists():
-            icons_folder = theme_folder
+            icons_folder = theme_folder / "icons"
         else:
             icons_folder = plugin_folder / Global.ASSETS_FOLDER
 
@@ -140,11 +140,13 @@ class ThemeManager(PluginBaseManager):
             props_data = theme_conf.get("properties")
             self._stylesheet_props.update(**props_data)
             self._parse_template(theme_folder / theme_conf["template"])
+
         elif theme_conf.get("theme"):
             theme_file = theme_folder / theme_conf.get("theme")
             if theme_file.exists():
                 style_sheet = theme_file.read_text(encoding="utf-8")
                 self._stylesheet += style_sheet
+        
         else:
             self._logger.critical(f"Can't load theme: specify `template` or `theme` fields")
 
