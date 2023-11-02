@@ -12,7 +12,7 @@ class ThemeAccessorMixin:
     Config mixin
     """
 
-    def get_icon_path(
+    def get_file_path(
         self,
         key: Any,
         default: Any = None,
@@ -43,5 +43,5 @@ class ThemeAccessorMixin:
 
     getIcon = get_icon
     getSvgIcon = get_svg_icon
-    getIconPath = get_icon_path
+    getFilePath = get_file_path
     getThemes = get_themes

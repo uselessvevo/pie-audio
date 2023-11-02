@@ -63,7 +63,7 @@ class Converter(
 
         # Setup placeholder
         self._pixmap_label = QLabel()
-        self._pixmap_label.set_pixmap(QIcon(self.get_icon_path("icons/package.svg", section=self.name)).pixmap(100))
+        self._pixmap_label.set_pixmap(self.get_icon("icons/package.svg", section=self.name).pixmap(100))
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._text_label = QLabel()
