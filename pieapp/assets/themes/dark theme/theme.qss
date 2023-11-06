@@ -36,7 +36,6 @@ QMenuBar {
    min-height:20px;
    min-width:30px;
    padding: 3px 1px 3px 1px;
-   font-family: Arial;
 }
 
 QMenuBar::item {
@@ -55,7 +54,6 @@ QMenu {
    background-color: #424242;
    border: 1px solid #2d73ff;
    color: #cccccc;
-   font-family: Arial;
 }
 
 QMenu::item {
@@ -102,7 +100,6 @@ QPushButton {
    min-width:80px;
    padding:1px 3px 1px 3px;
    outline:none;
-   font-family: Arial;
 }
 
 QPushButton::focus {
@@ -273,7 +270,6 @@ QScrollBar::sub-page:vertical {
 QStatusBar {
    color: #cccccc;
    font-size: 13px;
-   font-family: Arial;
 }
 
 QStatusBar QLabel {

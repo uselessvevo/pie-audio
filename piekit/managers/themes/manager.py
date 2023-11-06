@@ -59,6 +59,8 @@ class ThemeManager(PluginBaseManager):
 
             self._add_icon(Section.Shared, file)
 
+        self._stylesheet_props["THEME_ROOT"] = str(theme_folder.as_posix())
+
         self._app = get_application()
         self._load_style_sheet(theme_folder)
         self._load_palette(theme_folder)
@@ -120,7 +122,7 @@ class ThemeManager(PluginBaseManager):
         """
         Parse template file
         """
-        pattern = re.compile(r"@([A-Za-z0-9-]+)")
+        pattern = re.compile(r"@([A-Za-z0-9-_]+)")
         with open(str(template_file)) as lines:
             for line in lines:
                 match_list = pattern.findall(line)
@@ -128,6 +130,8 @@ class ThemeManager(PluginBaseManager):
                     if match in self._stylesheet_props:
                         line = line.replace(match, self._stylesheet_props.get(match))
                         line = line.replace("@", "")
+                    else:
+                        self._logger.debug(f"Can't find {match}/{line}")
                 self._stylesheet += line
 
     def _load_style_sheet(self, theme_folder: Path) -> None:
@@ -136,8 +140,8 @@ class ThemeManager(PluginBaseManager):
             return
 
         theme_conf = read_json(theme_folder / "theme.json")
-        if theme_conf.get("template") and theme_conf.get("properties"):
-            props_data = theme_conf.get("properties")
+        if theme_conf.get("template"):
+            props_data = theme_conf.get("properties", {})
             self._stylesheet_props.update(**props_data)
             self._parse_template(theme_folder / theme_conf["template"])
 

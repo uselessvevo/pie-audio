@@ -26,6 +26,9 @@ class MetadataEditor(
     name = Plugin.MetadataEditor
     requires = [Plugin.Converter]
 
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("icons/edit.svg")
+
     @on_plugin_event(target=Plugin.Converter)
     def on_converter_available(self) -> None:
         self._dialog = QDialog(self._parent)
@@ -55,9 +58,6 @@ class MetadataEditor(
 
     def _edit_file_button_connect(self, media_file: MediaFile) -> None:
         self._dialog.show()
-
-    def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", section=self.name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:

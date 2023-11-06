@@ -1,0 +1,100 @@
+/* #WorkbenchToolButton */
+
+#workbench {
+    background-color: @minorBackgroundColor;
+}
+
+#WorkbenchToolButton {
+   background-color: transparent;
+   border-radius: @controlsBorderRadius;
+   border: @controlsBorderRadius @controlsBackgroundColor;
+   margin: @controlsMargin;
+   color: @controlsFontColor;
+   padding: @controlsPadding;
+   outline: @controlsOutline;
+}
+
+#WorkbenchToolButton::menu-indicator
+{
+    image: none;
+}
+
+#WorkbenchToolButton::focus {
+   color: @controlsFontColor;
+   background-color: @controlsBackgroundColor;
+}
+
+#WorkbenchToolButton::hover {
+   color: @controlsFontColor;
+   background-color: @controlsBackgroundColor;
+}
+
+#WorkbenchToolButton::pressed {
+   color: @controlsFontColor;
+   background-color: @controlsBackgroundColor;
+}
+
+#WorkbenchToolButton::checked {
+   background-color: @controlsBackgroundColorChecked;
+}
+
+#WorkbenchToolButton::item:checked {
+   color: @controlsFontColor;
+   background-color: @controlsBackgroundColor;
+   border: @controlsBorderRadius @controlsBorderColorType @controlsBorderColor;
+}
+
+#WorkbenchToolButton::item:checked {
+   padding: @toolButtonPadding;
+   border: @controlsBorderRadius @controlsBorderColorType transparent;
+}
+
+#WorkbenchToolButton::item:disabled {
+   color: gray;
+}
+
+#WorkbenchToolButton:disabled {
+   color: gray;
+   background-color: #424242;
+}
+
+#WorkbenchToolButton::item:disabled:selected {
+   color: #f2f2f2;
+}
+
+#WorkbenchToolButton::item:selected {
+   color: @controlsFontColor;
+   background-color: @controlsBackgroundColorSelected;
+}
+
+#WorkbenchToolButton::item:checked {
+   background-color: @controlsBackgroundColor;
+   border: 1px solid palette(highlight);
+   border-radius: @controlsBorderRadius;
+}
+
+#WorkbenchToolButton::item {
+   height: 1px;
+   background-color: @controlsBackgroundColor;
+}
+
+#WorkbenchToolButton::item {
+   width: 18px;
+   height: 18px;
+}
+
+#WorkbenchToolButton::menu-indicator{
+    image: none;
+}
+
+#WorkbenchToolButton {
+    background-color: transparent;
+}
+
+#WorkbenchToolButton:hover {
+    background-color: @controlsBackgroundColor;
+}
+
+#WorkbenchToolButton:pressed {
+    background-color: @controlsBackgroundColor;
+}
