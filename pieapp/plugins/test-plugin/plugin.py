@@ -157,7 +157,7 @@ class TestPlugin(
 
     def test_plugin_info(self) -> None:
         self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
-        self.logger.debug(self.get_icon_path("icons/cancel.svg"))
+        self.logger.debug(self.get_file_path("icons/cancel.svg"))
         self.logger.debug(self.get_plugin_icon())
         self.logger.debug(self.get_translation("Test String"))
 

@@ -38,7 +38,7 @@ class About(
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
-        pixmap.load(self.get_icon_path("icons/app.svg"))
+        pixmap.load(self.get_file_path("icons/app.svg"))
 
         icon_label = QLabel()
         icon_label.set_pixmap(pixmap)
