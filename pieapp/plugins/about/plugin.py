@@ -3,7 +3,7 @@ from __feature__ import snake_case
 from typing import Union
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
 
 from pieapp.structs.menus import MainMenu
@@ -13,7 +13,7 @@ from pieapp.structs.plugins import Plugin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 
 from piekit.globals import Global
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_event
 
@@ -22,7 +22,7 @@ class About(
     PiePlugin,
     MenuAccessorMixin,
     LocalesAccessorMixin,
-    IconAccessorMixin,
+    ThemeAccessorMixin,
 ):
     name = Plugin.About
     requires = [Plugin.MenuBar]
@@ -38,7 +38,7 @@ class About(
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
-        pixmap.load(self.get_icon_path("app.svg"))
+        pixmap.load(self.get_file_path("icons/app.svg"))
 
         icon_label = QLabel()
         icon_label.set_pixmap(pixmap)
@@ -70,11 +70,11 @@ class About(
             name="about",
             text=self.get_translation("About"),
             triggered=self.call,
-            icon=self.get_svg_icon("help.svg"),
+            icon=self.get_svg_icon("icons/help.svg"),
         )
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("app.svg", section=self.name)
+        return self.get_svg_icon("icons/app.svg", section=self.name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:

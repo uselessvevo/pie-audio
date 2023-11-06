@@ -3,7 +3,6 @@ import os
 from PySide6.QtWidgets import QGridLayout
 
 from piekit.globals.types import Lock
-from piekit.managers.structs import DirectoryType
 
 
 # Application main info
@@ -18,14 +17,13 @@ DEFAULT_MIN_WINDOW_SIZE: Lock = (680, 450)
 TOOL_BUTTON_ICON_SIZE: Lock = (24, 24)
 
 # List of excluded file formats
-ASSETS_EXCLUDED_FORMATS = [DirectoryType, ".qss", ".json", ".ttf", ".py"]
 USE_EXCEPTION_HOOK: Lock = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
 
 # Managers startup configuration
 CORE_MANAGERS: Lock = [
     "piekit.managers.configs.manager.ConfigManager",
     "piekit.managers.locales.manager.LocaleManager",
-    "piekit.managers.icons.manager.IconManager",
+    "piekit.managers.themes.manager.ThemeManager",
 ]
 
 LAYOUT_MANAGERS: Lock = [

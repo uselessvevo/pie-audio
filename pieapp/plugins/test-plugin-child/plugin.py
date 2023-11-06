@@ -5,13 +5,13 @@ from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout
 from piekit.globals import Global
 from pieapp.structs.plugins import Plugin
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.plugins.mixins import ContainerRegisterAccessorMixin
 
 
 class TestPluginChild(
     PiePlugin, 
-    IconAccessorMixin,
+    ThemeAccessorMixin,
     ContainerRegisterAccessorMixin
 ):
     """
@@ -28,7 +28,7 @@ class TestPluginChild(
         self._test_button = QPushButton(self._widget)
         self._test_button.set_text("Click me")
         self._test_button.clicked.connect(self.test_button_connect)
-        self._test_button.set_icon(self.get_svg_icon("delete.svg"))
+        self._test_button.set_icon(self.get_svg_icon("icons/delete.svg"))
         self._main_layout.add_widget(self._test_button, 0, 0)
         self._widget.set_layout(self._main_layout)
 

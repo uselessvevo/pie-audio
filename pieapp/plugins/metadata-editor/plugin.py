@@ -1,16 +1,15 @@
 from __feature__ import snake_case
 
-from PySide6.QtWidgets import QDialog, QTableWidget, QStyledItemDelegate, QGridLayout
-
 from typing import Union
 
-from pieapp.structs.media import MediaFile
+from PySide6.QtWidgets import QDialog, QTableWidget, QStyledItemDelegate, QGridLayout
 
+from pieapp.structs.media import MediaFile
 from pieapp.structs.plugins import Plugin
 from piekit.globals.loader import Global
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.utils import get_plugin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.plugins.decorators import on_plugin_event
 
@@ -22,10 +21,13 @@ class ReadOnlyDelegate(QStyledItemDelegate):
 
 
 class MetadataEditor(
-    PiePlugin, LocalesAccessorMixin, IconAccessorMixin
+    PiePlugin, LocalesAccessorMixin, ThemeAccessorMixin
 ):
     name = Plugin.MetadataEditor
     requires = [Plugin.Converter]
+
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("icons/edit.svg")
 
     @on_plugin_event(target=Plugin.Converter)
     def on_converter_available(self) -> None:
@@ -49,16 +51,13 @@ class MetadataEditor(
         self._converter.add_quick_action(
             name="edit",
             text=self.get_translation("Edit"),
-            icon=self.get_svg_icon("edit.svg"),
+            icon=self.get_svg_icon("icons/edit.svg"),
             callback=self._edit_file_button_connect,
             before="delete"
         )
 
     def _edit_file_button_connect(self, media_file: MediaFile) -> None:
         self._dialog.show()
-
-    def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("app.svg", section=self.name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:

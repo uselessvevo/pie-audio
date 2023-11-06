@@ -17,7 +17,7 @@ from piekit.widgets.spacer import Spacer
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.structs import Section
 from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
@@ -30,7 +30,7 @@ from PySide6.QtWidgets import QGridLayout, QDialog, QTreeWidget, QLabel, QDialog
 class Settings(
     PiePlugin,
     ConfigPageAccessorMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, ThemeAccessorMixin,
     MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
 ):
     name = Plugin.Settings
@@ -167,12 +167,12 @@ class Settings(
             name="settings",
             text=self.get_translation("Settings"),
             triggered=self.call,
-            icon=self.get_svg_icon("settings.svg"),
+            icon=self.get_svg_icon("icons/settings.svg"),
             before=MainMenuItem.Exit
         )
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("app.svg", section=self.name)
+        return self.get_svg_icon("icons/app.svg", section=self.name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:

@@ -6,9 +6,7 @@ import sys
 
 from piekit.globals import Global, Lock, Max, Min
 from pieapp.wizard.wizard import SetupWizard
-from piekit.managers.icons.utils import get_palette, get_theme
 from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManager
 from piekit.utils.modules import is_debug
 from piekit.utils.core import check_crabs
 from piekit.utils.core import except_hook
@@ -81,19 +79,6 @@ def start_application(*args, **kwargs) -> None:
     # Starting all managers by order
     for manager in Global.CORE_MANAGERS:
         Managers.from_config(manager)
-
-    theme = Managers(SysManager.Icons).get_theme()
-    if theme:
-        if Global.ASSETS_USE_STYLE:
-            app.set_style_sheet(get_theme(theme))
-            palette = get_palette(theme)
-            if palette:
-                app.set_palette(palette)
-
-    # Applying *fantasticly* good theme
-    theme = Managers(SysManager.Icons).get_theme()
-    if theme and Global.ASSETS_USE_STYLE:
-        app.set_style_sheet(get_theme(theme))
 
     # Closing splashscreen
     if splash:

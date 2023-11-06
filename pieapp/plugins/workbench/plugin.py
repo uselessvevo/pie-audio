@@ -11,7 +11,7 @@ from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.plugins.plugins import PiePlugin
 
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin

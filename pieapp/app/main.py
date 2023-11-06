@@ -10,7 +10,7 @@ from piekit.globals import Global
 from pieapp.structs.layouts import Layout
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.structs import Section
-from piekit.managers.icons.mixins import IconAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.plugins.mixins import ErrorDialogMixin, QuitDialogMixin
@@ -18,7 +18,7 @@ from piekit.plugins.mixins import ErrorDialogMixin, QuitDialogMixin
 
 class MainWindow(
     LayoutsAccessorMixin, QuitDialogMixin, ErrorDialogMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, IconAccessorMixin,
+    ConfigAccessorMixin, LocalesAccessorMixin, ThemeAccessorMixin,
     QMainWindow,
 ):
     # Accessors section
@@ -68,7 +68,7 @@ class MainWindow(
             f'{self.get_translation("Pie Audio • Simple Audio Editor")} '
             f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
-        self.set_window_icon(self.get_svg_icon("cloud.svg"))
+        self.set_window_icon(self.get_svg_icon("icons/cloud.svg"))
 
     def prepare_main_layout(self) -> None:
         self.main_layout = QGridLayout()
