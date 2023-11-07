@@ -6,12 +6,12 @@ from typing import Union
 from piekit.globals import Global
 from piekit.utils.logger import logger
 from piekit.utils.modules import import_by_path
-from piekit.managers.base import PluginBaseManager
+from piekit.managers.base import BaseManager
 from piekit.managers.structs import SysManager
 from piekit.managers.confpages.structs import ConfigPage
 
 
-class ConfigPageManager(PluginBaseManager):
+class ConfigPageManager(BaseManager):
     name = SysManager.ConfigPages
 
     def __init__(self) -> None:
@@ -24,25 +24,20 @@ class ConfigPageManager(PluginBaseManager):
         self._pages_list: list[ConfigPage] = []
 
     def init(self) -> None:
-        folder = Global.APP_ROOT / Global.CONF_PAGES_FOLDER
-        if (folder / "confpage.py").exists():
-            confpage_module: ModuleType = import_by_path(str(folder / "confpage.py"))
-            confpage_instance = getattr(confpage_module, "main")()
-            if confpage_instance:
-                confpage_instance.init()
-                self._pages_list.append(confpage_instance)
+        self._collect_pages(Global.APP_ROOT / Global.CONF_PAGES_FOLDER)
+        self._collect_pages(Global.APP_ROOT / Global.PLUGINS_FOLDER)
+        self._collect_pages(Global.USER_ROOT / Global.PLUGINS_FOLDER)
+        
+        # Initialize pages
+        for page in self._pages_list:
+            page.init()
 
-    def shutdown(self, *args, **kwargs) -> None:
-        self._pages = {}
-        self._pages_list = []
-
-    def init_plugin(self, plugin_folder: Path) -> None:
+    def _collect_pages(self, plugin_folder: Path) -> None:
         for folder in plugin_folder.iterdir():
             if (folder / "confpage.py").exists():
                 confpage_module: ModuleType = import_by_path(str(folder / "confpage.py"))
                 confpage_instance = getattr(confpage_module, "main")()
                 if confpage_instance:
-                    confpage_instance.init()
                     self._pages_list.append(confpage_instance)
 
         page_instances: list[ConfigPage] = list(sorted(self._pages_list, key=lambda v: v.root is None))
@@ -57,8 +52,9 @@ class ConfigPageManager(PluginBaseManager):
                 if page_instance.name not in self._pages[page_instance.root]["children"]:
                     self._pages[page_instance.root]["children"].append(page_instance)
 
-    def _notify_main_window_restart_request(self, page_instance: ConfigPage) -> None:
-        page_instance.parent().sig_restart_requested.emit(page_instance.name)
+    def shutdown(self, *args, **kwargs) -> None:
+        self._pages = {}
+        self._pages_list = []
 
     def get_page(self, section: str, page_name: str) -> ConfigPage:
         if section not in self._pages:
