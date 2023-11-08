@@ -31,12 +31,3 @@ class BaseManager:
 
     def __repr__(self) -> str:
         return f'({self.__class__.__name__}) <id: {id(self)}>'
-
-
-class PluginBaseManager(BaseManager):
-
-    def init_plugin(self, plugin_folder: Path) -> None:
-        raise NotImplementedError(f"Method `init_plugin` must be implemented")
-
-    def shutdown_plugin(self) -> None:
-        pass

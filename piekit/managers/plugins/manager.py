@@ -47,9 +47,6 @@ class PluginManager(BaseManager):
         # Dictionary with plugin name to its type
         self._plugins_types_registry: dict[PluginType, set[str]] = {k.value: set() for k in PluginType}
 
-        # List of managers that can setup plugins
-        self._plugin_managers = Managers.get_plugin_managers()
-
     def init(self) -> None:
         """ Initialize all built-in or third-party PiePlugins, components and user plugins """
         main_window = get_main_window()
@@ -86,11 +83,7 @@ class PluginManager(BaseManager):
 
     # Prepare methods
 
-    def _initialize_from_packages(
-        self,
-        folder: "Path",
-        parent: "QMainWindow" = None
-    ) -> None:
+    def _initialize_from_packages(self, folder: "Path", parent: "QMainWindow" = None) -> None:
         if not folder.exists():
             self._logger.warning(f"Plugins folder {folder.name} doesn't exist")
             return
@@ -102,6 +95,9 @@ class PluginManager(BaseManager):
                 # Plugin path: pieapp/plugins/<plugin name>
                 plugin_path = folder / package.name
 
+                if (plugin_path / "globals.py").exists():
+                    Global.load_by_path(plugin_path / "globals.py")
+
                 # Add our plugin into sys.path
                 sys.path.append(os.path.abspath(str(plugin_path)))
                 plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
@@ -112,10 +108,6 @@ class PluginManager(BaseManager):
 
                 # Importing plugin module
                 plugin_module = import_by_path(str(plugin_path / "plugin.py"))
-
-                # Setup plugin via `PluginManager`
-                for plugin_manager in self._plugin_managers:
-                    plugin_manager.init_plugin(plugin_path)
 
                 # Initializing plugin instance
                 plugin_instance: PiePlugin = getattr(plugin_module, "main")(parent, plugin_path)

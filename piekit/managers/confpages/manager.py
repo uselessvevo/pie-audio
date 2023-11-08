@@ -24,33 +24,37 @@ class ConfigPageManager(BaseManager):
         self._pages_list: list[ConfigPage] = []
 
     def init(self) -> None:
-        self._collect_pages(Global.APP_ROOT / Global.CONF_PAGES_FOLDER)
-        self._collect_pages(Global.APP_ROOT / Global.PLUGINS_FOLDER)
-        self._collect_pages(Global.USER_ROOT / Global.PLUGINS_FOLDER)
-        
-        # Initialize pages
-        for page in self._pages_list:
-            page.init()
+        self._load_app_config_pages()
+        self._load_plugins_config_pages(Global.APP_ROOT / Global.PLUGINS_FOLDER)
+        self._load_plugins_config_pages(Global.USER_ROOT / Global.PLUGINS_FOLDER)
 
-    def _collect_pages(self, plugin_folder: Path) -> None:
-        for folder in plugin_folder.iterdir():
-            if (folder / "confpage.py").exists():
-                confpage_module: ModuleType = import_by_path(str(folder / "confpage.py"))
+    def _load_app_config_pages(self) -> None:
+        app_folder = Global.APP_ROOT / Global.CONF_PAGES_FOLDER
+        if (app_folder / "confpage.py").exists():
+            confpage_module: ModuleType = import_by_path(str(app_folder / "confpage.py"))
+            confpage_instance = getattr(confpage_module, "main")()
+            if confpage_instance:
+                self._pages_list.append(confpage_instance)
+
+    def _load_plugins_config_pages(self, plugins_folder: Path) -> None:
+        for plugin_folder in plugins_folder.iterdir():
+            if (plugin_folder / "confpage.py").exists():
+                confpage_module: ModuleType = import_by_path(str(plugin_folder / "confpage.py"))
                 confpage_instance = getattr(confpage_module, "main")()
                 if confpage_instance:
                     self._pages_list.append(confpage_instance)
 
-        page_instances: list[ConfigPage] = list(sorted(self._pages_list, key=lambda v: v.root is None))
-        for page_instance in reversed(page_instances):
+        pages: list[ConfigPage] = list(sorted(self._pages_list, key=lambda v: v.root is None))
+        for page in reversed(pages):
             # Check if page is a category root item, and it doesn't exist in `self._pages`
-            if not self._pages.get(page_instance.name) and page_instance.root is None:
-                self._pages[page_instance.name] = {"page": page_instance, "children": []}
+            if not self._pages.get(page.name) and page.root is None:
+                self._pages[page.name] = {"page": page, "children": set()}
 
             # Check if page is a child item and parent item does exist in `self._pages`
-            elif page_instance.root in self._pages:
+            elif page.root in self._pages:
                 # Check if page is a child item and in its parent
-                if page_instance.name not in self._pages[page_instance.root]["children"]:
-                    self._pages[page_instance.root]["children"].append(page_instance)
+                if page.name not in self._pages[page.root]["children"]:
+                    self._pages[page.root]["children"].add(page)
 
     def shutdown(self, *args, **kwargs) -> None:
         self._pages = {}
@@ -69,15 +73,4 @@ class ConfigPageManager(BaseManager):
         return self._pages.get(section, [])
 
     def get_all_pages(self, as_list: bool = False) -> Union[dict[str, ConfigPage], list[ConfigPage]]:
-        if as_list:
-            pages: list[ConfigPage] = []
-            pages_copy: dict = copy.copy(self._pages)
-            for page in pages_copy.values():
-                children = page["children"]
-                pages.append(page)
-                for child in children:
-                    pages.append(child)
-
-            return pages
-
-        return self._pages
+        return self._pages_list if as_list else self._pages

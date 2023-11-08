@@ -22,5 +22,8 @@ class ConfigPageAccessorMixin:
     def get_pages(self, section: str) -> Union[list[ConfigPage], list]:
         return Managers(SysManager.ConfigPages).get_pages(section)
 
-    def get_all_confpages(self, as_list: bool = False) -> ConfigPagesUnion:
-        return Managers(SysManager.ConfigPages).get_all_pages(as_list=as_list)
+    def get_confpages_dict(self) -> dict[str, ConfigPage]:
+        return Managers(SysManager.ConfigPages).get_all_pages(as_list=False)
+
+    def get_confpages_list(self) -> list[ConfigPage]:
+        return Managers(SysManager.ConfigPages).get_all_pages(as_list=True)

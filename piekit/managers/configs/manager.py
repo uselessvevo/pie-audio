@@ -6,7 +6,7 @@ from dotty_dict import Dotty
 
 from piekit.globals import Global
 from piekit.exceptions import PieException
-from piekit.managers.base import PluginBaseManager
+from piekit.managers.base import BaseManager
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.utils.files import read_json, write_json
@@ -14,7 +14,7 @@ from piekit.observers.filesystem import FileSystemObserver
 from piekit.utils.logger import logger
 
 
-class ConfigManager(PluginBaseManager):
+class ConfigManager(BaseManager):
     name = SysManager.Configs
     protected_keys = ("__FOLDER__",)
 
@@ -26,14 +26,12 @@ class ConfigManager(PluginBaseManager):
 
     def init(self) -> None:
         # Read app/core configurations
-        self._read_root_configuration(Global.APP_ROOT / Global.CONFIGS_FOLDER, Section.Inner)
-        self._read_root_configuration(Global.USER_ROOT / Global.CONFIGS_FOLDER, Section.User)
+        self._load_app_configs(Global.APP_ROOT / Global.CONFIGS_FOLDER, Section.Inner)
+        self._load_app_configs(Global.USER_ROOT / Global.CONFIGS_FOLDER, Section.User)
+        self._load_plugins_configs(Global.APP_ROOT / Global.PLUGINS_FOLDER)
+        self._load_plugins_configs(Global.APP_ROOT / Global.PLUGINS_FOLDER)
 
-    def _read_root_configuration(
-        self,
-        folder: Path,
-        section: Union[str, Section] = None
-    ) -> None:
+    def _load_app_configs(self, folder: Path, section: Union[str, Section] = None) -> None:
         self._configuration[Section.Root] = {section: {"__FOLDER__": folder}}
         if (folder / Global.CONFIG_FILE_NAME).exists():
             self._configuration[Section.Root][section].update(
@@ -41,26 +39,27 @@ class ConfigManager(PluginBaseManager):
             )
             self._observer.add_handler(str(folder), str(folder.name))
 
-    def init_plugin(self, plugin_folder: Path) -> None:
-        # Read plugin's user configuration file
-        user_folder: Path = Global.USER_ROOT / Global.CONFIGS_FOLDER / plugin_folder.name
-        self._configuration[plugin_folder.name] = {
-            Section.Inner: {"__FOLDER__": plugin_folder},
-            Section.User: {"__FOLDER__": user_folder}
-        }
+    def _load_plugins_configs(self, plugins_folder: Path) -> None:
+        for plugin_folder in plugins_folder.iterdir():
+            # Read plugin's user configuration file
+            user_folder: Path = Global.USER_ROOT / Global.CONFIGS_FOLDER / plugin_folder.name
+            self._configuration[plugin_folder.name] = {
+                Section.Inner: {"__FOLDER__": plugin_folder},
+                Section.User: {"__FOLDER__": user_folder}
+            }
 
-        if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
-            # Read plugin's inner configuration file
-            self._configuration[plugin_folder.name][Section.Inner].update({
-                **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
-            })
-            self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
+            if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
+                # Read plugin's inner configuration file
+                self._configuration[plugin_folder.name][Section.Inner].update({
+                    **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
+                })
+                self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
 
-        if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
-            self._configuration[plugin_folder.name][Section.User].update({
-                **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
-            })
-            self._observer.add_handler(str(user_folder), str(user_folder.name))
+            if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
+                self._configuration[plugin_folder.name][Section.User].update({
+                    **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
+                })
+                self._observer.add_handler(str(user_folder), str(user_folder.name))
 
     def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})

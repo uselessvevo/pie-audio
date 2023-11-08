@@ -60,7 +60,7 @@ def start_application(*args, **kwargs) -> None:
 
     if first_run or not fully_setup:
         for manager in Global.CORE_MANAGERS:
-            Managers.from_config(manager)
+            Managers.from_string(manager)
 
         # Closing splashscreen because we don't need it here
         if splash:
@@ -78,7 +78,7 @@ def start_application(*args, **kwargs) -> None:
 
     # Starting all managers by order
     for manager in Global.CORE_MANAGERS:
-        Managers.from_config(manager)
+        Managers.from_string(manager)
 
     # Closing splashscreen
     if splash:
@@ -90,12 +90,12 @@ def start_application(*args, **kwargs) -> None:
 
     # Starting all managers by order
     for manager in Global.LAYOUT_MANAGERS:
-        Managers.from_config(manager)
+        Managers.from_string(manager)
 
     main_window.prepare_main_layout()
     main_window.prepare_central_widget()
 
-    Managers.from_config(Global.PLUGIN_MANAGER)
+    Managers.from_string(Global.PLUGIN_MANAGER)
 
     main_window.show()
 

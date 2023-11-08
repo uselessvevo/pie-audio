@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -14,10 +16,10 @@ from piekit.utils.modules import import_by_path
 from piekit.managers.structs import Section
 from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager
-from piekit.managers.base import PluginBaseManager
+from piekit.managers.base import BaseManager
 
 
-class ThemeManager(PluginBaseManager):
+class ThemeManager(BaseManager):
     name = SysManager.Themes
 
     def __init__(self) -> None:
@@ -52,6 +54,11 @@ class ThemeManager(PluginBaseManager):
             str(i.name) for i in
             (Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER).iterdir() if i.is_dir()
         )
+        self._load_app_theme()
+        self._load_plugins_theme(Global.APP_ROOT / Global.PLUGINS_FOLDER)
+        self._load_plugins_theme(Global.USER_ROOT / Global.PLUGINS_FOLDER)
+
+    def _load_app_theme(self) -> None:
         theme_folder = Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
         for file in theme_folder.rglob("*.*"):
             if not self._check_icon(file):
@@ -59,36 +66,39 @@ class ThemeManager(PluginBaseManager):
 
             self._add_icon(Section.Shared, file)
 
-        self._stylesheet_props["THEME_ROOT"] = str(theme_folder.as_posix())
+        self._stylesheet_props["THEME_ROOT"] = theme_folder.as_posix()
 
         self._app = get_application()
         self._load_style_sheet(theme_folder)
         self._load_palette(theme_folder)
 
-    def init_plugin(self, plugin_folder: Path) -> None:
+    def _load_plugins_theme(self, plugins_folder: Path) -> None:
         """
         Load theme and icons in the plugin folder
 
         If `current_theme` folder doesn't exist manager will load icons from "flat" assets folder
         
         Args:
-            plugin_folder (pathlib.Path): Plugin folder
+            plugins_folder (pathlib.Path): Plugins folder
         """
-        theme_folder = plugin_folder / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
-        if theme_folder.exists():
-            icons_folder = theme_folder / "icons"
-        else:
-            icons_folder = plugin_folder / Global.ASSETS_FOLDER
+        for plugin_folder in plugins_folder.iterdir():
+            theme_folder = plugin_folder / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
+            if theme_folder.exists():
+                icons_folder = theme_folder / "icons"
+            else:
+                icons_folder = plugin_folder / Global.ASSETS_FOLDER
 
-        for file in icons_folder.rglob("*.*"):
-            if not self._check_icon(file):
-                continue
+            self._stylesheet_props[f"{plugin_folder.name.upper()}_PLUGIN"] = theme_folder.as_posix()
 
-            self._add_icon(plugin_folder.name, file)
+            for file in icons_folder.rglob("*.*"):
+                if not self._check_icon(file):
+                    continue
 
-        self._load_style_sheet(theme_folder)
-        self._load_palette(theme_folder)
-        self._app.set_style_sheet(self._stylesheet)
+                self._add_icon(plugin_folder.name, file)
+
+            self._load_style_sheet(theme_folder)
+            self._load_palette(theme_folder)
+            self._app.set_style_sheet(self._stylesheet)
 
     def _add_icon(self, section: Union[str, Section], file: Path) -> None:
         """
@@ -182,6 +192,9 @@ class ThemeManager(PluginBaseManager):
 
     def get_themes(self) -> list[str]:
         return self._themes
+
+    def get_property(self, prop_name: str, default: Any = None) -> str:
+        return self._stylesheet_props.get(prop_name, default)
 
     getTheme = get_theme
     getThemes = get_themes
