@@ -156,42 +156,42 @@ class TestPlugin(
         inner_dialog.show()
 
     def test_plugin_info(self) -> None:
-        self.logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
-        self.logger.debug(self.get_file_path("icons/cancel.svg"))
-        self.logger.debug(self.get_plugin_icon())
-        self.logger.debug(self.get_translation("Test String"))
+        self._logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
+        self._logger.debug(self.get_file_path("icons/cancel.svg"))
+        self._logger.debug(self.get_plugin_icon())
+        self._logger.debug(self.get_translation("Test String"))
 
     def test_restore_test_config(self) -> None:
-        self.logger.debug("Setting new value")
+        self._logger.debug("Setting new value")
         self.set_config("key", "New String Value", temp=True)
-        self.logger.debug(f"Value: {self.get_config('key')}")
-        self.logger.debug(f"Value from temp: {self.get_config('key', temp=True)}")
+        self._logger.debug(f"Value: {self.get_config('key')}")
+        self._logger.debug(f"Value from temp: {self.get_config('key', temp=True)}")
 
-        self.logger.debug("Restoring configuration")
+        self._logger.debug("Restoring configuration")
         self.restore_config()
 
-        self.logger.debug("Retrieving value from temp")
-        self.logger.debug(self.get_config("key", temp=True))
-        self.logger.debug("=================================")
+        self._logger.debug("Retrieving value from temp")
+        self._logger.debug(self.get_config("key", temp=True))
+        self._logger.debug("=================================")
 
     def test_inner_config_save(self) -> None:
-        self.logger.debug(self.get_config("key"))
-        self.logger.debug("Setting new value")
+        self._logger.debug(self.get_config("key"))
+        self._logger.debug("Setting new value")
         self.set_config("key", str(uuid.uuid4()), temp=True)
-        self.logger.debug(self.get_config("key", temp=True))
+        self._logger.debug(self.get_config("key", temp=True))
 
-        self.logger.debug("Restoring configuration")
+        self._logger.debug("Restoring configuration")
         self.restore_config()
 
-        self.logger.debug("Retrieving value")
-        self.logger.debug(self.get_config("key", temp=True))
+        self._logger.debug("Retrieving value")
+        self._logger.debug(self.get_config("key", temp=True))
 
-        self.logger.debug("Saving data")
+        self._logger.debug("Saving data")
         self.save_config(temp=True)
 
-        self.logger.debug("Retrieving saved value")
-        self.logger.debug(self.get_config("key"))
-        self.logger.debug(self.get_config("key", temp=True))
+        self._logger.debug("Retrieving saved value")
+        self._logger.debug(self.get_config("key"))
+        self._logger.debug(self.get_config("key", temp=True))
 
     def get_plugin_icon(self) -> "QIcon":
         return self.get_svg_icon("icons/app.svg", section=self.name)
