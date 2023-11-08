@@ -4,7 +4,7 @@ from pathlib import Path
 from piekit.utils.logger import logger
 from piekit.utils.files import read_json
 from piekit.utils.modules import import_by_string
-from piekit.managers.base import PluginBaseManager, BaseManager
+from piekit.managers.base import BaseManager
 
 
 class ManagersRegistry:
@@ -16,10 +16,7 @@ class ManagersRegistry:
         # Dictionary with base managers
         self._managers_instances: dict[str, BaseManager] = {}
 
-        # Dictionary with managers that can setup plugins
-        self._plugin_managers_instances: dict[str, PluginBaseManager] = {}
-
-    def from_class(self, manager_class: Type[Union[BaseManager, PluginBaseManager]]) -> None:
+    def from_class(self, manager_class: Type[BaseManager]) -> None:
         """
         Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
         For example:
@@ -28,25 +25,17 @@ class ManagersRegistry:
         >>> Managers.init(ConfigManager, PathConfig(...), ...)
         """
         manager_instance = manager_class()
-        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
-
         self._managers_instances[manager_instance.name] = manager_instance
-        if isinstance(manager_instance, PluginBaseManager):
-            self._plugin_managers_instances[manager_instance.name] = manager_instance
-
+        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
         manager_instance.init()
 
-    def from_config(self, config: str) -> None:
+    def from_string(self, import_string: str) -> None:
         """
-        Initialize manager from `ManagerConfig` structure
+        Initialize manager from import string
         """
-        manager_instance = import_by_string(config)()
-        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
-
+        manager_instance = import_by_string(import_string)()
         self._managers_instances[manager_instance.name] = manager_instance
-        if isinstance(manager_instance, PluginBaseManager):
-            self._plugin_managers_instances[manager_instance.name] = manager_instance
-            
+        self._logger.info(f"Initializing \"{manager_instance.__class__.__name__}\"")
         manager_instance.init()
 
     def from_json(self, file: Union[str, Path]) -> None:
@@ -54,15 +43,14 @@ class ManagersRegistry:
         Initialize managers from json file.
         File structure must have an array with the next parameters
             * import_string (str): import string separated by dots - 'path.to.manager.ManagerClassName'
-            * init (bool): initialize manager
 
-        For example: `[{"import_string": string, "init": boolean}, ...]`
+        For example: <import string>, ...]`
         """
         file_data = read_json(file)
         file_data = tuple(fd["import"] for fd in file_data)
 
         for config in file_data:
-            self.from_config(config)
+            self.from_string(config)
 
     def shutdown(self, *managers: str, full_house: bool = False) -> None:
         self._logger.info("Preparing to shutdown all managers")
@@ -71,10 +59,6 @@ class ManagersRegistry:
 
         for manager_instance in managers_instances:
             self._logger.info(f"Shutting down \"{manager_instance.__class__.__name__}\"")
-
-            if isinstance(manager_instance, PluginBaseManager):
-                manager_instance.shutdown_plugin()
-
             manager_instance.shutdown(full_house=True)
 
     def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
@@ -91,9 +75,6 @@ class ManagersRegistry:
         for manager in managers:
             self._logger.info(f"Destroying \"{manager.__class__.__name__}\"")
             self._managers_instances.pop(manager)
-
-    def get_plugin_managers(self) -> list[PluginBaseManager]:
-        return list(self._plugin_managers_instances.values())
 
     def __call__(self, manager: str, fallback_method: callable = None) -> BaseManager:
         """

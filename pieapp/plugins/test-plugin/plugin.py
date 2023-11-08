@@ -215,8 +215,6 @@ class TestMagicManager(BaseManager):
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
-    Global.load_by_path(str(plugin_path / "globals.py"))
-
     if Global.TEST_PLUGIN_ENABLE:
         Managers.from_class(TestMagicManager)
         return TestPlugin(parent, plugin_path)

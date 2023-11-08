@@ -1,6 +1,6 @@
 * {
-   color: @mainFontColor;
-   font-family: url(@THEME_ROOT/fonts/@mainFontFamily);
+    color: @mainFontColor;
+    font-family: url(@THEME_ROOT/fonts/@mainFontFamily);
 }
 
 QMainWindow {
@@ -21,7 +21,7 @@ QDialog {
 QToolTip {
    color: @minorColor;
    background-color: @minorBackgroundColor;
-   border: @controlsBorderWidth @controlsBorderColorType @controlsBorderColor;;
+   border: @controlsBorderWidth @controlsBorderColorType @controlsBorderColor;
    border-radius: @controlsBorderRadius;
 }
 
@@ -193,4 +193,31 @@ QScrollBar::down-arrow:vertical {
 QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical {
     background: none;
+}
+
+QComboBox, QAbstractItemView {
+    color: @minorColor;
+    background-color: @minorBackgroundColor;
+    padding: 3px;
+    border: @controlsBorderWidth @controlsBorderColorType @controlsBorderColor;
+}
+
+QAbstractItemView::item {
+    border: none;
+    border-radius: 3px;
+    color: @minorColor;
+    background-color: @minorBackgroundColor;
+}
+
+QComboBox::down-arrow {
+    border: none;
+    color: red;
+    image: url(@THEME_ROOT/icons/arrow-down.svg);
+}
+
+QLineEdit {
+    color: @minorColor;
+    background-color: @minorBackgroundColor;
+    padding: 3px;
+    border: @controlsBorderWidth @controlsBorderColorType @controlsBorderColor;
 }

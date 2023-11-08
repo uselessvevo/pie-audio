@@ -264,5 +264,4 @@ class Converter(
 
 
 def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
-    Global.load_by_path(str(plugin_path / "globals.py"))
     return Converter(parent, plugin_path)

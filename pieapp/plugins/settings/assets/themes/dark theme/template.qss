@@ -1,5 +1,5 @@
 #CurrentCanvasWidget {
-    font-size: 30px;
+    font-size: 20pt;
 }
 
 #SettingsDialog {
@@ -7,30 +7,37 @@
 }
 
 #SettingsLineEdit {
-    font-size: 10pt;
+    /*font-size: 10pt;*/
 }
 
 #SettingsComboBox {
-    font-size: 10pt;
+    /*font-size: 10pt;*/
 }
 
 #SettingsTreeWidget {
-    font-size: 12pt;
+    border: none;
     border-radius: 0px;
-    border-color: none;
+    font-size: 10pt;
     background-color: @minorBackgroundColor;
 }
 
 #SettingsTreeWidget::item {
-    font-size: 8pt;
     background-color: @minorBackgroundColor;
-    outline: @controlsOutline;
 }
 
 #SettingsTreeWidget::item:focus,
 #SettingsTreeWidget::item:!focus {
     color: @minorColor;
-    font-size: 8pt;
     background-color: @minorBackgroundColor;
-    outline: @controlsOutline;
+}
+
+#SettingsTreeWidget::branch:open:has-children:!has-siblings,
+#SettingsTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(@THEME_ROOT/icons/arrow-down.svg);
+}
+#SettingsTreeWidget::branch:has-children:!has-siblings:closed,
+#SettingsTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(@THEME_ROOT/icons/arrow-right.svg);
 }
