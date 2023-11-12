@@ -1,6 +1,4 @@
-"""
-ContentTable API
-"""
+from pathlib import Path
 
 from __feature__ import snake_case
 
@@ -9,18 +7,29 @@ import os.path
 from typing import Generator
 from dotty_dict import Dotty
 
+from PySide6.QtCore import Slot
+from PySide6.QtCore import Signal
+from PySide6.QtCore import QObject
+from PySide6.QtCore import QRunnable
+from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QFileDialog
-from PySide6.QtCore import QRunnable, QObject, Signal, Slot, QThreadPool
 
 from pieapp.structs.plugins import Plugin
-from piekit.plugins.utils import get_plugin
+from pieapp.helpers.ffmpeg import get_cover_album
+
+from pieapp.structs.media import Codec
+from pieapp.structs.media import FileInfo
+from pieapp.structs.media import Metadata
+from pieapp.structs.media import MediaFile
+from piekit.globals import Global
+
 from piekit.utils.logger import logger
 from piekit.plugins import PiePluginAPI
+from piekit.plugins.utils import get_plugin
+
 from piekit.managers.structs import Section
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-
-from pieapp.structs.media import MediaFile, Metadata, FileInfo, Codec
 
 
 class Signals(QObject):
@@ -31,13 +40,31 @@ class Signals(QObject):
 
 class Worker(QRunnable):
 
-    def __init__(self, command: str, chunk: list[str]) -> None:
+    def __init__(
+        self,
+        chunk: list[Path],
+        temp_folder: Path,
+        ffmpeg_cmd: Path,
+        ffprobe_cmd: Path,
+    ) -> None:
         super().__init__()
 
-        self._chunk = chunk
-        self._command = command
-        self._logger = logger
         self.signals = Signals()
+        self._logger = logger
+
+        self._chunk = chunk
+        self._temp_folder = temp_folder
+        self._ffmpeg_cmd = ffmpeg_cmd
+        self._ffprobe_cmd = ffprobe_cmd
+
+    def _get_cover_image(self, filename: str):
+        """
+        ffmpeg -i video.mp4 -map 0:v -map -0:V -c copy cover.jpg
+        """
+        filename_we = filename.split(".")[0]
+        input_file = ffmpeg.input(filename)
+        album_cover = ffmpeg.output(input_file["1"], acodec="copy", filename=f"{filename_we}.jpg")
+        return album_cover
 
     @Slot()
     def run(self) -> None:
@@ -45,7 +72,8 @@ class Worker(QRunnable):
         try:
             probe_results: list[MediaFile] = []
             for file in self._chunk:
-                probe_result = Dotty(ffmpeg.probe(file, self._command))
+                probe_result = Dotty(ffmpeg.probe(file.as_posix(), self._ffprobe_cmd.as_posix()))
+                album_cover_image = get_cover_album(self._ffmpeg_cmd, file, self._temp_folder)
                 if probe_result:
                     probe_result["stream"] = probe_result["streams"][0]
                     probe_result.pop("streams")
@@ -56,6 +84,7 @@ class Worker(QRunnable):
                         track_number=probe_result.get("format.tags.track_number"),
                         featured_artist=probe_result.get("format.tags.album"),
                         primary_artist=probe_result.get("format.tags.album_artist"),
+                        album_cover=album_cover_image
                     )
                     codec = Codec(
                         name=probe_result.get("stream.codec_name"),
@@ -82,6 +111,7 @@ class Worker(QRunnable):
 
         except ffmpeg.Error as e:
             self._logger.critical(e.stderr)
+            raise e
 
 
 class ConverterAPI(
@@ -90,18 +120,36 @@ class ConverterAPI(
     LocalesAccessorMixin,
 ):
     def init(self) -> None:
-        self._current_files = []
+        self._current_files: list[Path] = []
         self._chunk_size = self.get_config(
             key="ffmpeg.chunk_size",
             default=10,
             scope=Section.Root,
             section=Section.User,
         )
-        self._ffprobe_command = self.get_config(
-            key="ffmpeg.ffprobe",
-            default="ffprobe",
-            scope=Section.Root,
-            section=Section.User
+        self._ffmpeg_command = Path(
+            self.get_config(
+                key="ffmpeg.ffmpeg",
+                default="ffmpeg",
+                scope=Section.Root,
+                section=Section.User
+            )
+        )
+        self._ffprobe_command = Path(
+            self.get_config(
+                key="ffmpeg.ffprobe",
+                default="ffprobe",
+                scope=Section.Root,
+                section=Section.User
+            )
+        )
+        self._temp_folder = Path(
+            self.get_config(
+                key="ffmpeg.temp_folder",
+                default=Global.USER_ROOT / Global.DEFAULT_TEMP_FOLDER_NAME,
+                scope=Section.Root,
+                section=Section.User
+            )
         )
 
     def _split_by_chunks(self, files: tuple[str], n: int) -> Generator:
@@ -109,28 +157,34 @@ class ConverterAPI(
             yield files[i:i + n]
 
     def _worker_started(self) -> None:
-        get_plugin(Plugin.StatusBar).show_message(self.get_translation("Loading files"))
+        get_plugin(Plugin.StatusBar).show_message(self.translate("Loading files"))
 
     def _worker_finished(self, models_list: list[MediaFile]) -> None:
         self._parent.fill_list(models_list)
-        get_plugin(Plugin.StatusBar).show_message(self.get_translation("Done loading files"))
+        get_plugin(Plugin.StatusBar).show_message(self.translate("Done loading files"))
 
     def clear_files(self) -> None:
         self._current_files = []
 
     def open_files(self) -> None:
-        selected_files = QFileDialog.get_open_file_names(caption=self.get_translation("Open files"))
+        selected_files = QFileDialog.get_open_file_names(caption=self.translate("Open files"))[0]
         if not selected_files:
             return
 
         # chunks = self._split_by_chunks(selected_files[0], self._chunk_size)
         pool = QThreadPool.global_instance()
 
-        for chunk in selected_files:
-            filtered_chunk = [i for i in chunk if i not in self._current_files]
-            self._current_files.extend(filtered_chunk)
+        for selected_file in selected_files:
+            selected_file = Path(selected_file)
+            if selected_file not in self._current_files:
+                self._current_files.append(selected_file)
 
-            worker = Worker(self._ffprobe_command, filtered_chunk)
-            worker.signals.started.connect(self._worker_started)
-            worker.signals.completed.connect(self._worker_finished)
-            pool.start(worker)
+        worker = Worker(
+            chunk=self._current_files,
+            temp_folder=self._temp_folder,
+            ffmpeg_cmd=self._ffmpeg_command,
+            ffprobe_cmd=self._ffprobe_command,
+        )
+        worker.signals.started.connect(self._worker_started)
+        worker.signals.completed.connect(self._worker_finished)
+        pool.start(worker)

@@ -7,7 +7,13 @@ from PySide6.QtCore import Slot, QObject
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from piekit.managers.configs.mixins import ConfigAccessorMixin
+from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.menus.mixins import MenuAccessorMixin
+from piekit.managers.shortcuts.mixins import ShortcutAccessorMixin
+from piekit.managers.themes.mixins import ThemeAccessorMixin
+from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
+from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.plugins.types import Error
 from piekit.managers.registry import Managers
 from piekit.managers.structs import Section, SysManager
@@ -86,7 +92,7 @@ class QuitDialogMixin(ConfigAccessorMixin, LocalesAccessorMixin):
         )
         if cancellable and show_exit_dialog:
             message_box = MessageCheckBox(parent=self)
-            message_box.set_check_box_text(self.get_translation("Don't show this message again?"))
+            message_box.set_check_box_text(self.translate("Don't show this message again?"))
             message_box.exec()
             if message_box.is_checked():
                 self.set_config(self.exit_dialog_key, False, scope=Section.Root, section=Section.User)
@@ -123,5 +129,23 @@ class ErrorDialogMixin:
         message_box.set_icon(QMessageBox.Icon.Critical)
         message_box.set_text(error.title)
         message_box.set_informative_text(error.description)
-        message_box.set_window_title(self.get_translation("Error"))
+        message_box.set_window_title(self.translate("Error"))
         message_box.exec()
+
+
+class CoreAccessorsMixin(
+    ConfigAccessorMixin,
+    LocalesAccessorMixin,
+    ThemeAccessorMixin
+):
+    pass
+
+
+class LayoutAccessorsMixin(
+    LayoutsAccessorMixin,
+    ShortcutAccessorMixin,
+    MenuAccessorMixin,
+    ToolBarAccessorMixin,
+    ToolButtonAccessorMixin
+):
+    pass

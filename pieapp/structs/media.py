@@ -1,13 +1,13 @@
 import datetime
 import dataclasses as dt
-from typing import Optional
+from typing import Optional, Any
 
 
 @dt.dataclass
-class CoverImage:
-    image_big: str
-    image_small: str
-    file_format: str
+class AlbumCover:
+    image_big: bytearray = dt.field(default=None)
+    image_small: bytearray = dt.field(default=None)
+    file_format: str = dt.field(default=None)
 
 
 @dt.dataclass
@@ -33,6 +33,12 @@ class FileInfo:
     channels: int = dt.field(default=2)
     channels_layout: ChannelsLayout = dt.field(default=ChannelsLayout.stereo)
 
+    def as_dict(self) -> dict:
+        return dt.asdict(self)
+
+    def as_tuple(self) -> tuple:
+        return dt.astuple(self)
+
 
 @dt.dataclass
 class Metadata:
@@ -40,7 +46,7 @@ class Metadata:
     genre: Optional[str] = None
     subgenre: Optional[str] = None
     track_number: Optional[int] = None
-    cover_image: Optional[CoverImage] = None
+    album_cover: Optional[Any] = None
     primary_artist: Optional[str] = None
     publisher: Optional[str] = None
     explicit_content: Optional[bool] = None
@@ -51,6 +57,12 @@ class Metadata:
     featured_artist: str = dt.field(default_factory=str)
     additional_contributors: list[str] = dt.field(default_factory=list)
     year_of_composition: datetime.date = dt.field(default=datetime.date(1999, 1, 1))
+
+    def as_dict(self) -> dict:
+        return dt.asdict(self)
+
+    def as_tuple(self) -> tuple:
+        return dt.astuple(self)
 
 
 @dt.dataclass

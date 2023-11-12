@@ -10,7 +10,8 @@ readme = "README.md"
 keywords = [
     "Qt", "PySide", "PySide6",
     "audio", "media", "converter",
-    "audio-converter", "experimental"
+    "audio-converter", "experimental",
+    "plugins", "plug-ins"
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",

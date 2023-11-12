@@ -65,10 +65,10 @@ class MainWindow(
             section=Section.User
         ))
         self.set_window_title(
-            f'{self.get_translation("Pie Audio • Simple Audio Editor")} '
+            f'{self.translate("Pie Audio • Simple Audio Editor")} '
             f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
-        self.set_window_icon(self.get_svg_icon("icons/cloud.svg"))
+        self.set_window_icon(self.get_svg_icon("icons/bolt.svg", color="#f5d97f"))
 
     def prepare_main_layout(self) -> None:
         self.main_layout = QGridLayout()

@@ -23,24 +23,25 @@ class MainMenuBar(
         self._menu_bar = self.add_menu_bar(
             name=Section.Shared,
         )
+        self._menu_bar.set_object_name("MainMenuBar")
 
         self._file_menu = self.add_menu(
             section=Section.Shared,
             parent=self._menu_bar,
             name=MainMenu.File,
-            text=self.get_translation("File"),
+            text=self.translate("File"),
         )
         self._help_menu = self.add_menu(
             section=Section.Shared,
             parent=self._menu_bar,
             name=MainMenu.Help,
-            text=self.get_translation("Help")
+            text=self.translate("Help")
         )
         self.add_menu_item(
             section=Section.Shared,
             menu=MainMenu.File,
             name=MainMenuItem.Exit,
-            text=self.get_translation("Exit"),
+            text=self.translate("Exit"),
             icon=self.get_svg_icon("icons/logout.svg"),
             triggered=self._parent.close,
             index=INDEX_END()

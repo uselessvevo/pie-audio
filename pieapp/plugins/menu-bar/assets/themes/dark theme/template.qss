@@ -1,4 +1,4 @@
-QMenuBar {
+#MainMenuBar {
    background-color: @menuBarBackgroundColor;
    color: @menuBarColor;
    min-height: @menuBarMinHeight;
@@ -6,16 +6,16 @@ QMenuBar {
    padding: @menuBarPadding;
 }
 
-/*QMenuBar and QMenu*/
-QMenuBar::item {
+/*#MainMenuBar and QMenu*/
+#MainMenuBar::item {
    background-color: @menuBarItemBackgroundColor;
 }
 
-QMenuBar::item:selected {
+#MainMenuBar::item:selected {
    color: @menuBarItemSelectedColor;
 }
 
-QMenuBar::item:pressed {
+#MainMenuBar::item:pressed {
    background-color: @menuBarItemPressedBackgroundColor;
 }
 

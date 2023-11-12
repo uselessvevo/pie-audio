@@ -49,7 +49,7 @@ class TestPlugin(
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(400, 300)
 
-        ok_button = QPushButton(self.get_translation("Ok"))
+        ok_button = QPushButton(self.translate("Ok"))
         ok_button.clicked.connect(self._dialog.close)
 
         test_plugin_info_button = QPushButton("Test plugin info")
@@ -111,8 +111,8 @@ class TestPlugin(
         self.add_tool_button(
             section=self.name,
             name="TestButton",
-            text=self.get_translation("Test"),
-            tooltip=self.get_translation("Test"),
+            text=self.translate("Test"),
+            tooltip=self.translate("Test"),
             icon=self.get_plugin_icon(),
             triggered=self.call
         )
@@ -129,14 +129,14 @@ class TestPlugin(
             parent=self.get_menu_bar(Section.Shared),
             section=Section.Shared,
             name=MainMenu.Test,
-            text=self.get_translation("Test"),
+            text=self.translate("Test"),
         )
 
         self.add_menu_item(
             section=Section.Shared,
             menu=MainMenu.Test,
             name="test-plugin",
-            text=self.get_translation("Run test plugin"),
+            text=self.translate("Run test plugin"),
             triggered=self.call,
             icon=self.get_plugin_icon(),
         )
@@ -159,7 +159,7 @@ class TestPlugin(
         self._logger.debug(f"{Global.APP_ROOT=}, {Global.TEST_STR_ATTRIBUTE=}, {Global.TEST_LIST_ATTRIBUTE=}")
         self._logger.debug(self.get_file_path("icons/cancel.svg"))
         self._logger.debug(self.get_plugin_icon())
-        self._logger.debug(self.get_translation("Test String"))
+        self._logger.debug(self.translate("Test String"))
 
     def test_restore_test_config(self) -> None:
         self._logger.debug("Setting new value")

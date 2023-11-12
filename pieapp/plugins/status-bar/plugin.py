@@ -24,7 +24,7 @@ class StatusBar(
         self.status_bar = QStatusBar(self._parent)
         self.status_bar.insert_permanent_widget(0, QWidget())
         self._parent.set_status_bar(self.status_bar)
-        self._parent.sig_plugin_ready.connect(lambda _: self.show_message(self.get_translation("Plugins are ready")))
+        self._parent.sig_plugin_ready.connect(lambda _: self.show_message(self.translate("Plugins are ready")))
 
     showMessage = show_message
 

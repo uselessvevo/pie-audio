@@ -41,7 +41,7 @@ class Settings(
         self._dialog = QDialog(self._parent)
         self._dialog.set_modal(True)
         self._dialog.set_object_name("SettingsDialog")
-        self._dialog.set_window_title(self.get_translation("Settings"))
+        self._dialog.set_window_title(self.translate("Settings"))
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.set_minimum_size(*Global.SETTINGS_PLUGIN_MIN_SIZE)
         self._dialog.resize(*self.get_config("ui.window_size", Global.SETTINGS_PLUGIN_MIN_SIZE))
@@ -52,7 +52,7 @@ class Settings(
 
         self._current_canvas_widget = QLabel()
         self._current_canvas_widget.set_object_name("CurrentCanvasWidget")
-        self._current_canvas_widget.set_text(self.get_translation("Choose settings category"))
+        self._current_canvas_widget.set_text(self.translate("Choose settings category"))
         self._current_canvas_widget.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         # Footer layout
@@ -64,15 +64,15 @@ class Settings(
         self._footer_button_box.set_contents_margins(0, 10, 10, 10)
 
         self._ok_button = QPushButton()
-        self._ok_button.set_text(self.get_translation("Ok"))
+        self._ok_button.set_text(self.translate("Ok"))
         self._ok_button.clicked.connect(self._on_pages_accept)
 
         self._cancel_button = QPushButton()
-        self._cancel_button.set_text(self.get_translation("Cancel"))
+        self._cancel_button.set_text(self.translate("Cancel"))
         self._cancel_button.clicked.connect(self._on_pages_cancel)
 
         self._apply_button = QPushButton()
-        self._apply_button.set_text(self.get_translation("Apply"))
+        self._apply_button.set_text(self.translate("Apply"))
         self._apply_button.set_enabled(False)
         self._apply_button.clicked.connect(self._on_pages_apply)
 
@@ -118,7 +118,7 @@ class Settings(
             section=Section.Shared,
             menu=MainMenu.File,
             name="settings",
-            text=self.get_translation("Settings"),
+            text=self.translate("Settings"),
             triggered=self.call,
             icon=self.get_svg_icon("icons/settings.svg"),
             before=MainMenuItem.Exit
@@ -161,7 +161,7 @@ class Settings(
         Args:
             page (CustomTreeWidgetItem): configuration page instance
         """
-        # This is a retarded way to swap widgets but that will do
+        # This is a retarded way to swap components but that will do
         self._page_widget_grid.remove_widget(self._current_canvas_widget)
         self._current_canvas_widget.set_visible(False)
         self._current_canvas_widget = page.confpage.get_page_widget()

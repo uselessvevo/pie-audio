@@ -26,7 +26,7 @@ class MagicPlugin(
 
     def init(self) -> None:
         self.logger.info(f"{self.get_icon_path('asset name.svg')=}")
-        self.logger.info(f"{self.get_translation('About')=}")
+        self.logger.info(f"{self.translate('About')=}")
 
     def shutdown(self) -> None:
         self.logger.info("Shutting down")
@@ -37,7 +37,7 @@ class MagicPlugin(
             section=Section.Shared,
             menu=MainMenu.Help,
             name="about",
-            text=self.get_translation("About"),
+            text=self.translate("About"),
             triggered=self.call,
             icon=self.get_svg_icon("help.svg"),
         )

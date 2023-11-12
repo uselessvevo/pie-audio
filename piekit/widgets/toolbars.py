@@ -33,6 +33,10 @@ class PieToolBar(QWidget):
         self.set_object_name(name)
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
 
+    @property
+    def name(self) -> str:
+        return self._name
+
     def add_toolbar_item(
         self,
         name: str,

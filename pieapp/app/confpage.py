@@ -70,13 +70,13 @@ class AppConfigPage(
         ))
         self._theme_cbox.currentIndexChanged.connect(self._theme_cbox_connect)
 
-        main_grid.add_widget(QLabel(self.get_translation("Language")), 0, 0, 1, 1)
+        main_grid.add_widget(QLabel(self.translate("Language")), 0, 0, 1, 1)
         main_grid.add_widget(self._locales_cbox, 0, 1, 1, 1)
 
-        main_grid.add_widget(QLabel(self.get_translation("Theme")), 2, 0, 1, 1)
+        main_grid.add_widget(QLabel(self.translate("Theme")), 2, 0, 1, 1)
         main_grid.add_widget(self._theme_cbox, 2, 1, 1, 1)
 
-        main_grid.add_widget(QLabel(self.get_translation("FFmpeg path")), 6, 0, 1, 1)
+        main_grid.add_widget(QLabel(self.translate("FFmpeg path")), 6, 0, 1, 1)
         main_grid.add_widget(self._ffmpeg_line_edit, 6, 1, 1, 1)
         main_grid.add_widget(Spacer(), 7, 0, 1, 2)
 
@@ -110,7 +110,7 @@ class AppConfigPage(
     def _ffmpeg_button_connect(self) -> None:
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self._main_widget,
-            caption=self.get_translation("Select ffmpeg directory"),
+            caption=self.translate("Select ffmpeg directory"),
             dir=str(Global.USER_ROOT)
         )
 
@@ -128,7 +128,7 @@ class AppConfigPage(
         self.restore_config()
 
     def get_title(self) -> str:
-        return self.get_translation("Main")
+        return self.translate("Main")
 
     def get_icon(self) -> Union[QIcon, None]:
         return self.get_svg_icon("icons/cloud.svg")

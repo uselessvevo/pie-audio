@@ -1,0 +1,8 @@
+#MetadataEditor {
+    color: @mainColor;
+    background-color: @mainBackgroundColor;
+}
+
+#MetadataToolBar {
+    background-color: @mainBackgroundColor;
+}

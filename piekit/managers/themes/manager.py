@@ -29,7 +29,7 @@ class ThemeManager(BaseManager):
         self._themes: list[str] = None
 
         # Registries
-        self._icons: dict[str, dict[str, Path]] = {}
+        self._files: dict[str, dict[str, Path]] = {}
         self._stylesheet: str = ""
         self._stylesheet_props: dict[str, str] = {}
 
@@ -50,21 +50,26 @@ class ThemeManager(BaseManager):
             key="assets.theme",
             default=Global.DEFAULT_THEME
         )
-        self._themes = list(
-            str(i.name) for i in
-            (Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER).iterdir() if i.is_dir()
-        )
+        self._themes = self._get_themes()
         self._load_app_theme()
         self._load_plugins_theme(Global.APP_ROOT / Global.PLUGINS_FOLDER)
         self._load_plugins_theme(Global.USER_ROOT / Global.PLUGINS_FOLDER)
 
+    def _get_themes(self) -> list[str]:
+        themes: list[str] = []
+        for folder in (Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER).iterdir():
+            if folder.is_dir() and not folder.name.startswith("__"):
+                themes.append(folder.name)
+
+        return themes
+
     def _load_app_theme(self) -> None:
         theme_folder = Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
         for file in theme_folder.rglob("*.*"):
-            if not self._check_icon(file):
+            if not self._check_file(file):
                 continue
 
-            self._add_icon(Section.Shared, file)
+            self._add_file(Section.Shared, theme_folder, file)
 
         self._stylesheet_props["THEME_ROOT"] = theme_folder.as_posix()
 
@@ -91,32 +96,35 @@ class ThemeManager(BaseManager):
             self._stylesheet_props[f"{plugin_folder.name.upper()}_PLUGIN"] = theme_folder.as_posix()
 
             for file in icons_folder.rglob("*.*"):
-                if not self._check_icon(file):
+                if not self._check_file(file):
                     continue
 
-                self._add_icon(plugin_folder.name, file)
+                self._add_file(plugin_folder.name, theme_folder, file)
 
             self._load_style_sheet(theme_folder)
             self._load_palette(theme_folder)
             self._app.set_style_sheet(self._stylesheet)
 
-    def _add_icon(self, section: Union[str, Section], file: Path) -> None:
+    def _add_file(self, section: Union[str, Section], theme_folder: Path, file: Path) -> None:
         """
         Add file to the files registry
 
         Args:
             section (str|Section): The file section can be a plugin's name or `Section` item
-            file (pathlib.Path): A file path
+            theme_folder (pathlib.Path): Theme full path
+            file (pathlib.Path): File path
         """
-        if not self._icons.get(section):
-            self._icons[section] = {}
+        if not self._files.get(section):
+            self._files[section] = {}
 
-        if not self._icons.get(file.name):
-            self._icons[section][f"{file.parent.name}/{file.name}"] = {}
+        if not self._files.get(file.name):
+            file_key = file.as_posix().replace(theme_folder.as_posix(), "")
+            file_key = file_key.replace("/", "", 1)
+            self._files[section][file_key] = {}
 
-        self._icons[section].update({f"{file.parent.name}/{file.name}": file.as_posix()})
+        self._files[section].update({f"{file.parent.name}/{file.name}": file.as_posix()})
 
-    def _check_icon(self, file: Path) -> bool:
+    def _check_file(self, file: Path) -> bool:
         """
         Check if file is not a directory, or it has the right file format
 
@@ -182,7 +190,7 @@ class ThemeManager(BaseManager):
             default (Any): Default value if icon was not found
         """
         try:
-            return self._icons[section][key]
+            return self._files[section][key]
         except KeyError:
             self._logger.info(f"File {key} not found")
             return default

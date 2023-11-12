@@ -1,30 +1,29 @@
 from typing import Union
 
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QLabel, QGridLayout, QHBoxLayout, QListWidgetItem
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Slot
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QListWidgetItem
 
-from pieapp.structs.menus import MainMenu, MainMenuItem
 from pieapp.structs.plugins import Plugin
-from pieapp.structs.workbench import WorkbenchItem
 from pieapp.structs.layouts import Layout
-from piekit.widgets.menus import INDEX_START
+from pieapp.structs.media import MediaFile
+from pieapp.structs.menus import MainMenu
+from pieapp.structs.menus import MainMenuItem
+from pieapp.structs.workbench import WorkbenchItem
 
-from piekit.globals import Global
 from piekit.managers.structs import Section
-from piekit.plugins.plugins import PiePlugin
 from piekit.managers.plugins.decorators import on_plugin_event
-from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.themes.mixins import ThemeAccessorMixin
-from piekit.managers.configs.mixins import ConfigAccessorMixin
-from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.layouts.mixins import LayoutsAccessorMixin
-from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
-from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.shortcuts.mixins import ShortcutAccessorMixin
+from piekit.widgets.menus import INDEX_START
+from piekit.plugins.plugins import PiePlugin
+from piekit.plugins.mixins import CoreAccessorsMixin
+from piekit.plugins.mixins import LayoutAccessorsMixin
 
 from api import ConverterAPI
-from pieapp.structs.media import MediaFile
 
 from components.list import ConverterListWidget
 from components.item import ConverterItemWidget
@@ -32,9 +31,9 @@ from components.search import ConverterSearch
 
 
 class Converter(
-    PiePlugin, LayoutsAccessorMixin, ShortcutAccessorMixin,
-    ConfigAccessorMixin, LocalesAccessorMixin, ThemeAccessorMixin,
-    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
+    PiePlugin,
+    CoreAccessorsMixin,
+    LayoutAccessorsMixin
 ):
     api = ConverterAPI
     name = Plugin.Converter
@@ -67,7 +66,7 @@ class Converter(
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._text_label = QLabel()
-        self._text_label.set_text(self.get_translation("No files selected"))
+        self._text_label.set_text(self.translate("No files selected"))
         self._text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         # Setup placeholder
@@ -153,7 +152,7 @@ class Converter(
 
             widget.add_quick_action(
                 name="delete",
-                text=self.get_translation("Delete"),
+                text=self.translate("Delete"),
                 icon=self.get_svg_icon("icons/delete.svg"),
                 callback=self._delete_tool_button_connect
             )
@@ -204,7 +203,7 @@ class Converter(
             section=Section.Shared,
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
-            text=self.get_translation("Open file"),
+            text=self.translate("Open file"),
             icon=self.get_svg_icon("icons/folder-open.svg"),
             index=INDEX_START(),
             triggered=self.api.open_files
@@ -218,8 +217,8 @@ class Converter(
         self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.OpenFiles,
-            text=self.get_translation("Open file"),
-            tooltip=self.get_translation("Open file"),
+            text=self.translate("Open file"),
+            tooltip=self.translate("Open file"),
             icon=self.get_svg_icon("icons/folder.svg"),
             triggered=self.api.open_files
         )
@@ -227,16 +226,16 @@ class Converter(
         self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.Convert,
-            text=self.get_translation("Convert"),
-            tooltip=self.get_translation("Convert"),
+            text=self.translate("Convert"),
+            tooltip=self.translate("Convert"),
             icon=self.get_svg_icon("icons/bolt.svg")
         ).set_enabled(False)
 
         clear_tool_button = self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.Clear,
-            text=self.get_translation("Clear"),
-            tooltip=self.get_translation("Clear"),
+            text=self.translate("Clear"),
+            tooltip=self.translate("Clear"),
             icon=self.get_svg_icon("icons/delete.svg")
         )
         clear_tool_button.set_enabled(False)

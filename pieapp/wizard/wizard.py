@@ -43,7 +43,7 @@ class LocaleWizardPage(
         self.combo_box.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
         self.combo_box.currentIndexChanged.connect(self.get_result)
 
-        self.locale_label = QtWidgets.QLabel(self.get_translation("Select locale"))
+        self.locale_label = QtWidgets.QLabel(self.translate("Select locale"))
         self.locale_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -93,7 +93,7 @@ class ThemeWizardPage(
             section=Section.User
         )
 
-        theme_label = QtWidgets.QLabel(self.get_translation("Select theme"))
+        theme_label = QtWidgets.QLabel(self.translate("Select theme"))
         theme_label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -140,7 +140,7 @@ class ConverterWizardPage(
         self.line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
         self.line_edit.add_action(self.line_edit_action, QtWidgets.QLineEdit.ActionPosition.TrailingPosition)
 
-        page_title = QtWidgets.QLabel(self.get_translation("Setup ffmpeg"))
+        page_title = QtWidgets.QLabel(self.translate("Setup ffmpeg"))
         page_title.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         ffmpeg_hbox = QtWidgets.QHBoxLayout()
@@ -157,7 +157,7 @@ class ConverterWizardPage(
     def select_ffmpeg_root_path(self):
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self,
-            caption=self.get_translation("Select ffmpeg directory"),
+            caption=self.translate("Select ffmpeg directory"),
             dir=str(Global.USER_ROOT)
         )
         directory_path = QDir.to_native_separators(ffmpeg_directory)
@@ -204,7 +204,7 @@ class FinishWizardPage(
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
-        label = QtWidgets.QLabel(self.get_translation("Done"))
+        label = QtWidgets.QLabel(self.translate("Done"))
         label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()
@@ -216,7 +216,7 @@ class SetupWizard(QtWidgets.QWizard, LocalesAccessorMixin):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.set_window_title(self.get_translation("Setup Wizard", Section.Shared))
+        self.set_window_title(self.translate("Setup Wizard", Section.Shared))
         self.set_window_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DialogHelpButton))
 
         if os.name == "nt":

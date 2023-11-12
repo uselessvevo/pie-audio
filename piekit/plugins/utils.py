@@ -14,7 +14,7 @@ def get_plugin(plugin: str) -> PiePlugin:
     return Managers(SysManager.Plugins).get(plugin)
 
 
-def get_api(plugin: str, method: str, **kwargs) -> Any:
+def get_api(plugin: str, method: str, raise_error: bool = False, **kwargs) -> Any:
     plugin_instance = get_plugin(plugin)
     if not plugin_instance.api:
         raise PieException(f"Plugin \"{plugin}\" has no controller implementation")

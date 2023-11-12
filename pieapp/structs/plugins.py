@@ -13,3 +13,4 @@ class Plugin:
     MetadataEditor = "converter-me"
     TestPlugin = "test-plugin"
     TestPluginChild = "test-plugin-child"
+    MainLayout = "main-layout"

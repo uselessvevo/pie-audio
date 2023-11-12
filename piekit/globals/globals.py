@@ -12,6 +12,9 @@ APP_ROOT: Lock = BASE_DIR / os.getenv("PIE_APP_ROOT", "pieapp")
 USER_ROOT: Lock = Path.home() / ".crabs"
 SYSTEM_ROOT: Lock = BASE_DIR / "piekit"
 
+# Default temporary folder
+DEFAULT_TEMP_FOLDER_NAME: Lock = "temp"
+
 # Plugins configuration
 # Built-in plugins folder
 DEFAULT_PLUGIN_ICON_NAME: Lock = "app"

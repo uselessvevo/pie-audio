@@ -9,11 +9,11 @@ class LocalesAccessorMixin:
     ConfigManager accessor mixin
     """
 
-    def get_translation(
+    def translate(
         self,
         key: Any,
         section: Union[str, Section] = Section.Shared
     ) -> Any:
         return Managers(SysManager.Locales).get(section or self.section, key)
 
-    getTranslation = get_translation
+    getTranslation = translate

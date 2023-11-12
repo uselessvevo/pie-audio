@@ -30,11 +30,11 @@ class About(
     def call(self) -> None:
         self._dialog = QDialog(self._parent)
         self._dialog.set_modal(True)
-        self._dialog.set_window_title(self.get_translation("About"))
+        self._dialog.set_window_title(self.translate("About"))
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(400, 300)
 
-        ok_button = QPushButton(self.get_translation("Ok"))
+        ok_button = QPushButton(self.translate("Ok"))
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
@@ -45,13 +45,13 @@ class About(
 
         description_label = QLabel()
         description_label.set_text(
-            f'{self.get_translation("Pie Audio • Simple Audio Editor")} '
+            f'{self.translate("Pie Audio • Simple Audio Editor")} '
             f'({Global.PIEAPP_APPLICATION_VERSION})'
         )
 
         github_link_label = QLabel()
         github_link_label.set_open_external_links(True)
-        github_link_label.set_text(f"<a href='{Global.PIEAPP_PROJECT_URL}'>{self.get_translation('Project URL')}</a>")
+        github_link_label.set_text(f"<a href='{Global.PIEAPP_PROJECT_URL}'>{self.translate('Project URL')}</a>")
 
         grid_layout = QGridLayout()
         grid_layout.add_widget(icon_label, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
@@ -68,7 +68,7 @@ class About(
             section=Section.Shared,
             menu=MainMenu.Help,
             name="about",
-            text=self.get_translation("About"),
+            text=self.translate("About"),
             triggered=self.call,
             icon=self.get_svg_icon("icons/help.svg"),
         )

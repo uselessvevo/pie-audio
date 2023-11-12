@@ -1,7 +1,6 @@
 """
 Base manager
 """
-from pathlib import Path
 
 
 class BaseManager:
