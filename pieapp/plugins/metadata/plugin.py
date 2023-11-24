@@ -1,26 +1,28 @@
 from typing import Union
 
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QDialog, QHeaderView, QSizePolicy
+from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QHeaderView
+from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QListWidget
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
 from PySide6.QtWidgets import QStyledItemDelegate
 
+from pieapp.structs.media import MediaFile
+from pieapp.structs.plugins import Plugin
+
 from piekit.globals.loader import Global
 from piekit.plugins.utils import get_plugin
 from piekit.plugins.plugins import PiePlugin
+from piekit.managers.plugins.decorators import on_plugin_event
 from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_event
 
-from pieapp.structs.media import MediaFile
-from pieapp.structs.plugins import Plugin
-
-from pieapp.components.albumpicker import AlbumCoverPicker
+from metadata.components.albumpicker import AlbumCoverPicker
 
 
 class ReadOnlyDelegate(QStyledItemDelegate):
@@ -124,16 +126,16 @@ class MetadataEditor(
         -metadata:s:v title="album cover"
         -metadata:s:v comment="cover (front)" out.mp3
         """
-        self._save_button.clicked.connect(lambda f: self._save_button_connect(f))
-        self._undo_button.clicked.connect(lambda f: self._undo_button_connect(f))
-        self._redo_button.clicked.connect(lambda f: self._redo_button_connect(f))
+        self._save_button.clicked.connect(lambda: self._save_button_connect(media_file))
+        self._undo_button.clicked.connect(lambda: self._undo_button_connect(media_file))
+        self._redo_button.clicked.connect(lambda: self._redo_button_connect(media_file))
 
         contributors_list_widget = QListWidget()
         contributors_list_widget.add_items(media_file.metadata.additional_contributors)
 
         album_cover_widget = AlbumCoverPicker(
             parent=self._dialog,
-            image=media_file.metadata.album_cover,
+            image_path=media_file.metadata.album_cover.image_small_path or media_file.metadata.album_cover.image_path,
             placeholder_text=self.translate("No image selected"),
             select_album_text=self.translate("Select album cover image")
         )

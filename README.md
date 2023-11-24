@@ -19,3 +19,8 @@ I want to appreciate the [spyder-ide](https://github.com/spyder-ide/spyder) proj
 4. Run program - `python ./pie-audio.py`
 
 To install this app: `pip install .`
+
+## Development
+
+1. We're using the `snake_case` feature - that means, you need to generate `*.pyi` files by typing this command: `pyside6-genpyi all --feature snake_case`
+2. Start the `pie-audio-server`

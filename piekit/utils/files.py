@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 
 from pathlib import Path
 from typing import Union, Any
@@ -82,6 +83,15 @@ def update_json(
     copy = read_json(file, create=create)
     copy.update(data)
     write_json(file, copy)
+
+
+def create_temp_directory(prefix: str, temp_directory: str) -> Path:
+    prefix_uuid: str = str(uuid.uuid4()).replace("-", "")[:5]
+    directory_path: Path = Path(temp_directory, f"{prefix}_{prefix_uuid}")
+    if not directory_path.exists():
+        directory_path.mkdir(exist_ok=True)
+
+    return directory_path
 
 
 readJson = read_json

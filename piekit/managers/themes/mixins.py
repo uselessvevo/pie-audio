@@ -41,10 +41,11 @@ class ThemeAccessorMixin:
     def get_themes(self) -> list[str]:
         return Managers(SysManager.Themes).get_themes()
 
-    def get_property(self, prop_name: str, default: Any = None) -> str:
-        return Managers(SysManager.Themes).get_property(prop_name, default)
+    def get_theme_property(self, prop_name: str, default: Any = None) -> str:
+        return Managers(SysManager.Themes).get_theme_property(prop_name, default)
 
     getIcon = get_icon
     getSvgIcon = get_svg_icon
     getFilePath = get_file_path
     getThemes = get_themes
+    getThemeProperty = get_theme_property

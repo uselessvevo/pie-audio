@@ -88,6 +88,9 @@ class PluginManager(BaseManager):
             self._logger.warning(f"Plugins folder {folder.name} doesn't exist")
             return
 
+        sys.path.append(str(folder))
+        self._logger.critical(os.listdir(str(folder)))
+
         for package in folder.iterdir():
             if package.is_dir() and package.name not in ("__pycache__",):
                 self._logger.info(f"Reading package data from {package.name}")
@@ -99,7 +102,7 @@ class PluginManager(BaseManager):
                     Global.load_by_path(plugin_path / "globals.py")
 
                 # Add our plugin into sys.path
-                sys.path.append(os.path.abspath(str(plugin_path)))
+                sys.path.insert(0, os.path.abspath(str(plugin_path)))
                 plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
                 try:
                     self._check_versions(plugin_package_module)
@@ -159,6 +162,14 @@ class PluginManager(BaseManager):
             self._notify_plugin_dependencies(plugin_instance.name),
             self._notify_plugin_availability(plugin_instance.name)
         ))
+
+        try:
+            plugin_api = getattr(plugin_instance, "api")
+            if plugin_api is not None:
+                plugin_api_instance = plugin_api(plugin_instance)
+                plugin_api_instance.prepare()
+        except Exception as e:
+            raise e
 
         try:
             plugin_instance.prepare()
@@ -310,6 +321,9 @@ class PluginManager(BaseManager):
             if plugin in self._plugin_registry:
                 if self._plugin_availability.get(plugin, False):
                     self._logger.info(f"Shutting down {plugin_name} from {plugin}")
+                    plugin_api = getattr(plugin_instance, "api")
+                    if plugin_api is not None:
+                        plugin_instance.api.shutdown()
                     plugin_instance.on_plugin_event(plugin, "plugin_shutdown")
 
     # PluginManager public methods

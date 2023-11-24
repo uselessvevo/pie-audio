@@ -99,8 +99,6 @@ class PiePlugin(
             self.api = self.api(self)
             self.api.init()
 
-    # Properties
-
     def get_name(self) -> str:
         return self.name
 

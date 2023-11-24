@@ -1,7 +1,5 @@
 from __feature__ import snake_case
 
-from pathlib import Path
-
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QCursor
 from PySide6.QtGui import QAction
@@ -35,13 +33,13 @@ class AlbumCoverPicker(QLineEdit, LocalesAccessorMixin):
     def __init__(
         self,
         parent=None,
-        image: str = None,
+        image_path: str = None,
         placeholder_text: str = "No image selected",
         select_album_text: str = "Select album cover image"
     ) -> None:
         super(AlbumCoverPicker, self).__init__(parent)
 
-        self._image_path = image
+        self._image_path = image_path
         self._placeholder_text = f"<{placeholder_text}>"
         self._select_album_text = select_album_text
         self._image_preview = ImagePreview(self, self._image_path)
@@ -67,26 +65,26 @@ class AlbumCoverPicker(QLineEdit, LocalesAccessorMixin):
         """
         self._image_preview.hide_text()
 
-    def add_image(self, image_path: str) -> None:
-        self.clear()
-        self.insert(image_path)
-
     def set_picker_icon(self, icon: QIcon) -> None:
         self._add_image_action.set_icon(icon)
 
+    def set_prepare_image_method(self, method: callable) -> None:
+        setattr(self, method.__qualname__, method)
+
     def set_load_image_method(self, method: callable) -> None:
         setattr(self, method.__qualname__, method)
+
+    def prepare_image(self) -> None:
+        pass
 
     def load_image(self) -> None:
         file_path = QFileDialog.get_open_file_name(
             parent=self,
             caption=self.translate(self._select_album_text),
-            dir=str(Global.USER_ROOT),
+            dir=self._image_path or str(Global.USER_ROOT),
         )
         if file_path[0]:
             self.clear()
-            self._image_path = Path(file_path[0])
-            self.insert(self._image_path.as_posix())
-
-    def _prepare_image(self, image: Path) -> None:
-        pass
+            self._image_path = file_path[0]
+            self.insert(self._image_path)
+            self._image_preview = ImagePreview(self, file_path[0])

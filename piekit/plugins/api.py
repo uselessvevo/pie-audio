@@ -1,16 +1,24 @@
 from typing import Any
 
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Signal
 
 from piekit.plugins.plugins import PiePlugin
 
 
 class PiePluginAPI(QObject):
+    name: str = None
 
-    def __init__(self, parent: PiePlugin) -> None:
-        super().__init__(parent)
+    # Notify that API is ready
+    sig_plugin_api_ready = Signal()
 
-        self._parent = parent
+    def __init__(self, plugin: PiePlugin) -> None:
+        super().__init__(plugin)
+
+        self._plugin = plugin
+
+    def prepare(self) -> None:
+        self.init()
+        self.sig_plugin_api_ready.emit()
 
     def init(self) -> None:
         pass
@@ -29,8 +37,8 @@ class PiePluginAPI(QObject):
             raise AttributeError(method)
 
     @property
-    def parent(self) -> PiePlugin:
-        return self._parent
+    def plugin(self) -> PiePlugin:
+        return self._plugin
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}> (id: {id(self)}, parent: {self._parent})"
+        return f"<{self.__class__.__name__}> (id: {id(self)}, parent: {self._plugin})"

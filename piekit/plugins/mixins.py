@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.locales.utils import translate
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.shortcuts.mixins import ShortcutAccessorMixin
 from piekit.managers.themes.mixins import ThemeAccessorMixin
@@ -67,15 +68,15 @@ class ContainerRegisterAccessorMixin:
         container_instance.remove_object(target, *args, **kwargs)
 
 
-class QuitDialogMixin(ConfigAccessorMixin, LocalesAccessorMixin):
+class QuitDialogMixin(ConfigAccessorMixin):
     """
     Mixin that calls the MessageBox on exit. 
     Requires:
     * `ConfigAccessorMixin` with specified `exit_dialog_section` and `exit_dialog_key`
     * `LocalesAccessorMixin`
     """
-    exit_dialog_section: Union[str, Section] = Section.User
     exit_dialog_key: str = "ui.show_exit_dialog"
+    exit_dialog_section: Union[str, Section] = Section.User
 
     def close_event(self, event) -> None:
         if self.close_handler(True):
@@ -85,14 +86,18 @@ class QuitDialogMixin(ConfigAccessorMixin, LocalesAccessorMixin):
 
     def close_handler(self, cancellable: bool = True) -> bool:
         show_exit_dialog = self.get_config(
-            key="ui.show_exit_dialog",
+            key=self.exit_dialog_key,
             default=True,
             scope=Section.Root,
             section=self.exit_dialog_section
         )
         if cancellable and show_exit_dialog:
-            message_box = MessageCheckBox(parent=self)
-            message_box.set_check_box_text(self.translate("Don't show this message again?"))
+            message_box = MessageCheckBox(
+                parent=self,
+                window_title=translate("Exit"),
+                message_text=translate("Are you sure you want to exit?"),
+            )
+            message_box.set_check_box_text(translate("Don't show this message again?"))
             message_box.exec()
             if message_box.is_checked():
                 self.set_config(self.exit_dialog_key, False, scope=Section.Root, section=Section.User)

@@ -1,13 +1,13 @@
 import datetime
 import dataclasses as dt
-from typing import Optional, Any
+from typing import Optional
 
 
 @dt.dataclass
 class AlbumCover:
-    image_big: bytearray = dt.field(default=None)
-    image_small: bytearray = dt.field(default=None)
-    file_format: str = dt.field(default=None)
+    image_path: str = dt.field(default=None)
+    image_file_format: str = dt.field(default=None)
+    image_small_path: str = dt.field(default=None)
 
 
 @dt.dataclass
@@ -46,7 +46,7 @@ class Metadata:
     genre: Optional[str] = None
     subgenre: Optional[str] = None
     track_number: Optional[int] = None
-    album_cover: Optional[Any] = None
+    album_cover: Optional[AlbumCover] = None
     primary_artist: Optional[str] = None
     publisher: Optional[str] = None
     explicit_content: Optional[bool] = None

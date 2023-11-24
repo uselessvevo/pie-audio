@@ -10,7 +10,6 @@ from piekit.managers.base import BaseManager
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.utils.files import read_json, write_json
-from piekit.observers.filesystem import FileSystemObserver
 from piekit.utils.logger import logger
 
 
@@ -22,7 +21,6 @@ class ConfigManager(BaseManager):
         self._logger = logger
         self._configuration: Dotty[str, dict[str, Any]] = Dotty({})
         self._temp_configuration: Dotty[str, dict[str, Any]] = Dotty({})
-        self._observer = FileSystemObserver()
 
     def init(self) -> None:
         # Read app/core configurations
@@ -37,7 +35,6 @@ class ConfigManager(BaseManager):
             self._configuration[Section.Root][section].update(
                 **read_json(str(folder / Global.CONFIG_FILE_NAME))
             )
-            self._observer.add_handler(str(folder), str(folder.name))
 
     def _load_plugins_configs(self, plugins_folder: Path) -> None:
         for plugin_folder in plugins_folder.iterdir():
@@ -53,18 +50,15 @@ class ConfigManager(BaseManager):
                 self._configuration[plugin_folder.name][Section.Inner].update({
                     **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
                 })
-                self._observer.add_handler(str(plugin_folder), str(plugin_folder.name))
 
             if (plugin_folder / Global.CONFIG_FILE_NAME).exists():
                 self._configuration[plugin_folder.name][Section.User].update({
                     **read_json(plugin_folder / Global.CONFIG_FILE_NAME),
                 })
-                self._observer.add_handler(str(user_folder), str(user_folder.name))
 
     def shutdown(self, *args, **kwargs) -> None:
         self._configuration = Dotty({})
         self._temp_configuration = Dotty({})
-        self._observer.remove_handlers(full_house=True)
 
     def get(
         self,

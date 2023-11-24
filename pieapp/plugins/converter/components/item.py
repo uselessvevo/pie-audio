@@ -1,20 +1,18 @@
 from __feature__ import snake_case
 
 from PySide6.QtGui import Qt, QIcon
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QListWidgetItem
-from pieapp.structs.media import MediaFile
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QListWidgetItem
 
-from piekit.managers.themes.mixins import ThemeAccessorMixin
-from piekit.managers.locales.mixins import LocalesAccessorMixin
+from pieapp.structs.media import MediaFile
 
 from .list import ConverterListWidget
 from .menu import ConverterItemQuickActions
 
 
-class ConverterItemWidget(QWidget, LocalesAccessorMixin, ThemeAccessorMixin):
+class ConverterItemWidget(QWidget):
 
     def __init__(self, parent: ConverterListWidget, media_file: "MediaFile") -> None:
-        super(ConverterItemWidget, self).__init__(parent=parent)
+        super().__init__(parent)
 
         self._parent = parent
         self._list_widget = None
@@ -87,12 +85,6 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, ThemeAccessorMixin):
         for item in self._item_menu.get_items():
             item.set_visible(False)
 
-    def _get_file_format_color(self) -> None:
-        r, g, b = 245, 165, 105
-        self._file_format_label.set_style_sheet(
-            "#ConverterItemFormat {background-color: rgb(%s,%s,%s);}" % (r, g, b)
-        )
-
     def set_title(self, title: str) -> None:
         self._title_label.set_text(title)
 
@@ -101,3 +93,9 @@ class ConverterItemWidget(QWidget, LocalesAccessorMixin, ThemeAccessorMixin):
 
     def set_icon(self, file_format: str) -> None:
         self._file_format_label.set_text(file_format)
+
+    def _get_file_format_color(self) -> None:
+        r, g, b = 245, 165, 105
+        self._file_format_label.set_style_sheet(
+            "#ConverterItemFormat {background-color: rgb(%s,%s,%s);}" % (r, g, b)
+        )
