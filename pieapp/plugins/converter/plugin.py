@@ -58,7 +58,7 @@ class Converter(
             change_callback=self._content_list_item_removed,
             remove_callback=self._content_list_item_removed
         )
-        self.add_shortcut("converter-toggle-search", "Ctrl+F", self._toggle_search, self._content_list)
+        self.add_shortcut("toggle_search", "Ctrl+F", self._toggle_search, self._content_list)
 
         # Setup placeholder
         self._pixmap_label = QLabel()
