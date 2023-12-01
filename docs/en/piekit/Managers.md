@@ -1,37 +1,59 @@
 ## Managers
 
-All managers are made for separated data storing and control (*single responsibility*).
+> Warning: the principle of managers' work may change during the active development of the project
 
-To create your own manager you need next things:
-* Create `BaseManager` or `PluginBaseManager` based class
-* Define all the logic
+<br>
+## Description
+Managers are designed to manage resources separately under the principle of single-responsibility.
 
+<br>
 
+## Managers registration
+To register managers, you need to write the import path to the manager with the class name in one of the categories or add it directly by calling the `from_string` or `from_class` method from the `ManagersRegistry` class.
+
+<br>
+
+## Registration via import line
 ```py
-from piekit.managers.base import BaseManager
+# globals.py
+CORE_MANAGERS: Lock = [
+    ...
+    "piekit.managers.magic.MagicManagerClass",
+    ...
+]
 
+# app.py
+from piekit.managers.registry import Managers
+from piekit.managers.magic.manager import MagicManagerClass
 
-class MagicManager(BaseManager):
-    name = "test-magic-manager"
+# Via import string
+Managers.from_string("piekit.managers.magic.manager.MagicManager")
 
-    def __init__(self) -> None:
-        self._logger = logger
+# Via manager class
+Managers.from_class(MagicManagerClass)
 
-    def init(self, *args, **kwargs) -> None:
-        self._logger.debug("* Testing magic *")
-
-    def shutdown(self, *args, **kwargs):
-        self._logger.debug("No more magic...")
-
-    def reload(self):
-        self.shutdown()
-        self.init()
+# Calling manager's method
+Managers("magic-manager").some_method(...)
 ```
 
-After that you need to add it into managers registry (read `Manager Registry.md` file).
-To get access to your registered manager (or other built-in managers) you need to do next:
+<br>
 
-* import `Managers` from `piekit.managers.registry`
-* Managers(<manager name>).<manager method>(...)
+# Manager's methods
 
-Also, you can use mixins (read `Plugins.md`)
+## Method `init`
+This optional method is designed to run the manager. For example, you can collect resources from plugins and put them into the manager's internal registry.
+
+<br>
+
+## Method `shutdown`
+This optional method is intended to terminate the manager. For example, you can clear the manager's internal registry.
+
+<br>
+
+## Method `reload`
+This optional method is used to restart the manager. By default, the `init` and `shutdown` methods are called.
+
+<br>
+
+## Method `__repr__`
+This method outputs a string representation containing the name of the class and the `id` of its instance.
