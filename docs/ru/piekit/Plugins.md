@@ -62,7 +62,7 @@ def init(self) -> None:
     self.dialog.set_window_icon(self.get_plugin_icon())
     self.dialog.set_window_title(self.translate("My plugin"))
 
-    self.button = QPushButton(self.getTranslation("Ok"))
+    self.button = QPushButton(self.translate("Ok"))
     self.button.clicked.connect(self.dialog.close)
 
     grid_layout = QGridLayout()
