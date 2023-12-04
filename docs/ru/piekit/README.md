@@ -6,7 +6,7 @@
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 ## Документация
-[English](https://github.com/uselessvevo/pie-audio/tree/docs/docs/en/piekit) • [Русский](https://github.com/uselessvevo/pie-audio/tree/docs/docs/ru/piekit)
+[English](https://github.com/uselessvevo/pie-audio/tree/main/docs/en/piekit) • [Русский](https://github.com/uselessvevo/pie-audio/tree/main/docs/ru/piekit)
 
 Перед началом я хочу сказать особое спасибо создателям проекта [spyder-ide](https://github.com/spyder-ide/spyder), т.к. часть кода базируется на нём.
 
