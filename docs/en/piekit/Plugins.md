@@ -113,4 +113,20 @@ def _on_menu_available_(self) -> None:
     )
 ```
 
-All done! Now you can make your plugin more beautiful!
+## Using internal components
+If your plugin is broken down into components, you are required to do the following to use them:
+
+1. Create a `plugins/myplugin/components` directory and place your component there.
+2. In `plugins/myplugin/plugin.py` add an import of our component:
+
+```py
+from myplugin.components.mycomponent import MyComponent
+```
+
+## Using components within components
+To use a component inside another component, use a local import:
+
+```py
+# plugins/myplugin/components/mycomponent_b.py
+from .mycomponent_a import MyComponentA
+```

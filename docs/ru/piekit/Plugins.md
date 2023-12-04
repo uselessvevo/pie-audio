@@ -113,4 +113,21 @@ def _on_menu_available_(self) -> None:
     )
 ```
 
-Все готово! Теперь вы можете сделать свой плагин более замечательным!
+
+## Использование внутренних компонентов
+Если ваш плагин разбит на компоненты, то для их использования вам требуется сделать следующее:
+
+1. Создать директорию `plugins/myplugin/components` и поместить ваш компонент туда.
+2. В `plugins/myplugin/plugin.py` добавляем импорт нашего компонента:
+
+```py
+from myplugin.components.mycomponent import MyComponent
+```
+
+## Использование компонентов внутри компонентов
+Для использования компонента внутри другого компонента используйте локальный импорт:
+
+```py
+# plugins/myplugin/components/mycomponent_b.py
+from .mycomponent_a import MyComponentA
+```
