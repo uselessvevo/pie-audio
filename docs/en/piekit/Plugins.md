@@ -1,5 +1,9 @@
 # Plugins
 
+> Attention: the principle of operation may change during the active development of the project
+
+<br>
+
 ## Description
 Plugins are an integral part of the application, acting as full-fledged firmware, managers, complementing other plugins, etc.
 

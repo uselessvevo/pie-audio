@@ -1,8 +1,9 @@
-## Managers
+# Managers
 
-> Warning: the principle of managers' work may change during the active development of the project
+> Attention: the principle of operation may change during the active development of the project
 
 <br>
+
 ## Description
 Managers are designed to manage resources separately under the principle of single-responsibility.
 
