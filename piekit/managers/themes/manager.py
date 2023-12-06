@@ -42,7 +42,7 @@ class ThemeManager(BaseManager):
             * <icons folder>
             * <fonts folder>
             * props.json - theme properties: colors and icons accent
-            * template.qss - style sheet template file
+            * theme.qss - style sheet template file
         """
         self._current_theme = Managers(SysManager.Configs).get(
             scope=Section.Root,
@@ -153,24 +153,13 @@ class ThemeManager(BaseManager):
                 self._stylesheet += line
 
     def _load_style_sheet(self, theme_folder: Path) -> None:
-        theme_file = theme_folder / "theme.json"
+        theme_file = theme_folder / "theme.qss"
         if not theme_file.exists():
             return
 
-        theme_conf = read_json(theme_folder / "theme.json")
-        if theme_conf.get("template"):
-            props_data = theme_conf.get("properties", {})
-            self._stylesheet_props.update(**props_data)
-            self._parse_template(theme_folder / theme_conf["template"])
-
-        elif theme_conf.get("theme"):
-            theme_file = theme_folder / theme_conf.get("theme")
-            if theme_file.exists():
-                style_sheet = theme_file.read_text(encoding="utf-8")
-                self._stylesheet += style_sheet
-        
-        else:
-            self._logger.critical(f"Can't load theme: specify `template` or `theme` fields")
+        props_data = read_json(theme_folder / "props.json", raise_exception=False, default={})
+        self._stylesheet_props.update(**props_data)
+        self._parse_template(theme_file)
 
     def _load_palette(self, theme_folder: Path) -> None:
         palette_file = theme_folder / "palette.py"
@@ -206,3 +195,4 @@ class ThemeManager(BaseManager):
 
     getTheme = get_theme
     getThemes = get_themes
+    getProperty = get_property
