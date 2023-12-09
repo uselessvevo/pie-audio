@@ -189,5 +189,5 @@ class Settings(
             page.accept()
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return Settings(parent, plugin_path)

@@ -1,21 +1,21 @@
-from __feature__ import snake_case
-
-from typing import Union
-
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QLabel, QGridLayout, QPushButton, QDialog
-
-from pieapp.structs.menus import MainMenu
-from piekit.managers.structs import Section
-from piekit.plugins.plugins import PiePlugin
-from pieapp.structs.plugins import Plugin
-from piekit.managers.menus.mixins import MenuAccessorMixin
+from PySide6.QtGui import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QGridLayout
 
 from piekit.globals import Global
+from pieapp.structs.menus import MainMenu
+from pieapp.structs.plugins import Plugin
+
+from piekit.plugins.plugins import PiePlugin
+from piekit.managers.plugins.decorators import on_plugin_event
+
+from piekit.managers.structs import Section
+from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_event
 
 
 class About(
@@ -46,7 +46,7 @@ class About(
         description_label = QLabel()
         description_label.set_text(
             f'{self.translate("Pie Audio • Simple Audio Editor")} '
-            f'({Global.PIEAPP_APPLICATION_VERSION})'
+            f'({Global.PIEAPP_VERSION})'
         )
 
         github_link_label = QLabel()
@@ -77,5 +77,5 @@ class About(
         return self.get_svg_icon("icons/app.svg", section=self.name)
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return About(parent, plugin_path)

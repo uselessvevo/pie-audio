@@ -32,5 +32,5 @@ class Workbench(
         self.get_layout(Layout.Main).add_layout(self._workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return Workbench(parent, plugin_path)

@@ -6,16 +6,17 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QListWi
 from pieapp.structs.media import MediaFile
 
 from .list import ConverterListWidget
-from .menu import ConverterItemQuickActions
+from .menu import QuickActionMenu
 
 
-class ConverterItemWidget(QWidget):
+class ConverterItem(QWidget):
 
-    def __init__(self, parent: ConverterListWidget, media_file: "MediaFile") -> None:
+    def __init__(self, parent: ConverterListWidget, media_file: "MediaFile", color_props: dict = None) -> None:
         super().__init__(parent)
 
         self._parent = parent
         self._list_widget = None
+        self._color_props = color_props
 
         # Index of item
         self._media_file = media_file
@@ -30,7 +31,7 @@ class ConverterItemWidget(QWidget):
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
 
-        self._item_menu = ConverterItemQuickActions(self, media_file)
+        self._item_menu = QuickActionMenu(self, media_file)
 
         self._main_vbox_layout.add_widget(self._item_menu, alignment=Qt.AlignmentFlag.AlignRight)
         self._main_vbox_layout.add_widget(self._title_label)
@@ -95,7 +96,7 @@ class ConverterItemWidget(QWidget):
         self._file_format_label.set_text(file_format)
 
     def _get_file_format_color(self) -> None:
-        r, g, b = 245, 165, 105
+        rgba = self._color_props[self._media_file.info.file_format]
         self._file_format_label.set_style_sheet(
-            "#ConverterItemFormat {background-color: rgb(%s,%s,%s);}" % (r, g, b)
+            "#ConverterItemFormat {background-color: %s;}" % rgba
         )

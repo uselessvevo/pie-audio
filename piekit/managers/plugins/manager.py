@@ -18,7 +18,6 @@ from piekit.exceptions import PieException
 from piekit.plugins.types import PluginType
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.base import BaseManager
-from piekit.managers.registry import Managers
 from piekit.managers.structs import SysManager
 
 
@@ -88,8 +87,7 @@ class PluginManager(BaseManager):
             self._logger.warning(f"Plugins folder {folder.name} doesn't exist")
             return
 
-        sys.path.append(str(folder))
-        self._logger.critical(os.listdir(str(folder)))
+        sys.path.insert(0, folder.as_posix())
 
         for package in folder.iterdir():
             if package.is_dir() and package.name not in ("__pycache__",):
@@ -102,12 +100,11 @@ class PluginManager(BaseManager):
                     Global.load_by_path(plugin_path / "globals.py")
 
                 # Add our plugin into sys.path
-                sys.path.insert(0, os.path.abspath(str(plugin_path)))
                 plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
                 try:
                     self._check_versions(plugin_package_module)
                 except AttributeError as e:
-                    raise PieException(str(e))
+                    raise e
 
                 # Importing plugin module
                 plugin_module = import_by_path(str(plugin_path / "plugin.py"))
@@ -121,18 +118,18 @@ class PluginManager(BaseManager):
         """
         Check application/pieapp, piekit and plugin version
         """
-        sys_pieapp_version = Version(Global.PIEAPP_APPLICATION_VERSION)
+        sys_pieapp_version = Version(Global.PIEAPP_VERSION)
         sys_piekit_version = Version(Global.PIEKIT_VERSION)
 
         if not plugin_package.version:
             raise AttributeError(f"Plugin {plugin_package.name} must have `version` attribute")
 
-        plugin_pieapp_version = Version(plugin_package.pieapp_application_version)
+        plugin_pieapp_version = Version(plugin_package.pieapp_version)
         plugin_piekit_version = Version(plugin_package.piekit_version)
 
         if sys_pieapp_version.get_major_version() != plugin_pieapp_version.get_major_version():
             raise AttributeError(f"Application version ({sys_pieapp_version}) is not compatible with plugin"
-                                 f"{plugin_package.name} version ({plugin_package.PIEAPP_APPLICATION_VERSION})")
+                                 f"{plugin_package.name} version ({plugin_package.PIEAPP_VERSION})")
 
         if sys_piekit_version != plugin_piekit_version:
             raise AttributeError(f"PieKit version ({sys_piekit_version}) is not compatible with plugin"
@@ -178,11 +175,14 @@ class PluginManager(BaseManager):
 
     def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[str]:
         """
-        Collect signals names from plugin instance that starts with `sig_` prefix
+        Collect signals names that starts with `PLUGINS_SIGNAL_PREFIX (sig_/sig)` prefix
         """
         signals: list[str] = []
         for signal_name in dir(plugin_instance):
-            if signal_name.startswith("sig_") and signal_name != "sig_plugin_ready":
+            if (
+                signal_name.startswith(Global.PLUGINS_SIGNAL_PREFIX)
+                and signal_name not in Global.PLUGINS_PRIVATE_SIGNALS
+            ):
                 signal_instance = getattr(plugin_instance, signal_name, None)
                 if isinstance(signal_instance, Signal):
                     signals.append(signal_name)

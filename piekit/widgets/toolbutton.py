@@ -1,12 +1,8 @@
-from typing import Union
+from __feature__ import snake_case
 
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon, Qt
-from __feature__ import snake_case
 from PySide6.QtWidgets import QToolButton
-
-from piekit.globals import Global
-from piekit.managers.structs import Section
 
 
 def create_tool_button(
@@ -18,7 +14,7 @@ def create_tool_button(
     only_icon: bool = False,
     focus_type: Qt.FocusPolicy = Qt.FocusPolicy.NoFocus,
     icon_size: tuple[int, int] = (25, 25),
-    object_name: str = "WorkbenchToolButton"
+    object_name: str = None
 ) -> QToolButton:
     tool_button = QToolButton(parent=parent)
     if icon:

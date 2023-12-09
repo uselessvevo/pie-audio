@@ -1,16 +1,14 @@
 from __feature__ import snake_case
 
-from PySide6.QtGui import QIcon
-from PySide6.QtGui import QCursor
-from PySide6.QtGui import QAction
-
 from PySide6.QtCore import QEvent, QRect
+from PySide6.QtGui import QAction
+from PySide6.QtGui import QCursor
 from PySide6.QtGui import QEnterEvent
-
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QToolTip
-from PySide6.QtWidgets import QLineEdit
-from PySide6.QtWidgets import QFileDialog
 
 from piekit.globals import Global
 from piekit.managers.locales.mixins import LocalesAccessorMixin
@@ -20,12 +18,12 @@ class ImagePreview(QToolTip):
 
     def __init__(self, parent, image_path: str) -> None:
         self._parent = parent
-        self._string = "<img src='%s'>" % image_path if image_path else None
+        self._string = "<img width=264 height=264 src='%s'>" % image_path if image_path else None
         super(ImagePreview, self).__init__()
 
     def show_tooltip(self) -> None:
         if self._string:
-            self.show_text(QCursor.pos(), self._string, self._parent, QRect(), 5000)
+            self.show_text(QCursor.pos(), self._string, self._parent, QRect(), 10000)
 
 
 class AlbumCoverPicker(QLineEdit, LocalesAccessorMixin):
@@ -34,19 +32,20 @@ class AlbumCoverPicker(QLineEdit, LocalesAccessorMixin):
         self,
         parent=None,
         image_path: str = None,
+        picker_icon: QIcon = None,
         placeholder_text: str = "No image selected",
-        select_album_text: str = "Select album cover image"
+        select_album_cover_text: str = "Select album cover image"
     ) -> None:
         super(AlbumCoverPicker, self).__init__(parent)
 
         self._image_path = image_path
         self._placeholder_text = f"<{placeholder_text}>"
-        self._select_album_text = select_album_text
+        self._select_album_cover_text = select_album_cover_text
         self._image_preview = ImagePreview(self, self._image_path)
 
         self._add_image_button = QLineEdit()
         self._add_image_action = QAction()
-        self._add_image_action.set_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DirOpenIcon))
+        self._add_image_action.set_icon(picker_icon or self.style().standard_icon(QStyle.StandardPixmap.SP_DirOpenIcon))
         self._add_image_action.triggered.connect(self.load_image)
 
         self.set_read_only(True)
@@ -80,7 +79,7 @@ class AlbumCoverPicker(QLineEdit, LocalesAccessorMixin):
     def load_image(self) -> None:
         file_path = QFileDialog.get_open_file_name(
             parent=self,
-            caption=self.translate(self._select_album_text),
+            caption=self.translate(self._select_album_cover_text),
             dir=self._image_path or str(Global.USER_ROOT),
         )
         if file_path[0]:

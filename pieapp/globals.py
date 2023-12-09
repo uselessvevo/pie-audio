@@ -7,7 +7,7 @@ from piekit.globals.types import Lock
 
 # Application main info
 PIEAPP_APPLICATION_NAME: Lock = "pie-audio"
-PIEAPP_APPLICATION_VERSION: Lock = "1.0.0"
+PIEAPP_VERSION: Lock = "1.0.0"
 PIEAPP_ORGANIZATION_NAME: Lock = "Crab Devs."
 PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"

@@ -201,7 +201,7 @@ class ThemeManager(BaseManager):
     def get_themes(self) -> list[str]:
         return self._themes
 
-    def get_property(self, prop_name: str, default: Any = None) -> str:
+    def get_theme_property(self, prop_name: str, default: Any = None) -> str:
         return self._stylesheet_props.get(prop_name, default)
 
     getTheme = get_theme

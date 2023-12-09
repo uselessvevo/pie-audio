@@ -1,5 +1,5 @@
 #MetadataEditor {
-    color: @mainColor;
+    color: @mainFontColor;
     background-color: @mainBackgroundColor;
 }
 

@@ -29,5 +29,5 @@ class StatusBar(
     showMessage = show_message
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return StatusBar(parent, plugin_path)

@@ -1,13 +1,15 @@
 import datetime
 import dataclasses as dt
+from pathlib import Path
 from typing import Optional
 
 
 @dt.dataclass
 class AlbumCover:
-    image_path: str = dt.field(default=None)
+    image_path: Path = dt.field(default=None)
     image_file_format: str = dt.field(default=None)
-    image_small_path: str = dt.field(default=None)
+    image_small_path: Path = dt.field(default=None)
+    image_small_file_format: str = dt.field(default=None)
 
 
 @dt.dataclass
@@ -25,6 +27,7 @@ class ChannelsLayout:
 @dt.dataclass
 class FileInfo:
     filename: str
+    file_format: str
     bit_rate: int
     bit_depth: int
     sample_rate: float

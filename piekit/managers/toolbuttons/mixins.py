@@ -3,12 +3,13 @@ from __feature__ import snake_case
 from typing import Union
 
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import Qt, QObject, QSize
+from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QToolButton
 
-from piekit.managers.registry import Managers
-from piekit.managers.structs import SysManager, Section
 from piekit.globals import Global
+from piekit.managers.structs import Section
+from piekit.managers.structs import SysManager
+from piekit.managers.registry import Managers
 from piekit.widgets.toolbutton import create_tool_button
 
 
@@ -24,7 +25,7 @@ class ToolButtonAccessorMixin:
         icon: QIcon = None,
         triggered: callable = None,
         only_icon: bool = False,
-        object_name: str = "WorkbenchToolButton"
+        object_name: str = None
     ) -> QToolButton:
         tool_button = create_tool_button(
             parent=parent, text=text, tooltip=tooltip,

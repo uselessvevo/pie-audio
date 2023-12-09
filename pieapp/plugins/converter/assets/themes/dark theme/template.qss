@@ -13,18 +13,18 @@ QListWidget::item:hover:!active
     background: rgba(43, 43, 43, 50%);
 }
 
-#ConverterItemQuickActions {
+#QuickAction {
     border-radius: 2px;
     background-color: #424242;
 }
 
-#ConverterItemQuickActions,
+#QuickAction,
 #ConverterMenuItemTB {
     border: none;
     background-color: #434343;
 }
 
-#ConverterItemQuickActions:disabled,
+#QuickAction:disabled,
 #ConverterMenuItemTB:disabled {
     border: none;
     background-color: #303030;

@@ -1,4 +1,4 @@
-from PySide6.QtCore import QSettings, QCoreApplication
+from PySide6.QtCore import QSettings
 from __feature__ import snake_case
 
 import os
@@ -34,7 +34,7 @@ def start_application(*args, **kwargs) -> None:
     splash = None
     app = get_application(sys.argv)
     app.set_application_name(Global.PIEAPP_APPLICATION_NAME)
-    app.set_application_version(Global.PIEAPP_APPLICATION_VERSION)
+    app.set_application_version(Global.PIEAPP_VERSION)
     app.set_organization_name(Global.PIEAPP_ORGANIZATION_NAME)
     app.set_organization_domain(Global.PIEAPP_ORGANIZATION_DOMAIN)
 

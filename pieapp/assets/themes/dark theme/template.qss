@@ -31,31 +31,60 @@ QPushButton {
    background-color: @controlsBackgroundColor;
    border-radius: @controlsBorderRadius;
    color: @minorColor;
-   min-height: @buttonMinHeight;
-   min-width: @buttonMinWidth;
+   min-height: @controlsMinHeight;
+   min-width: @controlsMinWidth;
    padding: @controlsPadding;
    outline: @controlsOutline;
 }
 
 QPushButton::focus {
-   color: @controlsFontColorFocused;
-   background-color: @controlsBackgroundColorFocused;
+   color: @buttonsFontColorFocused;
+   background-color: @buttonsBackgroundColorFocused;
 }
 
 QPushButton::hover {
-   color: @controlsFontColorFocused;
-   background-color: @controlsBackgroundColorFocused;
+   color: @buttonsFontColorFocused;
+   background-color: @buttonsBackgroundColorFocused;
 }
 
 QPushButton::pressed {
    color: @minorColor;
-   background-color: @controlsBackgroundColorFocused;
+   background-color: @buttonsBackgroundColorFocused;
 }
 
 QPushButton::disabled {
-   color: @controlsFontColorDisabled;
-   background-color: @controlsBackgroundColorDisabled;
+   color: @buttonsFontColorDisabled;
+   background-color: @buttonsBackgroundColorDisabled;
 }
+
+/* QToolButton */
+
+QToolButton {
+   background-color: @controlsBackgroundColor;
+   border-radius: @controlsBorderRadius;
+   border: @controlsBorderRadius @controlsBackgroundColor;
+   margin: @controlsMargin;
+   color: @controlsFontColor;
+   padding: @controlsPadding;
+   outline: @controlsOutline;
+}
+
+QToolButton::hover {
+    font: @controlsFontColorSelected;
+    background-color: @controlsBackgroundColorFocused;
+}
+
+QToolButton:disabled {
+    font: @controlsFontColorDisabled;
+    background-color: @controlsBackgroundColorDisabled;
+}
+
+QToolButton::menu-indicator
+{
+    image: none;
+}
+
+/* QScrollBar */
 
 QScrollBar:horizontal {
     height: 16px;

@@ -1,4 +1,6 @@
-from typing import Union
+from __feature__ import snake_case
+
+from typing import Union, Any
 
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
@@ -9,24 +11,24 @@ from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
+from pieapp.structs.media import MediaFile
 from pieapp.structs.plugins import Plugin
 from pieapp.structs.layouts import Layout
-from pieapp.structs.media import MediaFile
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.workbench import WorkbenchItem
 
 from piekit.widgets.menus import INDEX_START
 from piekit.managers.structs import Section
-from piekit.managers.plugins.decorators import on_plugin_event
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.mixins import CoreAccessorsMixin
 from piekit.plugins.mixins import LayoutAccessorsMixin
+from piekit.managers.plugins.decorators import on_plugin_event
 
 from converter.api import ConverterAPI
-from converter.components.list import ConverterListWidget
-from converter.components.item import ConverterItemWidget
-from converter.components.search import ConverterSearch
+from converter.widgets.search import ConverterSearch
+from converter.widgets.list import ConverterListWidget
+from converter.widgets.item import ConverterItem
 
 
 class Converter(
@@ -40,7 +42,7 @@ class Converter(
     sig_converter_table_ready = Signal()
 
     def init(self) -> None:
-        self._converter_item_widgets: list[ConverterItemWidget] = []
+        self._converter_item_widgets: list[ConverterItem] = []
 
         # Setup grid layouts
         self._list_grid_layout = QGridLayout()
@@ -50,7 +52,7 @@ class Converter(
         # Setup search field
         self._search = ConverterSearch()
         self._search.set_hidden(True)
-        self._search.textChanged.connect(self.on_search_text_changed)
+        self._search.textChanged.connect(self._on_search_text_changed)
 
         # Setup content list
         self._content_list = ConverterListWidget(
@@ -71,18 +73,7 @@ class Converter(
         # Setup placeholder
         self._set_placeholder()
 
-    @Slot(str)
-    def on_search_text_changed(self, text: str) -> None:
-        """
-        Filter `content_list` by text
-        """
-        for row in range(self._content_list.count()):
-            item = self._content_list.item(row)
-            widget = self._content_list.item_widget(item)
-            if text:
-                item.set_hidden(not (text.lower() in widget.media_file.info.filename.lower()))
-            else:
-                item.set_hidden(False)
+    # ConverterListWidget public methods
 
     def fill_list(self, media_files: list[MediaFile]) -> None:
         """
@@ -96,15 +87,16 @@ class Converter(
         self._list_grid_layout.add_widget(self._content_list, 1, 0)
 
         for index, media_file in enumerate(media_files):
-            widget = ConverterItemWidget(self._content_list, media_file)
+            widget = ConverterItem(self._content_list, media_file)
             widget.set_title(media_file.info.filename)
             widget.set_description(f"{media_file.info.bit_rate}kb/s")
-            widget.set_icon(media_file.info.codec.name)
+            widget.set_icon(media_file.info.file_format)
 
+            # Add default buttons
             widget.add_quick_action(
                 name="delete",
                 text=self.translate("Delete"),
-                icon=self.get_svg_icon("icons/delete.svg"),
+                icon=self.get_svg_icon("icons/delete.svg", color=self.get_theme_property("dangerBackgroundColor")),
                 callback=self._delete_tool_button_connect
             )
 
@@ -125,8 +117,13 @@ class Converter(
 
         self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(False)
         self.sig_converter_table_ready.emit()
+        
+    # QuickActionMenu public proxy methods
 
     def disable_side_menu_items(self) -> None:
+        """
+        A proxy method to disable all QuickActionMenu's items
+        """
         for item in self._converter_item_widgets:
             item.set_items_disabled()
 
@@ -140,12 +137,12 @@ class Converter(
         after: str = None,
     ) -> None:
         """
-        A proxy method to add an item on the "quick action menu"
+        A proxy method to add an item in the QuickActionMenu
         """
         for item in self._converter_item_widgets:
             item.add_quick_action(name, text, icon, callback, before, after)
 
-    # Private/protected methods
+    # ConverterListWidget private methods
 
     def _content_list_item_removed(self) -> None:
         """
@@ -153,6 +150,8 @@ class Converter(
         """
         if self._content_list.count() == 0:
             self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
+
+    # Private/protected methods
 
     def _set_placeholder(self) -> None:
         """
@@ -187,14 +186,29 @@ class Converter(
         self._content_list.take_item(selected_index.row())
         del self._converter_item_widgets[selected_index.row()]
 
-    # Public methods
+    # ConverterSearch private methods
 
     def _toggle_search(self) -> None:
         self._search.set_hidden(not self._search.is_hidden())
         self._search.set_focus()
 
+    @Slot(str)
+    def _on_search_text_changed(self, text: str) -> None:
+        """
+        Filter `content_list` by text
+        """
+        for row in range(self._content_list.count()):
+            item = self._content_list.item(row)
+            widget = self._content_list.item_widget(item)
+            if text:
+                item.set_hidden(not (text.lower() in widget.media_file.info.filename.lower()))
+            else:
+                item.set_hidden(False)
+
+    # Plugin event methods
+
     @on_plugin_event(target=Plugin.MenuBar)
-    def on_menu_bar_available(self) -> None:
+    def _on_menu_bar_available(self) -> None:
         """
         Add open file element in the "File" menu
         """
@@ -209,7 +223,7 @@ class Converter(
         )
 
     @on_plugin_event(target=Plugin.Workbench)
-    def on_workbench_available(self) -> None:
+    def _on_workbench_available(self) -> None:
         """
         Add tool button on the `Workbench`
         """
@@ -261,5 +275,5 @@ class Converter(
         )
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return Converter(parent, plugin_path)

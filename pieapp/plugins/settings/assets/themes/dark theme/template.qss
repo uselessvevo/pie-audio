@@ -1,5 +1,5 @@
 #CurrentCanvasWidget {
-    font-size: 20pt;
+    /*font-size: 20pt;*/
 }
 
 #SettingsDialog {
@@ -17,7 +17,7 @@
 #SettingsTreeWidget {
     border: none;
     border-radius: 0px;
-    font-size: 10pt;
+    /*font-size: 10pt;*/
     background-color: @minorBackgroundColor;
 }
 

@@ -1,6 +1,9 @@
 from piekit.globals import Lock
 
 
+ALBUM_COVER_EXTENSIONS: Lock = (".jpeg", ".jpg", ".png",)
+
+
 AUDIO_EXTENSIONS: Lock = (
     ".m3u", ".m3u8", ".au", ".snd", ".mp3", ".mp2", ".aif",
     ".aifc", ".aiff", ".ra", ".wav", ".mpa", ".aa", ".aac",

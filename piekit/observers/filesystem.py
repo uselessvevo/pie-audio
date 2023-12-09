@@ -68,6 +68,10 @@ class FileSystemWatcher(QObject):
         QObject.__init__(self, parent)
         self._event_handler = FileSystemEventHandler(self)
 
+    @property
+    def event_handler(self) -> FileSystemEventHandler:
+        return self._event_handler
+
     def connect_signals(self, target: QObject):
         self._event_handler.sig_file_created.connect(target.file_created)
         self._event_handler.sig_file_moved.connect(target.file_moved)

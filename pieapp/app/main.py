@@ -66,7 +66,7 @@ class MainWindow(
         ))
         self.set_window_title(
             f'{self.translate("Pie Audio • Simple Audio Editor")} '
-            f'({Global.PIEAPP_APPLICATION_VERSION})'
+            f'({Global.PIEAPP_VERSION})'
         )
         self.set_window_icon(self.get_svg_icon("icons/bolt.svg", color="#f5d97f"))
 

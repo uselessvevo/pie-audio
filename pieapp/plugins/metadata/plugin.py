@@ -1,28 +1,24 @@
-from typing import Union
-
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QDialog
-from PySide6.QtWidgets import QHeaderView
-from PySide6.QtWidgets import QSizePolicy
-from PySide6.QtWidgets import QListWidget
 from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QHeaderView
+from PySide6.QtWidgets import QListWidget
+from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtWidgets import QStyledItemDelegate
-
-from pieapp.structs.media import MediaFile
-from pieapp.structs.plugins import Plugin
-
-from piekit.globals.loader import Global
-from piekit.plugins.utils import get_plugin
-from piekit.plugins.plugins import PiePlugin
-from piekit.managers.plugins.decorators import on_plugin_event
-from piekit.managers.themes.mixins import ThemeAccessorMixin
-from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
-from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 
 from metadata.components.albumpicker import AlbumCoverPicker
+from pieapp.structs.media import MediaFile
+from pieapp.structs.plugins import Plugin
+from piekit.globals.loader import Global
+from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.managers.themes.mixins import ThemeAccessorMixin
+from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
+from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
+from piekit.plugins.plugins import PiePlugin
+from piekit.plugins.utils import get_plugin
 
 
 class ReadOnlyDelegate(QStyledItemDelegate):
@@ -42,7 +38,7 @@ class MetadataEditor(
     requires = [Plugin.Converter]
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/edit.svg")
+        return self.get_svg_icon("icons/app.svg", section=self.name)
 
     @on_plugin_event(target=Plugin.Converter)
     def on_converter_available(self) -> None:
@@ -109,12 +105,15 @@ class MetadataEditor(
         self._dialog.set_layout(self._main_grid_layout)
 
     @on_plugin_event(target=Plugin.Converter, event="converter_table_ready")
-    def on_converter_table_ready(self) -> None:
+    def _on_converter_table_ready(self) -> None:
+        """
+        Add button into quick action menu
+        """
         self._converter = get_plugin(Plugin.Converter)
         self._converter.add_quick_action(
             name="edit",
             text=self.translate("Edit"),
-            icon=self.get_svg_icon("icons/edit.svg"),
+            icon=self.get_plugin_icon(),
             callback=self._edit_file_button_connect,
             before="delete"
         )
@@ -133,13 +132,15 @@ class MetadataEditor(
         contributors_list_widget = QListWidget()
         contributors_list_widget.add_items(media_file.metadata.additional_contributors)
 
+        album_cover = media_file.metadata.album_cover
+
         album_cover_widget = AlbumCoverPicker(
             parent=self._dialog,
-            image_path=media_file.metadata.album_cover.image_small_path or media_file.metadata.album_cover.image_path,
+            image_path=album_cover.image_path.as_posix() if album_cover.image_path.exists() else None,
+            picker_icon=self.get_svg_icon("icons/folder-open.svg", color="#f5d97f"),
             placeholder_text=self.translate("No image selected"),
-            select_album_text=self.translate("Select album cover image")
+            select_album_cover_text=self.translate("Select album cover image")
         )
-        album_cover_widget.set_picker_icon(self.get_svg_icon("icons/folder-open.svg", color="#f5d97f"))
 
         self._table_widget.set_item(0, 0, QTableWidgetItem(self.translate("Title")))
         self._table_widget.set_item(1, 0, QTableWidgetItem(self.translate("Genre")))
@@ -185,5 +186,5 @@ class MetadataEditor(
         pass
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return MetadataEditor(parent, plugin_path)

@@ -12,6 +12,9 @@ APP_ROOT: Lock = BASE_DIR / os.getenv("PIE_APP_ROOT", "pieapp")
 USER_ROOT: Lock = Path.home() / ".crabs"
 SYSTEM_ROOT: Lock = BASE_DIR / "piekit"
 
+PLUGINS_SIGNAL_PREFIX: Lock = "sig_"
+PLUGINS_PRIVATE_SIGNALS: Lock = ("sig_plugin_ready",)
+
 # Default temporary folder
 DEFAULT_TEMP_FOLDER_NAME: Lock = "temp"
 

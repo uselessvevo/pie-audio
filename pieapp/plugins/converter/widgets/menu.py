@@ -1,14 +1,24 @@
 from __feature__ import snake_case
 
-from PySide6.QtCore import QSize
-
 from typing import Union
-from PySide6.QtGui import Qt, QIcon
-from PySide6.QtWidgets import QWidget, QToolButton, QHBoxLayout
+
+from PySide6.QtGui import Qt
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QToolButton
+from PySide6.QtWidgets import QHBoxLayout
+
 from pieapp.structs.media import MediaFile
 
 
-class ConverterItemQuickActions(QWidget):
+class QuickActionSideMenu(QWidget):
+
+    def __init__(self, parent: "QObject") -> None:
+        super().__init__(parent)
+
+
+class QuickActionMenu(QWidget):
 
     def __init__(self, parent: "QObject" = None, media_file: MediaFile = None) -> None:
         super().__init__(parent)
@@ -23,7 +33,7 @@ class ConverterItemQuickActions(QWidget):
         self._menu_hbox.insert_stretch(-1, 1)
 
         self.set_layout(self._menu_hbox)
-        self.set_object_name("ConverterItemQuickActions")
+        self.set_object_name("QuickAction")
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
         menu_size_policy = self.size_policy()
         menu_size_policy.set_retain_size_when_hidden(True)

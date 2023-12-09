@@ -1,14 +1,12 @@
-from typing import Union
-
-from pieapp.structs.menus import MainMenu, MainMenuItem
+from pieapp.structs.menus import MainMenu
+from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.plugins import Plugin
-from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.plugins.plugins import PiePlugin
-
-from piekit.managers.structs import Section
-from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
+from piekit.managers.menus.mixins import MenuAccessorMixin
+from piekit.managers.structs import Section
+from piekit.managers.themes.mixins import ThemeAccessorMixin
+from piekit.plugins.plugins import PiePlugin
 from piekit.widgets.menus import INDEX_END
 
 
@@ -52,5 +50,5 @@ class MainMenuBar(
         self._parent.set_menu_bar(self._menu_bar)
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
+def main(parent: "QMainWindow", plugin_path: "Path"):
     return MainMenuBar(parent, plugin_path)
