@@ -9,8 +9,8 @@ from PySide6.QtWidgets import QMessageBox
 
 from piekit.exceptions import PieException
 from piekit.globals import Global
-from piekit.managers.locales.utils import translate
-from piekit.utils.logger import logger
+from piekit.managers.locales.helpers import translate
+from piekit.helpers.logger import logger
 
 
 class FileSystemEventHandler(QObject, events.FileSystemEventHandler):

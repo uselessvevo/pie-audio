@@ -7,7 +7,7 @@ class WorkbenchItem:
     OpenFiles = "openFiles"
     Clear = "clear"
     Convert = "convert"
-    Settings = "settings"
+    Preferences = "Preferences"
     Spacer = "spacer"
     Exit = "exit"
     Search = "search"

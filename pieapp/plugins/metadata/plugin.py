@@ -13,12 +13,12 @@ from pieapp.structs.media import MediaFile
 from pieapp.structs.plugins import Plugin
 from piekit.globals.loader import Global
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.plugins.decorators import on_plugin_event
 from piekit.managers.themes.mixins import ThemeAccessorMixin
 from piekit.managers.toolbars.mixins import ToolBarAccessorMixin
 from piekit.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from piekit.plugins.plugins import PiePlugin
-from piekit.plugins.utils import get_plugin
+from piekit.plugins.helpers import get_plugin
 
 
 class ReadOnlyDelegate(QStyledItemDelegate):

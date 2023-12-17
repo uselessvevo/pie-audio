@@ -2,7 +2,7 @@ import locale
 import os.path
 from pathlib import Path
 
-from piekit.globals.types import Lock
+from confstar.types import Lock
 
 PIEKIT_VERSION: Lock = "1.0.0"
 
@@ -31,13 +31,12 @@ USER_PLUGINS_FOLDER: Lock = "plugins"
 
 # Assets
 ASSETS_FOLDER: Lock = "assets"
-THEMES_FOLDER: Lock = "themes"
 
 # Icons
 ICONS_ALLOWED_FORMATS = [".svg", ".png", ".ico"]
 
-themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER / THEMES_FOLDER).rglob("*") if i.is_dir())
-DEFAULT_THEME: Lock = themes_list[0] if themes_list else None
+themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
+DEFAULT_THEME: Lock = themes_list[0].name if themes_list else None
 ASSETS_USE_STYLE: Lock = bool(int(os.getenv("PIE_ASSETS_USE_STYLE", True)))
 
 # Configurations

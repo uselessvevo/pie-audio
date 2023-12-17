@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from piekit.utils.files import read_json
+from piekit.helpers.files import read_json
 from piekit.globals import Global
 from piekit.managers.base import BaseManager
 from piekit.managers.registry import Managers

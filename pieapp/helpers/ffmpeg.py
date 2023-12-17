@@ -1,19 +1,10 @@
-from pathlib import Path
-from typing import Union
+import os
+import subprocess
 
 import ffmpeg
+from pathlib import Path
 
-
-ERROR_STRING_SET: set[str] = {
-    "Conversion failed!",
-    "Output file does not contain any stream",
-}
-
-
-def check_conversion_failed(error_string_set: set[str]) -> bool:
-    if ERROR_STRING_SET.intersection(error_string_set):
-        return False
-    return True
+from piekit.helpers.logger import logger
 
 
 def get_cover_album(cmd: Path, filepath: Path, temp_folder: Path) -> Path:
@@ -26,3 +17,19 @@ def get_cover_album(cmd: Path, filepath: Path, temp_folder: Path) -> Path:
     )
 
     return cover_image_path
+
+
+def check_ffmpeg_binaries(binaries: list[Path]) -> bool:
+    """
+    Check if ffmpeg, ffprobe and ffplay can execute
+
+    Args:
+        binaries (tuple[Path]): Tuple of binaries paths
+    """
+    binaries = (f"{i}.exe" if os.name == "nt" else i for i in binaries)
+    for binary in binaries:
+        try:
+            subprocess.Popen(binary)
+        except Exception as e:
+            logger.critical(e)
+            return False

@@ -1,9 +1,9 @@
 from typing import Union, Type
 from pathlib import Path
 
-from piekit.utils.logger import logger
-from piekit.utils.files import read_json
-from piekit.utils.modules import import_by_string
+from piekit.helpers.logger import logger
+from piekit.helpers.files import read_json
+from piekit.helpers.modules import import_by_string
 from piekit.managers.base import BaseManager
 
 

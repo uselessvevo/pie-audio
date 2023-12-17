@@ -5,7 +5,7 @@ Built-in app menus
 
 class MainMenuItem:
     OpenFiles = "openFiles"
-    Settings = "settings"
+    Preferences = "preferences"
     Exit = "exit"
 
 

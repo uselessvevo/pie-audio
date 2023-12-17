@@ -1,12 +1,12 @@
+from pathlib import Path
+
 from __feature__ import snake_case
 
-from typing import Union, Any
-
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtCore import Slot
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QFileDialog
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
@@ -17,18 +17,23 @@ from pieapp.structs.layouts import Layout
 from pieapp.structs.menus import MainMenu
 from pieapp.structs.menus import MainMenuItem
 from pieapp.structs.workbench import WorkbenchItem
+from piekit.globals import Global
+from piekit.helpers.files import create_temp_directory
+from piekit.observers.filesystem import FileSystemWatcher
+from piekit.plugins import get_plugin
 
 from piekit.widgets.menus import INDEX_START
 from piekit.managers.structs import Section
 from piekit.plugins.plugins import PiePlugin
 from piekit.plugins.mixins import CoreAccessorsMixin
 from piekit.plugins.mixins import LayoutAccessorsMixin
-from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.plugins.decorators import on_plugin_event
 
-from converter.api import ConverterAPI
+from converter.workers import ConverterWorker
+from converter.confpage import ConverterConfigPage
+from converter.widgets.item import ConverterItem
 from converter.widgets.search import ConverterSearch
 from converter.widgets.list import ConverterListWidget
-from converter.widgets.item import ConverterItem
 
 
 class Converter(
@@ -36,14 +41,47 @@ class Converter(
     CoreAccessorsMixin,
     LayoutAccessorsMixin
 ):
-    api = ConverterAPI
     name = Plugin.Converter
-    requires = [Plugin.MenuBar, Plugin.Workbench]
+    requires = [Plugin.MenuBar, Plugin.Workbench, Plugin.Preferences]
     sig_converter_table_ready = Signal()
 
-    def init(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
+        super(Converter, self).__init__(*args, **kwargs)
+        self._watcher = FileSystemWatcher(self)
+        self._temp_folder: Path = None
+        self._current_files: list[Path] = []
         self._converter_item_widgets: list[ConverterItem] = []
 
+        self._chunk_size = self.get_config(
+            key="ffmpeg.chunk_size",
+            default=10,
+            scope=Section.Root,
+            section=Section.User,
+        )
+        self._ffmpeg_command = Path(
+            self.get_config(
+                key="ffmpeg.ffmpeg",
+                default="ffmpeg",
+                scope=Section.Root,
+                section=Section.User
+            )
+        )
+        self._ffprobe_command = Path(
+            self.get_config(
+                key="ffmpeg.ffprobe",
+                default="ffprobe",
+                scope=Section.Root,
+                section=Section.User
+            )
+        )
+
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("icons/app.svg")
+
+    def get_config_page(self) -> "ConfigPage":
+        return ConverterConfigPage()
+
+    def init(self) -> None:
         # Setup grid layouts
         self._list_grid_layout = QGridLayout()
         self._main_layout = self.get_layout(Layout.Main)
@@ -73,12 +111,84 @@ class Converter(
         # Setup placeholder
         self._set_placeholder()
 
-    # ConverterListWidget public methods
+    def on_system_shutdown(self) -> None:
+        if self._temp_folder:
+            if not self._temp_folder.exists():
+                return
 
-    def fill_list(self, media_files: list[MediaFile]) -> None:
+            for file in self._temp_folder.iterdir():
+                file.unlink(missing_ok=True)
+            self._temp_folder.rmdir()
+
+    def disable_side_menu_items(self) -> None:
         """
-        Fill list from the `ConverterAPI`
+        A proxy method to disable all QuickActionMenu's items
         """
+        for item in self._converter_item_widgets:
+            item.set_items_disabled()
+
+    # Public proxy methods
+
+    def add_quick_action(
+        self,
+        name: str,
+        text: str,
+        icon: QIcon,
+        callback: callable = None,
+        before: str = None,
+        after: str = None,
+    ) -> None:
+        """
+        A proxy method to add an item in the QuickActionMenu
+        """
+        for item in self._converter_item_widgets:
+            item.add_quick_action(name, text, icon, callback, before, after)
+
+    # Public API methods
+
+    def open_files(self) -> None:
+        self._temp_folder = create_temp_directory(
+            prefix=self.name,
+            temp_directory=self.get_config(
+                key="ffmpeg.temp_folder",
+                default=Global.USER_ROOT / Global.DEFAULT_TEMP_FOLDER_NAME,
+                scope=Section.Root,
+                section=Section.User
+            )
+        )
+
+        selected_files = QFileDialog.get_open_file_names(caption=self.translate("Open files"))[0]
+        selected_files = list(map(Path, selected_files))
+        if not selected_files:
+            return
+
+        # chunks = self._split_by_chunks(selected_files[0], self._chunk_size)
+        pool = QThreadPool.global_instance()
+
+        for index, selected_file in enumerate(selected_files):
+            if selected_file not in self._current_files:
+                self._current_files.append(selected_file)
+            else:
+                del selected_files[index]
+
+        worker = ConverterWorker(
+            chunk=selected_files,
+            temp_folder=self._temp_folder,
+            ffmpeg_cmd=self._ffmpeg_command,
+            ffprobe_cmd=self._ffprobe_command,
+        )
+        worker.signals.started.connect(self._worker_started)
+        worker.signals.completed.connect(self._worker_finished)
+        pool.start(worker)
+
+    def _worker_started(self) -> None:
+        get_plugin(Plugin.StatusBar).show_message(self.translate("Loading files"))
+
+    def _worker_finished(self, models_list: list[MediaFile]) -> None:
+        self._fill_list(models_list)
+        get_plugin(Plugin.StatusBar).show_message(self.translate("Done loading files"))
+
+    def _fill_list(self, media_files: list[MediaFile]) -> None:
         if not media_files:
             return
 
@@ -87,7 +197,7 @@ class Converter(
         self._list_grid_layout.add_widget(self._content_list, 1, 0)
 
         for index, media_file in enumerate(media_files):
-            widget = ConverterItem(self._content_list, media_file)
+            widget = ConverterItem(self._content_list, media_file, self.get_theme_property("converterItemColors"))
             widget.set_title(media_file.info.filename)
             widget.set_description(f"{media_file.info.bit_rate}kb/s")
             widget.set_icon(media_file.info.file_format)
@@ -96,7 +206,7 @@ class Converter(
             widget.add_quick_action(
                 name="delete",
                 text=self.translate("Delete"),
-                icon=self.get_svg_icon("icons/delete.svg", color=self.get_theme_property("dangerBackgroundColor")),
+                icon=self.get_svg_icon("icons/delete.svg", self.get_theme_property("dangerBackgroundColor")),
                 callback=self._delete_tool_button_connect
             )
 
@@ -117,30 +227,6 @@ class Converter(
 
         self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(False)
         self.sig_converter_table_ready.emit()
-        
-    # QuickActionMenu public proxy methods
-
-    def disable_side_menu_items(self) -> None:
-        """
-        A proxy method to disable all QuickActionMenu's items
-        """
-        for item in self._converter_item_widgets:
-            item.set_items_disabled()
-
-    def add_quick_action(
-        self,
-        name: str,
-        text: str,
-        icon: QIcon,
-        callback: callable = None,
-        before: str = None,
-        after: str = None,
-    ) -> None:
-        """
-        A proxy method to add an item in the QuickActionMenu
-        """
-        for item in self._converter_item_widgets:
-            item.add_quick_action(name, text, icon, callback, before, after)
 
     # ConverterListWidget private methods
 
@@ -178,7 +264,7 @@ class Converter(
         self._list_grid_layout.remove_widget(self._content_list)
         self._set_placeholder()
 
-        self.api.clear_files()
+        self._current_files = []
         self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
 
     def _delete_tool_button_connect(self, _: MediaFile) -> None:
@@ -205,7 +291,17 @@ class Converter(
             else:
                 item.set_hidden(False)
 
-    # Plugin event methods
+    # Plugin event method
+
+    @on_plugin_event(target=Plugin.Preferences)
+    def _on_preferences_available(self) -> None:
+        preferences = get_plugin(Plugin.Preferences)
+        preferences.register_config_page(self)
+
+    @on_plugin_event(target=Plugin.Preferences, event="on_teardown")
+    def _on_preferences_teardown(self) -> None:
+        preferences = get_plugin(Plugin.Preferences)
+        preferences.deregister_config_page(self)
 
     @on_plugin_event(target=Plugin.MenuBar)
     def _on_menu_bar_available(self) -> None:
@@ -219,7 +315,7 @@ class Converter(
             text=self.translate("Open file"),
             icon=self.get_svg_icon("icons/folder-open.svg"),
             index=INDEX_START(),
-            triggered=self.api.open_files
+            triggered=self.open_files
         )
 
     @on_plugin_event(target=Plugin.Workbench)
@@ -233,7 +329,7 @@ class Converter(
             text=self.translate("Open file"),
             tooltip=self.translate("Open file"),
             icon=self.get_svg_icon("icons/folder.svg"),
-            triggered=self.api.open_files
+            triggered=self.open_files
         )
 
         self.add_tool_button(

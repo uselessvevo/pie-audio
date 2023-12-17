@@ -10,7 +10,7 @@ from pieapp.structs.menus import MainMenu
 from pieapp.structs.plugins import Plugin
 
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.plugins.decorators import on_plugin_event
 
 from piekit.managers.structs import Section
 from piekit.managers.menus.mixins import MenuAccessorMixin

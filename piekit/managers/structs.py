@@ -13,6 +13,9 @@ class SysManager:
     # AssetsManager
     Themes = "assets"
 
+    # IconsManager
+    Icons = "icons"
+
     # ShortcutsManager
     Shortcuts = "shortcuts"
 

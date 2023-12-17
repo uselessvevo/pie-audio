@@ -9,8 +9,8 @@ from piekit.exceptions import PieException
 from piekit.managers.base import BaseManager
 from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
-from piekit.utils.files import read_json, write_json
-from piekit.utils.logger import logger
+from piekit.helpers.files import read_json, write_json
+from piekit.helpers.logger import logger
 
 
 class ConfigManager(BaseManager):

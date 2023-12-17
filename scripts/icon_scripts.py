@@ -46,4 +46,4 @@ def change_icons_color(folder: Path, color: str, *exclude) -> None:
 
 if __name__ == '__main__':
     # rename_material_icons(Path(r"../pieapp/assets/themes/dark theme/icons/"))
-    change_icons_color(Path(r"../pieapp/assets/themes/dark theme/icons/"), "#cccccc", "app.svg", "app.png")
+    change_icons_color(Path(r"../pieapp/assets/dark theme/icons/"), "#cccccc", "app.svg", "app.png")

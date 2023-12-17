@@ -1,48 +1,132 @@
-## Plugins
-Piekit has plug-ins support to extend application usability. 
+# Plugins
 
-To create your own manager you need next things:
-* Create a plugin folder in the project or in the `.crabs` user folder.
-* Create `plugin.py` module
+> Attention: the principle of operation may change during the active development of the project
+
+<br>
+
+## Description
+Plugins are an integral part of the application, acting as full-fledged firmware, managers, complementing other plugins, etc.
+
+<br>
+
+## Registering and calling plugins
+In order for a plugin to be registered, it must first be created. At the moment it is done manually.
+
+In the end, you should have a plugin directory structure like this:
+
+## Plugin's root directory
+![plugin's root directory](../../images/plugin_folder1.png)
+
+## Assets directory
+![assets directory](../../images/plugin_folder2.png)
+
+Let's open the `myplugin/plugin.py` module
 
 ```py
-from pieapp.structs.plugins import Plugin
-
+from piekit.globals import Global
 from piekit.plugins.plugins import PiePlugin
-from piekit.managers.menus.mixins import MenuAccessorMixin
-from piekit.managers.themes.mixins import ThemeAccessorMixin
-from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.plugins.decorators import on_plugin_event
+from piekit.managers.assets.mixins import AssetsAccessor
+from piekit.managers.configs.mixins import ConfigAccessor
+from piekit.managers.locales.mixins import LocalesAccessor
 
 
-class MagicPlugin(
+class MyPlugin(
     PiePlugin,
-    MenuAccessorMixin,
-    ThemeAccessorMixin,
-    LocalesAccessorMixin,
+    ConfigAccessor,
+    LocalesAccessor,
+    AssetsAccessor,
 ):
-    name = Plugin.About
-    requires = [Plugin.MenuBar]
+    name = "myplugin"
+
+    def get_plugin_icon(self) -> "QIcon":
+        raise NotImpelementedError("Method `get_plugin_icon` must be implemented")
 
     def init(self) -> None:
-        self.logger.info(f"{self.get_icon_path('asset name.svg')=}")
-        self.logger.info(f"{self.translate('About')=}")
-
-    def shutdown(self) -> None:
-        self.logger.info("Shutting down")
-
-    @on_plugin_event(target=Plugin.MenuBar)
-    def on_menu_bar_available(self) -> None:
-        self.add_menu_item(
-            section=Section.Shared,
-            menu=MainMenu.Help,
-            name="about",
-            text=self.translate("About"),
-            triggered=self.call,
-            icon=self.get_svg_icon("help.svg"),
-        )
+        raise NotImpelementedError("Method `init` must be implemented")
 
 
-def main(parent: "QMainWindow", plugin_path: "Path") -> Union[PiePlugin, None]:
-    return MagicPlugin(parent, plugin_path)
+def main(*args, **kwargs) -> typing.Any:
+    return MyPlugin(*args, **kwargs)
+```
+
+But we'd like our plugin to do something.
+
+First, let's override the `init` method.
+
+```py
+def init(self) -> None:
+    """
+    Method of plugin initialization
+    """
+    self.dialog = QDialog(self.parent())
+    self.dialog.set_window_icon(self.get_plugin_icon())
+    self.dialog.set_window_title(self.translate("My plugin"))
+
+    self.button = QPushButton(self.translate("Ok"))
+    self.button.clicked.connect(self.dialog.close)
+
+    grid_layout = QGridLayout()
+    gridLayout.add_widget(self.button, 0, 0)
+
+    self.dialog.set_layout(grid_layout)
+    self.dialog.resize(400, 300)
+```
+
+Let's override the `call` method so that we can call the window when the button on the main menu is clicked.
+
+```py
+def call(self) -> None:
+    self.dialog.show()
+```
+
+Let's add some logic to the `main` method
+
+```py
+def main(*args, **kwargs) -> typing.Any:
+    """
+    Method for configuring and running the plugin
+    """
+
+    # We can also change the value of the configuration field
+    # Attention! This field may not exist at this moment
+    # so it is recommended to change their values in the `init` method
+    # or in a method called when the plugin is available, in which
+    # this field is declared
+    Global.AUDIO_EXTENSIONS.append(".wav")
+
+    # Let's run the plugin
+    return MyPlugin(*args, **kwargs)
+```
+
+Let's add a button to the `MenuBar`:
+
+```py
+@on_plugin_event(target=Plugin.MenuBar)
+def _on_menu_available_(self) -> None:
+    self.add_menu_item(
+        section=Sections.Shared,
+        menu=Menus.Help,
+        name="myplugin",
+        text=self.translate("Dream plugin"),
+        triggered=self.dialog.show,
+        icon=self.get_plugin_icon(),
+    )
+```
+
+## Using internal components
+If your plugin is broken down into components, you are required to do the following to use them:
+
+1. Create a `plugins/myplugin/components` directory and place your component there.
+2. In `plugins/myplugin/plugin.py` add an import of our component:
+
+```py
+from myplugin.components.mycomponent import MyComponent
+```
+
+## Using components within components
+To use a component inside another component, use a local import:
+
+```py
+# plugins/myplugin/components/mycomponent_b.py
+from .mycomponent_a import MyComponentA
 ```

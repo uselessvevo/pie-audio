@@ -6,8 +6,8 @@ class PluginType(Enum):
     # Plugin
     Plugin: str = "plugin"
 
-    # Container
-    Container: str = "container"
+    # Object
+    Object: str = "manager"
 
 
 @dt.dataclass

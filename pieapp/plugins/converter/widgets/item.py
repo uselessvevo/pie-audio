@@ -16,7 +16,7 @@ class ConverterItem(QWidget):
 
         self._parent = parent
         self._list_widget = None
-        self._color_props = color_props
+        self._color_props = color_props or {}
 
         # Index of item
         self._media_file = media_file
@@ -96,7 +96,7 @@ class ConverterItem(QWidget):
         self._file_format_label.set_text(file_format)
 
     def _get_file_format_color(self) -> None:
-        rgba = self._color_props[self._media_file.info.file_format]
+        color = self._color_props.get(self._media_file.info.file_format, self._color_props["default"])
         self._file_format_label.set_style_sheet(
-            "#ConverterItemFormat {background-color: %s;}" % rgba
+            "#ConverterItemFormat {background-color: %s;}" % color
         )

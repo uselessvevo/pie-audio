@@ -1,18 +1,38 @@
 from PySide6.QtCore import QSettings
 from __feature__ import snake_case
 
-import os
 import sys
 
 from piekit.globals import Global, Lock, Max, Min
-from pieapp.wizard.wizard import SetupWizard
+from pieapp.app.wizard import SetupWizard
+from piekit.helpers.files import write_json
 from piekit.managers.registry import Managers
-from piekit.utils.modules import is_debug
-from piekit.utils.core import check_crabs
-from piekit.utils.core import except_hook
-from piekit.utils.core import restore_crabs
-from piekit.utils.core import get_application
+from piekit.helpers.modules import is_debug
+from piekit.helpers.core import except_hook
+from piekit.helpers.core import get_application
+from piekit.plugins.registry import Plugins
 from piekit.widgets.splashscreen import SplashScreen
+
+
+def check_crabs() -> bool:
+    return (
+        Global.USER_ROOT.exists()
+        and (Global.USER_ROOT / Global.CONFIGS_FOLDER).exists()
+        and (Global.USER_ROOT / Global.PLUGINS_FOLDER).exists()
+        and (Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME).exists()
+    )
+
+
+def restore_crabs() -> None:
+    if not Global.USER_ROOT.exists():
+        Global.USER_ROOT.mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_FOLDER).mkdir()
+        (Global.USER_ROOT / Global.PLUGINS_FOLDER).mkdir()
+        write_json(
+            file=str(Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME),
+            data={"crab_status": "what a crab doin?"},
+            create=True
+        )
 
 
 def start_application(*args, **kwargs) -> None:
@@ -22,9 +42,9 @@ def start_application(*args, **kwargs) -> None:
     # Adding additional magic-annotations
     Global.add_handlers(Lock, Max, Min)
     
-    # Load configuration modules
-    Global.import_module(os.getenv("PIE_SYS_GLOBALS_MODULE", "piekit.globals.globals"))
-    Global.import_module(os.getenv("PIE_APP_GLOBALS_MODULE", "pieapp.globals"))
+    # Load system configuration modules first
+    Global.import_module("piekit.globals.globals")
+    Global.import_module("pieapp.app.globals")
 
     # Swapping the exception hook
     if bool(int(Global.USE_EXCEPTION_HOOK)):
@@ -62,6 +82,8 @@ def start_application(*args, **kwargs) -> None:
         for manager in Global.CORE_MANAGERS:
             Managers.from_string(manager)
 
+        app.set_style_sheet("")
+
         # Closing splashscreen because we don't need it here
         if splash:
             splash.close()
@@ -95,7 +117,7 @@ def start_application(*args, **kwargs) -> None:
     main_window.prepare_main_layout()
     main_window.prepare_central_widget()
 
-    Managers.from_string(Global.PLUGIN_MANAGER)
+    Plugins.init_plugins()
 
     main_window.show()
 

@@ -8,7 +8,7 @@ from piekit.managers.structs import Section
 from piekit.managers.structs import SysManager
 from piekit.managers.base import BaseManager
 from piekit.exceptions import PieException
-from piekit.utils.logger import logger
+from piekit.helpers.logger import logger
 
 
 class ActionManager(BaseManager):

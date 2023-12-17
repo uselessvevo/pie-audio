@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from piekit.managers.configs.mixins import ConfigAccessorMixin
 from piekit.managers.layouts.mixins import LayoutsAccessorMixin
 from piekit.managers.locales.mixins import LocalesAccessorMixin
-from piekit.managers.locales.utils import translate
+from piekit.managers.locales.helpers import translate
 from piekit.managers.menus.mixins import MenuAccessorMixin
 from piekit.managers.shortcuts.mixins import ShortcutAccessorMixin
 from piekit.managers.themes.mixins import ThemeAccessorMixin

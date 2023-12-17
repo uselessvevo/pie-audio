@@ -3,13 +3,13 @@ from typing import Any, Union
 from PySide6.QtGui import QIcon
 
 from piekit.managers.registry import Managers
-from piekit.managers.themes.utils import as_svg
+from piekit.managers.themes.helpers import as_svg
 from piekit.managers.structs import SysManager, Section
 
 
 class ThemeAccessorMixin:
     """
-    Config mixin
+    ThemeManager mixins
     """
 
     def get_file_path(
@@ -41,11 +41,5 @@ class ThemeAccessorMixin:
     def get_themes(self) -> list[str]:
         return Managers(SysManager.Themes).get_themes()
 
-    def get_theme_property(self, prop_name: str, default: Any = None) -> str:
+    def get_theme_property(self, prop_name: str, default: Any = None) -> Any:
         return Managers(SysManager.Themes).get_theme_property(prop_name, default)
-
-    getIcon = get_icon
-    getSvgIcon = get_svg_icon
-    getFilePath = get_file_path
-    getThemes = get_themes
-    getThemeProperty = get_theme_property

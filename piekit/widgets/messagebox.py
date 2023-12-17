@@ -5,7 +5,7 @@ from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QMessageBox, QCheckBox
 
-from piekit.managers.locales.utils import translate
+from piekit.managers.locales.helpers import translate
 
 
 class MessageCheckBox(QMessageBox):

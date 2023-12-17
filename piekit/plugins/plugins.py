@@ -1,37 +1,31 @@
 from pathlib import Path
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import Signal
+from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QMainWindow
 
-from piekit.utils.logger import logger
-from piekit.plugins.types import PluginType, Error
+from piekit.helpers.logger import logger
+from piekit.plugins.types import Error
+from piekit.plugins.types import PluginType
 from piekit.plugins.observer import PluginsObserverMixin
+from piekit.managers.actions.mixins import ActionAccessorMixin
 
 
-class PiePlugin(
-    QObject,
-    PluginsObserverMixin,
-):
-    # Main attributes #
-
-    # Plugin type
-    type: PluginType = PluginType.Plugin
-
-    # Plugin codename
+class PieObject(QObject, PluginsObserverMixin):
+    """
+    Base object
+    """
+    # Plugin name
     name: str
 
-    # Accessors section
-    section: str = None
+    # Plugin type
+    type: PluginType = PluginType.Object
 
     # List of required built-in plugins
     requires: list[str] = []
 
     # List of optional built-in plugins
     optional: list[str] = []
-
-    api: "PiePluginAPI" = None
-
-    # Qt configuration #
 
     # Signal when plugin is ready
     sig_plugin_ready = Signal()
@@ -67,11 +61,11 @@ class PiePlugin(
     # Prepare methods
 
     def prepare(self) -> None:
+        """
+        Prepares the plugin by calling `init` method and emitting `sig_plugin_ready` signal.
+        """
         # Initializing plugin
         self.init()
-
-        # Prepare PiePluginAPI
-        self.init_api()
 
         # Notify that our plugin is ready
         self.sig_plugin_ready.emit()
@@ -80,36 +74,68 @@ class PiePlugin(
 
     def init(self) -> None:
         """
-        Initialize an object for the first time.
-        For example, you can call managers' register method
+        Initializes the plugin and required services after forming an instance of the class
         """
+
+    def on_system_shutdown(self) -> None:
+        pass
+
+    def on_close(self) -> None:
+        pass
+
+    def can_close(self) -> None:
+        pass
+
+    def get_type(self) -> PluginType:
+        return self.type
+
+    def get_path(self) -> Path:
+        """
+        This method returns the full path of the plugin
+        """
+        return self._path
+
+    def __repr__(self) -> str:
+        return f"({self.__class__.__name__}) <name: {self.name} type: {self.type.value}>"
+
+
+class PiePlugin(PieObject, ActionAccessorMixin):
+    """
+    Base pie-kit plugin
+    """
+    # Plugin type
+    type: PluginType = PluginType.Plugin
+
+    # Emit on main window shown
+    sig_on_main_window_show = Signal()
+
+    # Emit on main window close
+    sig_on_main_window_close = Signal()
 
     def call(self) -> None:
         """
-        Call an object.
-        Notice, don't call managers' register methods.
+        This method calls the plugin.
+        For example, it is usually used to display an already prepared plugin widget (window).
+        In rare cases the whole thing is rendered anew.
         """
-        raise NotImplementedError(f"Method `call` is not implemented")
-
-    def init_api(self) -> None:
-        """
-        Method that prepare PiePluginAPI based instance
-        """
-        if self.api:
-            self.api = self.api(self)
-            self.api.init()
-
-    def get_name(self) -> str:
-        return self.name
-
-    def get_path(self) -> Path:
-        return self._path
-
-    def get_description(self) -> str:
-        return f"{self.name.capitalize()} description"
+        raise NotImplementedError(f"Method \"call\" must be implemented")
 
     def get_plugin_icon(self) -> "QIcon":
-        raise NotImplementedError("A plugin icon must be defined")
+        """
+        This method returns the plugin icon
+        """
+        raise NotImplementedError(f"Method \"get_plugin_icon\" must be implemented")
 
-    def __repr__(self) -> str:
-        return f"({self.__class__.__name__}) <id: {id(self)}, name: {self.name}>"
+    @staticmethod
+    def get_name() -> str:
+        """
+        This method returns the translated name of the plugin
+        """
+        raise NotImplementedError(f"Method \"get_name\" must be implemented")
+
+    @staticmethod
+    def get_description() -> str:
+        """
+        This method returns the translated description of the plugin
+        """
+        raise NotImplementedError("Method \"get_description\" must be implemented")

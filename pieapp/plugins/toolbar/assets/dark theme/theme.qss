@@ -1,0 +1,6 @@
+/* #QToolButton */
+
+#workbench {
+    background-color: @minorBackgroundColor;
+    border-bottom: @minorBorderColor solid 1px;
+}

@@ -30,7 +30,7 @@ class MenuAccessorMixin:
         text: str = None,
         icon: QIcon = None,
     ) -> PieMenu:
-        menu = PieMenu(parent=parent, name=name, text=text)
+        menu = PieMenu(parent=parent, name=name, text=f"&{text}")
         if icon:
             menu.menu_action().set_icon_visible_in_menu(True)
             menu.set_icon(icon)

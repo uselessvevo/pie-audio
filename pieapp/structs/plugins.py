@@ -4,13 +4,18 @@ Built-in app plugins
 
 
 class Plugin:
+    # Plugins
     About = "about"
     MenuBar = "menu-bar"
-    Settings = "settings"
+    Preferences = "preferences"
     Workbench = "workbench"
     StatusBar = "status-bar"
     Converter = "converter"
     MetadataEditor = "metadata"
-    TestPlugin = "test-plugin"
-    TestPluginChild = "test-plugin-child"
-    MainLayout = "main-layout"
+
+    # Managers
+    Layout = "layout"
+    ConfPage = "confpage"
+
+    # Configuration pages
+    Appearance = "appearance"

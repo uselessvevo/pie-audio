@@ -1,91 +1,85 @@
 # Плагины
 
-# Описание
-В `piekit` имеется поддержка плагинов и чтобы создать плагин мечты, для начала определим, какой именно тип плагина вам нужен - контейнер или приложение?
+> Внимание: принцип работы может менятся в течении активной разработки проекта
 
-**Контейнер** - это плагин, который предусматривает регистрацию других плагинов (приложений) на себе.
+<br>
 
-**Приложение** - это независимый от других плагин, не предусматривающий регистрацию.
+## Описание
+Плагины являются неотъемлемой частью приложения, выполняя роли полноценных микропрограмм, менеджеров, дополнением других плагинов и т.д.
 
-Для начала создадим директорию `plugins/<your plugin name>` в проекте или в директории пользователя, используя `pie-cli.py`.
+<br>
 
-```
-pie-cli.py --create-plugin dream-plugin --folder plugin/container
-```
+## Регистрация и вызов плагинов
+Для того, чтобы плагин был зарегистрирован, прежде всего его нужно создать. На данный момент это делается вручную.
 
-Так же, вы можете указать дополнительные параметры для создания директорий:
+В конечном итоге, у вас должна быть такая структура директории плагина:
 
-```
-... --add-configs --add-locales --add-assets
-```
+## Корневая директория
+![Корневая директория](../../images/plugin_folder1.png)
 
-Структура директории плагина:
+## Директория с ресурсами
+![Директория ресурсов](../../images/plugin_folder2.png)
 
-```
-plugins/
-... dream-plugin/
-...... assets
-...... configs
-...... locales
-...... plugin /
-............ plugin.py
-............ confpage.py
-............ widget.py
-...... __init__.py
-...... app.png
-```
-
-Откроем модуль `plugin/plugin.py`
-
+Откроем модуль `myplugin/plugin.py`
 
 ```py
-import typing
-
-from piekit.config import Config
+from piekit.globals import Global
 from piekit.plugins.plugins import PiePlugin
 from piekit.managers.assets.mixins import AssetsAccessor
 from piekit.managers.configs.mixins import ConfigAccessor
 from piekit.managers.locales.mixins import LocalesAccessor
 
 
-class DreamPlugin(
+class MyPlugin(
     PiePlugin,
     ConfigAccessor,
     LocalesAccessor,
     AssetsAccessor,
 ):
-    name = "dream-plugin"
+    name = "myplugin"
+
+    def get_plugin_icon(self) -> "QIcon":
+        raise NotImpelementedError("Method `get_plugin_icon` must be implemented")
 
     def init(self) -> None:
         raise NotImpelementedError("Method `init` must be implemented")
 
 
 def main(*args, **kwargs) -> typing.Any:
-    return DreamPlugin(*args, **kwargs)
+    return MyPlugin(*args, **kwargs)
 ```
 
-Но мы бы хотели, чтобы наш плагин что-нибудь делал и чтобы мы могли его запустить.
+Но мы бы хотели, чтобы наш плагин что-нибудь делал.
 
-Переопределим метод `init`:
+Для начала переопределим метод `init`.
 
 ```py
 def init(self) -> None:
     """
-    Метод отрисовки плагина
+    Метод инициализации плагина
     """
     self.dialog = QDialog(self.parent())
-    self.dialog.setWindowIcon(self.getPluginIcon())
-    self.dialog.setWindowTitle(self.getTranslation("Dream plugin"))
+    self.dialog.set_window_icon(self.get_plugin_icon())
+    self.dialog.set_window_title(self.translate("My plugin"))
 
-    self.button = QPushButton(self.getTranslation("Ok"))
+    self.button = QPushButton(self.translate("Ok"))
     self.button.clicked.connect(self.dialog.close)
 
-    gridLayout = QGridLayout()
-    gridLayout.addWidget(self.button, 0, 0)
+    grid_layout = QGridLayout()
+    grid_layout.add_widget(self.button, 0, 0)
 
-    self.dialog.setLayout(gridLayout)
+    self.dialog.set_layout(grid_layout)
     self.dialog.resize(400, 300)
 ```
+
+Переопределим метод `call`, чтобы мы могли вызывать окно при нажатии на кнопку в главном меню.
+
+```py
+def call(self) -> None:
+    self.dialog.show()
+```
+
+Добавим немного логики в метод `main`
 
 ```py
 def main(*args, **kwargs) -> typing.Any:
@@ -94,23 +88,46 @@ def main(*args, **kwargs) -> typing.Any:
     """
 
     # Мы так же можем изменить значение поля конфигурации
-    Config.ASSETS_EXCLUDED_FORMATS.append(".wma")
+    # Внимание! В этот момент это поле может не существовать
+    # поэтому рекомендуется изменять их значения в методе `init`
+    # или в методе, вызывающийся при доступности плагина, в котором
+    # это поле объявлено
+    Global.AUDIO_EXTENSIONS.append(".wav")
 
     # Запустим плагин
-    return DreamPlugin(*args, **kwargs)
+    return MyPlugin(*args, **kwargs)
 ```
 
 Добавим кнопку в `MenuBar`:
 
 ```py
-@onPluginAvailable(target=Containers.MenuBar)
-def onMenuBarAvailable(self) -> None:
-    self.addMenuItem(
+@on_plugin_event(target=Plugin.MenuBar)
+def _on_menu_available_(self) -> None:
+    self.add_menu_item(
         section=Sections.Shared,
         menu=Menus.Help,
-        name="dream",
-        text=self.getTranslation("Dream plugin"),
+        name="myplugin",
+        text=self.translate("Dream plugin"),
         triggered=self.dialog.show,
-        icon=self.getAssetIcon("help.png"),
+        icon=self.get_plugin_icon(),
     )
+```
+
+
+## Использование внутренних компонентов
+Если ваш плагин разбит на компоненты, то для их использования вам требуется сделать следующее:
+
+1. Создать директорию `plugins/myplugin/components` и поместить ваш компонент туда.
+2. В `plugins/myplugin/plugin.py` добавляем импорт нашего компонента:
+
+```py
+from myplugin.components.mycomponent import MyComponent
+```
+
+## Использование компонентов внутри компонентов
+Для использования компонента внутри другого компонента используйте локальный импорт:
+
+```py
+# plugins/myplugin/components/mycomponent_b.py
+from .mycomponent_a import MyComponentA
 ```

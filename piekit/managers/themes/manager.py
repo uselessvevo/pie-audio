@@ -8,10 +8,10 @@ from typing import Any, Union
 from PySide6.QtWidgets import QApplication
 
 from piekit.globals import Global
-from piekit.utils.files import read_json
-from piekit.utils.logger import logger
-from piekit.utils.core import get_application
-from piekit.utils.modules import import_by_path
+from piekit.helpers.files import read_json
+from piekit.helpers.logger import logger
+from piekit.helpers.core import get_application
+from piekit.helpers.modules import import_by_path
 
 from piekit.managers.structs import Section
 from piekit.managers.registry import Managers
@@ -42,7 +42,7 @@ class ThemeManager(BaseManager):
             * <icons folder>
             * <fonts folder>
             * props.json - theme properties: colors and icons accent
-            * template.qss - style sheet template file
+            * theme.qss - style sheet template file
         """
         self._current_theme = Managers(SysManager.Configs).get(
             scope=Section.Root,
@@ -57,14 +57,14 @@ class ThemeManager(BaseManager):
 
     def _get_themes(self) -> list[str]:
         themes: list[str] = []
-        for folder in (Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER).iterdir():
+        for folder in (Global.APP_ROOT / Global.ASSETS_FOLDER).iterdir():
             if folder.is_dir() and not folder.name.startswith("__"):
                 themes.append(folder.name)
 
         return themes
 
     def _load_app_theme(self) -> None:
-        theme_folder = Global.APP_ROOT / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
+        theme_folder = Global.APP_ROOT / Global.ASSETS_FOLDER / self._current_theme
         for file in theme_folder.rglob("*.*"):
             if not self._check_file(file):
                 continue
@@ -74,7 +74,8 @@ class ThemeManager(BaseManager):
         self._stylesheet_props["THEME_ROOT"] = theme_folder.as_posix()
 
         self._app = get_application()
-        self._load_style_sheet(theme_folder)
+        if Global.ASSETS_USE_STYLE:
+            self._load_style_sheet(theme_folder)
         self._load_palette(theme_folder)
 
     def _load_plugins_theme(self, plugins_folder: Path) -> None:
@@ -87,7 +88,7 @@ class ThemeManager(BaseManager):
             plugins_folder (pathlib.Path): Plugins folder
         """
         for plugin_folder in plugins_folder.iterdir():
-            theme_folder = plugin_folder / Global.ASSETS_FOLDER / Global.THEMES_FOLDER / self._current_theme
+            theme_folder = plugin_folder / Global.ASSETS_FOLDER / self._current_theme
             if theme_folder.exists():
                 icons_folder = theme_folder / "icons"
             else:
@@ -101,7 +102,8 @@ class ThemeManager(BaseManager):
 
                 self._add_file(plugin_folder.name, theme_folder, file)
 
-            self._load_style_sheet(theme_folder)
+            if Global.ASSETS_USE_STYLE:
+                self._load_style_sheet(theme_folder)
             self._load_palette(theme_folder)
             self._app.set_style_sheet(self._stylesheet)
 
@@ -140,7 +142,7 @@ class ThemeManager(BaseManager):
         """
         Parse template file
         """
-        pattern = re.compile(r"@([A-Za-z0-9-_]+)")
+        pattern = re.compile(r"@([A-Za-z0-9-_\.]+)")
         with open(str(template_file)) as lines:
             for line in lines:
                 match_list = pattern.findall(line)
@@ -153,24 +155,13 @@ class ThemeManager(BaseManager):
                 self._stylesheet += line
 
     def _load_style_sheet(self, theme_folder: Path) -> None:
-        theme_file = theme_folder / "theme.json"
+        theme_file = theme_folder / "theme.qss"
         if not theme_file.exists():
             return
 
-        theme_conf = read_json(theme_folder / "theme.json")
-        if theme_conf.get("template"):
-            props_data = theme_conf.get("properties", {})
-            self._stylesheet_props.update(**props_data)
-            self._parse_template(theme_folder / theme_conf["template"])
-
-        elif theme_conf.get("theme"):
-            theme_file = theme_folder / theme_conf.get("theme")
-            if theme_file.exists():
-                style_sheet = theme_file.read_text(encoding="utf-8")
-                self._stylesheet += style_sheet
-        
-        else:
-            self._logger.critical(f"Can't load theme: specify `template` or `theme` fields")
+        props_data = read_json(theme_folder / "props.json", raise_exception=False, default={})
+        self._stylesheet_props.update(**props_data)
+        self._parse_template(theme_file)
 
     def _load_palette(self, theme_folder: Path) -> None:
         palette_file = theme_folder / "palette.py"
@@ -206,3 +197,4 @@ class ThemeManager(BaseManager):
 
     getTheme = get_theme
     getThemes = get_themes
+    getProperty = get_theme_property
