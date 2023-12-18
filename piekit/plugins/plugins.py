@@ -83,8 +83,8 @@ class PieObject(QObject, PluginsObserverMixin):
     def on_close(self) -> None:
         pass
 
-    def can_close(self) -> None:
-        pass
+    def can_close(self) -> bool:
+        return True
 
     def get_type(self) -> PluginType:
         return self.type

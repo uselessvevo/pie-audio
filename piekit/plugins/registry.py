@@ -75,6 +75,37 @@ class PluginRegistry(QObject):
             plugin_instance = self._plugin_registry.get(plugin)
             self._initialize_plugin(plugin_instance)
 
+    def delete_plugin(
+        self,
+        plugin_name: str,
+        teardown: bool = False,
+        check_can_delete: bool = False
+    ) -> bool:
+        plugin_instance = self._plugin_registry[plugin_name]
+        if check_can_delete:
+            can_delete = plugin_instance.can_close()
+            if not can_delete:
+                return False
+        
+        try:
+            plugin_instance.delete_later()
+        except RuntimeError:
+            pass
+
+        if teardown:
+            # Disconnect plugin from other plugins
+            self._shutdown_plugin(plugin_name)
+
+            # Disconnect depending plugins from the plugin to delete
+            self._notify_plugin_shutdown(plugin_name)
+
+        try:
+            plugin_instance.on_close()
+        except Exception:
+            pass
+
+        return True
+
     def get_plugin(self, plugin_name: str) -> Any:
         """ Get PiePlugin instance by its name """
         return self._plugin_registry.get(plugin_name)
@@ -102,8 +133,8 @@ class PluginRegistry(QObject):
                 plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
                 try:
                     self._check_versions(plugin_package_module)
-                except AttributeError as e:
-                    raise e
+                except AttributeError:
+                    self.delete_plugin(package.name)
 
                 # Importing plugin module
                 plugin_module = import_by_path(str(plugin_path / "plugin.py"))
@@ -161,8 +192,8 @@ class PluginRegistry(QObject):
 
         try:
             plugin_instance.prepare()
-        except Exception as e:
-            raise e
+        except Exception:
+            self.delete_plugin(plugin_instance.name)
 
     def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[str]:
         """
@@ -285,8 +316,13 @@ class PluginRegistry(QObject):
         plugin_dependencies[category] = plugin_strict_dependencies
         self._plugin_dependencies[plugin] = plugin_dependencies
 
-    def _notify_plugin_shutting_down(self, plugin_name: str):
-        """Notify dependents of a plugin that is going to be unavailable."""
+    def _notify_plugin_shutdown(self, plugin_name: str):
+        """
+        Notify dependents of a plugin that is going to be unavailable.
+
+        Args:
+            plugin_name (str): Plugin name
+        """
         plugin_dependents = self._plugin_dependents.get(plugin_name, {})
         required_plugins = plugin_dependents.get("requires", [])
         optional_plugins = plugin_dependents.get("optional", [])

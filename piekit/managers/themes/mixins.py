@@ -2,9 +2,10 @@ from typing import Any, Union
 
 from PySide6.QtGui import QIcon
 
+from piekit.managers.structs import Section
+from piekit.managers.structs import SysManager
 from piekit.managers.registry import Managers
 from piekit.managers.themes.helpers import as_svg
-from piekit.managers.structs import SysManager, Section
 
 
 class ThemeAccessorMixin:
