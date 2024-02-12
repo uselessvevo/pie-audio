@@ -1,0 +1,47 @@
+[project]
+name = "pie-audio"
+version = "0.1.0"
+description = "A simple audio editor"
+authors = [
+    {name = "Ivanov Cyril", email = "jcommander13@yandex.ru"}
+]
+license = { text = "GPLv2+" }
+readme = "README.md"
+keywords = [
+    "Qt", "PySide", "PySide6",
+    "audio", "media", "converter",
+    "audio-converter", "experimental",
+    "plugins", "plug-ins"
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Intended Audience :: Developers",
+    "Environment :: X11 Applications :: Qt",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "Natural Language :: English",
+    "Natural Language :: Russian",
+]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements/default.txt"]}
+
+[project.optional-dependencies]
+build = ["Nuitka==1.5.5"]
+
+[project.scripts]
+pie-audio = "pieapp.launcher:launch"
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pieapp", "piekit"]

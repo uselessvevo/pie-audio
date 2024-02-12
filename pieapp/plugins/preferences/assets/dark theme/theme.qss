@@ -1,0 +1,43 @@
+#PreferencesCurrentWidget {
+    /*font-size: 20pt;*/
+}
+
+#PreferencesDialog {
+    background-color: @mainBackgroundColor;
+}
+
+#PreferencesLineEdit {
+    /*font-size: 10pt;*/
+}
+
+#PreferencesComboBox {
+    /*font-size: 10pt;*/
+}
+
+#PreferencesTreeWidget {
+    border: none;
+    border-radius: 0px;
+    /*font-size: 10pt;*/
+    background-color: @minorBackgroundColor;
+}
+
+#PreferencesTreeWidget::item {
+    background-color: @minorBackgroundColor;
+}
+
+#PreferencesTreeWidget::item:focus,
+#PreferencesTreeWidget::item:!focus {
+    color: @minorColor;
+    background-color: @minorBackgroundColor;
+}
+
+#PreferencesTreeWidget::branch:open:has-children:!has-siblings,
+#PreferencesTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(@THEME_ROOT/icons/arrow-down.svg);
+}
+#PreferencesTreeWidget::branch:has-children:!has-siblings:closed,
+#PreferencesTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(@THEME_ROOT/icons/arrow-right.svg);
+}
