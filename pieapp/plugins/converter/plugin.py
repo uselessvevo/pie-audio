@@ -285,9 +285,11 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
     @on_plugin_event(target=Plugin.Layout)
     def _on_layout_manager_available(self) -> None:
-        main_layout = get_plugin(Plugin.Layout).get_layout(Layout.Main)
+        layout_manager = get_plugin(Plugin.Layout)
+        main_layout = layout_manager.get_layout(Layout.Main)
         if main_layout:
             main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+            layout_manager.add_layout(self.name, main_layout)
 
     @on_plugin_event(target=Plugin.Shortcut)
     def _on_shortcut_manager_ready(self) -> None:

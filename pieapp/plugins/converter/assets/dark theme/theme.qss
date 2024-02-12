@@ -14,7 +14,7 @@ QListWidget::item:hover:!active
 }
 
 #QuickAction {
-    border-radius: 2px;
+    border-radius: @controlsBorderRadius;
     background-color: #424242;
 }
 

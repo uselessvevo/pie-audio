@@ -35,9 +35,11 @@ class QuickActionMenu(QWidget):
         self.set_layout(self._menu_hbox)
         self.set_object_name("QuickAction")
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
+
         menu_size_policy = self.size_policy()
         menu_size_policy.set_retain_size_when_hidden(True)
         self.set_size_policy(menu_size_policy)
+
         self.hide()
 
     def get_items(self) -> list[QToolButton]:

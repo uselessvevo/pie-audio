@@ -212,3 +212,4 @@ fabric.properties
 # *.iml
 # modules.xml
 /lvenv/
+/ffmpeg/

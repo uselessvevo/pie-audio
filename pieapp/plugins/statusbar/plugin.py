@@ -21,14 +21,16 @@ class StatusBar(PiePlugin):
         self._main_grid = QGridLayout()
         self._status_bar = QWidget()
         self._status_bar_label = QLabel()
+        self._status_bar_label.set_text("Sex")
+        self._status_bar_label.set_style_sheet("QLabel {background-color: red}")
         self._status_bar.set_layout(self._main_grid)
 
     @on_plugin_event(target=Plugin.Layout)
     def on_layout_manager_available(self) -> None:
         layout_manager = get_plugin(Plugin.Layout)
-        main_layout = layout_manager.get_layout(Layout.Main)
+        main_layout = get_plugin(Plugin.Layout).get_layout(Layout.Main)
         if main_layout:
-            main_layout.add_layout(self._main_grid, 1, 0, Qt.AlignmentFlag.AlignBottom)
+            main_layout.add_layout(self._main_grid, 0, 0, Qt.AlignmentFlag.AlignBottom)
             layout_manager.add_layout(self.name, self._main_grid)
 
 

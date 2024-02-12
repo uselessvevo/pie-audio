@@ -32,9 +32,10 @@ class MainToolBar(PiePlugin, LocalesAccessorMixin, ToolBarAccessorMixin):
     @on_plugin_event(target=Plugin.Layout)
     def on_layout_manager_available(self) -> None:
         layout_manager = get_plugin(Plugin.Layout)
-        layout = layout_manager.get_layout(Layout.Main)
-        layout.add_layout(self._workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
-        layout_manager.add_layout(self.name, self._workbench_layout)
+        main_layout = layout_manager.get_layout(Layout.Main)
+        if main_layout:
+            main_layout.add_layout(self._workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
+            layout_manager.add_layout(self.name, self._workbench_layout)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path"):
