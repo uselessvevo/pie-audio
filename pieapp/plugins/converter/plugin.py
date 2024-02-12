@@ -24,6 +24,7 @@ from pieapp.api.structs.menus import MainMenu
 from pieapp.api.structs.menus import MainMenuItem
 from pieapp.api.globals import Global
 from pieapp.api.structs.workbench import WorkbenchItem
+from pieapp.widgets.menus import INDEX_START
 from pieapp.helpers.files import create_temp_directory
 
 from converter.workers import ConverterWorker
@@ -31,17 +32,21 @@ from converter.confpage import ConverterConfigPage
 from converter.widgets.item import ConverterItem
 from converter.widgets.search import ConverterSearch
 from converter.widgets.list import ConverterListWidget
-from pieapp.widgets.menus import INDEX_START
 
 
 class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     name = Plugin.Converter
-    requires = [Plugin.MainMenuBar, Plugin.MainToolBar, Plugin.Preferences, Plugin.Layout, Plugin.Shortcut]
+    requires = [Plugin.MainToolBar, Plugin.Preferences, Plugin.Layout, Plugin.Shortcut]
+    optional = [Plugin.MainMenuBar]
     sig_converter_table_ready = Signal()
 
-    def __init__(self, *args, **kwargs) -> None:
-        super(Converter, self).__init__(*args, **kwargs)
+    def get_plugin_icon(self) -> "QIcon":
+        return self.get_svg_icon("icons/app.svg")
 
+    def get_config_page(self) -> "ConfigPage":
+        return ConverterConfigPage()
+
+    def init(self) -> None:
         self._watcher = FileSystemWatcher(self)
         self._temp_folder: Path = None
         self._current_files: list[Path] = []
@@ -70,13 +75,6 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             )
         )
 
-    def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg")
-
-    def get_config_page(self) -> "ConfigPage":
-        return ConverterConfigPage()
-
-    def init(self) -> None:
         # Setup grid layouts
         self._list_grid_layout = QGridLayout()
 
