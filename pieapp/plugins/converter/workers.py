@@ -50,6 +50,7 @@ class ConverterWorker(QRunnable):
         Run ffprobe and get file information
         """
         try:
+            self.signals.started.emit()
             probe_results: list[MediaFile] = []
             for file in self._chunk:
                 probe_result = Dotty(ffmpeg.probe(file.as_posix(), self._ffprobe_cmd.as_posix()))
@@ -97,4 +98,5 @@ class ConverterWorker(QRunnable):
 
         except ffmpeg.Error as e:
             logger.critical(e.stderr)
+            self.signals.failed.emit(e)
             raise e

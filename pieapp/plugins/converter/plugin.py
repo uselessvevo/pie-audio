@@ -32,11 +32,12 @@ from converter.confpage import ConverterConfigPage
 from converter.widgets.item import ConverterItem
 from converter.widgets.search import ConverterSearch
 from converter.widgets.list import ConverterListWidget
+from pieapp.widgets.waitingspinner import create_wait_spinner
 
 
 class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     name = Plugin.Converter
-    requires = [Plugin.MainToolBar, Plugin.Preferences, Plugin.Layout, Plugin.Shortcut]
+    requires = [Plugin.MainToolBar, Plugin.Preferences, Plugin.Layout, Plugin.Shortcut, Plugin.StatusBar]
     optional = [Plugin.MainMenuBar]
     sig_converter_table_ready = Signal()
 
@@ -87,6 +88,12 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._content_list = ConverterListWidget(
             change_callback=self._content_list_item_removed,
             remove_callback=self._content_list_item_removed
+        )
+
+        self._spinner = create_wait_spinner(
+            parent=self._content_list,
+            size=18,
+            color=self.get_theme_property("mainFontColor")
         )
 
         # Setup placeholder
@@ -169,14 +176,26 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         )
         worker.signals.started.connect(self._worker_started)
         worker.signals.completed.connect(self._worker_finished)
+        worker.signals.failed.connect(self._worker_failed)
         pool.start(worker)
 
+    @Slot(Exception)
+    def _worker_failed(self, exception: Exception) -> None:
+        status_bar = get_plugin(Plugin.StatusBar)
+        if status_bar:
+            self._spinner.stop()
+            status_bar.show_message(self.translate("Failed to load files: %s" % str(exception)))
+
     def _worker_started(self) -> None:
-        get_plugin(Plugin.StatusBar).show_message(self.translate("Loading files"))
+        status_bar = get_plugin(Plugin.StatusBar)
+        if status_bar:
+            self._spinner.start()
 
     def _worker_finished(self, models_list: list[MediaFile]) -> None:
         self._fill_list(models_list)
-        get_plugin(Plugin.StatusBar).show_message(self.translate("Done loading files"))
+        status_bar = get_plugin(Plugin.StatusBar)
+        if status_bar:
+            self._spinner.stop()
 
     def _fill_list(self, media_files: list[MediaFile]) -> None:
         if not media_files:
@@ -282,6 +301,12 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
                 item.set_hidden(False)
 
     # Plugin event method
+
+    @on_plugin_event(target=Plugin.StatusBar)
+    def _on_status_bar_available(self) -> None:
+        if self._spinner:
+            status_bar = get_plugin(Plugin.StatusBar)
+            status_bar.add_widget(f"{self.name}.status_icon", self._spinner)
 
     @on_plugin_event(target=Plugin.Layout)
     def _on_layout_manager_available(self) -> None:
