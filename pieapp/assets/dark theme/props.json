@@ -1,5 +1,6 @@
 {
     "mainFontFamily": "GoogleSans.ttf",
+    "mainFontSize": "12pt",
     "mainFontColor": "#cccccc",
     "mainBackgroundColor": "#353535",
     "minorColor": "#cccccc",

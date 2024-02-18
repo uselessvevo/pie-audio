@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
+from pieapp.api.managers.locales.helpers import translate
 from pieapp.api.managers.structs import Section
 from pieapp.api.observers.filesystem import FileSystemWatcher
 from pieapp.api.plugins import PiePlugin
@@ -23,6 +24,7 @@ from pieapp.api.structs.layouts import Layout
 from pieapp.api.structs.menus import MainMenu
 from pieapp.api.structs.menus import MainMenuItem
 from pieapp.api.globals import Global
+from pieapp.api.structs.statusbar import StatusBarIndex
 from pieapp.api.structs.workbench import WorkbenchItem
 from pieapp.widgets.menus import INDEX_START
 from pieapp.helpers.files import create_temp_directory
@@ -91,8 +93,10 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         )
 
         self._spinner = create_wait_spinner(
-            parent=self._content_list,
-            size=18,
+            self._content_list,
+            size=64,
+            number_of_lines=30,
+            inner_radius=10,
             color=self.get_theme_property("mainFontColor")
         )
 
@@ -102,7 +106,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._text_label = QLabel()
-        self._text_label.set_text(self.translate("No files selected"))
+        self._text_label.set_text(translate("No files selected"))
         self._text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         # Setup placeholder
@@ -154,7 +158,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             )
         )
 
-        selected_files = QFileDialog.get_open_file_names(caption=self.translate("Open files"))[0]
+        selected_files = QFileDialog.get_open_file_names(caption=translate("Open files"))[0]
         selected_files = list(map(Path, selected_files))
         if not selected_files:
             return
@@ -184,18 +188,23 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         status_bar = get_plugin(Plugin.StatusBar)
         if status_bar:
             self._spinner.stop()
-            status_bar.show_message(self.translate("Failed to load files: %s" % str(exception)))
+            status_bar.show_message(translate("Failed to load files: %s" % str(exception)))
 
     def _worker_started(self) -> None:
         status_bar = get_plugin(Plugin.StatusBar)
         if status_bar:
+            self._clear_placeholder()
+            self._list_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
             self._spinner.start()
 
+    @Slot(MediaFile)
     def _worker_finished(self, models_list: list[MediaFile]) -> None:
         self._fill_list(models_list)
         status_bar = get_plugin(Plugin.StatusBar)
         if status_bar:
             self._spinner.stop()
+            self._list_grid_layout.remove_widget(self._spinner)
+            self._spinner.set_tool_tip(translate("Done loading files"))
 
     def _fill_list(self, media_files: list[MediaFile]) -> None:
         if not media_files:
@@ -214,7 +223,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             # Add default buttons
             widget.add_quick_action(
                 name="delete",
-                text=self.translate("Delete"),
+                text=translate("Delete"),
                 icon=self.get_svg_icon("icons/delete.svg", self.get_theme_property("dangerBackgroundColor")),
                 callback=self._delete_tool_button_connect
             )
@@ -252,8 +261,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         """
         Show placeholder
         """
-        self._list_grid_layout.add_widget(self._pixmap_label, 1, 0)
-        self._list_grid_layout.add_widget(self._text_label, 2, 0)
+        self._list_grid_layout.add_widget(self._pixmap_label, 0, 0, alignment=Qt.AlignmentFlag.AlignVCenter)
+        self._list_grid_layout.add_widget(self._text_label, 1, 0, alignment=Qt.AlignmentFlag.AlignVCenter)
 
     def _clear_placeholder(self) -> None:
         """
@@ -302,12 +311,6 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
     # Plugin event method
 
-    @on_plugin_event(target=Plugin.StatusBar)
-    def _on_status_bar_available(self) -> None:
-        if self._spinner:
-            status_bar = get_plugin(Plugin.StatusBar)
-            status_bar.add_widget(f"{self.name}.status_icon", self._spinner)
-
     @on_plugin_event(target=Plugin.Layout)
     def _on_layout_manager_available(self) -> None:
         layout_manager = get_plugin(Plugin.Layout)
@@ -340,7 +343,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             section=Section.Shared,
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
-            text=self.translate("Open file"),
+            text=translate("Open file"),
             icon=self.get_svg_icon("icons/folder-open.svg"),
             index=INDEX_START(),
             triggered=self.open_files
@@ -354,8 +357,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.OpenFiles,
-            text=self.translate("Open file"),
-            tooltip=self.translate("Open file"),
+            text=translate("Open file"),
+            tooltip=translate("Open file"),
             icon=self.get_svg_icon("icons/folder.svg"),
             triggered=self.open_files
         )
@@ -363,16 +366,16 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.Convert,
-            text=self.translate("Convert"),
-            tooltip=self.translate("Convert"),
+            text=translate("Convert"),
+            tooltip=translate("Convert"),
             icon=self.get_svg_icon("icons/bolt.svg")
         ).set_enabled(False)
 
         clear_tool_button = self.add_tool_button(
             section=self.name,
             name=WorkbenchItem.Clear,
-            text=self.translate("Clear"),
-            tooltip=self.translate("Clear"),
+            text=translate("Clear"),
+            tooltip=translate("Clear"),
             icon=self.get_svg_icon("icons/delete.svg")
         )
         clear_tool_button.set_enabled(False)

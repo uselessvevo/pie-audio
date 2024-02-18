@@ -40,7 +40,7 @@ from __feature__ import snake_case
 
 import math
 
-from PySide6.QtCore import QTimer, QRect
+from PySide6.QtCore import QTimer, QRect, QObject
 from PySide6.QtGui import Qt, QColor, QPainter, QPaintEvent
 from PySide6.QtWidgets import QWidget
 
@@ -48,12 +48,11 @@ from PySide6.QtWidgets import QWidget
 class QWaitingSpinner(QWidget):
     def __init__(
         self,
-        parent,
-        center_on_parent=True,
-        disable_parent_when_spinning=False,
-        modality=Qt.WindowModality.NonModal
+        parent: QObject,
+        center_on_parent: bool = True,
+        disable_parent_when_spinning: bool = False,
+        modality: Qt.WindowModality = Qt.WindowModality.NonModal
     ):
-        # super().__init__(parent)
         QWidget.__init__(self, parent)
 
         self._center_on_parent = center_on_parent
@@ -273,7 +272,14 @@ class QWaitingSpinner(QWidget):
         return color
 
 
-def create_wait_spinner(size=32, n=11, parent=None, color: str = None):
+def create_wait_spinner(
+    parent: QObject = None,
+    size: int = 32,
+    number_of_lines: int = 11,
+    dot_size: int = None,
+    inner_radius: int = None,
+    color: str = None
+) -> QWaitingSpinner:
     """
     Create a wait spinner with the specified size built with n circling dots.
     """
@@ -284,12 +290,12 @@ def create_wait_spinner(size=32, n=11, parent=None, color: str = None):
     # system of two equations in two variables.
     # (1) middle_circumference = pi * (size - dot_size)
     # (2) middle_circumference = n * (dot_size + dot_padding)
-    dot_size = (pi * size - n * dot_padding) / (n + pi)
-    inner_radius = (size - 2 * dot_size) / 2
+    dot_size = dot_size or (pi * size - number_of_lines * dot_padding) / (number_of_lines + pi)
+    inner_radius = inner_radius or (size - 2 * dot_size) / 2
 
     spinner = QWaitingSpinner(parent, center_on_parent=False)
-    spinner.set_trail_size_decreasing(True)
-    spinner.set_number_of_lines(n)
+    spinner.set_trail_size_decreasing(False)
+    spinner.set_number_of_lines(number_of_lines)
     spinner.set_line_length(dot_size)
     spinner.set_line_width(dot_size)
     spinner.set_inner_radius(inner_radius)

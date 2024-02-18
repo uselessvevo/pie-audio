@@ -37,12 +37,15 @@ class ConverterWorker(QRunnable):
     ) -> None:
         super().__init__()
 
-        self.signals = Signals()
-
+        self._signals = Signals()
         self._chunk = chunk
         self._temp_folder = temp_folder
         self._ffmpeg_cmd = ffmpeg_cmd
         self._ffprobe_cmd = ffprobe_cmd
+
+    @property
+    def signals(self) -> Signals:
+        return self._signals
 
     @Slot()
     def run(self) -> None:
@@ -50,7 +53,7 @@ class ConverterWorker(QRunnable):
         Run ffprobe and get file information
         """
         try:
-            self.signals.started.emit()
+            self._signals.started.emit()
             probe_results: list[MediaFile] = []
             for file in self._chunk:
                 probe_result = Dotty(ffmpeg.probe(file.as_posix(), self._ffprobe_cmd.as_posix()))
@@ -94,9 +97,9 @@ class ConverterWorker(QRunnable):
                     )
                     probe_results.append(media_file)
 
-            self.signals.completed.emit(probe_results)
+            self._signals.completed.emit(probe_results)
 
         except ffmpeg.Error as e:
             logger.critical(e.stderr)
-            self.signals.failed.emit(e)
+            self._signals.failed.emit(e)
             raise e
