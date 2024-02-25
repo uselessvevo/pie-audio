@@ -2,25 +2,25 @@ from typing import Type
 
 from pieapp.helpers.logger import logger
 from pieapp.helpers.modules import import_by_string
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.base import BaseRegistry
 
 
-class ManagersRegistry:
+class RegistryContainer:
 
     def __init__(self) -> None:
         # Just a logger
         self._logger = logger
 
         # Dictionary with base managers
-        self._managers_instances: dict[str, BaseManager] = {}
+        self._managers_instances: dict[str, BaseRegistry] = {}
 
-    def from_class(self, manager_class: Type[BaseManager]) -> None:
+    def from_class(self, manager_class: Type[BaseRegistry]) -> None:
         """
         Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
         For example:
-        >>> from pieapp.api.managers.registry import Managers
-        >>> from pieapp.api.managers.configs.manager import ConfigManager
-        >>> Managers.init(ConfigManager, PathConfig(...), ...)
+        >>> from pieapp.api.managers.registry import Registries
+        >>> from pieapp.api.managers.configs.manager import ConfigRegistry
+        >>> Registries.init(ConfigRegistry, PathConfig(...), ...)
         """
         manager_instance = manager_class()
         self._managers_instances[manager_instance.name] = manager_instance
@@ -45,7 +45,7 @@ class ManagersRegistry:
             self._logger.debug(f"Shutting down \"{manager_instance.__class__.__name__}\"")
             manager_instance.shutdown()
 
-    def reload(self, *managers: tuple[BaseManager], full_house: bool = False):
+    def reload(self, *managers: tuple[BaseRegistry], full_house: bool = False):
         managers = reversed(self._managers_instances.keys()) if full_house else managers
         managers_instances = (self._managers_instances.get(i) for i in managers)
 
@@ -60,7 +60,7 @@ class ManagersRegistry:
             self._logger.debug(f"Destroying \"{manager.__class__.__name__}\"")
             self._managers_instances.pop(manager)
 
-    def __call__(self, manager: str, fallback_method: callable = None) -> BaseManager:
+    def __call__(self, manager: str, fallback_method: callable = None) -> BaseRegistry:
         """
         Call needed manager instance via its name
         For example: `Managers(SysManager.Configs).get(...)`
@@ -81,4 +81,4 @@ class ManagersRegistry:
             fallback_method()
 
 
-Managers = ManagersRegistry()
+Registries = RegistryContainer()

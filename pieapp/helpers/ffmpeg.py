@@ -40,11 +40,11 @@ class DownloadWorker(QObject):
     sig_unpack_archive_message = Signal(str)
 
     def __init__(self, release_url: str = None, archive_path: str = None) -> None:
-        self._ffmpeg_binaries_path = str(Global.BASE_DIR / "ffmpeg")
+        self._ffmpeg_binaries_path = str(Global.USER_ROOT / "ffmpeg")
         self._ffmpeg_build_url: str = None
 
         if release_url is None:
-            self._ffmpeg_build_url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
+            self._ffmpeg_build_url = Global.FFMPEG_RELEASE_URL
 
         if isinstance(release_url, str):
             self._ffmpeg_build_url = release_url
@@ -52,7 +52,7 @@ class DownloadWorker(QObject):
         archive_name: str = ARCHIVE_URL_NAME[os.name]
         archive_file_type: str = ARCHIVE_TYPE_NAME[os.name]
 
-        self._archive_path: str = os.path.join(archive_path or Global.BASE_DIR, f"ffmpeg.{archive_file_type}")
+        self._archive_path: str = os.path.join(archive_path or Global.USER_ROOT, f"ffmpeg.{archive_file_type}")
         self._ffmpeg_build_url: str = f"{self._ffmpeg_build_url}/{archive_name}"
 
         super(DownloadWorker, self).__init__()

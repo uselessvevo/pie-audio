@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QMainWindow, QApplication
 
 from pieapp.api.globals import Global
 from pieapp.api.managers.structs import Section
-from pieapp.api.managers.registry import Managers
+from pieapp.api.managers.registry import Registries
 from pieapp.api.managers.locales.helpers import translate
 from pieapp.api.managers.configs.mixins import ConfigAccessorMixin
 from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
@@ -69,6 +69,6 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
         self.save_config(Section.Root, Section.User, create=True)
 
         QApplication.process_events()
-        Managers.shutdown(full_house=True)
+        Registries.shutdown(full_house=True)
 
         return True

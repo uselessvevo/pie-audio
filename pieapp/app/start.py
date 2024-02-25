@@ -10,7 +10,7 @@ from pieapp.wizard.wizard import StartupWizard
 from pieapp.helpers.modules import is_debug
 from pieapp.helpers.qt import get_application, except_hook
 from pieapp.widgets.splashscreen import SplashScreen
-from pieapp.api.managers.registry import Managers
+from pieapp.api.managers.registry import Registries
 
 
 def check_crabs() -> bool:
@@ -73,7 +73,7 @@ def start_application(*args, **kwargs) -> None:
 
     if first_run or not fully_setup:
         for manager in Global.CORE_MANAGERS:
-            Managers.from_string(manager)
+            Registries.from_string(manager)
 
         app.set_style_sheet("")
 
@@ -89,7 +89,7 @@ def start_application(*args, **kwargs) -> None:
     # Preparing our application
     # Starting all managers by order
     for manager in Global.CORE_MANAGERS:
-        Managers.from_string(manager)
+        Registries.from_string(manager)
 
     from pieapp.app.main import MainWindow
     app = get_application()
@@ -101,7 +101,7 @@ def start_application(*args, **kwargs) -> None:
 
     # Starting all managers by order
     for manager in Global.LAYOUT_MANAGERS:
-        Managers.from_string(manager)
+        Registries.from_string(manager)
 
     Plugins.init_plugins()
 

@@ -185,25 +185,24 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
     @Slot(Exception)
     def _worker_failed(self, exception: Exception) -> None:
+        self._spinner.stop()
         status_bar = get_plugin(Plugin.StatusBar)
         if status_bar:
-            self._spinner.stop()
             status_bar.show_message(translate("Failed to load files: %s" % str(exception)))
 
     def _worker_started(self) -> None:
-        status_bar = get_plugin(Plugin.StatusBar)
-        if status_bar:
-            self._clear_placeholder()
-            self._list_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
-            self._spinner.start()
+        self._clear_placeholder()
+        self._list_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self._spinner.start()
 
     @Slot(MediaFile)
     def _worker_finished(self, models_list: list[MediaFile]) -> None:
+        self._list_grid_layout.remove_widget(self._spinner)
+        self._spinner.stop()
         self._fill_list(models_list)
+
         status_bar = get_plugin(Plugin.StatusBar)
         if status_bar:
-            self._spinner.stop()
-            self._list_grid_layout.remove_widget(self._spinner)
             self._spinner.set_tool_tip(translate("Done loading files"))
 
     def _fill_list(self, media_files: list[MediaFile]) -> None:
@@ -321,7 +320,16 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
     @on_plugin_event(target=Plugin.Shortcut)
     def _on_shortcut_manager_ready(self) -> None:
-        get_plugin(Plugin.Shortcut).add_shortcut("toggle_search", "Ctrl+F", self._toggle_search, self._content_list)
+        shortcut = get_plugin(Plugin.Shortcut)
+        if shortcut:
+            shortcut.add_shortcut(
+                name="toggle_search",
+                shortcut="Ctrl+F",
+                triggered=self._toggle_search,
+                target=self._content_list,
+                title="Toggle search input",
+                description="Toggle search input in converter content list"
+            )
 
     @on_plugin_event(target=Plugin.Preferences)
     def _on_preferences_available(self) -> None:

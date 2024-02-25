@@ -24,14 +24,14 @@ class ConverterWizardPage(
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
-        self._ffmpeg_path = Global.BASE_DIR / "ffmpeg"
+        self._ffmpeg_path: Path = Path(Global.USER_ROOT / "ffmpeg")
 
         self._progress_bar = QtWidgets.QProgressBar()
         self._progress_bar.set_style_sheet("QProgressBar{font-size: 15pt;}")
         self._progress_bar.set_format(f"{translate('Downloading files...')} (%p%/100%)")
         self._progress_bar.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
-        self._download_thread = QThread(None)
+        self._download_thread = QThread()
         self._download_worker = DownloadWorker()
         self._download_worker.sig_download_progress.connect(self._show_downloader_progress)
         self._download_worker.sig_download_done.connect(self._show_downloader_ready)
@@ -39,6 +39,7 @@ class ConverterWizardPage(
         self._download_worker.sig_unpack_ready.connect(self._unpack_ready)
         self._download_worker.move_to_thread(self._download_thread)
         self._download_thread.started.connect(self._download_worker.start)
+        self._download_thread.finished.connect(self._download_worker.delete_later)
         self._download_worker.destroyed.connect(self._download_worker.destroyed)
 
         self.line_edit_action = QAction()
@@ -47,17 +48,22 @@ class ConverterWizardPage(
 
         self._download_button = QtWidgets.QPushButton()
         self._download_button.set_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_ArrowDown))
-        self._download_button.set_icon_size(QSize(24, 24))
+        self._download_button.set_icon_size(QSize(27, 27))
         self._download_button.clicked.connect(self._start_downloader_thread)
 
         self._line_edit = QtWidgets.QLineEdit()
-        self._line_edit.insert(str(Global.BASE_DIR / "ffmpeg"))
         self._line_edit.set_style_sheet("QLineEdit{font-size: 15pt;}")
+        self._line_edit.set_placeholder_text(translate("Select ffmpeg directory or download latest release"))
         self._line_edit.add_action(self.line_edit_action, QtWidgets.QLineEdit.ActionPosition.TrailingPosition)
+
+        if self._ffmpeg_path.exists():
+            self._line_edit.insert(str(self._ffmpeg_path))
 
         page_title = QtWidgets.QLabel(translate("Setup converter"))
         page_title.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
-        page_description = QtWidgets.QLabel(translate("Select ffmpeg directory"))
+        page_description = QtWidgets.QLabel(translate(
+            "Select directory with ffmpeg, ffprobe and ffplay or download its latest release"
+        ))
         page_description.set_style_sheet("QLabel{font-size: 12pt; padding-bottom: 20px;}")
 
         ffmpeg_hbox = QtWidgets.QHBoxLayout()
@@ -72,6 +78,7 @@ class ConverterWizardPage(
         self.set_layout(self._layout)
 
     def _start_downloader_thread(self) -> None:
+        self.wizard().button(QtWidgets.QWizard.WizardButton.BackButton).set_enabled(False)
         self._line_edit.set_disabled(True)
         self._download_button.set_disabled(True)
         self._download_thread.start(QThread.Priority.HighPriority)
@@ -90,10 +97,10 @@ class ConverterWizardPage(
         self._line_edit.set_focus()
         self._line_edit.clear()
         self._line_edit.insert(ffmpeg_path)
+        self.wizard().button(QtWidgets.QWizard.WizardButton.BackButton).set_enabled(True)
 
     @Slot(str)
     def _download_worker_unpack(self, status: str) -> None:
-        logger.critical(f"Status: {status}")
         self._progress_bar.set_format(status)
 
     @Slot(str)
@@ -101,7 +108,7 @@ class ConverterWizardPage(
         self.wizard().button(QtWidgets.QWizard.WizardButton.NextButton).set_enabled(True)
 
     def is_complete(self) -> bool:
-        return bool(Path(self._ffmpeg_path).exists() if self._ffmpeg_path else False) and super().is_complete()
+        return bool(self._ffmpeg_path.exists() if self._ffmpeg_path else False) and super().is_complete()
 
     def select_ffmpeg_root_path(self):
         ffmpeg_directory = QFileDialog.get_existing_directory(
@@ -136,8 +143,8 @@ class ConverterWizardPage(
                 scope=Section.Root,
                 section=Section.User
             )
-            self._ffmpeg_path = directory_path
-            self._line_edit.set_text(directory_path)
+            self._ffmpeg_path = Path(directory_path)
+            self._line_edit.set_text(str(directory_path))
             self.completeChanged.emit()
 
     def finish(self) -> None:

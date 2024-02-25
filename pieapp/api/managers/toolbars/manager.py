@@ -5,14 +5,14 @@ from typing import Union
 from PySide6.QtWidgets import QWidget
 
 from pieapp.api.managers.structs import Section
-from pieapp.api.managers.structs import SysManager
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.structs import SysRegistry
+from pieapp.api.managers.base import BaseRegistry
 from pieapp.api.exceptions import PieException
 from pieapp.widgets.toolbars import PieToolBar
 
 
-class ToolBarManager(BaseManager):
-    name = SysManager.ToolBars
+class ToolBarRegistry(BaseRegistry):
+    name = SysRegistry.ToolBars
 
     def __init__(self):
         # ToolBar mapping

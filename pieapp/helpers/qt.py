@@ -1,5 +1,6 @@
 from __feature__ import snake_case
 
+import os
 import sys
 import traceback
 from typing import Union
@@ -30,7 +31,12 @@ def get_main_window() -> Union[QMainWindow, None]:
 
 
 def restart_application() -> None:
+    from pieapp.api.globals import Global
     from pieapp.api.plugins.registry import Plugins
+
+    if not Global.IS_DEV_ENV or False:
+        file_extension = "exe" if os.name == "nt" else ""
+        sys.argv[0] = f"{sys.argv[0]}.{file_extension}"
 
     Plugins.shutdown_plugins(full_house=True)
     QCoreApplication.quit()

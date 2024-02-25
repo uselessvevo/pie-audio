@@ -3,6 +3,8 @@ from __feature__ import snake_case
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QShortcut, QKeySequence
 
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry
 from pieapp.api.plugins import PieObject
 from pieapp.api.exceptions import PieException
 from pieapp.api.managers.locales.helpers import translate
@@ -33,19 +35,26 @@ class ShortcutManager(PieObject):
         title: str = None,
         description: str = None
     ) -> None:
-        key_path = f"{self.__class__.__name__}.{name}"
-        if key_path in self._shortcuts:
+        shortcut_name = f"{self.__class__.__name__}.{name}"
+        if shortcut_name in self._shortcuts:
             raise PieException(f"Shortcut \"{name}/{shortcut}\" is already registered")
 
-        shortcut_instance = QShortcut(QKeySequence(shortcut), self or target)
+        shortcut_instance = QShortcut(QKeySequence(shortcut), target)
         shortcut_instance.activated.connect(triggered)
-        setattr(self, key_path, shortcut_instance)
-        self._shortcuts[key_path] = {
+        setattr(self, shortcut_name, shortcut_instance)
+
+        target_name = getattr(target, "name", target.__class__.__name__)
+        payload = {
             "instance": shortcut_instance,
-            "plugin_name": self.name,
+            "target_name": target_name,
             "title": title,
             "description": description,
         }
+
+        Registries(SysRegistry.Shortcuts).add(shortcut_name, payload)
+
+    def has_layout(self, name: str) -> bool:
+        return Registries(SysRegistry.Shortcuts).has(name)
 
     def remove_shortcut(self, name: str) -> None:
         key_path = f"{self.__class__.__name__}.{name}"
@@ -53,10 +62,10 @@ class ShortcutManager(PieObject):
             raise PieException(f"Shortcut \"{name}\" was not found")
 
         delattr(self, key_path)
-        del self._shortcuts[key_path]
+        Registries(SysRegistry.Shortcuts).delete_shortcut()
 
     def get_shortcuts(self) -> dict:
-        return self._shortcuts
+        return Registries(SysRegistry.Shortcuts).get_shorcuts()
 
 
 def main(parent: "QMainWindow", plugin_path: "Path"):

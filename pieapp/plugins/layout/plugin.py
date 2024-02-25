@@ -3,8 +3,8 @@ from __feature__ import snake_case
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel
 
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry
 from pieapp.api.plugins import PieObject
 from pieapp.api.exceptions import PieException
 from pieapp.api.managers.locales.helpers import translate
@@ -25,7 +25,7 @@ class LayoutManager(PieObject):
         return translate("Layout manager")
 
     def init(self) -> None:
-        self._layout_manager = Managers(SysManager.Layout)
+        self._layout_registry = Registries(SysRegistry.Layout)
 
         main_layout = QGridLayout()
         main_layout.set_spacing(0)
@@ -41,23 +41,23 @@ class LayoutManager(PieObject):
         self.add_layout(Layout.Main, main_layout)
 
     def add_layout(self, name: str, layout: QGridLayout) -> QGridLayout:
-        if self._layout_manager.has_layout(name):
+        if self._layout_registry.has(name):
             raise PieException(f"Layout \"{layout}\" already exists")
 
-        self._layout_manager.add_layout(name, layout)
+        self._layout_registry.add(name, layout)
         return layout
 
     def remove_layout(self, name: str) -> None:
-        if not self._layout_manager.has_layout(name):
+        if not self._layout_registry.has(name):
             raise PieException(f"Layout \"{name}\" not found")
 
-        self._layout_manager.delete_layout(name)
+        self._layout_registry.delete(name)
 
     def get_layout(self, name: str) -> QGridLayout:
-        if not self._layout_manager.has_layout(name):
+        if not self._layout_registry.has(name):
             raise PieException(f"Can't find layout \"{name}\"")
 
-        return self._layout_manager.get_layout(name)
+        return self._layout_registry.get(name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path"):

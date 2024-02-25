@@ -1,10 +1,8 @@
 from __future__ import annotations
 from __feature__ import snake_case
 
-from typing import Union
-
 from PySide6.QtCore import Slot, QObject
-from PySide6.QtWidgets import QApplication, QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 from pieapp.api.managers.configs.mixins import ConfigAccessorMixin
 from pieapp.api.managers.locales.mixins import LocalesAccessorMixin
@@ -15,9 +13,8 @@ from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
 from pieapp.api.managers.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.api.managers.toolbuttons.mixins import ToolButtonAccessorMixin
 from pieapp.api.plugins.types import Error
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import Section, SysManager
-from pieapp.widgets.messagebox import MessageCheckBox
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry
 
 
 class ContainerRegisterMixin:
@@ -42,12 +39,12 @@ class ContainerRegisterAccessorMixin:
             parent_container (str): name of the parent container
             target (QObject): an object we want to register on `parent_container`
         """
-        parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
+        parent_container_instance = Registries(SysRegistry.Plugins).get(parent_container)
 
         if parent_container_instance and not isinstance(parent_container_instance, ContainerRegisterMixin):
             raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManager.Plugins).get(parent_container)
+        container_instance = Registries(SysRegistry.Plugins).get(parent_container)
         container_instance.register_object(target, *args, **kwargs)
     
     def remove_from(self, parent_container: str, target: QObject, *args, **kwargs) -> None:
@@ -58,12 +55,12 @@ class ContainerRegisterAccessorMixin:
             parent_container (str): name of the parent container
             target (QObject): an object we want to remove from the `parent_container`
         """
-        parent_container_instance = Managers(SysManager.Plugins).get(parent_container)
+        parent_container_instance = Registries(SysRegistry.Plugins).get(parent_container)
 
         if parent_container_instance and isinstance(parent_container_instance, ContainerRegisterMixin):
             raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
 
-        container_instance = Managers(SysManager.Plugins).get(parent_container)
+        container_instance = Registries(SysRegistry.Plugins).get(parent_container)
         container_instance.remove_object(target, *args, **kwargs)
 
 

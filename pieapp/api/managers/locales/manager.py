@@ -2,16 +2,16 @@ from pathlib import Path
 
 from pieapp.api.globals import Global
 from pieapp.helpers.files import read_json
-from pieapp.api.managers.base import BaseManager
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager, Section
+from pieapp.api.managers.base import BaseRegistry
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry, Section
 
 
-class LocaleManager(BaseManager):
-    name = SysManager.Locales
+class LocaleRegistry(BaseRegistry):
+    name = SysRegistry.Locales
 
     def __init__(self) -> None:
-        self._locale: str = Managers(SysManager.Configs).get(
+        self._locale: str = Registries(SysRegistry.Configs).get(
             scope=Section.Root,
             section=Section.User,
             key="locale.locale",

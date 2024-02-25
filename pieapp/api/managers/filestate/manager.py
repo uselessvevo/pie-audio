@@ -1,5 +1,5 @@
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.base import BaseRegistry
 
 
-class FileStateManager(BaseManager):
+class FileStateRegistry(BaseRegistry):
     pass

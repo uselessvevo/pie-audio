@@ -4,13 +4,13 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu, QMenuBar
 
 from pieapp.widgets.menus import PieMenu
-from pieapp.api.managers.base import BaseManager
-from pieapp.api.managers.structs import SysManager
+from pieapp.api.managers.base import BaseRegistry
+from pieapp.api.managers.structs import SysRegistry
 from pieapp.api.exceptions import PieException
 
 
-class MenuManager(BaseManager):
-    name = SysManager.Menus
+class MenuRegistry(BaseRegistry):
+    name = SysRegistry.Menus
 
     def __init__(self):
         self._bars: dict[str, QMenuBar] = {}

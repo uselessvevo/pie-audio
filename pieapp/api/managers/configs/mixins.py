@@ -1,7 +1,7 @@
 from typing import Any, Union
 
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager, Section
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry, Section
 
 
 class ConfigAccessorMixin:
@@ -17,7 +17,7 @@ class ConfigAccessorMixin:
         scope: Union[str, Section.Root] = None,
         section: Union[Section.Inner, Section.User] = Section.Inner,
     ) -> Any:
-        return Managers(SysManager.Configs).get(scope or self.name, section, key, default, temp=temp)
+        return Registries(SysRegistry.Configs).get(scope or self.name, section, key, default, temp=temp)
 
     def set_config(
         self,
@@ -27,7 +27,7 @@ class ConfigAccessorMixin:
         scope: Union[str, Section.Root] = None,
         section: Union[Section.Inner, Section.User] = Section.Inner,
     ) -> None:
-        Managers(SysManager.Configs).set(scope or self.name, section, key, data, temp=temp)
+        Registries(SysRegistry.Configs).update(scope or self.name, section, key, data, temp=temp)
 
     def delete_config(
         self,
@@ -35,7 +35,7 @@ class ConfigAccessorMixin:
         scope: Union[str, Section.Root] = None,
         section: Union[Section.Inner, Section.User] = Section.Inner,
     ) -> None:
-        Managers(SysManager.Configs).delete(scope or self.name, section, key)
+        Registries(SysRegistry.Configs).delete(scope or self.name, section, key)
 
     def save_config(
         self,
@@ -44,7 +44,7 @@ class ConfigAccessorMixin:
         temp: bool = False,
         create: bool = False
     ) -> None:
-        Managers(SysManager.Configs).save(scope or self.name, section, temp=temp, create=create)
+        Registries(SysRegistry.Configs).save(scope or self.name, section, temp=temp, create=create)
 
     def restore_config(
         self,
@@ -52,4 +52,4 @@ class ConfigAccessorMixin:
         scope: Union[str, Section.Root] = None,
         section: Union[Section.Inner, Section.User] = Section.Inner,
     ) -> None:
-        Managers(SysManager.Configs).restore(scope or self.name, section, key)
+        Registries(SysRegistry.Configs).restore(scope or self.name, section, key)

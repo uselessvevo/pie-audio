@@ -5,13 +5,13 @@ from typing import Union
 from PySide6.QtWidgets import QToolButton
 
 from pieapp.api.managers.structs import Section
-from pieapp.api.managers.structs import SysManager
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.structs import SysRegistry
+from pieapp.api.managers.base import BaseRegistry
 from pieapp.api.exceptions import PieException
 
 
-class ToolButtonManager(BaseManager):
-    name = SysManager.ToolButton
+class ToolButtonRegistry(BaseRegistry):
+    name = SysRegistry.ToolButton
 
     def __init__(self):
         # Menu items/actions mapping

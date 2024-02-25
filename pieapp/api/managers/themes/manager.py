@@ -14,13 +14,13 @@ from pieapp.helpers.qt import get_application
 from pieapp.helpers.modules import import_by_path
 
 from pieapp.api.managers.structs import Section
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry
+from pieapp.api.managers.base import BaseRegistry
 
 
-class ThemeManager(BaseManager):
-    name = SysManager.Themes
+class ThemeRegistry(BaseRegistry):
+    name = SysRegistry.Themes
 
     def __init__(self) -> None:
         self._app: QApplication = None
@@ -43,7 +43,7 @@ class ThemeManager(BaseManager):
             * props.json - theme properties: colors and icons accent
             * theme.qss - style sheet template file
         """
-        self._current_theme = Managers(SysManager.Configs).get(
+        self._current_theme = Registries(SysRegistry.Configs).get(
             scope=Section.Root,
             section=Section.User,
             key="assets.theme",

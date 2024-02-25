@@ -6,15 +6,15 @@ from dotty_dict import Dotty
 
 from pieapp.api.globals import Global
 from pieapp.api.exceptions import PieException
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.base import BaseRegistry
 from pieapp.api.managers.structs import Section
-from pieapp.api.managers.structs import SysManager
+from pieapp.api.managers.structs import SysRegistry
 from pieapp.helpers.files import read_json, write_json
 from pieapp.helpers.logger import logger
 
 
-class ConfigManager(BaseManager):
-    name = SysManager.Configs
+class ConfigRegistry(BaseRegistry):
+    name = SysRegistry.Configs
     protected_keys = ("__FOLDER__",)
 
     def __init__(self) -> None:
@@ -85,7 +85,7 @@ class ConfigManager(BaseManager):
 
         return self._configuration.get(f"{scope}.{section}.{key}", default=default)
 
-    def set(
+    def update(
         self,
         scope: Union[str, Section.Root] = Section.Root,
         section: Union[Section.Inner, Section.User] = Section.Inner,

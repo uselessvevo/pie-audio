@@ -3,7 +3,7 @@ Default managers
 """
 
 
-class SysManager:
+class SysRegistry:
     # ConfigManager
     Configs = "configs"
     

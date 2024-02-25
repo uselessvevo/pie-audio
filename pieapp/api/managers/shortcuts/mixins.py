@@ -2,8 +2,8 @@ from PySide6.QtCore import QObject
 from PySide6.QtGui import QShortcut, QKeySequence
 from pieapp.api.exceptions import PieException
 
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry
 
 
 class ShortcutAccessorMixin:
@@ -15,7 +15,7 @@ class ShortcutAccessorMixin:
         Args:
             name (str): Shortcut field name
         """
-        return Managers(SysManager.Shortcuts).get(name)
+        return Registries(SysRegistry.Shortcuts).get(name)
 
     def add_shortcut(self, name: str, shortcut: str, triggered: callable, target: QObject = None) -> None:
         """
@@ -28,7 +28,7 @@ class ShortcutAccessorMixin:
             target (QObject): On which object will the shortcut be called
         """
         shortcut_name = f"{target.__class__.__name__}.{name}"
-        manager = Managers(SysManager.Shortcuts)
+        manager = Registries(SysRegistry.Shortcuts)
         if manager.get(shortcut_name):
             raise PieException(f"Shortcut \"{shortcut_name}\" is already registered")
 
@@ -46,7 +46,7 @@ class ShortcutAccessorMixin:
             target (QObject): From which object will the shortcut be deleted
         """
         shortcut_name = f"{target.__class__.__name__}.{name}"
-        manager = Managers(SysManager.Shortcuts)
+        manager = Registries(SysRegistry.Shortcuts)
         if manager.get(shortcut_name):
             raise PieException(f"Shortcut \"{shortcut_name}\" is already registered")
 

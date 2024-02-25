@@ -205,7 +205,7 @@ class PluginRegistry(QObject):
         try:
             plugin_instance.prepare()
         except Exception as e:
-            print("Error: ", plugin_instance.name, str(e))
+            logger.critical(f"Error {plugin_instance.name}: {e!s}")
             self.delete_plugin(plugin_instance.name)
 
     def _get_plugin_signals(self, plugin_instance: PiePlugin) -> list[str]:

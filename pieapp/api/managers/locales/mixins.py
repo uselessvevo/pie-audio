@@ -1,7 +1,7 @@
 from typing import Any, Union
 
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager, Section
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry, Section
 
 
 class LocalesAccessorMixin:
@@ -14,4 +14,4 @@ class LocalesAccessorMixin:
         key: Any,
         section: Union[str, Section] = Section.Shared
     ) -> Any:
-        return Managers(SysManager.Locales).get(section or self.section, key)
+        return Registries(SysRegistry.Locales).get(section or self.section, key)

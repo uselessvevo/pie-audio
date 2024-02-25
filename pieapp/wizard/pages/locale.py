@@ -29,7 +29,7 @@ class LocaleWizardPage(
         self._locales_reversed = {v: k for (k, v) in self._locales.items()}
 
         self.combo_box = QtWidgets.QComboBox()
-        self.combo_box.set_style_sheet("QComboBox{font-size: 12pt;}")
+        self.combo_box.set_style_sheet("QComboBox{font-size: 15pt;}")
         self.combo_box.insert_item(0, self._locales.pop(self._cur_locale))
         self.combo_box.add_items([self._locales.get(i) for (i, _) in self._locales.items()])
         self.combo_box.currentIndexChanged.connect(self.finish)

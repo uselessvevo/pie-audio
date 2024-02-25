@@ -5,20 +5,20 @@ from typing import Union
 from PySide6.QtGui import QAction
 
 from pieapp.api.managers.structs import Section
-from pieapp.api.managers.structs import SysManager
-from pieapp.api.managers.base import BaseManager
+from pieapp.api.managers.structs import SysRegistry
+from pieapp.api.managers.base import BaseRegistry
 from pieapp.api.exceptions import PieException
 from pieapp.helpers.logger import logger
 
 
-class ActionManager(BaseManager):
-    name = SysManager.Actions
+class ActionRegistry(BaseRegistry):
+    name = SysRegistry.Actions
 
     def __init__(self) -> None:
         self._logger = logger
         self._actions: dict[str, QAction] = {}
 
-    def add_action(
+    def add(
         self,
         section: Union[str, Section],
         name: str,
@@ -34,7 +34,7 @@ class ActionManager(BaseManager):
 
         return action
 
-    def get_action(
+    def get(
         self,
         section: Union[str, Section],
         name: str
@@ -47,9 +47,9 @@ class ActionManager(BaseManager):
 
         return self._actions[section][name]
 
-    def get_actions(
+    def get_items(
         self,
         section: Union[str, Section],
         *names: str
     ) -> list[QAction]:
-        return [self.get_action(section, n) for n in names]
+        return [self.get(section, n) for n in names]

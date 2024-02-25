@@ -71,20 +71,23 @@ PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 DEFAULT_MIN_WINDOW_SIZE: Lock = (760, 480)
 TOOL_BUTTON_ICON_SIZE: Lock = (24, 24)
 
+IS_DEV_ENV: Lock = os.getenv("PIE_IS_DEV_ENV", False)
+FFMPEG_RELEASE_URL: Lock = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
+
 # List of excluded file formats
 USE_EXCEPTION_HOOK: Lock = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
 
 # Managers startup configuration
 CORE_MANAGERS: Lock = [
-    "pieapp.api.managers.configs.manager.ConfigManager",
-    "pieapp.api.managers.locales.manager.LocaleManager",
-    "pieapp.api.managers.themes.manager.ThemeManager",
+    "pieapp.api.managers.configs.manager.ConfigRegistry",
+    "pieapp.api.managers.locales.manager.LocaleRegistry",
+    "pieapp.api.managers.themes.manager.ThemeRegistry",
 ]
 
 LAYOUT_MANAGERS: Lock = [
-    "pieapp.api.managers.layouts.manager.LayoutManager",
-    "pieapp.api.managers.menus.manager.MenuManager",
-    "pieapp.api.managers.toolbars.manager.ToolBarManager",
-    "pieapp.api.managers.toolbuttons.manager.ToolButtonManager",
-    "pieapp.api.managers.shortcuts.manager.ShortcutManager",
+    "pieapp.api.managers.layouts.manager.LayoutRegistry",
+    "pieapp.api.managers.menus.manager.MenuRegistry",
+    "pieapp.api.managers.toolbars.manager.ToolBarRegistry",
+    "pieapp.api.managers.toolbuttons.manager.ToolButtonRegistry",
+    "pieapp.api.managers.shortcuts.manager.ShortcutRegistry",
 ]

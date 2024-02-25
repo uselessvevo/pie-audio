@@ -31,7 +31,7 @@ classifiers = [
 dynamic = ["dependencies"]
 
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements/default.txt"]}
+dependencies = {file = ["requirements.default.txt"]}
 
 [project.optional-dependencies]
 build = ["Nuitka==1.5.5"]
@@ -44,4 +44,4 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["pieapp", "piekit"]
+packages = ["pieapp"]

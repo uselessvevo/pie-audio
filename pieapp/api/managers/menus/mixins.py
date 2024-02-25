@@ -5,8 +5,8 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenuBar, QWidget
 
 from pieapp.widgets.menus import PieMenu, INDEX_END, INDEX_START
-from pieapp.api.managers.registry import Managers
-from pieapp.api.managers.structs import SysManager, Section
+from pieapp.api.managers.registry import Registries
+from pieapp.api.managers.structs import SysRegistry, Section
 
 
 class MenuAccessorMixin:
@@ -17,10 +17,10 @@ class MenuAccessorMixin:
         name: str = None
     ) -> QMenuBar:
         menu_bar = QMenuBar(parent)
-        return Managers(SysManager.Menus).add_menu_bar(name or Section.Shared, menu_bar)
+        return Registries(SysRegistry.Menus).add_menu_bar(name or Section.Shared, menu_bar)
 
     def get_menu_bar(self, name: str) -> QMenuBar:
-        return Managers(SysManager.Menus).get_menu_bar(name or Section.Shared)
+        return Registries(SysRegistry.Menus).get_menu_bar(name or Section.Shared)
 
     def add_menu(
         self,
@@ -35,7 +35,7 @@ class MenuAccessorMixin:
             menu.menu_action().set_icon_visible_in_menu(True)
             menu.set_icon(icon)
 
-        return Managers(SysManager.Menus).add_menu(section or Section.Shared, name, menu)
+        return Registries(SysRegistry.Menus).add_menu(section or Section.Shared, name, menu)
 
     def add_menu_item(
         self,
@@ -48,13 +48,13 @@ class MenuAccessorMixin:
         before: str = None,
         index: Union[int, INDEX_START, INDEX_END] = None
     ) -> QAction:
-        manager = Managers(SysManager.Menus)
+        manager = Registries(SysRegistry.Menus)
         menu_instance = manager.get_menu(section, menu)
         menu_instance.add_menu_item(name, text, triggered, icon, before, index)
         return manager.add_menu_item(section or Section.Shared, menu, name, menu_instance)
 
     def get_menu(self, section: str, name: str) -> PieMenu:
-        return Managers(SysManager.Menus).get_menu(section or Section.Shared, name)
+        return Registries(SysRegistry.Menus).get_menu(section or Section.Shared, name)
 
     def get_menu_item(self, section: str, menu: str, name: str) -> QAction:
-        return Managers(SysManager.Menus).get_menu_item(section, menu, name)
+        return Registries(SysRegistry.Menus).get_menu_item(section, menu, name)
