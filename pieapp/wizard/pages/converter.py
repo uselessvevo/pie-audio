@@ -25,6 +25,8 @@ class ConverterWizardPage(
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self._ffmpeg_path: Path = Path(Global.USER_ROOT / "ffmpeg")
+        file_extension = ".exe" if os.name == "nt" else ""
+        self._binaries = tuple(map(lambda v: Path(f"{v}{file_extension}"), ("ffmpeg", "ffprobe", "ffplay")))
 
         self._progress_bar = QtWidgets.QProgressBar()
         self._progress_bar.set_style_sheet("QProgressBar{font-size: 15pt;}")
@@ -125,10 +127,8 @@ class ConverterWizardPage(
                 key="ffmpeg.root",
                 data=directory_path
             )
-            
-            file_extension = ".exe" if os.name == "nt" else ""
-            binaries = tuple(map(lambda v: Path(f"{v}{file_extension}"), ("ffmpeg", "ffprobe", "ffplay")))
-            for binary in binaries:
+
+            for binary in self._binaries:
                 if not (directory_path / binary).exists():
                     raise FileNotFoundError(f"Binary file \"{binary.stem!s}\" not found. "
                                             f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html")
@@ -165,7 +165,7 @@ class ConverterWizardPage(
             data=10
         )
         # Binary extension name
-        for binary in ffmpeg_path.rglob("*.exe"):
+        for binary in self._binaries:
             self.set_config(
                 scope=Section.Root,
                 section=Section.User,
