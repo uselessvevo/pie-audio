@@ -125,8 +125,9 @@ class ConverterWizardPage(
                 key="ffmpeg.root",
                 data=directory_path
             )
-
-            binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
+            
+            file_extension = ".exe" if os.name == "nt" else ""
+            binaries = tuple(map(lambda v: Path(f"{v}{file_extension}"), ("ffmpeg", "ffprobe", "ffplay")))
             for binary in binaries:
                 if not (directory_path / binary).exists():
                     raise FileNotFoundError(f"Binary file \"{binary.stem!s}\" not found. "

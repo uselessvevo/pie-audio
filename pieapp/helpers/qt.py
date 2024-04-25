@@ -35,8 +35,8 @@ def restart_application() -> None:
     from pieapp.api.plugins.registry import Plugins
 
     if not Global.IS_DEV_ENV or False:
-        file_extension = "exe" if os.name == "nt" else ""
-        sys.argv[0] = f"{sys.argv[0]}.{file_extension}"
+        file_extension = ".exe" if os.name == "nt" else ""
+        sys.argv[0] = f"{sys.argv[0]}{file_extension}"
 
     Plugins.shutdown_plugins(full_house=True)
     QCoreApplication.quit()
