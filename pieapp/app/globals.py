@@ -2,92 +2,106 @@ import locale
 import os.path
 from pathlib import Path
 
-from confstar.types import Lock
 
-PIEKIT_VERSION: Lock = "1.0.0"
+# Base configuration fields #
+PIEKIT_VERSION = "1.0.0"
 
-# Base paths
-BASE_DIR: Lock = Path(__file__).parent.parent.parent
-APP_ROOT: Lock = BASE_DIR / os.getenv("PIE_APP_ROOT", "pieapp")
-USER_ROOT: Lock = Path.home() / ".crabs"
+# Base/root project folder
+BASE_DIR = Path(__file__).parent.parent.parent
+
+# Application root folder
+APP_ROOT = BASE_DIR / os.getenv("PIE_APP_ROOT", "pieapp")
+
+# User root folder
+USER_ROOT = Path.home() / ".pie"
+
+# Default temporary folder name
+DEFAULT_TEMP_FOLDER_NAME = "temp"
+MEDIA_FILES_FOLDER_NAME = "media"
+
+# Logging fields #
 
 LOG_LEVEL = os.getenv("PIE_LOG_LEVEL", "DEBUG")
 
-PLUGINS_SIGNAL_PREFIX: Lock = "sig_"
-PLUGINS_PRIVATE_SIGNALS: Lock = ("sig_plugin_ready",)
+# Plugins fields #
 
-# Default temporary folder
-DEFAULT_TEMP_FOLDER_NAME: Lock = "temp"
+PLUGINS_SIGNAL_PREFIX = "sig_"
+PLUGINS_PRIVATE_SIGNALS = ("sig_plugin_ready",)
 
-# Plugins configuration
-# Built-in plugins folder
-DEFAULT_PLUGIN_ICON_NAME: Lock = "app"
-PLUGINS_FOLDER: Lock = "plugins"
+# Default plugin icon theme
+DEFAULT_PLUGIN_ICON_NAME = "app"
 
-# Configuration pages
-CONF_PAGES_FOLDER: Lock = "app"
+# Plugin folder name
+PLUGINS_FOLDER_NAME = "plugins"
+
+# Configuration pages fields #
+
+# Configuration pages folder name
+CONF_PAGES_FOLDER = "app"
 
 # User's/third-party plugins folder
-USER_PLUGINS_FOLDER: Lock = "plugins"
+USER_PLUGINS_FOLDER = "plugins"
 
-# Assets
-ASSETS_FOLDER: Lock = "assets"
+# Assets/theme fields #
+# Assets folder name
+ASSETS_FOLDER = "assets"
 
-# Icons
+# Icons allowed formats list
 ICONS_ALLOWED_FORMATS = [".svg", ".png", ".ico"]
 
-themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
-DEFAULT_THEME: Lock = themes_list[0].name if themes_list else None
-USE_THEME: Lock = bool(int(os.getenv("PIE_USE_THEME", True)))
+_themes_list = tuple(i for i in (APP_ROOT / ASSETS_FOLDER).rglob("*") if i.is_dir())
+DEFAULT_THEME = _themes_list[0].name if _themes_list else None
+USE_THEME = bool(int(os.getenv("PIE_USE_THEME", True)))
 
-# Configurations
-CONFIG_FILE_NAME: Lock = "config.json"
-CONFIGS_FOLDER: Lock = "configs"
-USER_CONFIG_FOLDER: Lock = "configs"
+# Configuration fields #
+CONFIG_FILE_NAME = "config.json"
+CONFIGS_FOLDER_NAME = "configs"
 
-# Locales
+# Locales fields #
+
 LOCALES = {
-    "en-US": "English",
-    "ru-RU": "Русский"
+    "en_US": "English",
+    "ru_RU": "Русский"
 }
 
 # Setup default locale
-system_locale = locale.getdefaultlocale()[0].replace("_", "-")
-default_locale = system_locale if system_locale in LOCALES else "en-US"
+_system_locale = locale.getdefaultlocale()[0]
+default_locale = _system_locale if _system_locale in LOCALES else "en_US"
 
-DEFAULT_LOCALE: Lock = default_locale
-LOCALES_FOLDER: Lock = "locales"
+DEFAULT_LOCALE = default_locale
+LOCALES_FOLDER = "locales"
 
+# Application related fields #
 
-# Application globals
-
-# Application main info
-PIEAPP_APPLICATION_NAME: Lock = "pie-audio"
-PIEAPP_VERSION: Lock = "1.0.0"
-PIEAPP_ORGANIZATION_NAME: Lock = "Crab Devs."
-PIEAPP_ORGANIZATION_DOMAIN: Lock = "com.crabdevs.pieaudio"
+# Main information
+PIEAPP_APPLICATION_NAME = "pie-audio"
+PIEAPP_VERSION = "1.0.0"
+PIEAPP_ORGANIZATION_NAME = "CrabDevs"
+PIEAPP_ORGANIZATION_DOMAIN = "com.crabdevs.pieaudio"
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
 
-DEFAULT_MIN_WINDOW_SIZE: Lock = (760, 480)
-TOOL_BUTTON_ICON_SIZE: Lock = (24, 24)
+DEFAULT_MIN_WINDOW_SIZE = (760, 480)
+TOOL_BUTTON_ICON_SIZE = (24, 24)
 
-IS_DEV_ENV: Lock = os.getenv("PIE_IS_DEV_ENV", False)
-FFMPEG_RELEASE_URL: Lock = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
+IS_DEV_ENV = os.getenv("PIE_IS_DEV_ENV", False)
+FFMPEG_RELEASE_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
 
 # List of excluded file formats
-USE_EXCEPTION_HOOK: Lock = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
+USE_EXCEPTION_HOOK = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
 
 # Managers startup configuration
-CORE_MANAGERS: Lock = [
-    "pieapp.api.managers.configs.manager.ConfigRegistry",
-    "pieapp.api.managers.locales.manager.LocaleRegistry",
-    "pieapp.api.managers.themes.manager.ThemeRegistry",
+CORE_MANAGERS = [
+    "pieapp.api.registries.configs.manager.ConfigRegistry",
+    "pieapp.api.registries.locales.manager.LocaleRegistry",
+    "pieapp.api.registries.themes.manager.ThemeRegistry",
 ]
 
-LAYOUT_MANAGERS: Lock = [
-    "pieapp.api.managers.layouts.manager.LayoutRegistry",
-    "pieapp.api.managers.menus.manager.MenuRegistry",
-    "pieapp.api.managers.toolbars.manager.ToolBarRegistry",
-    "pieapp.api.managers.toolbuttons.manager.ToolButtonRegistry",
-    "pieapp.api.managers.shortcuts.manager.ShortcutRegistry",
+LAYOUT_MANAGERS = [
+    "pieapp.api.registries.layouts.manager.LayoutRegistry",
+    "pieapp.api.registries.menus.manager.MenuRegistry",
+    "pieapp.api.registries.toolbars.manager.ToolBarRegistry",
+    "pieapp.api.registries.toolbuttons.manager.ToolButtonRegistry",
+    "pieapp.api.registries.shortcuts.manager.ShortcutRegistry",
+    "pieapp.api.registries.confpages.manager.ConfPageRegistry",
+    "pieapp.api.registries.snapshots.manager.SnapshotRegistry"
 ]

@@ -2,7 +2,6 @@ from __feature__ import snake_case
 
 from pathlib import Path
 
-from PySide6.QtGui import QIcon
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QDir
 from PySide6.QtWidgets import QWidget
@@ -10,13 +9,13 @@ from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QFormLayout
 
-from pieapp.api.globals import Global
-from pieapp.api.managers.configs.mixins import ConfigAccessorMixin
-from pieapp.api.managers.locales.helpers import translate
-from pieapp.api.managers.structs import Section
-from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
+from pieapp.api.gloader import Global
+from pieapp.api.registries.models import Scope
+from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.confpage import ConfigPage
-from pieapp.api.structs.plugins import Plugin
+from pieapp.api.registries.locales.helpers import translate
+from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
+from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 
 
 class ConverterConfigPage(
@@ -24,10 +23,10 @@ class ConverterConfigPage(
     ConfigAccessorMixin,
     ThemeAccessorMixin
 ):
-    name = Plugin.Converter
+    name = SysPlugin.Converter
 
     def get_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", section=self.name)
+        return self.get_svg_icon("icons/app.svg", scope=self.name)
 
     def get_title(self) -> str:
         return translate("Converter")
@@ -43,11 +42,10 @@ class ConverterConfigPage(
         self._ffmpeg_line_edit_action.set_icon(self.get_svg_icon("icons/folder.svg"))
         self._ffmpeg_line_edit_action.triggered.connect(self._ffmpeg_button_connect)
 
+        self._ffmpeg_root = self.get_config("ffmpeg.root", Scope.User, Global.USER_ROOT / "ffmpeg")
         self._ffmpeg_line_edit = QLineEdit()
         self._ffmpeg_line_edit.set_object_name("PreferencesLineEdit")
-        self._ffmpeg_line_edit.insert(self.get_config(
-            "ffmpeg.root", scope=Section.Root, section=Section.User
-        ))
+        self._ffmpeg_line_edit.insert(self._ffmpeg_root)
         self._ffmpeg_line_edit.add_action(
             self._ffmpeg_line_edit_action,
             QLineEdit.ActionPosition.TrailingPosition
@@ -60,22 +58,12 @@ class ConverterConfigPage(
         ffmpeg_directory = QFileDialog.get_existing_directory(
             parent=self._main_widget,
             caption=translate("Select ffmpeg directory"),
-            dir=self.get_config(
-                key="ffmpeg.root",
-                default=Global.USER_ROOT,
-                scope=Section.Root,
-                section=Section.User,
-            )
+            dir=self._ffmpeg_root
         )
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
-            self.set_config(
-                scope=Section.Root,
-                section=Section.User,
-                key="ffmpeg.root",
-                data=directory_path,
-            )
+            self.update_config("ffmpeg.root", Scope.User, directory_path)
             directory_path_obj = Path(directory_path)
             binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
             for binary in binaries:
@@ -85,20 +73,15 @@ class ConverterConfigPage(
                         f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html"
                     )
 
-                self.set_config(
-                    scope=Section.Root,
-                    section=Section.User,
-                    key=f"ffmpeg.{binary.stem!s}",
-                    data=str(directory_path_obj / binary),
-                )
+                self.update_config(f"ffmpeg.{binary.stem!s}", Scope.User, str(directory_path_obj / binary))
 
             self._ffmpeg_path = directory_path
             self._ffmpeg_line_edit.set_text(directory_path)
             self.set_modified(True)
 
     def accept(self) -> None:
-        self.save_config(scope=Section.Root, section=Section.User)
+        self.save_config()
         self.set_modified(False)
 
     def cancel(self) -> None:
-        self.restore_config()
+        self.restore_config(Scope.User)

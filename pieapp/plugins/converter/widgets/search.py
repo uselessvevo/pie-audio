@@ -3,7 +3,7 @@ from __feature__ import snake_case
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QSizePolicy, QLineEdit
 
-from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
+from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 
 
 class ConverterSearch(QLineEdit, ThemeAccessorMixin):

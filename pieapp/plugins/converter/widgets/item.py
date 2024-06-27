@@ -1,40 +1,55 @@
 from __feature__ import snake_case
 
 from PySide6.QtGui import Qt, QIcon
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QListWidgetItem, QGridLayout, QSplitter
+from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QSplitter
+from PySide6.QtWidgets import QToolButton
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QListWidgetItem
 
-from pieapp.helpers.qt import get_main_window
-from pieapp.widgets.spacer import Spacer
-from pieapp.api.structs.media import MediaFile
+from pieapp.api.models.media import MediaFile
+from pieapp.api.registries.registry import Registry
+from pieapp.api.registries.models import SysRegistry
 
+from converter.models import ConverterThemeProperties
 from converter.widgets.list import ConverterListWidget
 from converter.widgets.menu import QuickActionMenu
 
 
 class ConverterItem(QWidget):
 
-    def __init__(self, parent: ConverterListWidget, media_file: "MediaFile", color_props: dict = None) -> None:
+    def __init__(
+        self,
+        parent: ConverterListWidget,
+        media_file: MediaFile,
+        color_props: dict = None,
+        sig_on_file_modified: "Signal" = None
+    ) -> None:
         super().__init__(parent)
+
+        self._snapshots = Registry(SysRegistry.Snapshots)
 
         self._parent = parent
         self._list_widget = None
         self._color_props = color_props or {}
-
-        # Index of item
         self._media_file = media_file
 
         self.set_object_name("ConverterItem")
 
         self._title_label = QLabel()
+        self._title_label.set_size_policy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
         self._title_label.set_object_name("ConverterItemTitle")
 
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
-
-        self._quick_action_menu = QuickActionMenu(media_file=media_file)
+        self._quick_action_menu = QuickActionMenu(self, media_file.name)
 
         main_grid_layout = QGridLayout()
-
         title_vbox = QVBoxLayout()
         title_vbox.add_widget(self._title_label, alignment=Qt.AlignmentFlag.AlignLeft)
         title_vbox.add_widget(self._description_label, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -59,6 +74,31 @@ class ConverterItem(QWidget):
         item_hbox_layout.add_layout(main_grid_layout, 1)
         self.set_layout(item_hbox_layout)
 
+        self.set_title(media_file.info.filename)
+        self.set_description(f"{media_file.info.bit_rate}kb/s")
+        self.set_icon(media_file.info.file_format)
+
+        # sig_on_file_created.connect(self._on_file_created)
+        # sig_on_file_moved.connect(self._on_file_moved)
+        sig_on_file_modified.connect(self._on_file_modified)
+        # parent.sig_on_snapshot_modified.connect(self._on_file_modified)
+
+    @Slot(MediaFile, bool)
+    def _on_file_created(self, media_file: MediaFile) -> None:
+        pass
+
+    @Slot(MediaFile, str, bool)
+    def _on_file_moved(self, media_file: MediaFile, destination: str, is_directory: bool) -> None:
+        pass
+
+    @Slot(str, bool)
+    def _on_file_modified(self, media_file_name: str, is_directory: bool) -> None:
+        media_file = self._snapshots.get(media_file_name)
+        self.set_title(media_file.info.filename)
+        # TODO: Добавить список с ед. измерений в настройках конвертора
+        self.set_description(f"{media_file.info.bit_rate}kb/s")
+        self.set_icon(media_file.info.file_format)
+
     @property
     def media_file(self) -> MediaFile:
         return self._media_file
@@ -76,11 +116,11 @@ class ConverterItem(QWidget):
         callback: callable = None,
         before: str = None,
         after: str = None,
-    ) -> None:
+    ) -> QToolButton:
         """
         A proxy method to interact with `ConverterItemMenu`
         """
-        self._quick_action_menu.add_item(name, text, icon, callback, before, after)
+        return self._quick_action_menu.add_item(name, text, icon, callback, before, after)
 
     def set_list_widget(self, item: QListWidgetItem) -> None:
         self._list_widget = item
@@ -97,7 +137,9 @@ class ConverterItem(QWidget):
             item.set_visible(False)
 
     def set_title(self, title: str) -> None:
-        self._title_label.set_text(f"{title[0:60]}...")
+        if len(title) >= 50:
+            title = f"{title[:50]}..."
+        self._title_label.set_text(title)
         self._title_label.set_tool_tip(title)
 
     def set_description(self, description: str) -> None:
@@ -107,7 +149,6 @@ class ConverterItem(QWidget):
         self._file_format_label.set_text(file_format)
 
     def _get_file_format_color(self) -> None:
-        color = self._color_props.get(self._media_file.info.file_format, self._color_props.get("default"))
-        self._file_format_label.set_style_sheet(
-            "#ConverterItemFormat {background-color: %s;}" % color
-        )
+        color = self._color_props.get(self._media_file.info.file_format,
+                                      self._color_props.get(ConverterThemeProperties.DefaultColor))
+        self._file_format_label.set_style_sheet("#ConverterItemFormat {background-color: %s;}" % color)

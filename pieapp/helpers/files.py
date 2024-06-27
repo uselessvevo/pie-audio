@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import uuid
 
 from pathlib import Path
@@ -7,7 +8,7 @@ from typing import Union, Any
 from json import JSONDecodeError
 
 
-def touch(file_path):
+def touch(file_path: os.PathLike):
     """
     Creates empty file by given path
     """
@@ -18,7 +19,7 @@ def touch(file_path):
 
 
 def read_json(
-    file: Union[str, Path],
+    file: os.PathLike,
     default: Any = None,
     create: bool = False,
     raise_exception: bool = True
@@ -49,14 +50,14 @@ def read_json(
             raise e
 
 
-def write_json(file: str, data: Any, mode: str = "w", create: bool = False) -> None:
+def write_json(file: os.PathLike, data: Any, create: bool = False) -> None:
     """ Writes data in file by given path """
     try:
         if create and not os.path.exists(file):
             touch(file)
 
         data = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False)
-        with open(file, mode, encoding='utf-8') as output:
+        with open(file, "w", encoding='utf-8') as output:
             output.write(data)
 
     except (
@@ -68,7 +69,7 @@ def write_json(file: str, data: Any, mode: str = "w", create: bool = False) -> N
 
 
 def update_json(
-    file: Union[str, Path],
+    file: os.PathLike,
     data: Any,
     create: bool = False
 ) -> None:
@@ -85,17 +86,34 @@ def update_json(
     write_json(file, copy)
 
 
-def create_temp_directory(prefix: str, temp_directory: str) -> Path:
-    prefix_uuid: str = str(uuid.uuid4()).replace("-", "")[:5]
-    directory_path: Path = Path(temp_directory)
-    if not directory_path.exists():
-        directory_path.mkdir()
+def delete_files(files: list[os.PathLike]) -> None:
+    try:
+        for file in files:
+            os.remove(file)
+    except OSError:
+        pass
 
-    directory_path = directory_path.joinpath(f"{prefix}_{prefix_uuid}")
-    if not directory_path.exists():
-        directory_path.mkdir(exist_ok=True)
 
-    return directory_path
+def delete_temp_directory(temp_directory: Union[str, os.PathLike]) -> None:
+    temp_directory = Path(temp_directory)
+    if not temp_directory.exists():
+        return
+
+    shutil.rmtree(temp_directory)
+
+
+def create_temp_directory(temp_directory: Union[str, os.PathLike], prefix: str = None) -> Path:
+    prefix_uuid: str = str(uuid.uuid4()).replace("-", "")
+    temp_directory: Path = Path(temp_directory)
+    if not temp_directory.exists():
+        temp_directory.mkdir()
+
+    prefix = f"{prefix}_" if prefix else ""
+    temp_directory = temp_directory.joinpath(f"{prefix}{prefix_uuid}")
+    if not temp_directory.exists():
+        temp_directory.mkdir(exist_ok=True)
+
+    return temp_directory
 
 
 readJson = read_json

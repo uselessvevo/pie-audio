@@ -6,10 +6,10 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QStyle
 
-from pieapp.api.globals import Global
+from pieapp.api.gloader import Global
 from pieapp.helpers.qt import restart_application
-from pieapp.api.managers.structs import Section
-from pieapp.api.managers.locales.helpers import translate
+from pieapp.api.registries.models import Scope
+from pieapp.api.registries.locales.helpers import translate
 
 from pieapp.wizard.pages.converter import ConverterWizardPage
 from pieapp.wizard.pages.locale import LocaleWizardPage
@@ -17,7 +17,7 @@ from pieapp.wizard.pages.theme import ThemeWizardPage
 
 
 class FinishWizardPage(QtWidgets.QWizardPage):
-    section = Section.Shared
+    scope = Scope.Shared
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
@@ -34,7 +34,7 @@ class StartupWizard(QtWidgets.QWizard):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.set_window_title(translate("Setup Wizard", Section.Shared))
+        self.set_window_title(translate("Setup Wizard", scope=Scope.Shared))
         self.set_window_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DialogHelpButton))
 
         if os.name == "nt":
@@ -48,6 +48,7 @@ class StartupWizard(QtWidgets.QWizard):
             QtWidgets.QWizard.WizardOption.NoBackButtonOnLastPage
             | QtWidgets.QWizard.WizardOption.NoCancelButtonOnLastPage
         )
+        self.set_wizard_style(QtWidgets.QWizard.WizardStyle.ModernStyle)
 
         self.pages: list[QtWidgets.QWizardPage] = [
             LocaleWizardPage(self),

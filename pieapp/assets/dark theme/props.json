@@ -4,8 +4,8 @@
     "mainFontColor": "#cccccc",
     "mainBackgroundColor": "#353535",
     "minorColor": "#cccccc",
-    "minorBackgroundColor": "rgba(74, 74, 74, 100%)",
-    "minorBorderColor": "1px solid rgba(62, 62, 62, 100%)",
+    "minorBackgroundColor": "#4a4a4a",
+    "minorBorderColor": "1px solid #3e3e3e",
 
     "buttonMinHeight": "20px",
     "buttonMinWidth": "80px",
@@ -25,11 +25,11 @@
     "controlsFontColorDisabled": "#cccccc",
     "controlsFontColorChecked": "#494949",
 
-    "controlsBackgroundColor": "rgba(51,51,51,100%)",
-    "controlsBackgroundColorHovered": "rgba(64, 64, 64, 100%)",
-    "controlsBackgroundColorChecked": "rgba(64, 64, 64, 100%)",
-    "controlsBackgroundColorFocused": "rgba(64, 64, 64, 100%)",
-    "controlsBackgroundColorDisabled": "rgba(64, 64, 64, 70%)",
+    "controlsBackgroundColor": "#333333",
+    "controlsBackgroundColorHovered": "#404040",
+    "controlsBackgroundColorChecked": "#404040",
+    "controlsBackgroundColorFocused": "#404040",
+    "controlsBackgroundColorDisabled": "#404040",
 
     "tooltipBorderColor": "#454545",
     "tooltipBackgroundColor": "#252526",

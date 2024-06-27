@@ -2,10 +2,12 @@ from __feature__ import snake_case
 
 from PySide6.QtGui import Qt
 
-from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QMessageBox, QCheckBox
 
-from pieapp.api.managers.locales.helpers import translate
+from pieapp.widgets.buttons import Button
+from pieapp.widgets.buttons import ButtonRole
+
+from pieapp.api.registries.locales.helpers import translate
 
 
 class MessageCheckBox(QMessageBox):
@@ -24,10 +26,10 @@ class MessageCheckBox(QMessageBox):
         self.set_window_title(translate(window_title))
         self.set_text(translate(message_text))
 
-        self.yes_button = QPushButton()
+        self.yes_button = Button(ButtonRole.Primary)
         self.yes_button.set_text(translate(yes_button_text))
 
-        self.no_button = QPushButton()
+        self.no_button = Button()
         self.no_button.set_text(translate(no_button_text))
 
         self.add_button(self.yes_button, QMessageBox.ButtonRole.YesRole)

@@ -5,22 +5,23 @@ from PySide6.QtWidgets import QSplashScreen
 from PySide6.QtGui import QPixmap, QImage, QPainter
 
 
-def SplashScreen(path: str) -> QSplashScreen:
-    """ Simple splash screen """
-    splash_image = QImage(720, 480, QImage.Format.Format_ARGB32_Premultiplied)
-    splash_image.fill(0)
+class SplashScreen(QSplashScreen):
 
-    svg_painter = QPainter(splash_image)
-    svg_renderer = QSvgRenderer(path)
-    svg_renderer.render(svg_painter)
-    svg_painter.end()
+    def __init__(self, image_path: str) -> None:
+        super(SplashScreen, self).__init__()
 
-    pixmap = QPixmap.from_image(splash_image)
-    pixmap = pixmap.copy(0, 0, 720, 480)
+        splash_image = QImage(720, 480, QImage.Format.Format_ARGB32_Premultiplied)
+        splash_image.fill(0)
 
-    splash_screen = QSplashScreen(pixmap)
-    splash_font = splash_screen.font()
-    splash_font.set_pixel_size(14)
-    splash_screen.set_font(splash_font)
+        svg_painter = QPainter(splash_image)
+        svg_renderer = QSvgRenderer(image_path)
+        svg_renderer.render(svg_painter)
+        svg_painter.end()
 
-    return splash_screen
+        pixmap = QPixmap.from_image(splash_image)
+        pixmap = pixmap.copy(0, 0, 720, 480)
+
+        self.set_pixmap(pixmap)
+        splash_font = self.font()
+        splash_font.set_pixel_size(14)
+        self.set_font(splash_font)

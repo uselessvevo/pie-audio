@@ -1,25 +1,31 @@
+from __feature__ import snake_case
+
 from PySide6.QtGui import Qt
+from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QListWidget
 from PySide6.QtWidgets import QSizePolicy
-from PySide6.QtWidgets import QStyledItemDelegate
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
+from PySide6.QtWidgets import QStyledItemDelegate
 
-from pieapp.api.globals import Global
-from pieapp.api.managers.locales.helpers import translate
-from pieapp.api.managers.shortcuts.mixins import ShortcutAccessorMixin
-from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
-from pieapp.api.managers.toolbars.mixins import ToolBarAccessorMixin
-from pieapp.api.managers.toolbuttons.mixins import ToolButtonAccessorMixin
+from pieapp.api.gloader import Global
 from pieapp.api.plugins import PiePlugin
-from pieapp.api.plugins.decorators import on_plugin_event
 from pieapp.api.plugins.helpers import get_plugin
-from pieapp.api.structs.media import MediaFile
+from pieapp.api.plugins.decorators import on_plugin_ready
 
-from pieapp.api.structs.plugins import Plugin
+from pieapp.api.models.media import MediaFile
+from pieapp.api.models.plugins import SysPlugin
+from pieapp.api.models.themes import ThemeProperties
+
+from pieapp.api.registries.locales.helpers import translate
+from pieapp.api.registries.registry import Registry
+from pieapp.api.registries.models import SysRegistry
+from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
+from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
+from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
 
 from metadata.widgets.albumpicker import AlbumCoverPicker
 
@@ -35,20 +41,23 @@ class MetadataEditor(
     ThemeAccessorMixin,
     ToolBarAccessorMixin,
     ToolButtonAccessorMixin,
-    ShortcutAccessorMixin
 ):
-    name = Plugin.MetadataEditor
-    requires = [Plugin.Converter]
+    name = SysPlugin.MetadataEditor
+    requires = [SysPlugin.Converter]
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", section=self.name)
+        return self.get_svg_icon("icons/app.svg", scope=self.name)
 
-    @on_plugin_event(target=Plugin.Converter)
+    @on_plugin_ready(plugin=SysPlugin.Converter)
     def on_converter_available(self) -> None:
+        self._snapshots = Registry(SysRegistry.Snapshots)
+        self._converter = get_plugin(SysPlugin.Converter)
+        self._converter.sig_table_item_added.connect(self._on_table_item_added)
+        # self._converter.sig_on_snapshot_modified.connect(self._on_snapshot_modified)
+
         self._dialog = QDialog(self._parent)
         self._dialog.set_modal(True)
         self._dialog.set_object_name("MetadataEditor")
-        self._dialog.set_window_title(translate("Edit metadata"))
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(*Global.DEFAULT_MIN_WINDOW_SIZE or (720, 450))
 
@@ -61,8 +70,10 @@ class MetadataEditor(
         self._toolbar.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
         self._toolbar.set_object_name("MetadataToolBar")
 
+        # Setup tool buttons
+
         self._save_button = self.add_tool_button(
-            section=self.name,
+            scope=self.name,
             name="save",
             text=translate("Save"),
             tooltip=translate("Save"),
@@ -71,7 +82,7 @@ class MetadataEditor(
         self._save_button.set_disabled(True)
 
         self._undo_button = self.add_tool_button(
-            section=self.name,
+            scope=self.name,
             name="undo",
             text=translate("Undo"),
             tooltip=translate("Undo"),
@@ -80,7 +91,7 @@ class MetadataEditor(
         self._undo_button.set_disabled(True)
 
         self._redo_button = self.add_tool_button(
-            section=self.name,
+            scope=self.name,
             name="redo",
             text=translate("Redo"),
             tooltip=translate("Redo"),
@@ -91,6 +102,9 @@ class MetadataEditor(
         self.add_toolbar_item(self._toolbar.name, "save", self._save_button)
         self.add_toolbar_item(self._toolbar.name, "undo", self._undo_button)
         self.add_toolbar_item(self._toolbar.name, "redo", self._redo_button)
+        self._toolbar.call()
+
+        # Setup table widget
 
         self._table_widget = QTableWidget()
         self._table_widget.set_object_name("MetadataTable")
@@ -107,12 +121,8 @@ class MetadataEditor(
 
         self._dialog.set_layout(self._main_grid_layout)
 
-    @on_plugin_event(target=Plugin.Converter, event="converter_table_ready")
-    def _on_converter_table_ready(self) -> None:
-        """
-        Add button into quick action menu
-        """
-        self._converter = get_plugin(Plugin.Converter)
+    @Slot(MediaFile, int)
+    def _on_table_item_added(self) -> None:
         self._converter.add_quick_action(
             name="edit",
             text=translate("Edit"),
@@ -121,26 +131,31 @@ class MetadataEditor(
             before="delete"
         )
 
-    def _edit_file_button_connect(self, media_file: MediaFile) -> None:
+    def _edit_file_button_connect(self, media_file_name: str) -> None:
         """
         -map 0:0 -map 1:0
         -c copy -id3v2_version 3
         -metadata:s:v title="album cover"
         -metadata:s:v comment="cover (front)" out.mp3
         """
+        media_file: MediaFile = self._snapshots.get(media_file_name)
+        self._dialog.set_window_title(f"{translate('Edit metadata')} - {media_file.info.filename}")
+
         self._save_button.clicked.connect(lambda: self._save_button_connect(media_file))
-        self._undo_button.clicked.connect(lambda: self._undo_button_connect(media_file))
-        self._redo_button.clicked.connect(lambda: self._redo_button_connect(media_file))
+        self._undo_button.clicked.connect(lambda: self._undo_button_connect())
+        self._redo_button.clicked.connect(lambda: self._redo_button_connect())
 
         contributors_list_widget = QListWidget()
         contributors_list_widget.add_items(media_file.metadata.additional_contributors)
 
         album_cover = media_file.metadata.album_cover
-
         album_cover_widget = AlbumCoverPicker(
             parent=self._dialog,
             image_path=album_cover.image_path.as_posix() if album_cover.image_path.exists() else None,
-            picker_icon=self.get_svg_icon("icons/folder-open.svg", color="#f5d97f"),
+            picker_icon=self.get_svg_icon(
+                key="icons/folder-open.svg",
+                color=self.get_theme_property(ThemeProperties.AppIconColor)
+            ),
             placeholder_text=translate("No image selected"),
             select_album_cover_text=translate("Select album cover image")
         )
@@ -161,7 +176,7 @@ class MetadataEditor(
         self._table_widget.set_item(13, 0, QTableWidgetItem(translate("Additional contributors")))
         self._table_widget.set_item(14, 0, QTableWidgetItem(translate("Year of composition")))
 
-        self._table_widget.set_item(0, 1, QTableWidgetItem(media_file.metadata.title))
+        self._table_widget.set_item(0, 1, QTableWidgetItem(media_file.uuid))  # metadata.title
         self._table_widget.set_item(1, 1, QTableWidgetItem(media_file.metadata.genre))
         self._table_widget.set_item(2, 1, QTableWidgetItem(media_file.metadata.subgenre))
         self._table_widget.set_item(3, 1, QTableWidgetItem(media_file.metadata.track_number))
@@ -182,10 +197,10 @@ class MetadataEditor(
     def _save_button_connect(self, media_file: MediaFile) -> None:
         pass
 
-    def _undo_button_connect(self, media_file: MediaFile) -> None:
+    def _undo_button_connect(self) -> None:
         pass
 
-    def _redo_button_connect(self, media_file: MediaFile) -> None:
+    def _redo_button_connect(self) -> None:
         pass
 
 

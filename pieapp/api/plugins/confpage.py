@@ -5,15 +5,36 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 
 from pieapp.api.exceptions import PieException
+from pieapp.helpers.qt import get_main_window
+
+
+class BlankPage(QWidget):
+    """
+    Just a blank page to show if needed
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
 
 
 class ConfigPage(QObject):
     name: str
     root: str
+
+    # Show page on top
     is_builtin_page: bool = False
 
+    # Emit when all plugins are ready
+    sig_plugins_ready = Signal()
+    
+    # Emit when application need to restart
     sig_restart_requested = Signal(str)
-    sig_enable_apply_button = Signal(bool)
+    
+    # Emit when page is registered
+    sig_page_registered = Signal(bool)
+    
+    # Emit to toggle apply button state
+    sig_toggle_apply_button = Signal(bool)
 
     def __int__(self, parent=None) -> None:
         super().__init__(parent)
@@ -39,7 +60,7 @@ class ConfigPage(QObject):
 
     def get_page_widget(self) -> QWidget:
         """ Render page """
-        raise PieException(f"Method `call` in \"{self.name}\" configuration page must be implemented")
+        raise PieException(f"Method f`{self.__qualname__}` in \"{self.name}\" configuration page must be implemented")
 
     @property
     def is_modified(self) -> bool:
@@ -47,7 +68,12 @@ class ConfigPage(QObject):
 
     def set_modified(self, state: bool) -> None:
         self._is_modified = state
-        self.sig_enable_apply_button.emit(state)
+        self.sig_toggle_apply_button.emit(state)
+
+    def require_restart(self) -> None:
+        main_window = get_main_window()
+        if hasattr(main_window, "show_restart_dialog"):
+            main_window.show_restart_dialog()
 
     def __repr__(self) -> str:
         return f"({self.__class__.__name__}) <name: {self.name}, parent: {self.root}>"

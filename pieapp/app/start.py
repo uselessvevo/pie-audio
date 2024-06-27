@@ -1,42 +1,45 @@
+import sys
+
 from PySide6.QtCore import QSettings
 from __feature__ import snake_case
 
-import sys
-from confstar.types import *
-
-from pieapp.api.globals import Global
+from pieapp.api.gloader import Global
 from pieapp.api.plugins import Plugins
+from pieapp.api.registries.models import SysRegistry, Scope
+from pieapp.helpers.files import create_temp_directory
 from pieapp.wizard.wizard import StartupWizard
 from pieapp.helpers.modules import is_debug
 from pieapp.helpers.qt import get_application, except_hook
 from pieapp.widgets.splashscreen import SplashScreen
-from pieapp.api.managers.registry import Registries
+from pieapp.api.registries.registry import Registry
 
 
-def check_crabs() -> bool:
+def check_user_folders() -> bool:
+    print((Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists(),
+          (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").exists(),
+          (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).exists(),
+          (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / Global.CONFIG_FILE_NAME).exists()
+          )
     return (
         Global.USER_ROOT.exists()
-        and (Global.USER_ROOT / Global.CONFIGS_FOLDER).exists()
-        and (Global.USER_ROOT / Global.PLUGINS_FOLDER).exists()
-        and (Global.USER_ROOT / Global.CONFIGS_FOLDER / Global.CONFIG_FILE_NAME).exists()
+        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists()
+        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").exists()
+        and (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).exists()
     )
 
 
-def restore_crabs() -> None:
+def restore_user_folders() -> None:
     if not Global.USER_ROOT.exists():
         Global.USER_ROOT.mkdir()
-        (Global.USER_ROOT / Global.CONFIGS_FOLDER).mkdir()
-        (Global.USER_ROOT / Global.PLUGINS_FOLDER).mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").mkdir()
+        (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).mkdir()
 
 
 def start_application(*args, **kwargs) -> None:
     """
     Main start-up entrypoint
     """
-    # Adding additional magic-annotations
-    Global.add_handlers(Lock, Max, Min)
-
-    # Load system configuration modules first
     Global.import_module("pieapp.app.globals")
 
     # Swapping the exception hook
@@ -61,19 +64,19 @@ def start_application(*args, **kwargs) -> None:
     app.process_events()
 
     settings = QSettings()
-    first_run = settings.value("first_run", type=bool)
     fully_setup = settings.value("fully_setup", type=bool)
 
     # Preparing or restoring our application's user folder
-    if not check_crabs():
+    if not check_user_folders():
         # To prepare/restore user's folder we need to use
-        # only the core managers (Config.CORE_MANAGERS)
-        restore_crabs()
+        # only the core managers (Global.CORE_MANAGERS)
+        restore_user_folders()
         settings.set_value("first_run", False)
 
+    first_run = settings.value("first_run", type=bool)
     if first_run or not fully_setup:
         for manager in Global.CORE_MANAGERS:
-            Registries.from_string(manager)
+            Registry.from_string(manager)
 
         app.set_style_sheet("")
 
@@ -89,22 +92,20 @@ def start_application(*args, **kwargs) -> None:
     # Preparing our application
     # Starting all managers by order
     for manager in Global.CORE_MANAGERS:
-        Registries.from_string(manager)
+        Registry.from_string(manager)
 
     from pieapp.app.main import MainWindow
     app = get_application()
     main_window = MainWindow()
 
-    # Closing splashscreen
-    if splash:
-        splash.hide()
-
     # Starting all managers by order
     for manager in Global.LAYOUT_MANAGERS:
-        Registries.from_string(manager)
+        Registry.from_string(manager)
 
-    Plugins.init_plugins()
-
+    main_window.init()
     main_window.show()
+
+    if splash:
+        splash.close()
 
     sys.exit(app.exec())

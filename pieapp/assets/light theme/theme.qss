@@ -1,0 +1,129 @@
+/* QMainWindow */
+
+QMainWindow {
+   background-color: @primaryBgColor;
+}
+
+/* QDialog */
+
+QDialog {
+    background-color: @primaryBgColor;
+}
+
+/* QPushButton */
+
+QPushButton {
+    font-size: @buttonFontSize;
+    border: @buttonBorder;
+    border-color: @buttonBorderColor;
+    border-radius: @buttonBorderRadius;
+    padding-right: @buttonPaddingRight;
+    padding-left: @buttonPaddingLeft;
+    padding-top: @buttonPaddingTop;
+    padding-bottom: @buttonPaddingBottom;
+    background-color: @buttonBgColor;
+    color: @buttonColor;
+    font: @buttonFontStyle;
+    width: @buttonWidth;
+    margin: @buttonMargin;
+}
+
+QPushButton::focus {
+    margin: @buttonMarginFocused;
+}
+
+#QPushButton::disabled {
+    color: @buttonDisabledColor;
+    background-color: @buttonDisabledBgColor;
+    border-color: @buttonDisabledBorderColor;
+}
+
+/* PrimaryButton */
+
+#PrimaryButton {
+    font-size: @buttonFontSize;
+    border: @primaryButtonBorder;
+    border-color: @primaryButtonBorderColor;
+    border-radius: @primaryButtonBorderRadius;
+    padding-right: @primaryButtonPaddingRight;
+    padding-left: @primaryButtonPaddingLeft;
+    padding-top: @primaryButtonPaddingTop;
+    padding-bottom: @primaryButtonPaddingBottom;
+    background-color: @primaryButtonBgColor;
+    color: @primaryButtonColor;
+    font: @primaryButtonFontStyle;
+    width: @primaryButtonWidth;
+    margin: @primaryButtonMargin;
+}
+
+#PrimaryButton::focus {
+    margin: @primaryButtonMarginFocused;
+}
+
+#PrimaryButton::disabled {
+    color: @buttonDisabledColor;
+    background-color: @buttonDisabledBgColor;
+    border-color: @buttonDisabledBorderColor;
+}
+
+/* FlatButton */
+
+#FlatButton {
+    font-size: @buttonFontSize;
+    border: @flatButtonBorder;
+    border-color: @flatButtonBorderColor;
+    border-radius: @flatButtonBorderRadius;
+    padding-right: @flatButtonPaddingRight;
+    padding-left: @flatButtonPaddingLeft;
+    padding-top: @flatButtonPaddingTop;
+    padding-bottom: @flatButtonPaddingBottom;
+    background-color: @primaryBgColor;
+    color: @flatButtonColor;
+    font: @flatButtonFontStyle;
+    width: @flatButtonWidth;
+    margin: @flatButtonMargin;
+}
+
+#FlatButton::focus {
+    margin: @flatButtonMarginFocused;
+}
+
+#FlatButton::disabled {
+    font-color: @flatButtonDisabledColor;
+    background-color: @flatButtonDisabledBgColor;
+    margin: @flatButtonMarginFocused;
+}
+
+/* QToolButton */
+
+QToolButton {
+    font-size: @buttonFontSize;
+    border: @toolButtonBorder;
+    border-color: @toolButtonBorderColor;
+    border-radius: @toolButtonBorderRadius;
+    padding-right: @toolButtonPaddingRight;
+    padding-left: @toolButtonPaddingLeft;
+    padding-top: @toolButtonPaddingTop;
+    padding-bottom: @toolButtonPaddingBottom;
+    background-color: @toolButtonBgColor;
+    color: @toolButtonColor;
+    font: @toolButtonFontStyle;
+    width: @toolButtonWidth;
+    margin: @toolButtonMargin;
+}
+
+QToolButton:disabled {
+    background-color: @toolButtonDisabledBgColor;
+}
+
+QToolButton:hover {
+    background-color: @toolButtonHoveredBgColor;
+}
+
+QToolButton:checked {
+    background-color: @toolButtonCheckedBgColor;
+}
+
+QToolButton:focus {
+    background-color: @toolButtonFocusedBgColor;
+}

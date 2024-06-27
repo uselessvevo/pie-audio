@@ -1,0 +1,61 @@
+#MainMenuBar {
+   background-color: @menuBgColor;
+   color: @secondaryFontColor;
+   min-height: @menuBarMinHeight;
+   min-width: @menuBarMinWidth;
+   padding: @menuBarPadding;
+   border: @menuBorder;
+}
+
+/*#MainMenuBar and QMenu*/
+#MainMenuBar::item {
+   background-color: @menuBgColor;
+}
+
+#MainMenuBar::item:selected {
+   color: @secondaryFontColor;
+}
+
+#MainMenuBar::item:pressed {
+   background-color: @menuBgColor;
+}
+
+QMenu {
+   color: @secondaryFontColor;
+   background-color: @menuBgColor;
+   border: @menuBorder;
+}
+
+QMenu::item {
+   padding: @menuItemPadding;
+   border: @menuItemBorder;
+}
+
+QMenu::item:disabled {
+   color: @secondaryFontColor;
+}
+
+QMenu::item:disabled:selected {
+	color: @secondaryFontColor;
+}
+
+QMenu::item:selected {
+   color: @secondaryFontColor;
+   background-color: @menuBgColorSelected;
+}
+
+QMenu::icon:checked {
+   background-color: @menuBgColorSelected;
+   border: @menuItemCheckedBorder;
+   border-radius: @controlsBorderRadius;
+}
+
+QMenu::separator {
+   height: @menuSeparatorHeight;
+   background-color: @menuBgColor;
+}
+
+QMenu::indicator {
+   width: @menuIndicatorWidth;
+   height: @menuIndicatorHeight;
+}

@@ -1,36 +1,43 @@
 from __feature__ import snake_case
 
-from typing import Union
+from typing import Union, Type
 
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
 
-from PySide6.QtWidgets import QLabel, QSizePolicy
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QTreeWidget
-from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QDialogButtonBox
 
-from pieapp.api.managers.locales.helpers import translate
-from pieapp.api.structs.plugins import Plugin
-from pieapp.api.structs.menus import MainMenu
-from pieapp.api.structs.menus import MainMenuItem
+from pieapp.api.exceptions import PieException
+from pieapp.api.registries.base import BaseRegistry
+from pieapp.api.registries.locales.helpers import translate
+from pieapp.api.registries.registry import Registry
+from pieapp.api.models.plugins import SysPlugin
+from pieapp.api.models.menus import MainMenu
+from pieapp.api.models.menus import MainMenuItem
 
-from pieapp.api.globals import Global
+from pieapp.api.gloader import Global
 from pieapp.api.plugins.confpage import ConfigPage
 
-from pieapp.widgets.spacer import Spacer
 from pieapp.api.plugins.plugins import PiePlugin
-from pieapp.api.managers.structs import Section
-from pieapp.api.plugins.decorators import on_plugin_event
-from pieapp.api.managers.menus.mixins import MenuAccessorMixin
-from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
-from pieapp.api.managers.configs.mixins import ConfigAccessorMixin
-from pieapp.api.managers.toolbars.mixins import ToolBarAccessorMixin
-from pieapp.api.managers.toolbuttons.mixins import ToolButtonAccessorMixin
+from pieapp.api.registries.models import Scope, SysRegistry
+from pieapp.api.plugins.decorators import on_plugin_ready
+from pieapp.api.registries.menus.mixins import MenuAccessorMixin
+from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
+from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
+from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
+from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
+from pieapp.helpers.logger import logger
 
-from preferences.widgets.item import ConfigPageTreeWidget
+from pieapp.widgets.spacer import Spacer
+from pieapp.widgets.buttons import Button
+from pieapp.widgets.buttons import ButtonRole
+
+from preferences.widgets.item import ConfigPageTreeWidgetItem
 
 
 ConfigPagesDict = dict[str, dict]
@@ -40,23 +47,24 @@ ConfigPagesUnion = Union[ConfigPagesList, ConfigPagesDict]
 
 class Preferences(
     PiePlugin,
-    ConfigAccessorMixin, ThemeAccessorMixin,
-    MenuAccessorMixin, ToolBarAccessorMixin, ToolButtonAccessorMixin,
+    ConfigAccessorMixin,
+    ThemeAccessorMixin,
+    MenuAccessorMixin,
+    ToolBarAccessorMixin,
+    ToolButtonAccessorMixin,
 ):
-    name = Plugin.Preferences
-    requires = [Plugin.MainMenuBar]
-
-    def __init__(self, *args, **kwargs) -> None:
-        super(Preferences, self).__init__(*args, **kwargs)
-
-        # Define main container variables
-        self._pages_dict: dict[str, ConfigPage] = {}
-        self._tree_item_dict: dict[str, ConfigPageTreeWidget] = {}
+    name = SysPlugin.Preferences
+    requires = [SysPlugin.MainMenuBar]
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", section=self.name)
+        return self.get_svg_icon("icons/app.svg", scope=self.name)
 
     def init(self) -> None:
+        # Define registry
+        self._tree_item_index: int = 0
+        self._tree_items: dict[str, ConfigPageTreeWidgetItem] = {}
+        self._registry: BaseRegistry = Registry(SysRegistry.ConfigPages)
+
         # Main window dialog
         self._dialog = QDialog(self._parent)
         self._dialog.set_modal(True)
@@ -64,15 +72,17 @@ class Preferences(
         self._dialog.set_window_title(translate("Preferences"))
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.set_minimum_size(*Global.DEFAULT_MIN_WINDOW_SIZE)
-        self._dialog.resize(*self.get_config("ui.window_size", Global.DEFAULT_MIN_WINDOW_SIZE))
+        self._dialog.resize(*self.get_config("ui.window_size", Scope.User, Global.DEFAULT_MIN_WINDOW_SIZE))
 
         # Page canvas and its state
         self._page_widget_grid = QGridLayout()
+        self._page_widget_grid.set_spacing(0)
         self._page_widget_grid.set_contents_margins(0, 0, 0, 0)
+        self._page_widget_grid.set_alignment(Qt.AlignmentFlag.AlignHCenter)
 
-        self._current_canvas_widget = QLabel()
-        self._current_canvas_widget.set_object_name("PreferencesCurrentWidget")
-        self._current_canvas_widget.set_alignment(Qt.AlignmentFlag.AlignCenter)
+        self._current_widget = QLabel()
+        self._current_widget.set_object_name("PreferencesCurrentWidget")
+        self._current_widget.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         # Footer layout
         self._command_buttons_footer_grid = QGridLayout()
@@ -82,15 +92,15 @@ class Preferences(
         self._footer_button_box = QDialogButtonBox()
         self._footer_button_box.set_contents_margins(0, 10, 10, 10)
 
-        self._ok_button = QPushButton()
+        self._ok_button = Button(ButtonRole.Primary)
         self._ok_button.set_text(translate("Ok"))
         self._ok_button.clicked.connect(self._on_pages_accept)
 
-        self._cancel_button = QPushButton()
+        self._cancel_button = Button()
         self._cancel_button.set_text(translate("Cancel"))
         self._cancel_button.clicked.connect(self._on_pages_cancel)
 
-        self._apply_button = QPushButton()
+        self._apply_button = Button()
         self._apply_button.set_text(translate("Apply"))
         self._apply_button.set_enabled(False)
         self._apply_button.clicked.connect(self._on_pages_apply)
@@ -109,7 +119,7 @@ class Preferences(
         self._command_buttons_footer_grid.add_widget(Spacer(), 0, 0, Qt.AlignmentFlag.AlignRight)
         self._command_buttons_footer_grid.add_widget(self._footer_button_box, 0, 1, Qt.AlignmentFlag.AlignRight)
 
-        self._page_widget_grid.add_widget(self._current_canvas_widget, 0, 0)
+        self._page_widget_grid.add_widget(self._current_widget, 0, 0)
 
         # Tree widget
         self._tree_widget = QTreeWidget()
@@ -131,85 +141,116 @@ class Preferences(
 
     # Public API methods
 
-    def register_config_page(self, plugin_instance: PiePlugin) -> None:
-        plugin_config_page = getattr(plugin_instance, "get_config_page")
+    def register_config_page(self, plugin: PiePlugin) -> None:
+        plugin_config_page = getattr(plugin, "get_config_page")
         if plugin_config_page and callable(plugin_config_page):
-            config_page_instance: ConfigPage = plugin_config_page()
-            self._pages_dict[plugin_instance.name] = config_page_instance
+            config_page: ConfigPage = plugin_config_page()
+            self._registry.add(plugin.name, config_page)
 
-            config_page_instance.init()
-            config_page_instance.sig_enable_apply_button.connect(
-                lambda: self._enable_apply_button(config_page_instance.is_modified)
+            config_page.init()
+            config_page.sig_toggle_apply_button.connect(
+                lambda: self._toggle_apply_button(config_page.is_modified),
             )
 
-            tree_item = ConfigPageTreeWidget(config_page_instance)
-            if config_page_instance.get_icon():
-                tree_item.set_icon(0, config_page_instance.get_icon())
-                tree_item.set_text(1, config_page_instance.get_title())
+            tree_item = ConfigPageTreeWidgetItem(config_page, self._tree_item_index)
+            if config_page.get_icon():
+                tree_item.set_icon(0, config_page.get_icon())
+                tree_item.set_text(1, config_page.get_title())
 
-            tree_item.set_text(0, config_page_instance.get_title())
-            self._tree_item_dict[tree_item.confpage.name] = tree_item
+            tree_item.set_text(0, config_page.get_title())
+            self._tree_items[plugin.name] = tree_item
             self._tree_widget.add_top_level_item(tree_item)
+            self._tree_item_index += 1
 
-    def deregister_config_page(self, plugin_instance: PiePlugin) -> None:
-        if plugin_instance.name in self._pages_dict:
-            self._pages_dict.pop(plugin_instance.name)
-            for index, tree_item in enumerate(self._tree_item_dict.values()):
-                if tree_item.confpage.name == plugin_instance.name:
+    def update_config_page(self, plugin: PiePlugin, new_page_name: str, new_page_class: Type[ConfigPage]) -> None:
+        # Update config page widget
+        new_page = new_page_class()
+        new_page.init()
+        new_page.sig_toggle_apply_button.connect(
+            lambda: self._toggle_apply_button(new_page.is_modified)
+        )
+
+        # Update config page tree item widget
+        cur_tree_item = self._tree_items[plugin.name]
+        new_tree_item = ConfigPageTreeWidgetItem(new_page, cur_tree_item.index)
+        if new_page.get_icon():
+            new_tree_item.set_icon(0, new_page.get_icon())
+            new_tree_item.set_text(1, new_page.get_title())
+
+        new_tree_item.set_text(0, new_page.get_title())
+        del self._tree_items[plugin.name]
+        self._tree_items[new_page_name] = new_tree_item
+        self._tree_widget.take_top_level_item(cur_tree_item.index)
+        self._tree_widget.add_top_level_item(new_tree_item)
+
+    def deregister_config_page(self, plugin: PiePlugin) -> None:
+        if plugin.name in self._registry:
+            self._registry.remove(plugin.name)
+            for index, tree_item in enumerate(self._registry.items()):
+                if tree_item.confpage.name == plugin.name:
                     self._tree_widget.remove_item_widget(tree_item, index)
 
-    def _enable_apply_button(self, state: bool) -> None:
-        self._apply_button.set_enabled(state)
+    def _toggle_apply_button(self, page_state: bool) -> None:
+        self._apply_button.set_enabled(page_state)
 
-    @Slot(ConfigPageTreeWidget, int)
-    def _on_item_clicked(self, page: ConfigPageTreeWidget) -> None:
+    @Slot(ConfigPageTreeWidgetItem, int)
+    def _on_item_clicked(self, page: ConfigPageTreeWidgetItem) -> None:
         """
         Handle on item clicked event by swapping current widget with the new one
 
         Args:
-            page (ConfigPageTreeWidget): configuration page instance
+            page (ConfigPageTreeWidgetItem): configuration page instance
         """
         # This is a retarded way to swap components but that will do
-        self._page_widget_grid.remove_widget(self._current_canvas_widget)
-        self._current_canvas_widget.set_visible(False)
-        self._current_canvas_widget = page.confpage.get_page_widget()
-        self._current_canvas_widget.set_size_policy(
+        self._page_widget_grid.remove_widget(self._current_widget)
+        self._current_widget.set_visible(False)
+        self._current_widget = page.confpage.get_page_widget()
+        self._current_widget.set_size_policy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Minimum
         )
-        self._page_widget_grid.add_widget(self._current_canvas_widget, 0, 0)
-        self._current_canvas_widget.set_visible(True)
+        self._page_widget_grid.add_widget(self._current_widget, 0, 0)
+        self._current_widget.set_visible(True)
 
     def _on_pages_accept(self) -> None:
-        pages = self._pages_dict.values()
+        pages = self._registry.values()
         for page in pages:
-            page.accept()
+            try:
+                page.accept()
+            except PieException as e:
+                logger.debug(str(e))
 
         self._dialog.accept()
 
     def _on_pages_cancel(self) -> None:
         # TODO: Add changes tracker subscription
-        pages = self._pages_dict.values()
+        pages = self._registry.values()
         for page in pages:
-            page.cancel()
+            try:
+                page.cancel()
+            except PieException as e:
+                logger.debug(str(e))
 
         self._dialog.accept()
 
     def _on_pages_apply(self) -> None:
-        pages = self._pages_dict.values()
+        pages = self._registry.values()
         for page in pages:
-            page.accept()
+            try:
+                page.accept()
+            except PieException as e:
+                logger.debug(str(e))
 
-    @on_plugin_event(target=Plugin.MainMenuBar)
+    @on_plugin_ready(plugin=SysPlugin.MainMenuBar)
     def _on_menu_bar_available(self) -> None:
         self.add_menu_item(
-            section=Section.Shared,
+            scope=Scope.Shared,
             menu=MainMenu.File,
             name="preferences",
             text=translate("Preferences"),
             triggered=self.call,
             icon=self.get_plugin_icon(),
-            before=MainMenuItem.Exit
+            after=MainMenuItem.OpenFiles
         )
 
 

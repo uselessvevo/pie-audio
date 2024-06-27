@@ -25,3 +25,5 @@ class ConverterListWidget(QListWidget):
 
         self.itemChanged.connect(change_callback)
         self.model().rowsRemoved.connect(remove_callback)
+
+    # def item_widget(self, item: PySide6.QtWidgets.QListWidgetItem) -> PySide6.QtWidgets.QWidget:

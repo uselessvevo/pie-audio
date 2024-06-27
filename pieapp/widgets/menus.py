@@ -1,16 +1,30 @@
 from __future__ import annotations
 from __feature__ import snake_case
 
+import copy
 from typing import Union, Any
 
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QAction
+from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QMenuBar, QMenu
 
 from pieapp.api.exceptions import PieException
 
-INDEX_END = type("INDEX_END", (), {})
-INDEX_START = type("INDEX_START", (), {})
+
+class PieMenuBar(QMenuBar):
+
+    def __init__(self, parent: QObject = None) -> None:
+        super(PieMenuBar, self).__init__(parent)
+        self._menus: list[PieMenu] = []
+
+    def add_pie_menu(self, menu: PieMenu):
+        self.add_menu(menu)
+        self._menus.append(menu)
+
+    def call(self) -> None:
+        for menu in self._menus:
+            menu.call()
 
 
 class PieMenu(QMenu):
@@ -24,7 +38,7 @@ class PieMenu(QMenu):
         self._name = name
         self._text = text
 
-        self._items: dict[str, QAction] = {}
+        self._items: dict[str, dict] = {}
         self._keys: list[Any] = list(self._items.keys())
 
         if text is not None:
@@ -39,41 +53,52 @@ class PieMenu(QMenu):
         triggered: callable = None,
         icon: QIcon = None,
         before: str = None,
-        index: Union[int, INDEX_START, INDEX_END] = None
+        after: str = None,
+        index: Union[int] = None
     ) -> QAction:
         if name in self._items:
             raise PieException(f"Menu item {name} already registered")
 
-        action = QAction(parent=self, text=text, icon=icon)
+        item = QAction(parent=self, text=text, icon=icon)
         if triggered:
-            action.triggered.connect(triggered)
+            item.triggered.connect(triggered)
 
-        self._items[name] = action
+        self._items[name] = {"item": item, "after": after, "before": before, "index": index}
         self._keys.append(name)
 
-        if isinstance(index, INDEX_START):
-            index = self._items[self._keys[0]]
-            self.insert_action(index, action)
+        return item
 
-        elif isinstance(index, INDEX_END):
-            index = self._items[self._keys[-1]]
-            self.insert_action(index, action)
+    def _get_items_list(self) -> list:
+        # A really shitty way to sort the list of dicts
+        # But I don't really care... for now
+        items_list = sorted(self._items.values(), key=lambda d: d.get("index") or 0)
+        for index, item_dict in enumerate(items_list):
+            if index == len(self._keys):
+                break
 
-        elif isinstance(index, int):
-            index = self._items[self._keys[index]]
-            self.insert_action(index, action)
+            if item_dict.get("index") == -1:
+                item_copy = copy.copy(item_dict)
+                del items_list[index]
+                item_copy["index"] = len(items_list)
+                items_list.insert(item_copy["index"], item_copy)
 
-        elif before:
-            before = self._items[before]
-            self.insert_action(before, action)
+            elif item_dict["after"]:
+                index = self._keys.index(item_dict["after"])
+                items_list.insert(index, item_dict)
 
-        else:
-            self.add_action(action)
+            elif item_dict["before"]:
+                index = self._keys.index(item_dict["before"]) - 1
+                items_list.insert(index, item_dict)
 
-        return action
+        items_list = [i["item"] for i in items_list]
+        return items_list
+
+    def call(self) -> None:
+        items_list = self._get_items_list()
+        self.add_actions(items_list)
 
     def get_item(self, name: str) -> QAction:
-        return self._items[name]
+        return self._items[name]["item"]
 
     @property
     def name(self) -> str:

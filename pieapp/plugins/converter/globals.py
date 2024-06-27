@@ -1,10 +1,7 @@
-from confstar.types import Lock
+ALBUM_COVER_EXTENSIONS = (".jpeg", ".jpg", ".png",)
 
 
-ALBUM_COVER_EXTENSIONS: Lock = (".jpeg", ".jpg", ".png",)
-
-
-AUDIO_EXTENSIONS: Lock = (
+AUDIO_EXTENSIONS = (
     ".m3u", ".m3u8", ".au", ".snd", ".mp3", ".mp2", ".aif",
     ".aifc", ".aiff", ".ra", ".wav", ".mpa", ".aa", ".aac",
     ".aax", ".ac3", ".adt", ".adts", ".ape", ".ec3", ".flac",
@@ -13,7 +10,7 @@ AUDIO_EXTENSIONS: Lock = (
     ".wave", ".wax", ".weba", ".wma", ".wv"
 )
 
-IMAGE_EXTENSIONS: Lock = (
+IMAGE_EXTENSIONS = (
     ".bmp", ".gif", ".ief", ".jpg", ".jpe", ".jpeg", ".png",
     ".svg", ".tiff", ".tif", ".ico", ".ras", ".pnm", ".pbm",
     ".pgm", ".ppm", ".rgb", ".xbm", ".xpm", ".xwd", ".3fr",

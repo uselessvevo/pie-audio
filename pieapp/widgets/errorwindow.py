@@ -4,12 +4,12 @@ import sys
 from typing import Union
 
 from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QErrorMessage
 
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QCheckBox
-from PySide6.QtWidgets import QPushButton
 
 
 def ErrorWindow(err_value: str, err_traceback: Union[tuple, list]):

@@ -1,6 +1,5 @@
 from __feature__ import snake_case
 
-import os
 from pathlib import Path
 
 from PySide6 import QtWidgets
@@ -9,28 +8,25 @@ from PySide6.QtGui import Qt, QAction
 from PySide6.QtWidgets import QStyle, QFileDialog
 
 from pieapp.helpers.ffmpeg import DownloadWorker
-from pieapp.api.globals import Global
-from pieapp.helpers.logger import logger
-from pieapp.api.managers.configs.mixins import ConfigAccessorMixin
-from pieapp.api.managers.locales.helpers import translate
-from pieapp.api.managers.structs import Section
+from pieapp.api.gloader import Global
+from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
+from pieapp.api.registries.locales.helpers import translate
+from pieapp.api.registries.models import Scope
 
 
 class ConverterWizardPage(
     ConfigAccessorMixin,
     QtWidgets.QWizardPage
 ):
-    section = Section.Shared
+    scope = Scope.Shared
 
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self._ffmpeg_path: Path = Path(Global.USER_ROOT / "ffmpeg")
-        file_extension = ".exe" if os.name == "nt" else ""
-        self._binaries = tuple(map(lambda v: Path(f"{v}{file_extension}"), ("ffmpeg", "ffprobe", "ffplay")))
 
         self._progress_bar = QtWidgets.QProgressBar()
         self._progress_bar.set_style_sheet("QProgressBar{font-size: 15pt;}")
-        self._progress_bar.set_format(f"{translate('Downloading files...')} (%p%/100%)")
+        self._progress_bar.set_format(f"{translate('Downloading files')}... (%p%/100%)")
         self._progress_bar.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._download_thread = QThread()
@@ -121,29 +117,16 @@ class ConverterWizardPage(
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
-            self.set_config(
-                scope=Section.Root,
-                section=Section.User,
-                key="ffmpeg.root",
-                data=directory_path
-            )
-
-            for binary in self._binaries:
+            self.update_config("ffmpeg.root", Scope.User, directory_path)
+            binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
+            for binary in binaries:
                 if not (directory_path / binary).exists():
                     raise FileNotFoundError(f"Binary file \"{binary.stem!s}\" not found. "
                                             f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html")
 
-                self.set_config(
-                    scope=Section.Root,
-                    section=Section.User,
-                    key=f"ffmpeg.{binary.stem!s}",
-                    data=str(directory_path / binary)
-                )
+                self.update_config(f"ffmpeg.{binary.stem!s}", Scope.User, str(directory_path / binary))
 
-            self.save_config(
-                scope=Section.Root,
-                section=Section.User
-            )
+            self.save_config(Scope.User, True)
             self._ffmpeg_path = Path(directory_path)
             self._line_edit.set_text(str(directory_path))
             self.completeChanged.emit()
@@ -151,34 +134,15 @@ class ConverterWizardPage(
     def finish(self) -> None:
         ffmpeg_path = Path(self._line_edit.text())
         # Converter root directory
-        self.set_config(
-            scope=Section.Root,
-            section=Section.User,
-            key="ffmpeg.root",
-            data=str(ffmpeg_path)
-        )
+        self.update_config("ffmpeg.root", Scope.User, str(ffmpeg_path))
         # Default chunk size
-        self.set_config(
-            scope=Section.Root,
-            section=Section.User,
-            key="ffmpeg.chunk_size",
-            data=10
-        )
+        self.update_config("ffmpeg.chunk_size", Scope.User, 10)
         # Binary extension name
-        for binary in self._binaries:
-            self.set_config(
-                scope=Section.Root,
-                section=Section.User,
-                key=f"ffmpeg.{binary.stem}",
-                data=str(binary)
-            )
+        for binary in ffmpeg_path.rglob("*.exe"):
+            self.update_config(f"ffmpeg.{binary.stem}", Scope.User, str(binary))
 
         # Default converter temporary folder
-        self.set_config(
-            scope=Section.Root,
-            section=Section.User,
-            key="ffmpeg.temp_folder",
-            data=str(ffmpeg_path / Global.DEFAULT_TEMP_FOLDER_NAME)
-        )
+        self.update_config("folders.temp_directory", Scope.User,
+                           str(Global.USER_ROOT / Global.DEFAULT_TEMP_FOLDER_NAME))
 
-        self.save_config(Section.Root, Section.User)
+        self.save_config(Scope.User)

@@ -1,0 +1,3 @@
+#MainStatusBar {
+    background-color: @primaryBgColor;
+}

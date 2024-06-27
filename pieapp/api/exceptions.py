@@ -1,7 +1,7 @@
 """
 System exceptions
 """
-from pieapp.api.managers.locales.helpers import translate
+from pieapp.api.registries.locales.helpers import translate
 
 
 class PieException(Exception):

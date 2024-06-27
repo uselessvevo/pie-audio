@@ -1,18 +1,16 @@
-from __feature__ import snake_case
-
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QWidget, QStatusBar
 
 from pieapp.api.exceptions import PieException
-from pieapp.api.structs.plugins import Plugin
+from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.plugins import PiePlugin
-from pieapp.api.managers.themes.mixins import ThemeAccessorMixin
-from pieapp.api.structs.statusbar import StatusBarIndex
+from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
+from pieapp.api.models.statusbar import StatusBarIndex
 
 
 class StatusBar(PiePlugin, ThemeAccessorMixin):
-    name = Plugin.StatusBar
-    requires = [Plugin.Layout]
+    name = SysPlugin.StatusBar
+    requires = [SysPlugin.Layout]
 
     def init(self) -> None:
         self._sb_widgets: dict[str, QWidget] = {}

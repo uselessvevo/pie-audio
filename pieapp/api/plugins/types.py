@@ -1,16 +1,18 @@
-from enum import Enum
 import dataclasses as dt
 
 
-class PluginType(Enum):
-    # Plugin
+@dt.dataclass(init=False, frozen=True, eq=False)
+class PluginType:
+    Object: str = "object"
     Plugin: str = "plugin"
+    Registry: str = "registry"
 
-    # Object
-    Object: str = "manager"
+    @classmethod
+    def fields(cls) -> list[str]:
+        return [i.default for i in dt.fields(cls)]
 
 
-@dt.dataclass
+@dt.dataclass(eq=True, slots=True)
 class Error:
     title: str
     code: str = dt.field(default="error")

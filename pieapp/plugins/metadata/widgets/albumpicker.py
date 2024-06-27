@@ -10,8 +10,8 @@ from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QStyle
 from PySide6.QtWidgets import QToolTip
 
-from pieapp.api.globals import Global
-from pieapp.api.managers.locales.helpers import translate
+from pieapp.api.gloader import Global
+from pieapp.api.registries.locales.helpers import translate
 
 
 class ImagePreview(QToolTip):

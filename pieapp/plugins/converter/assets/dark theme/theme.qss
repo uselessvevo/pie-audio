@@ -10,7 +10,7 @@ QListWidget::item:selected
 QListWidget::item:hover:!active
 {
     border: none;
-    background: rgba(43, 43, 43, 50%);
+    background: rgb(43, 43, 43, 50%);
 }
 
 #QuickAction {
@@ -19,13 +19,13 @@ QListWidget::item:hover:!active
 }
 
 #QuickAction,
-#ConverterMenuItemTB {
+#QuickActionToolButton {
     border: none;
     background-color: #434343;
 }
 
 #QuickAction:disabled,
-#ConverterMenuItemTB:disabled {
+#QuickActionToolButton:disabled {
     border: none;
     background-color: #303030;
 }

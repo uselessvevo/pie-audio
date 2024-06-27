@@ -7,7 +7,8 @@ from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal
 
-from pieapp.api.globals import Global
+from pieapp.api.gloader import Global
+from pieapp.api.registries.locales.helpers import translate
 
 
 def get_cover_album(cmd: Path, filepath: Path, temp_folder: Path) -> Path:
@@ -72,7 +73,7 @@ class DownloadWorker(QObject):
             tar_file = tarfile.TarFile(self._archive_path)
             tar_file.extractall(self._ffmpeg_binaries_path)
 
-        self.sig_unpack_archive_message.emit("Unpacking archive...")
+        self.sig_unpack_archive_message.emit(f'{translate("Unpacking archive")}...')
 
         if os.name == "nt":
             unpack_windows()
@@ -85,7 +86,7 @@ class DownloadWorker(QObject):
         self.sig_unpack_archive_message.emit("Done!")
 
         self.sig_unpack_archive_message.emit("Checking ffmpeg binaries...")
-        self.sig_unpack_archive_message.emit("All done!")
+        self.sig_unpack_archive_message.emit(f"{translate('All done')}!")
         self.sig_unpack_ready.emit(self._ffmpeg_binaries_path)
 
     def start(self) -> None:

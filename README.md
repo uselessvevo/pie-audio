@@ -8,16 +8,18 @@
 ## Documentation
 [English](https://github.com/uselessvevo/pie-audio/tree/main/docs/en/piekit) • [Русский](https://github.com/uselessvevo/pie-audio/tree/main/docs/ru/piekit)
 
-Before I start, I want to say a special thanks to the creators of the [spyder-ide](https://github.com/spyder-ide/spyder) project, as some of the code is based on it.
+Before I start, I want to say a special thanks to the creators of the [spyder-ide](https://github.com/spyder-ide/spyder) project, as some code is based on it.
 
 ## Installing and running the application
 Since the project is under active development, the installation package available on pypi is not yet available. This means that you will need the git versioning program and the pip package manager. Let's get started.
 
-* Download the project via git: `git clone https://github.com/uselessvevo/pie-audio`
-* Unpack the archive to any location you like.
-* Install all dependencies (`pip install -r requirements.default.txt`) or install through the package manager (`pip install .`)
+* Clone the project via git: `git clone https://github.com/uselessvevo/pie-audio`
+* Create virtual environment via `python3-venv`
+* Install all dependencies (`python -m pip install -r requirements.txt`) or install through the package manager (`pip install .`)
 * Run the program: `python pie-audio.py` or `pie-audio.exe`
 
-## Development
-We are using the `snake_case` feature - this means you need to generate _***.pyi**_ files by typing this command: `pyside6-genpyi all --feature snake_case`
-Mark the plugins directory as the source directory
+## Development 
+* Type `pyside6-genpyi all --feature snake_case` to generate the PySide6's [snake case feature](https://doc-snapshots.qt.io/qtforpython-6.2/considerations.html#snake-case)
+* Set `PIE_IS_DEV_ENV` environment variable to `1`
+
+Then you need to mark the plugins directory as the source directory. After that, you good to go and write your own code :)
