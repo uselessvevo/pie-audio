@@ -4,9 +4,6 @@ from PySide6.QtCore import QSettings
 from __feature__ import snake_case
 
 from pieapp.api.gloader import Global
-from pieapp.api.plugins import Plugins
-from pieapp.api.registries.models import SysRegistry, Scope
-from pieapp.helpers.files import create_temp_directory
 from pieapp.wizard.wizard import StartupWizard
 from pieapp.helpers.modules import is_debug
 from pieapp.helpers.qt import get_application, except_hook
@@ -15,11 +12,6 @@ from pieapp.api.registries.registry import Registry
 
 
 def check_user_folders() -> bool:
-    print((Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists(),
-          (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").exists(),
-          (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).exists(),
-          (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / Global.CONFIG_FILE_NAME).exists()
-          )
     return (
         Global.USER_ROOT.exists()
         and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists()

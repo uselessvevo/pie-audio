@@ -1,8 +1,12 @@
 """
 Status bar index struct
 """
+import dataclasses as dt
 
 
-class StatusBarIndex:
-    Left = 0
-    Right = -1
+@dt.dataclass(eq=False, frozen=True)
+class MessageStatus:
+    NoStatus: str = "default"
+    Info: str = "info"
+    Warning: str = "warning"
+    Error: str = "error"

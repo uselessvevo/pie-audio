@@ -13,6 +13,7 @@ from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QLabel, QFileDialog
 from PySide6.QtWidgets import QListWidgetItem
 
+from pieapp.api.models.statusbar import MessageStatus
 from pieapp.api.models.themes import ThemeProperties
 from pieapp.api.registries.registry import Registry
 from pieapp.helpers.files import delete_files
@@ -193,7 +194,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             widget.add_quick_action(
                 name="debug.spawn_media_file_copy",
                 text=translate("[DEBUG] Spawn media file copy"),
-                icon=self.get_svg_icon("icons/help.svg", self.get_theme_property(ThemeProperties.DangerColor)),
+                icon=self.get_svg_icon("icons/info.svg", self.get_theme_property(ThemeProperties.DangerColor)),
                 callback=self._debug_spawn_media_file_copy
             )
 
@@ -367,7 +368,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._spinner.stop()
         status_bar = get_plugin(SysPlugin.StatusBar)
         if status_bar:
-            status_bar.show_message(translate("Failed to load files: %s" % str(exception)))
+            status_bar.show_message(translate("Failed to load files: %s" % str(exception)), MessageStatus.Error)
 
     def _converter_worker_started(self) -> None:
         self._clear_placeholder()
@@ -386,14 +387,14 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
         status_bar = get_plugin(SysPlugin.StatusBar)
         if status_bar:
-            status_bar.show_message(translate(f"Loaded %s files", len(models_list)))
+            status_bar.show_message(translate(f"Loaded %s files", len(models_list)), MessageStatus.Info)
 
     @Slot(Exception)
     def _converter_worker_failed(self, exception: Exception) -> None:
         self._spinner.stop()
         status_bar = get_plugin(SysPlugin.StatusBar)
         if status_bar:
-            status_bar.show_message(translate("Failed to load files: %s" % str(exception)))
+            status_bar.show_message(translate("Failed to load files: %s" % str(exception)), MessageStatus.Error)
 
     # Debug methods
 

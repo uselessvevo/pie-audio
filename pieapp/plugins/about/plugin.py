@@ -78,7 +78,7 @@ class About(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
             name="about",
             text=translate("About"),
             triggered=self.call,
-            icon=self.get_svg_icon("icons/help.svg"),
+            icon=self.get_svg_icon("icons/info.svg"),
         )
 
 
