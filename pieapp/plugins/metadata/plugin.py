@@ -191,8 +191,6 @@ class MetadataEditor(
     def _fill_metadata_table(self, media_file: MediaFile) -> None:
         # TODO: Do something about this mess
         self._disconnect_signals()
-        logger.debug(media_file.metadata.title)
-
         contributors_list_widget = QListWidget()
         contributors_list_widget.add_items(media_file.metadata.additional_contributors)
 
@@ -277,7 +275,6 @@ class MetadataEditor(
         # Sync local and global snapshots
         local_snapshot = self._snapshots.get_local_snapshot(media_file.name, Index.End)
         self._snapshots.sync_local_to_global(local_snapshot.name)
-        logger.debug(f"{media_file.metadata.title}, {local_snapshot.metadata.title}")
         self._save_button.set_disabled(True)
         self._undo_button.set_disabled(False)
         self._redo_button.set_disabled(True)

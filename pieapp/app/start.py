@@ -56,17 +56,16 @@ def start_application(*args, **kwargs) -> None:
     app.process_events()
 
     settings = QSettings()
-    fully_setup = settings.value("fully_setup", type=bool)
 
-    # Preparing or restoring our application's user folder
+    # Check and restore user folder essential files
     if not check_user_folders():
         # To prepare/restore user's folder we need to use
         # only the core managers (Global.CORE_MANAGERS)
         restore_user_folders()
-        settings.set_value("first_run", False)
+        settings.set_value("first_run", True)
 
     first_run = settings.value("first_run", type=bool)
-    if first_run or not fully_setup:
+    if first_run:
         for manager in Global.CORE_MANAGERS:
             Registry.from_string(manager)
 

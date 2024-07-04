@@ -69,4 +69,4 @@ class StartupWizard(QtWidgets.QWizard):
 
         restart_application()
         settings = QSettings()
-        settings.set_value("fully_setup", True)
+        settings.set_value("first_run", False)
