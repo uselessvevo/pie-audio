@@ -7,3 +7,4 @@ watchdog==3.0.0
 win32-setctime
 version-parser==1.0.1
 ffmpeg-python==0.2.0
+python-dateutil==2.9.0.post0

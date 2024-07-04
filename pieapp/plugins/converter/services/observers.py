@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from watchdog import events
@@ -6,13 +5,10 @@ from watchdog.observers import Observer
 
 from PySide6.QtCore import Signal
 from PySide6.QtCore import QObject
-from PySide6.QtWidgets import QMessageBox
 
-from pieapp.api.gloader import Global
-from pieapp.api.exceptions import PieException
-from pieapp.api.models.media import MediaFile
-from pieapp.api.registries.locales.helpers import translate
 from pieapp.helpers.logger import logger
+from pieapp.api.exceptions import PieException
+from pieapp.api.registries.locales.helpers import translate
 
 
 class FileSystemEventHandler(QObject, events.FileSystemEventHandler):
@@ -81,31 +77,12 @@ class FileSystemWatcher(QObject):
         self._event_handler.sig_file_modified.connect(target.on_file_modified)
 
     def start(self, folder: str) -> None:
+        self.observer = Observer()
+        self.observer.schedule(self._event_handler, folder)
         try:
-            self.observer = Observer()
-            self.observer.schedule(
-                event_handler=self._event_handler,
-                path=folder,
-                recursive=True
-            )
-            try:
-                self.observer.start()
-            except OSError as e:
-                logger.debug(f"Watcher could not be started: {e!s}")
-        except OSError as e:
-            self.observer = None
-            if "inotify" in str(e):
-                QMessageBox.warning(
-                    parent=self.parent(),
-                    title=Global.PIEAPP_APPLICATION_NAME,
-                    text=translate(
-                        "Please, use this command `sudo sysctl -n -w fs.inotify.max_user_watches=524288` "
-                        "to fix the issue with file system can't handle too many files in the directory."
-                        "After doing that, you need to close and start the program again"
-                    )
-                )
-            else:
-                raise PieException(str(e))
+            self.observer.start()
+        except Exception as e:
+            raise PieException(f'{translate("Can't start an observer in")} - {folder}', str(e))
 
     def stop(self) -> None:
         if self.observer is not None:
@@ -115,4 +92,4 @@ class FileSystemWatcher(QObject):
                 del self.observer
                 self.observer = None
             except RuntimeError as e:
-                logger.debug(f"An error has been occurred while stopping observer: {e!s}")
+                raise PieException(translate(f"An error has been occurred while stopping observer"), str(e))

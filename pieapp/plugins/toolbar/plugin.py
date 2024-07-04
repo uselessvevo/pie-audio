@@ -8,7 +8,7 @@ from pieapp.api.models.plugins import SysPlugin
 
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
-from pieapp.api.plugins.decorators import on_plugin_ready
+from pieapp.api.plugins.decorators import on_plugin_available
 
 from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 
@@ -31,7 +31,7 @@ class MainToolBar(PiePlugin, ToolBarAccessorMixin):
     def on_plugins_ready(self) -> None:
         self._toolbar.call()
 
-    @on_plugin_ready(plugin=SysPlugin.Layout)
+    @on_plugin_available(plugin=SysPlugin.Layout)
     def _on_layout_manager_available(self) -> None:
         layout_manager = get_plugin(SysPlugin.Layout)
         main_layout = layout_manager.get_layout(Layout.Main)

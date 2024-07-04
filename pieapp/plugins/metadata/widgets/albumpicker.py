@@ -76,14 +76,17 @@ class AlbumCoverPicker(QLineEdit):
     def prepare_image(self) -> None:
         pass
 
-    def load_image(self) -> None:
+    def load_image(self, image=None) -> None:
+        image = image if image else self._image_path
         file_path = QFileDialog.get_open_file_name(
             parent=self,
             caption=translate(self._select_album_cover_text),
-            dir=self._image_path or str(Global.USER_ROOT),
+            dir=image or str(Global.USER_ROOT),
         )
         if file_path[0]:
             self.clear()
-            self._image_path = file_path[0]
-            self.insert(self._image_path)
+            image = file_path[0]
+            self.insert(image)
             self._image_preview = ImagePreview(self, file_path[0])
+
+        self._image_path = image

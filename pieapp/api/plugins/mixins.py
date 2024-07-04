@@ -1,59 +1,41 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QObject
+from PySide6.QtCore import Signal
 
+from pieapp.api.models.media import MediaFile
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.menus.mixins import MenuAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry
 
 
-class ContainerRegisterMixin:
+class MediaPluginMixin:
+    # Emit on snapshot created
+    sig_on_snapshot_created = Signal(MediaFile)
 
-    def register_object(self, target: QObject, *args, **kwargs) -> None:
-        raise NotImplementedError
+    # Emit on snapshot deleted
+    sig_on_snapshot_deleted = Signal(MediaFile)
 
-    def remove_object(self, target: QObject, *args, **kwargs) -> None:
-        raise NotImplementedError
+    # Emit on snapshot modified
+    sig_on_snapshot_modified = Signal(MediaFile)
 
+    # Emit on global snapshot restored
+    sig_on_snapshot_restored = Signal()
 
-class ContainerRegisterAccessorMixin:
-    """
-    Container accessor
-    """
+    # Global snapshots
 
-    def register_on(self, parent_container: str, target: QObject, *args, **kwargs) -> None:
-        """
-        Register plugin on certain container by its name
-        
-        Args:
-            parent_container (str): name of the parent container
-            target (QObject): an object we want to register on `parent_container`
-        """
-        parent_container_instance = Registry(SysRegistry.Plugins).get(parent_container)
-        if parent_container_instance and not isinstance(parent_container_instance, ContainerRegisterMixin):
-            raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
+    # Emit on global snapshot created
+    sig_on_global_snapshot_created = Signal(MediaFile)
 
-        container_instance = Registry(SysRegistry.Plugins).get(parent_container)
-        container_instance.register_object(target, *args, **kwargs)
-    
-    def remove_from(self, parent_container: str, target: QObject, *args, **kwargs) -> None:
-        """
-        Remove/unregister plugin from the container by its name
-        
-        Args:
-            parent_container (str): name of the parent container
-            target (QObject): an object we want to remove from the `parent_container`
-        """
-        parent_container_instance = Registry(SysRegistry.Plugins).get(parent_container)
-        if parent_container_instance and isinstance(parent_container_instance, ContainerRegisterMixin):
-            raise KeyError(f"Container {parent_container} doesn't exist on {self.__class__.__name__}")
+    # Emit on global snapshot deleted
+    sig_on_global_snapshot_deleted = Signal(MediaFile, int)
 
-        container_instance = Registry(SysRegistry.Plugins).get(parent_container)
-        container_instance.remove_object(target, *args, **kwargs)
+    # Emit on global snapshot modified
+    sig_on_global_snapshot_modified = Signal(MediaFile)
+
+    # Emit on global snapshot restored
+    sig_on_global_snapshot_restored = Signal()
 
 
 class CoreAccessorsMixin(

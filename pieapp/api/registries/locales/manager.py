@@ -10,12 +10,11 @@ from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 class LocaleRegistry(BaseRegistry, ConfigAccessorMixin):
     name = SysRegistry.Locales
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         self._locale = self.get_config("locale.locale", Scope.User, Global.DEFAULT_LOCALE)
         self._roots: set[Path] = set()
         self._translations: dict[str, dict[str, str]] = {}
 
-    def init(self) -> None:
         self._load_app_locales()
         self._load_plugins_locales(Global.APP_ROOT / Global.PLUGINS_FOLDER_NAME)
         self._load_plugins_locales(Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME)

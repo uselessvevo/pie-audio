@@ -4,7 +4,7 @@ from pieapp.api.models.workbench import WorkbenchItem
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.helpers import get_plugin
-from pieapp.api.plugins.decorators import on_plugin_ready
+from pieapp.api.plugins.decorators import on_plugin_available
 
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
@@ -20,7 +20,7 @@ class History(PiePlugin, ThemeAccessorMixin, ToolButtonAccessorMixin):
         self._main_grid_layout = QGridLayout()
         self._history_dialog.set_layout(self._main_grid_layout)
 
-    @on_plugin_ready(plugin=SysPlugin.MainToolBar)
+    @on_plugin_available(plugin=SysPlugin.MainToolBar)
     def _on_main_toolbar_available(self) -> None:
         main_toolbar = get_plugin(SysPlugin.MainToolBar)
         history_tool_button = self.add_tool_button(

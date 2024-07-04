@@ -13,7 +13,7 @@ from pieapp.api.exceptions import PieException
 class ToolButtonRegistry(BaseRegistry):
     name = SysRegistry.ToolButton
 
-    def __init__(self):
+    def init(self):
         # Menu items/actions mapping
         self._buttons: dict[str, dict[str, QToolButton]] = {}
 

@@ -15,7 +15,7 @@ from pieapp.api.models.shortcuts import ShortcutDict
 
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
-from pieapp.api.plugins.decorators import on_plugin_ready
+from pieapp.api.plugins.decorators import on_plugin_available
 from pieapp.api.plugins.decorators import on_plugin_shutdown
 
 from pieapp.api.registries.registry import Registry
@@ -66,7 +66,7 @@ class ShortcutManager(PiePlugin, ThemeAccessorMixin):
     def get_config_page(self) -> Union[ShortcutBlankConfigPage, ShortcutConfigPage]:
         return self._config_page_class()
 
-    @on_plugin_ready(plugin=SysPlugin.Preferences)
+    @on_plugin_available(plugin=SysPlugin.Preferences)
     def _on_preferences_available(self) -> None:
         preferences = get_plugin(SysPlugin.Preferences)
         preferences.register_config_page(self)

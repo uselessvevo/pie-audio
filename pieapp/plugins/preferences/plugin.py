@@ -25,7 +25,7 @@ from pieapp.api.plugins.confpage import ConfigPage
 
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.models import Scope, SysRegistry
-from pieapp.api.plugins.decorators import on_plugin_ready
+from pieapp.api.plugins.decorators import on_plugin_available
 from pieapp.api.registries.menus.mixins import MenuAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
@@ -241,7 +241,7 @@ class Preferences(
             except PieException as e:
                 logger.debug(str(e))
 
-    @on_plugin_ready(plugin=SysPlugin.MainMenuBar)
+    @on_plugin_available(plugin=SysPlugin.MainMenuBar)
     def _on_menu_bar_available(self) -> None:
         self.add_menu_item(
             scope=Scope.Shared,

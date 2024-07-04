@@ -8,14 +8,7 @@ from typing import Union, Any
 from json import JSONDecodeError
 
 
-def touch(file_path: os.PathLike):
-    """
-    Creates empty file by given path
-    """
-    try:
-        os.utime(file_path, None)
-    except OSError:
-        open(file_path, 'a').close()
+# JSON methods
 
 
 def read_json(
@@ -51,13 +44,20 @@ def read_json(
 
 
 def write_json(file: os.PathLike, data: Any, create: bool = False) -> None:
-    """ Writes data in file by given path """
+    """
+    Write data in JSON-file
+
+    Args:
+        file (os.PathLike): file name
+        data (Any): data to write
+        create (bool): create file if it doesn't exist
+    """
     try:
         if create and not os.path.exists(file):
-            touch(file)
+            create_empty_file(file)
 
         data = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False)
-        with open(file, "w", encoding='utf-8') as output:
+        with open(file, "w", encoding="utf-8") as output:
             output.write(data)
 
     except (
@@ -68,18 +68,14 @@ def write_json(file: os.PathLike, data: Any, create: bool = False) -> None:
         raise err
 
 
-def update_json(
-    file: os.PathLike,
-    data: Any,
-    create: bool = False
-) -> None:
+def update_json(file: os.PathLike, data: Any, create: bool = False) -> None:
     """
-    Updates file data by given path
+    Update JSON-file
 
     Args:
-        file (str): file full path
-        data (Any): data to update
-        create (bool): creat file if it doesn't exist
+        file (str): file path
+        data (Any): data to write
+        create (bool): create file if it doesn't exist
     """
     copy = read_json(file, create=create)
     copy.update(data)
@@ -87,6 +83,12 @@ def update_json(
 
 
 def delete_files(files: list[os.PathLike]) -> None:
+    """
+    Delete given files
+
+    Args:
+        files (list[os.PathLike]): list of files
+    """
     try:
         for file in files:
             os.remove(file)
@@ -94,17 +96,46 @@ def delete_files(files: list[os.PathLike]) -> None:
         pass
 
 
-def delete_temp_directory(temp_directory: Union[str, os.PathLike]) -> None:
-    temp_directory = Path(temp_directory)
-    if not temp_directory.exists():
+# Files and directories methods
+
+
+def create_empty_file(file_path: os.PathLike):
+    """
+    Creates empty file by given path
+
+    Args:
+        file_path (os.PathLike): full file path
+    """
+    try:
+        os.utime(file_path, None)
+    except OSError:
+        open(file_path, "a").close()
+
+
+def delete_directory(directory: Union[str, os.PathLike]) -> None:
+    """
+    Delete directory
+
+    Args:
+        directory (os.PathLike): full
+    """
+    directory = Path(directory)
+    if not directory.exists():
         return
 
-    shutil.rmtree(temp_directory)
+    shutil.rmtree(directory)
 
 
-def create_temp_directory(temp_directory: Union[str, os.PathLike], prefix: str = None) -> Path:
+def create_temp_directory(directory: Union[str, os.PathLike], prefix: str = None) -> Path:
+    """
+    Create temp directory
+
+    Args:
+        directory (str|os.PathLike): temp directory path
+        prefix (str): prefix to separate directory name
+    """
+    temp_directory: Path = Path(directory)
     prefix_uuid: str = str(uuid.uuid4()).replace("-", "")
-    temp_directory: Path = Path(temp_directory)
     if not temp_directory.exists():
         temp_directory.mkdir()
 
@@ -114,8 +145,3 @@ def create_temp_directory(temp_directory: Union[str, os.PathLike], prefix: str =
         temp_directory.mkdir(exist_ok=True)
 
     return temp_directory
-
-
-readJson = read_json
-writeJson = write_json
-updateJson = update_json

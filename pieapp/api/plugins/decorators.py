@@ -1,9 +1,9 @@
 import functools
 
 
-def on_plugin_ready(func: callable = None, plugin: str = None) -> callable:
+def on_plugin_available(func: callable = None, plugin: str = None) -> callable:
     if func is None:
-        return functools.partial(on_plugin_ready, plugin=plugin)
+        return functools.partial(on_plugin_available, plugin=plugin)
 
     func.plugin_listen = plugin
     return func

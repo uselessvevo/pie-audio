@@ -12,7 +12,7 @@ from pieapp.api.exceptions import PieException
 class MenuRegistry(BaseRegistry):
     name = SysRegistry.Menus
 
-    def __init__(self):
+    def init(self):
         self._bars: dict[str, QMenuBar] = {}
 
         # Menu mapping

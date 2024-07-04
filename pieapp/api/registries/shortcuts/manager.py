@@ -10,7 +10,7 @@ from pieapp.api.registries.models import SysRegistry
 class ShortcutRegistry(BaseRegistry):
     name = SysRegistry.Shortcuts
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         self._shortcuts: dict[str, ShortcutDict] = {}
 
     def get(self, name: str) -> QShortcut:

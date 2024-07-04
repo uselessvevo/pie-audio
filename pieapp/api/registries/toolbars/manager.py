@@ -14,7 +14,7 @@ from pieapp.widgets.toolbars import PieToolBar
 class ToolBarRegistry(BaseRegistry):
     name = SysRegistry.ToolBars
 
-    def __init__(self):
+    def init(self):
         # ToolBar mapping
         self._toolbars: dict[str, PieToolBar] = {}
 

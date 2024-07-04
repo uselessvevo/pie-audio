@@ -16,7 +16,7 @@ from pieapp.widgets.buttons import Button
 from pieapp.widgets.buttons import ButtonRole
 
 from pieapp.api.plugins.plugins import PiePlugin
-from pieapp.api.plugins.decorators import on_plugin_ready
+from pieapp.api.plugins.decorators import on_plugin_available
 
 from pieapp.api.registries.models import Scope
 from pieapp.api.registries.menus.mixins import MenuAccessorMixin
@@ -70,7 +70,7 @@ class About(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
         self._dialog.set_layout(grid_layout)
         self._dialog.show()
 
-    @on_plugin_ready(plugin=SysPlugin.MainMenuBar)
+    @on_plugin_available(plugin=SysPlugin.MainMenuBar)
     def on_menu_bar_available(self) -> None:
         self.add_menu_item(
             scope=Scope.Shared,

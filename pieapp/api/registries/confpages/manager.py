@@ -10,7 +10,7 @@ from pieapp.api.registries.models import SysRegistry
 class ConfPageRegistry(BaseRegistry):
     name = SysRegistry.ConfigPages
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         self._config_pages: dict[str, QLayout] = {}
 
     def shutdown(self, *args, **kwargs):

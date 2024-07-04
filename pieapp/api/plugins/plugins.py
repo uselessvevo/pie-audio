@@ -79,6 +79,7 @@ class PiePlugin(QObject, PluginsObserverMixin):
         self.sig_before_main_window_visible.connect(self.before_main_window_visible)
         self.sig_on_main_window_show.connect(self.on_main_window_show)
         self.sig_on_main_window_close.connect(self.on_main_window_close)
+        self.connect_signals()
 
         # Initializing plugin
         self.init()

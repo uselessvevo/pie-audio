@@ -22,11 +22,10 @@ class ProtectedKey:
 class ConfigRegistry(BaseRegistry):
     name = SysRegistry.Configs
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         self._configuration: Dotty = Dotty({})
         self._temp_configuration: Dotty = Dotty({})
 
-    def init(self) -> None:
         app_root = Global.APP_ROOT / Global.CONFIGS_FOLDER_NAME
         user_root = Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp"
         self._load_app_configs(app_root, f"{Scope.Root}.{Scope.Inner}")

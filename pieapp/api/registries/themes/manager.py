@@ -21,16 +21,6 @@ from pieapp.api.registries.base import BaseRegistry
 class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
     name = SysRegistry.Themes
 
-    def __init__(self) -> None:
-        self._app: QApplication = None
-        self._current_theme: str = None
-        self._themes: list[str] = None
-
-        # Registries
-        self._files: dict[str, dict[str, Path]] = {}
-        self._stylesheet: str = ""
-        self._stylesheet_props: dict[str, str] = {}
-
     def init(self) -> None:
         """
         Load root theme files
@@ -42,6 +32,15 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
             * props.json - theme properties: colors and icons accent
             * theme.qss - style sheet template file
         """
+        self._app: QApplication = None
+        self._current_theme: str = None
+        self._themes: list[str] = None
+
+        # Registries
+        self._files: dict[str, dict[str, Path]] = {}
+        self._stylesheet: str = ""
+        self._stylesheet_props: dict[str, str] = {}
+
         self._current_theme = self.get_config("assets.theme", Scope.User, Global.DEFAULT_THEME)
         self._themes = self._get_themes()
         self._load_app_theme()

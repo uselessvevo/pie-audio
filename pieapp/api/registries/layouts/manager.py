@@ -8,7 +8,7 @@ from pieapp.api.registries.models import SysRegistry
 class LayoutRegistry(BaseRegistry):
     name = SysRegistry.Layout
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         self._layouts: dict[str, QLayout] = {}
 
     def shutdown(self, *args, **kwargs):

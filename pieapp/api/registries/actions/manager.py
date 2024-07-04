@@ -14,7 +14,7 @@ from pieapp.helpers.logger import logger
 class ActionRegistry(BaseRegistry):
     name = SysRegistry.Actions
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         self._logger = logger
         self._actions: dict[str, QAction] = {}
 

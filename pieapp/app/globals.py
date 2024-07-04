@@ -75,7 +75,8 @@ LOCALES_FOLDER = "locales"
 
 # Main information
 PIEAPP_APPLICATION_NAME = "pie-audio"
-PIEAPP_VERSION = "1.0.0"
+PIEAPP_VERSION = "1.0.1"
+PIEAPP_VERSION_STAGE = "alpha"
 PIEAPP_ORGANIZATION_NAME = "CrabDevs"
 PIEAPP_ORGANIZATION_DOMAIN = "com.crabdevs.pieaudio"
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
@@ -94,6 +95,7 @@ CORE_MANAGERS = [
     "pieapp.api.registries.configs.manager.ConfigRegistry",
     "pieapp.api.registries.locales.manager.LocaleRegistry",
     "pieapp.api.registries.themes.manager.ThemeRegistry",
+    "pieapp.api.registries.snapshots.manager.SnapshotRegistry"
 ]
 
 LAYOUT_MANAGERS = [
@@ -103,5 +105,4 @@ LAYOUT_MANAGERS = [
     "pieapp.api.registries.toolbuttons.manager.ToolButtonRegistry",
     "pieapp.api.registries.shortcuts.manager.ShortcutRegistry",
     "pieapp.api.registries.confpages.manager.ConfPageRegistry",
-    "pieapp.api.registries.snapshots.manager.SnapshotRegistry"
 ]

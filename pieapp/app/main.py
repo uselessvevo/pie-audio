@@ -16,7 +16,7 @@ from pieapp.api.registries.registry import Registry
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.helpers.files import delete_temp_directory, create_temp_directory
+from pieapp.helpers.files import delete_directory, create_temp_directory
 from pieapp.widgets.messagebox import MessageCheckBox
 
 
@@ -41,7 +41,7 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
 
         self.set_window_title(
             f'{translate("Pie Audio • Simple Audio Editor")} '
-            f'({Global.PIEAPP_VERSION})'
+            f'({Global.PIEAPP_VERSION} - {Global.PIEAPP_VERSION_STAGE})'
         )
         self.set_window_icon(self.get_svg_icon(
             key="icons/bolt.svg",
@@ -63,7 +63,7 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
         if self.close_handler(True):
             self.sig_on_main_window_close.emit()
             temp_directory = self.get_config("workflow.temp_directory", Scope.User)
-            delete_temp_directory(temp_directory)
+            delete_directory(temp_directory)
             event.accept()
         else:
             event.ignore()

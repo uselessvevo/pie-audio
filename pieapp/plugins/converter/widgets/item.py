@@ -1,7 +1,7 @@
 from __feature__ import snake_case
 
 from PySide6.QtGui import Qt, QIcon
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, Signal
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QSplitter
@@ -27,8 +27,8 @@ class ConverterItem(QWidget):
         self,
         parent: ConverterListWidget,
         media_file: MediaFile,
-        color_props: dict = None,
-        sig_on_file_modified: "Signal" = None
+        color_props: dict,
+        sig_on_snapshot_modified: Signal
     ) -> None:
         super().__init__(parent)
 
@@ -78,22 +78,17 @@ class ConverterItem(QWidget):
         self.set_description(f"{media_file.info.bit_rate}kb/s")
         self.set_icon(media_file.info.file_format)
 
-        # sig_on_file_created.connect(self._on_file_created)
-        # sig_on_file_moved.connect(self._on_file_moved)
-        sig_on_file_modified.connect(self._on_file_modified)
-        # parent.sig_on_snapshot_modified.connect(self._on_file_modified)
+        sig_on_snapshot_modified.connect(lambda: self._on_snapshot_modified(media_file.name))
 
-    @Slot(MediaFile, bool)
-    def _on_file_created(self, media_file: MediaFile) -> None:
-        pass
+    @Slot(MediaFile)
+    def _on_snapshot_modified(self, media_file_name: str) -> None:
+        if self._media_file.name != media_file_name:
+            return
 
-    @Slot(MediaFile, str, bool)
-    def _on_file_moved(self, media_file: MediaFile, destination: str, is_directory: bool) -> None:
-        pass
-
-    @Slot(str, bool)
-    def _on_file_modified(self, media_file_name: str, is_directory: bool) -> None:
         media_file = self._snapshots.get(media_file_name)
+        if not media_file:
+            return
+
         self.set_title(media_file.info.filename)
         # TODO: Добавить список с ед. измерений в настройках конвертора
         self.set_description(f"{media_file.info.bit_rate}kb/s")
