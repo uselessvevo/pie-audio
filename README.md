@@ -19,7 +19,18 @@ Since the project is under active development, the installation package availabl
 * Run the program: `python pie-audio.py` or `pie-audio.exe`
 
 ## Development 
-* Type `pyside6-genpyi all --feature snake_case` to generate the PySide6's [snake case feature](https://doc-snapshots.qt.io/qtforpython-6.2/considerations.html#snake-case)
-* Set `PIE_IS_DEV_ENV` environment variable to `1`
+Open terminal and type `pyside6-genpyi all --feature snake_case` to generate the PySide6's [snake case feature](https://doc-snapshots.qt.io/qtforpython-6.2/considerations.html#snake-case).
+Then do next in your favourite code editor
 
-Then you need to mark the plugins directory as the source directory. After that, you good to go and write your own code :)
+## In Pycharm
+Mark folder as source <br><br>
+![Pycharm](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/Pycharm.%20Mark%20source%20folder.png)
+<br>
+Add or load environment variables <br><br>
+![Pycharm](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/Pycharm.%20Add%20env%20file.png)
+<br>
+## In VS Code <br>
+Add environment variables file <br><br>
+![VSCode](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/VSCode.%20Add%20env%20file.png)
+
+## After that, you good to go and write your own code :)
