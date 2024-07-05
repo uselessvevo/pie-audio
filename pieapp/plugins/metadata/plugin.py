@@ -73,7 +73,7 @@ class MetadataEditor(
         self._converter.sig_table_item_added.connect(self._on_table_item_added)
 
         self._dialog = QDialog(self._parent)
-        self._dialog.key_press_event = self._key_press_event
+        # self._dialog.key_press_event = self._key_press_event
         self._dialog.set_object_name("MetadataEditor")
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(*Global.DEFAULT_MIN_WINDOW_SIZE)
@@ -261,7 +261,7 @@ class MetadataEditor(
         item.set_text(item.text())
         media_file_name = item.media_file_name
         media_file_copy = copy.deepcopy(self._snapshots.get_local_snapshot(media_file_name, Index.End))
-        update_media_file(media_file_copy, item.field, item.value)
+        media_file_copy = update_media_file(media_file_copy, item.field, item.value)
 
         if not self._snapshots.contains_local(media_file_copy.name, media_file_copy):
             self._snapshots.add_local_snapshot(media_file_copy.name, media_file_copy)
