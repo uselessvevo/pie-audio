@@ -85,7 +85,7 @@ class DownloadWorker(QObject):
         self.sig_download_done.emit(self._ffmpeg_binaries_path)
         self.sig_unpack_archive_message.emit("Done!")
 
-        self.sig_unpack_archive_message.emit("Checking ffmpeg binaries...")
+        self.sig_unpack_archive_message.emit(translate("Checking files"))
         self.sig_unpack_archive_message.emit(f"{translate('All done')}!")
         self.sig_unpack_ready.emit(self._ffmpeg_binaries_path)
 

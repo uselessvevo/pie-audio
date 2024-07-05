@@ -46,5 +46,6 @@
     "All done": "Всё готово",
     "Select ffmpeg directory or download latest release": "Выберите папку ffmpeg или скачайте последнюю версию",
     "Downloading files": "Скачиваем файлы",
-    "Unpacking archive": "Разархивируем архив"
+    "Unpacking archive": "Разархивируем архив",
+    "Checking files": "Проверяем файлы"
 }
