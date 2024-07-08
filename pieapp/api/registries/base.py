@@ -9,17 +9,11 @@ class BaseRegistry:
         Optional initializer
         """
 
-    def shutdown(self):
-        """
-        This method serves to reset all containers, variables etc.
-        Don't use it to delete data from memory
-        """
-
     def reload(self):
         """
         This method reload manager
         """
-        self.shutdown()
+        self.restore()
         self.init()
 
     def add(self, *args, **kwargs) -> None:

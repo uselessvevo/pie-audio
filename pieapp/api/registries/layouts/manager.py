@@ -11,12 +11,8 @@ class LayoutRegistry(BaseRegistry):
     def init(self) -> None:
         self._layouts: dict[str, QLayout] = {}
 
-    def shutdown(self, *args, **kwargs):
+    def restore(self, *args, **kwargs):
         self._layouts = {}
-
-    def reload(self):
-        self.shutdown()
-        self.init()
 
     def add(self, name: str, layout: QLayout) -> QLayout:
         if name in self._layouts:

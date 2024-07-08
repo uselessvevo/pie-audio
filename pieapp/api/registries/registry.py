@@ -11,7 +11,7 @@ class RegistryContainer:
         # Dictionary of `BaseRegistry` based classes
         self._managers_instances: dict[str, BaseRegistry] = {}
 
-    def from_class(self, manager_class: Type[BaseRegistry]) -> None:
+    def init_from_class(self, manager_class: Type[BaseRegistry]) -> None:
         """
         Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
         For example:
@@ -24,7 +24,7 @@ class RegistryContainer:
         logger.debug(f"Initializing \"{manager_instance.__class__.__name__}\"")
         manager_instance.init()
 
-    def from_string(self, import_string: str) -> None:
+    def init_from_string(self, import_string: str) -> None:
         """
         Initialize manager from import string
         """
@@ -33,26 +33,19 @@ class RegistryContainer:
         logger.debug(f"Initializing \"{manager_instance.__class__.__name__}\"")
         manager_instance.init()
 
-    def shutdown(self, *managers: str, full_house: bool = False) -> None:
-        logger.debug("Preparing to shutdown all managers")
-        managers = reversed(self._managers_instances.keys()) if full_house else managers
-        managers_instances = (self._managers_instances.get(i) for i in managers or self._managers_instances.keys())
+    def restore(self, *managers: tuple[BaseRegistry], all_managers: bool = False):
+        managers = reversed(self._managers_instances.keys()) if all_managers else managers
+        managers_instances = (self._managers_instances.get(i) for i in managers)
         for manager_instance in managers_instances:
-            logger.debug(f"Shutting down \"{manager_instance.__class__.__name__}\"")
-            manager_instance.shutdown()
+            logger.debug(f"Restoring \"{manager_instance.__class__.__name__}\"")
+            manager_instance.restore()
 
-    def reload(self, *managers: tuple[BaseRegistry], full_house: bool = False):
-        managers = reversed(self._managers_instances.keys()) if full_house else managers
+    def reload(self, *managers: tuple[BaseRegistry], all_managers: bool = False):
+        managers = reversed(self._managers_instances.keys()) if all_managers else managers
         managers_instances = (self._managers_instances.get(i) for i in managers)
         for manager_instance in managers_instances:
             logger.debug(f"Reloading \"{manager_instance.__class__.__name__}\"")
             manager_instance.reload()
-
-    def destroy(self, *managers: str, full_house: bool = False):
-        managers = reversed(self._managers_instances.keys()) if full_house else managers
-        for manager in managers:
-            logger.debug(f"Destroying \"{manager.__class__.__name__}\"")
-            self._managers_instances.pop(manager)
 
     def __call__(self, manager: str, fallback_method: callable = None) -> BaseRegistry:
         """

@@ -13,12 +13,8 @@ class ConfPageRegistry(BaseRegistry):
     def init(self) -> None:
         self._config_pages: dict[str, QLayout] = {}
 
-    def shutdown(self, *args, **kwargs):
+    def restore(self, *args, **kwargs):
         self._config_pages = {}
-
-    def reload(self):
-        self.shutdown()
-        self.init()
 
     def add(self, name: str, page) -> QLayout:
         if name in self._config_pages:

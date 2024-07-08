@@ -40,12 +40,8 @@ class LocaleRegistry(BaseRegistry, ConfigAccessorMixin):
 
                 self._translations[file.stem].update(**read_json(file))
 
-    def shutdown(self, *args, **kwargs) -> None:
+    def restore(self, *args, **kwargs) -> None:
         self._translations = {}
-
-    def reload(self) -> None:
-        self.shutdown()
-        self.init()
 
     def get(self, scope: str, key: str) -> str:
         if scope not in self._translations:
