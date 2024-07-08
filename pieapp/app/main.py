@@ -88,6 +88,5 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
         settings.set_value("geometry", self.save_geometry())
 
         QApplication.process_events()
-        Registry.shutdown(full_house=True)
 
         return True

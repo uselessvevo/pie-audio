@@ -12,7 +12,7 @@ from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
 
 
 class History(PiePlugin, ThemeAccessorMixin, ToolButtonAccessorMixin):
-    name = SysPlugin.Appearance
+    name = SysPlugin.History
     requires = [SysPlugin.Preferences, SysPlugin.MainToolBar]
 
     def init(self) -> None:

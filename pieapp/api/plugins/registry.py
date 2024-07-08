@@ -55,23 +55,23 @@ class PluginRegistry(QObject):
         self._initialize_from_packages(Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME)
         self.sig_plugins_ready.emit()
 
-    def shutdown_plugins(self, *plugins: str, full_house: bool = False) -> None:
+    def shutdown_plugins(self, *plugins: str, all_plugins: bool = False) -> None:
         """
         Shutdown managers, services in parent object or all at once
 
         Args:
             plugins (objects): PiePlugin based classes
-            full_house (bool): reload all managers, services from all instances
+            all_plugins (bool): reload all managers, services from all instances
         """
-        plugins = plugins if not full_house else self._plugin_registry.keys()
+        plugins = plugins if not all_plugins else self._plugin_registry.keys()
         for plugin in plugins:
             logger.debug(f"Shutting down plugin \"{plugin}\" from {self.__class__.__name__}")
             if plugin in self._plugin_registry:
                 self._shutdown_plugin(plugin)
 
-    def reload_plugins(self, *plugins: str, full_house: bool = False) -> None:
+    def reload_plugins(self, *plugins: str, all_plugins: bool = False) -> None:
         """ Reload listed or all objects and components """
-        self.shutdown_plugins(*plugins, full_house=full_house)
+        self.shutdown_plugins(*plugins, all_plugins=all_plugins)
         for plugin in self._plugin_registry:
             plugin_instance = self._plugin_registry.get(plugin)
             self._initialize_plugin(plugin_instance)

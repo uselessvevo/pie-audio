@@ -80,7 +80,7 @@ class ConverterConfigPage(
             self.set_modified(True)
 
     def accept(self) -> None:
-        self.save_config()
+        self.save_config(Scope.User)
         self.set_modified(False)
 
     def cancel(self) -> None:

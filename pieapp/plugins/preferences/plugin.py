@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-from typing import Union, Type
+from typing import Type
 
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
@@ -22,15 +22,12 @@ from pieapp.api.models.menus import MainMenuItem
 
 from pieapp.api.gloader import Global
 from pieapp.api.plugins.confpage import ConfigPage
+from pieapp.api.plugins.mixins import CoreAccessorsMixin
+from pieapp.api.plugins.mixins import LayoutAccessorsMixins
 
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.models import Scope, SysRegistry
 from pieapp.api.plugins.decorators import on_plugin_available
-from pieapp.api.registries.menus.mixins import MenuAccessorMixin
-from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
-from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
-from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
 from pieapp.helpers.logger import logger
 
 from pieapp.widgets.spacer import Spacer
@@ -40,19 +37,7 @@ from pieapp.widgets.buttons import ButtonRole
 from preferences.widgets.item import ConfigPageTreeWidgetItem
 
 
-ConfigPagesDict = dict[str, dict]
-ConfigPagesList = list[dict[str, ConfigPage]]
-ConfigPagesUnion = Union[ConfigPagesList, ConfigPagesDict]
-
-
-class Preferences(
-    PiePlugin,
-    ConfigAccessorMixin,
-    ThemeAccessorMixin,
-    MenuAccessorMixin,
-    ToolBarAccessorMixin,
-    ToolButtonAccessorMixin,
-):
+class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     name = SysPlugin.Preferences
     requires = [SysPlugin.MainMenuBar]
 

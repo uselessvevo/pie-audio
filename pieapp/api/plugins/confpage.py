@@ -8,15 +8,6 @@ from pieapp.api.exceptions import PieException
 from pieapp.helpers.qt import get_main_window
 
 
-class BlankPage(QWidget):
-    """
-    Just a blank page to show if needed
-    """
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-
 class ConfigPage(QObject):
     name: str
     root: str

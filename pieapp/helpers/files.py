@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Union, Any
 from json import JSONDecodeError
 
+from pieapp.api.gloader import Global
+
 
 # JSON methods
 
@@ -145,3 +147,20 @@ def create_temp_directory(directory: Union[str, os.PathLike], prefix: str = None
         temp_directory.mkdir(exist_ok=True)
 
     return temp_directory
+
+
+def check_user_folders() -> bool:
+    return (
+        Global.USER_ROOT.exists()
+        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists()
+        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").exists()
+        and (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).exists()
+    )
+
+
+def restore_user_folders() -> None:
+    if not Global.USER_ROOT.exists():
+        Global.USER_ROOT.mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").mkdir()
+        (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).mkdir()

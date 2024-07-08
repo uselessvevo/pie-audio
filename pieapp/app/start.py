@@ -3,29 +3,17 @@ import sys
 from PySide6.QtCore import QSettings
 from __feature__ import snake_case
 
-from pieapp.api.gloader import Global
-from pieapp.wizard.wizard import StartupWizard
+from pieapp.helpers.qt import except_hook
+from pieapp.helpers.qt import get_application
 from pieapp.helpers.modules import is_debug
-from pieapp.helpers.qt import get_application, except_hook
-from pieapp.widgets.splashscreen import SplashScreen
+from pieapp.helpers.files import check_user_folders
+from pieapp.helpers.files import restore_user_folders
+
+from pieapp.api.gloader import Global
 from pieapp.api.registries.registry import Registry
 
-
-def check_user_folders() -> bool:
-    return (
-        Global.USER_ROOT.exists()
-        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists()
-        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").exists()
-        and (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).exists()
-    )
-
-
-def restore_user_folders() -> None:
-    if not Global.USER_ROOT.exists():
-        Global.USER_ROOT.mkdir()
-        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).mkdir()
-        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").mkdir()
-        (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).mkdir()
+from pieapp.wizard.wizard import StartupWizard
+from pieapp.widgets.splashscreen import SplashScreen
 
 
 def start_application(*args, **kwargs) -> None:
@@ -34,9 +22,9 @@ def start_application(*args, **kwargs) -> None:
     """
     Global.import_module("pieapp.app.globals")
 
-    # # Swapping the exception hook
-    # if bool(int(Global.USE_EXCEPTION_HOOK)):
-    #     sys.excepthook = except_hook
+    # Swapping the exception hook
+    if bool(int(Global.USE_EXCEPTION_HOOK)):
+        sys.excepthook = except_hook
 
     # Initializing the `QApplication` instance
     splash = None
@@ -67,7 +55,7 @@ def start_application(*args, **kwargs) -> None:
     first_run = settings.value("first_run", type=bool)
     if first_run:
         for manager in Global.CORE_MANAGERS:
-            Registry.from_string(manager)
+            Registry.init_from_string(manager)
 
         app.set_style_sheet("")
 
@@ -83,7 +71,7 @@ def start_application(*args, **kwargs) -> None:
     # Preparing our application
     # Starting all managers by order
     for manager in Global.CORE_MANAGERS:
-        Registry.from_string(manager)
+        Registry.init_from_string(manager)
 
     from pieapp.app.main import MainWindow
     app = get_application()
@@ -91,7 +79,7 @@ def start_application(*args, **kwargs) -> None:
 
     # Starting all managers by order
     for manager in Global.LAYOUT_MANAGERS:
-        Registry.from_string(manager)
+        Registry.init_from_string(manager)
 
     main_window.init()
     main_window.show()

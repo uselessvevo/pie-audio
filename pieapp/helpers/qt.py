@@ -38,7 +38,7 @@ def restart_application() -> None:
         file_extension = "exe" if os.name == "nt" else ""
         sys.argv[0] = f"{sys.argv[0]}.{file_extension}"
 
-    Plugins.shutdown_plugins(full_house=True)
+    Plugins.shutdown_plugins(all_plugins=True)
     QCoreApplication.quit()
     QProcess.start_detached(sys.executable, sys.argv)
 

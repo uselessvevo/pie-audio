@@ -32,7 +32,7 @@ class ShortcutBlankConfigPage(ConfigPage, ThemeAccessorMixin):
     scope = Scope.Root
 
     def get_icon(self) -> Union[QIcon, None]:
-        return self.get_svg_icon("icons/reload.svg")
+        return self.get_svg_icon("icons/hourglass.svg")
 
     def get_title(self) -> str:
         return translate("Shortcut")
@@ -57,7 +57,7 @@ class ShortcutConfigPage(
     scope = Scope.Root
 
     def get_icon(self) -> QIcon:
-        return self.get_svg_icon("icons/app.svg", scope=self.name)
+        return self.get_svg_icon("icons/keyboard.svg")
 
     def get_title(self) -> str:
         return translate("Shortcut")
