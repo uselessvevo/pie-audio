@@ -149,6 +149,13 @@ def create_temp_directory(directory: Union[str, os.PathLike], prefix: str = None
     return temp_directory
 
 
+def create_output_directory(directory: os.PathLike = None) -> Path:
+    output_directory = Path(directory) if directory else os.path.expanduser("~")
+    if not output_directory.exists():
+        output_directory.mkdir()
+    return output_directory
+
+
 def check_user_folders() -> bool:
     return (
         Global.USER_ROOT.exists()

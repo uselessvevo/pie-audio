@@ -36,8 +36,7 @@ class MainToolBar(PiePlugin, ToolBarAccessorMixin):
         layout_manager = get_plugin(SysPlugin.Layout)
         main_layout = layout_manager.get_layout(Layout.Main)
         if main_layout:
-            main_layout.add_layout(self._workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
-            layout_manager.add_layout(self.name, self._workbench_layout)
+            layout_manager.add_layout(self.name, main_layout, self._workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path"):

@@ -5,7 +5,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 
 from pieapp.api.exceptions import PieException
-from pieapp.helpers.qt import get_main_window
+from pieapp.utils.qt import get_main_window
 
 
 class ConfigPage(QObject):
@@ -27,21 +27,38 @@ class ConfigPage(QObject):
     # Emit to toggle apply button state
     sig_toggle_apply_button = Signal(bool)
 
+    # Emit to block all form's elements and action buttons
+    sig_toggle_config_page_state = Signal(bool)
+
     def __int__(self, parent=None) -> None:
         super().__init__(parent)
 
         self._is_modified = False
+        self._is_blocked = False
 
     def init(self) -> None:
         """ Initialize page """
 
+    def apply(self) -> None:
+        """
+        On apply event
+        """
+        pass
+
     def accept(self) -> None:
-        """ On accept event """
+        """
+        On accept event
+        """
         raise PieException(f"Method `accept` in \"{self.name}\" configuration page must be implemented")
 
     def cancel(self) -> None:
-        """ On cancel event """
+        """
+        On cancel event
+        """
         raise PieException(f"Method `cancel` in \"{self.name}\" configuration page must be implemented")
+
+    def set_page_state(self, disable: bool) -> None:
+        pass
 
     def get_title(self) -> str:
         raise NotImplementedError
@@ -50,18 +67,29 @@ class ConfigPage(QObject):
         return None
 
     def get_page_widget(self) -> QWidget:
-        """ Render page """
+        """
+        Retrieve page widget
+        """
         raise PieException(f"Method f`{self.__qualname__}` in \"{self.name}\" configuration page must be implemented")
 
     @property
     def is_modified(self) -> bool:
         return self._is_modified
 
-    def set_modified(self, state: bool) -> None:
-        self._is_modified = state
-        self.sig_toggle_apply_button.emit(state)
+    @property
+    def is_blocked(self) -> bool:
+        return self._is_blocked
+
+    def set_modified(self, modified: bool) -> None:
+        self._is_modified = modified
+        self.sig_toggle_apply_button.emit(modified)
+
+    def set_disabled(self, disabled: bool, all_forms: bool = False) -> None:
+        self._is_blocked = disabled
+        self.sig_toggle_config_page_state.emit(disabled)
 
     def require_restart(self) -> None:
+        self.sig_restart_requested.emit()
         main_window = get_main_window()
         if hasattr(main_window, "show_restart_dialog"):
             main_window.show_restart_dialog()

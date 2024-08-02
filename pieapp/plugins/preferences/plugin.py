@@ -1,11 +1,9 @@
-from __feature__ import snake_case
-
 from typing import Type
 
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
 
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QWidget
 from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QGridLayout
@@ -28,7 +26,7 @@ from pieapp.api.plugins.mixins import LayoutAccessorsMixins
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.models import Scope, SysRegistry
 from pieapp.api.plugins.decorators import on_plugin_available
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 
 from pieapp.widgets.spacer import Spacer
 from pieapp.widgets.buttons import Button
@@ -65,6 +63,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._page_widget_grid.set_contents_margins(0, 0, 0, 0)
         self._page_widget_grid.set_alignment(Qt.AlignmentFlag.AlignHCenter)
 
+        self._current_config_page = None
         self._current_widget = QLabel()
         self._current_widget.set_object_name("PreferencesCurrentWidget")
         self._current_widget.set_alignment(Qt.AlignmentFlag.AlignCenter)
@@ -75,6 +74,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._command_buttons_footer_grid.set_contents_margins(0, 0, 0, 0)
 
         self._footer_button_box = QDialogButtonBox()
+        self._footer_button_box.set_object_name("PreferencesButtonBox")
         self._footer_button_box.set_contents_margins(0, 10, 10, 10)
 
         self._ok_button = Button(ButtonRole.Primary)
@@ -132,10 +132,14 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             config_page: ConfigPage = plugin_config_page()
             self._registry.add(plugin.name, config_page)
 
-            config_page.init()
             config_page.sig_toggle_apply_button.connect(
-                lambda: self._toggle_apply_button(config_page.is_modified),
+                lambda: self._toggle_apply_button(config_page._is_modified)
             )
+            config_page.sig_toggle_config_page_state.connect(
+                lambda: config_page.set_page_state(config_page._is_blocked)
+                # lambda: self._toggle_current_page_state(config_page._is_blocked)
+            )
+            config_page.init()
 
             tree_item = ConfigPageTreeWidgetItem(config_page, self._tree_item_index)
             if config_page.get_icon():
@@ -175,8 +179,11 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
                 if tree_item.confpage.name == plugin.name:
                     self._tree_widget.remove_item_widget(tree_item, index)
 
-    def _toggle_apply_button(self, page_state: bool) -> None:
-        self._apply_button.set_enabled(page_state)
+    def _toggle_current_page_state(self, disabled: bool) -> None:
+        self._current_config_page.set_disabled(disabled)
+
+    def _toggle_apply_button(self, disable: bool) -> None:
+        self._apply_button.set_enabled(disable)
 
     @Slot(ConfigPageTreeWidgetItem, int)
     def _on_item_clicked(self, page: ConfigPageTreeWidgetItem) -> None:
@@ -189,11 +196,10 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         # This is a retarded way to swap components but that will do
         self._page_widget_grid.remove_widget(self._current_widget)
         self._current_widget.set_visible(False)
+
+        self._current_config_page = page
         self._current_widget = page.confpage.get_page_widget()
-        self._current_widget.set_size_policy(
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Minimum
-        )
+        self._current_widget.set_size_policy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._page_widget_grid.add_widget(self._current_widget, 0, 0)
         self._current_widget.set_visible(True)
 

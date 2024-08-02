@@ -9,7 +9,7 @@ from pieapp.api.models.statusbar import MessageStatus
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.helpers.qt import get_main_window
+from pieapp.utils.qt import get_main_window
 from pieapp.widgets.iconlabel import IconLabel
 
 

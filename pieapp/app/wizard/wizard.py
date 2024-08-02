@@ -7,13 +7,13 @@ from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QStyle
 
 from pieapp.api.gloader import Global
-from pieapp.helpers.qt import restart_application
+from pieapp.utils.qt import restart_application
 from pieapp.api.registries.models import Scope
 from pieapp.api.registries.locales.helpers import translate
 
-from pieapp.wizard.pages.converter import ConverterWizardPage
-from pieapp.wizard.pages.locale import LocaleWizardPage
-from pieapp.wizard.pages.theme import ThemeWizardPage
+from pieapp.app.wizard.pages.converter import ConverterWizardPage
+from pieapp.app.wizard.pages.locale import LocaleWizardPage
+from pieapp.app.wizard.pages.theme import ThemeWizardPage
 
 
 class FinishWizardPage(QtWidgets.QWizardPage):
@@ -22,7 +22,7 @@ class FinishWizardPage(QtWidgets.QWizardPage):
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
-        label = QtWidgets.QLabel(translate("Done"))
+        label = QtWidgets.QLabel(f'{translate("Done")}!')
         label.set_style_sheet("QLabel{font-size: 25pt; padding-bottom: 20px;}")
 
         layout = QtWidgets.QVBoxLayout()

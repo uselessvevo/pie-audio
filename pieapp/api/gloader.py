@@ -4,7 +4,7 @@ from types import ModuleType
 import os
 import importlib
 
-from pieapp.helpers.modules import import_by_path
+from pieapp.utils.modules import import_by_path
 
 
 class GlobalLoader:

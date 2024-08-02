@@ -1,5 +1,3 @@
-from __feature__ import snake_case
-
 import copy
 
 from PySide6.QtGui import Qt
@@ -18,12 +16,13 @@ from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
 
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 from pieapp.api.validators import date_validator
+from pieapp.widgets.delegates import ReadOnlyDelegate
 from pieapp.widgets.tables import MediaTableItemValue
 
 from pieapp.api.models.indexes import Index
-from pieapp.api.models.media import MediaFile, update_media_file
+from pieapp.api.converter.models import MediaFile, update_media_file
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.themes import ThemeProperties
 
@@ -37,12 +36,6 @@ from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
 from metadata.widgets.albumpicker import AlbumCoverPicker
 
 
-class ReadOnlyDelegate(QStyledItemDelegate):
-
-    def create_editor(self, parent, option, index) -> None:
-        return
-
-
 class MetadataEditor(
     PiePlugin,
     ThemeAccessorMixin,
@@ -51,6 +44,7 @@ class MetadataEditor(
 ):
     name = SysPlugin.MetadataEditor
     requires = [SysPlugin.Converter]
+    file_formats = ["mp3", "mp4", "wav", "m4a", "wma", "asf"]
 
     def get_plugin_icon(self) -> "QIcon":
         return self.get_svg_icon("icons/app.svg", scope=self.name)
@@ -138,13 +132,14 @@ class MetadataEditor(
         self._dialog.set_layout(self._main_grid_layout)
 
     @Slot(MediaFile, int)
-    def _on_table_item_added(self) -> None:
+    def _on_table_item_added(self, media_file: MediaFile, index: int) -> None:
         self._converter.add_quick_action(
             name="edit",
             text=translate("Edit"),
             icon=self.get_plugin_icon(),
             callback=self._edit_file_button_connect,
-            before="delete"
+            before="delete",
+            enabled=media_file.info.file_format.lower() in self.file_formats
         )
 
     def _edit_file_button_connect(self, media_file_name: str) -> None:
@@ -198,7 +193,7 @@ class MetadataEditor(
         image_path = album_cover.image_path.as_posix() if album_cover.image_path.exists() else None
         picker_icon = self.get_svg_icon(
             key="icons/folder-open.svg",
-            color=self.get_theme_property(ThemeProperties.AppIconColor)
+            prop=ThemeProperties.AppIconColor
         )
         album_cover_widget = AlbumCoverPicker(
             parent=self._dialog,

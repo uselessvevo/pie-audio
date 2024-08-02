@@ -4,9 +4,9 @@ from pathlib import Path
 
 from dotty_dict import Dotty
 
-from pieapp.helpers.logger import logger
-from pieapp.helpers.files import read_json
-from pieapp.helpers.files import write_json
+from pieapp.utils.logger import logger
+from pieapp.utils.files import read_json
+from pieapp.utils.files import write_json
 
 from pieapp.api.gloader import Global
 from pieapp.api.registries.models import Scope

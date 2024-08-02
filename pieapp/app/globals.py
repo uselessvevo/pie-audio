@@ -23,11 +23,6 @@ MEDIA_FILES_FOLDER_NAME = "media"
 
 LOG_LEVEL = os.getenv("PIE_LOG_LEVEL", "DEBUG")
 
-# Plugins fields #
-
-PLUGINS_SIGNAL_PREFIX = "sig_"
-PLUGINS_PRIVATE_SIGNALS = ("sig_plugin_ready",)
-
 # Default plugin icon theme
 DEFAULT_PLUGIN_ICON_NAME = "app"
 
@@ -75,7 +70,7 @@ LOCALES_FOLDER = "locales"
 
 # Main information
 PIEAPP_APPLICATION_NAME = "pie-audio"
-PIEAPP_VERSION = "1.0.1"
+PIEAPP_VERSION = "1.0.2"
 PIEAPP_VERSION_STAGE = "alpha"
 PIEAPP_ORGANIZATION_NAME = "CrabDevs"
 PIEAPP_ORGANIZATION_DOMAIN = "com.crabdevs.pieaudio"

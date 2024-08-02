@@ -6,5 +6,6 @@
   },
   "convertIconColor": "",
   "openFilesIconColor": "",
-  "clearListIconColor": ""
+  "clearListIconColor": "",
+  "downloadButtonSize": 35
 }

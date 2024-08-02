@@ -19,12 +19,7 @@ from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 
 from pieapp.api.plugins import ConfigPage
 from pieapp.api.models.plugins import SysPlugin
-
-
-class ReadOnlyDelegate(QStyledItemDelegate):
-
-    def create_editor(self, parent, option, index) -> None:
-        return
+from pieapp.widgets.delegates import ReadOnlyDelegate
 
 
 class ShortcutBlankConfigPage(ConfigPage, ThemeAccessorMixin):
@@ -35,7 +30,7 @@ class ShortcutBlankConfigPage(ConfigPage, ThemeAccessorMixin):
         return self.get_svg_icon("icons/hourglass.svg")
 
     def get_title(self) -> str:
-        return translate("Shortcut")
+        return f'{translate("Shortcuts")} ({translate("Loading")}...)'
 
     def init(self) -> None:
         self._main_widget = QWidget()
@@ -60,7 +55,7 @@ class ShortcutConfigPage(
         return self.get_svg_icon("icons/keyboard.svg")
 
     def get_title(self) -> str:
-        return translate("Shortcut")
+        return translate("Shortcuts")
 
     def get_page_widget(self) -> QWidget:
         return self._main_widget
@@ -70,6 +65,7 @@ class ShortcutConfigPage(
         self._registry = Registry(SysRegistry.Shortcuts)
 
         self._main_widget = QWidget()
+        self._main_widget.set_object_name("ConfigPageWidget")
         grid_layout = QGridLayout()
 
         table_widget = QTableWidget()
@@ -93,5 +89,9 @@ class ShortcutConfigPage(
             table_widget.set_item(row, 1, QTableWidgetItem(data["description"]))
             table_widget.set_item(row, 2, QTableWidgetItem(data["shortcut_key"]))
 
-        grid_layout.add_widget(table_widget, 0, 0)
+        page_description = QLabel(translate("Customize application shortcuts"))
+        page_description.set_object_name("PageDescription")
+
+        grid_layout.add_widget(page_description, 0, 0)
+        grid_layout.add_widget(table_widget, 1, 0)
         self._main_widget.set_layout(grid_layout)

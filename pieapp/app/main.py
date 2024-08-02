@@ -1,4 +1,3 @@
-import uuid
 from pathlib import Path
 
 from __feature__ import snake_case
@@ -12,11 +11,10 @@ from pieapp.api.gloader import Global
 from pieapp.api.models.themes import ThemeProperties
 from pieapp.api.plugins import Plugins
 from pieapp.api.registries.models import Scope
-from pieapp.api.registries.registry import Registry
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.helpers.files import delete_directory, create_temp_directory
+from pieapp.utils.files import delete_directory, create_temp_directory, create_output_directory
 from pieapp.widgets.messagebox import MessageCheckBox
 
 
@@ -45,7 +43,7 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
         )
         self.set_window_icon(self.get_svg_icon(
             key="icons/bolt.svg",
-            color=self.get_theme_property(ThemeProperties.AppIconColor)
+            prop=ThemeProperties.AppIconColor
         ))
 
     def init(self) -> None:
@@ -54,8 +52,18 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
             Scope.User,
             Global.USER_ROOT / Global.DEFAULT_TEMP_FOLDER_NAME
         )
+        root_output_directory = self.get_config(
+            "folders.output_directory",
+            Scope.User,
+            Path(os.path.expanduser("~"), "output")
+        )
+
         workflow_temp_directory = create_temp_directory(root_temp_directory)
         self.update_config("workflow.temp_directory", Scope.User, str(workflow_temp_directory), temp=True)
+
+        workflow_output_directory = create_output_directory(root_output_directory)
+        self.update_config("workflow.output_directory", Scope.User, str(workflow_output_directory), temp=True)
+
         Plugins.init_plugins()
         self.sig_on_main_window_show.emit()
 

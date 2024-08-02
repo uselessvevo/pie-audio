@@ -1,23 +1,10 @@
-#PreferencesCurrentWidget {
-    /*font-size: 20pt;*/
-}
-
-#PreferencesDialog {
-    background-color: @secondaryBgColor;
-}
-
-#PreferencesLineEdit {
-    /*font-size: 10pt;*/
-}
-
-#PreferencesComboBox {
-    /*font-size: 10pt;*/
+#PreferencesButtonBox {
+    border: 1px solid @secondaryBgColor;
+    background-color: @minorBackgroundColor;
 }
 
 #PreferencesTreeWidget {
-    border: none;
-    border-radius: 0px;
-    /*font-size: 10pt;*/
+    border: 1px solid @secondaryBgColor;
     background-color: @minorBackgroundColor;
 }
 
@@ -40,4 +27,75 @@
 #PreferencesTreeWidget::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(@THEME_ROOT/icons/arrow-right.svg);
+}
+
+/* ConfigPage */
+
+#ConfigPageWidget > QDialog {
+    border: 3px solid @secondaryBgColor;
+}
+
+#ConfigPageWidget > QLineEdit {
+    min-height: 25px;
+    max-height: 25px;
+    border: 1px solid @secondaryBgColor;
+    border-radius: @borderRadius;
+}
+
+#ConfigPageWidget > QLabel {
+    font-size: 10pt;
+}
+
+#ConfigPageWidget > #PageDescription {
+    padding-bottom: 20px;
+}
+
+#ConfigPageWidget > QPushButton {
+    border-radius: @buttonBorderRadius;
+}
+
+#ConfigPageWidget > QComboBox {
+    min-height: 20px;
+    max-height: 20px;
+    border-color: @cbBackgroundColor;
+    border-radius: @borderRadius;
+    padding: 2px 18px 2px 3px;
+    selection-background-color: @cbItemSelectedBackgroundColor;
+    selection-color: @cbItemSelectedBackgroundColor;
+}
+
+#ConfigPageWidget > QComboBox:editable {
+    background: #FFFFFF;
+}
+
+#ConfigPageWidget > QComboBox:!editable,
+#ConfigPageWidget > QComboBox::drop-down:editable,
+#ConfigPageWidget > QComboBox:!editable:on,
+#ConfigPageWidget > QComboBox::drop-down:editable:on {
+    border: 1px solid @secondaryBgColor;
+    border-radius: @borderRadius;
+}
+
+#ConfigPageWidget > QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    border-left: none;
+}
+
+#ConfigPageWidget > QComboBox::down-arrow {
+    width: 20px;
+    height: 20px;
+    image: url(@THEME_ROOT/icons/arrow-down.svg);
+}
+
+#ConfigPageWidget > QComboBox::down-arrow:disabled {
+    background-color: transparent;
+}
+
+#ConfigPageWidget > QComboBox::disabled {
+    background-color: @cbDropdownDisabledBackgroundColor;
+}
+
+#ConfigPageWidget > QComboBox QAbstractItemView {
+    border: @cbBackgroundColor;
 }

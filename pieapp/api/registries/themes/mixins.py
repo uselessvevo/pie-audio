@@ -33,9 +33,12 @@ class ThemeAccessorMixin:
         self,
         key: Any,
         color: str = None,
+        prop: str = None,
         default: Any = None,
         scope: Union[str, Scope] = Scope.Shared
     ) -> QIcon:
+        if prop:
+            color = self.get_theme_property(prop)
         icon_path = Registry(SysRegistry.Themes).get(scope or self.scope, key, default)
         return as_svg(icon_path, color)
 

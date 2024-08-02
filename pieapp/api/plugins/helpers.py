@@ -1,5 +1,5 @@
 """
-Plugin helpers
+Plugin utils
 """
 from typing import Any
 

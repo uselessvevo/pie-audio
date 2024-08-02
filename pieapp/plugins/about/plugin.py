@@ -31,7 +31,7 @@ class About(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
         return self.get_svg_icon(
             key="icons/app.svg",
             scope=self.name,
-            color=self.get_theme_property(ThemeProperties.AppIconColor)
+            prop=ThemeProperties.AppIconColor
         )
 
     def call(self) -> None:

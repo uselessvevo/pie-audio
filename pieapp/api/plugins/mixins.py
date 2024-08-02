@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import Signal
 
-from pieapp.api.models.media import MediaFile
+from pieapp.api.converter.models import MediaFile
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.menus.mixins import MenuAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin

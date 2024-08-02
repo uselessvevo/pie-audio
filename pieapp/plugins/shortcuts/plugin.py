@@ -1,12 +1,9 @@
-from __feature__ import snake_case
-
 from typing import Union
 
-from PySide6.QtCore import QObject, Slot
+from PySide6.QtCore import QObject
 from PySide6.QtGui import QShortcut, QKeySequence
-from PySide6.QtWidgets import QStyledItemDelegate
 
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 from pieapp.api.exceptions import PieException
 
 from pieapp.api.models.plugins import SysPlugin
@@ -27,23 +24,15 @@ from shortcuts.confpage import ShortcutConfigPage
 from shortcuts.confpage import ShortcutBlankConfigPage
 
 
-class ReadOnlyDelegate(QStyledItemDelegate):
-
-    def create_editor(self, parent, option, index) -> None:
-        return
-
-
 class ShortcutManager(PiePlugin, ThemeAccessorMixin):
     name = SysPlugin.Shortcut
     requires = [SysPlugin.Preferences]
 
-    @staticmethod
-    def get_name() -> str:
-        return translate("Shortcut")
+    def get_name(self) -> str:
+        return translate("Shortcuts")
 
-    @staticmethod
-    def get_description() -> str:
-        return translate("Shortcut manager")
+    def get_description(self) -> str:
+        return translate("Shortcut manager", scope=self.name)
 
     def init(self) -> None:
         # TODO: Add shortcuts manifest file
@@ -60,7 +49,7 @@ class ShortcutManager(PiePlugin, ThemeAccessorMixin):
         return self.get_svg_icon(
             key="icons/app.svg",
             scope=self.name,
-            color=self.get_theme_property(ThemeProperties.AppIconColor)
+            prop=ThemeProperties.AppIconColor
         )
 
     def get_config_page(self) -> Union[ShortcutBlankConfigPage, ShortcutConfigPage]:

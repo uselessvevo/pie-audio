@@ -1,7 +1,7 @@
 from typing import Type
 
-from pieapp.helpers.logger import logger
-from pieapp.helpers.modules import import_by_string
+from pieapp.utils.logger import logger
+from pieapp.utils.modules import import_by_string
 from pieapp.api.registries.base import BaseRegistry
 
 

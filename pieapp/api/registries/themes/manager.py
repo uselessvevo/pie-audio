@@ -7,13 +7,12 @@ from PySide6.QtWidgets import QApplication
 
 from pieapp.api.gloader import Global
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
-from pieapp.helpers.files import read_json
-from pieapp.helpers.logger import logger
-from pieapp.helpers.qt import get_application
-from pieapp.helpers.modules import import_by_path
+from pieapp.utils.files import read_json
+from pieapp.utils.logger import logger
+from pieapp.utils.qt import get_application
+from pieapp.utils.modules import import_by_path
 
 from pieapp.api.registries.models import Scope
-from pieapp.api.registries.registry import Registry
 from pieapp.api.registries.models import SysRegistry
 from pieapp.api.registries.base import BaseRegistry
 

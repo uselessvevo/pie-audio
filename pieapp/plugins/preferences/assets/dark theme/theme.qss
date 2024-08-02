@@ -22,6 +22,7 @@
 }
 
 #PreferencesTreeWidget::item {
+    font-size: 12pt;
     background-color: @minorBackgroundColor;
 }
 
@@ -36,6 +37,7 @@
     border-image: none;
     image: url(@THEME_ROOT/icons/arrow-down.svg);
 }
+
 #PreferencesTreeWidget::branch:has-children:!has-siblings:closed,
 #PreferencesTreeWidget::branch:closed:has-children:has-siblings {
     border-image: none;

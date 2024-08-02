@@ -8,7 +8,7 @@ from pieapp.api.registries.models import Scope
 from pieapp.api.registries.models import SysRegistry
 from pieapp.api.registries.base import BaseRegistry
 from pieapp.api.exceptions import PieException
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 
 
 class ActionRegistry(BaseRegistry):

@@ -8,6 +8,8 @@
     "secondaryBgColor": "#d3d3d3",
     "secondaryBorderColor": "#d3d8de",
 
+    "borderRadius": "3px",
+
     "buttonFontSize": "8pt",
     "buttonBorder": "1px solid",
     "buttonBorderColor": "#d3d3d3",
@@ -111,6 +113,10 @@
     "menuIndicatorWidth": "18px",
     "menuIndicatorHeight": "18px",
 
+    "cbDropdownBackgroundColor": "#f2f2f2",
+    "cbDropdownDisabledBackgroundColor": "#f2f2f2",
+
+    "actionIconColor": "#9dfc03",
     "appIconColor": "#f5d97f",
     "errorColor": "#db5860",
     "warningColor": "#edb706"

@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
-from pieapp.api.models.media import MediaFile
+from pieapp.api.converter.models import MediaFile
 from pieapp.api.registries.registry import Registry
 from pieapp.api.registries.models import SysRegistry
 
@@ -32,12 +32,11 @@ class ConverterItem(QWidget):
     ) -> None:
         super().__init__(parent)
 
-        self._snapshots = Registry(SysRegistry.Snapshots)
-
         self._parent = parent
         self._list_widget = None
         self._color_props = color_props or {}
         self._media_file = media_file
+        self._snapshots = Registry(SysRegistry.Snapshots)
 
         self.set_object_name("ConverterItem")
 
@@ -111,11 +110,12 @@ class ConverterItem(QWidget):
         callback: callable = None,
         before: str = None,
         after: str = None,
+        enabled: bool = False
     ) -> QToolButton:
         """
         A proxy method to interact with `ConverterItemMenu`
         """
-        return self._quick_action_menu.add_item(name, text, icon, callback, before, after)
+        return self._quick_action_menu.add_item(name, text, icon, callback, before, after, enabled)
 
     def set_list_widget(self, item: QListWidgetItem) -> None:
         self._list_widget = item

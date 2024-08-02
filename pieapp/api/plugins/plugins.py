@@ -25,6 +25,9 @@ class PiePlugin(QObject, PluginsObserverMixin):
     # List of optional built-in plugins
     optional: list[str] = []
 
+    # List of allowed file formats
+    file_formats: list[str] = []
+
     # Signal when plugin is ready
     sig_plugin_ready = Signal()
 

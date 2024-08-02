@@ -12,6 +12,7 @@ class Icons:
 @dt.dataclass(eq=False, frozen=True)
 class ThemeProperties:
     AppIconColor: str = "appIconColor"
+    ActionIconColor: str = "actionIconColor"
     ErrorColor: str = "errorColor"
     DangerColor: str = "dangerColor"
     MainFontColor: str = "mainFontColor"

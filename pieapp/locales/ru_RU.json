@@ -47,5 +47,8 @@
     "Select ffmpeg directory or download latest release": "Выберите папку ffmpeg или скачайте последнюю версию",
     "Downloading files": "Скачиваем файлы",
     "Unpacking archive": "Разархивируем архив",
-    "Checking files": "Проверяем файлы"
+    "Checking files": "Проверяем файлы",
+    "Shortcuts": "Раскладка клавиатуры",
+    "Customize application appearance and behaviour: change theme, locale, etc.": "Настройка внешнего вида приложения: тема, язык и т.д.",
+    "Customize application shortcuts": "Настройка горячих клавиши"
 }

@@ -12,7 +12,7 @@ class MainMenuItem:
 class MainMenu:
     File = "file"
     Help = "help"
-    Test = "test"
+    Test = "samples"
 
 
 class ToolButton:

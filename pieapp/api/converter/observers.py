@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from PySide6.QtCore import Signal
 from PySide6.QtCore import QObject
 
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 from pieapp.api.exceptions import PieException
 from pieapp.api.registries.locales.helpers import translate
 

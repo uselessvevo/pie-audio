@@ -1,5 +1,5 @@
 .idea/
-/test/
+/samples/
 
 TODO.md
 poetry.lock
@@ -44,7 +44,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit samples / coverage reports
 htmlcov/
 .tox/
 .nox/

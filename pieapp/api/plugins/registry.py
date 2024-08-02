@@ -13,9 +13,9 @@ from pieapp.api.exceptions import PieException
 from pieapp.api.gloader import Global
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.types import PluginType
-from pieapp.helpers.modules import import_by_path
-from pieapp.helpers.qt import get_main_window
-from pieapp.helpers.logger import logger
+from pieapp.utils.modules import import_by_path
+from pieapp.utils.qt import get_main_window
+from pieapp.utils.logger import logger
 
 
 class PluginRegistry(QObject):
@@ -205,23 +205,6 @@ class PluginRegistry(QObject):
             logger.debug(f"Error {plugin_instance.name}: {e!s}")
             self.delete_plugin(plugin_instance.name)
             raise e
-
-    @staticmethod
-    def _get_plugin_signals(plugin_instance: PiePlugin) -> list[str]:
-        """
-        Collect signals names that starts with `PLUGINS_SIGNAL_PREFIX (sig_/sig)` prefix
-        """
-        signals: list[str] = []
-        for signal_name in dir(plugin_instance):
-            if (
-                signal_name.startswith(Global.PLUGINS_SIGNAL_PREFIX)
-                and signal_name not in Global.PLUGINS_PRIVATE_SIGNALS
-            ):
-                signal_instance = getattr(plugin_instance, signal_name, None)
-                if isinstance(signal_instance, Signal):
-                    signals.append(signal_name)
-
-        return signals
 
     # Notification methods
 

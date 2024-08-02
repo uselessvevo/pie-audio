@@ -1,10 +1,8 @@
-from __feature__ import snake_case
-
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel
 
 from pieapp.api.plugins import PiePlugin
-from pieapp.helpers.qt import get_main_window
+from pieapp.utils.qt import get_main_window
 from pieapp.api.models.layouts import Layout
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.exceptions import PieException
@@ -34,16 +32,18 @@ class LayoutManager(PiePlugin):
         main_window = get_main_window()
         main_window.set_layout(main_layout)
 
-        widget = QLabel()
-        widget.set_layout(main_layout)
-        main_window.set_central_widget(widget)
+        main_widget = QLabel()
+        main_widget.set_layout(main_layout)
+        main_window.set_central_widget(main_widget)
 
-        self.add_layout(Layout.Main, main_layout)
+        self._layout_registry.add(Layout.Main, main_layout)
 
-    def add_layout(self, name: str, layout: QGridLayout) -> QGridLayout:
+    def add_layout(self, name: str, layout: QGridLayout, target_layout: QGridLayout,
+                   row: int, col: int, alignment: Qt.AlignmentFlag) -> QGridLayout:
         if self._layout_registry.contains(name):
             raise PieException(f"Layout \"{layout}\" already exists")
 
+        layout.add_layout(target_layout, row, col, alignment=alignment)
         self._layout_registry.add(name, layout)
         return layout
 
@@ -51,6 +51,7 @@ class LayoutManager(PiePlugin):
         if not self._layout_registry.contains(name):
             raise PieException(f"Layout \"{name}\" not found")
 
+        layout = self._layout_registry.get(name)
         self._layout_registry.delete(name)
 
     def get_layout(self, name: str) -> QGridLayout:

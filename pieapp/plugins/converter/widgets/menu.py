@@ -9,6 +9,8 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QToolButton
 from PySide6.QtWidgets import QHBoxLayout
 
+from pieapp.api.registries.locales.helpers import translate
+
 
 class QuickActionSideMenu(QWidget):
 
@@ -67,6 +69,9 @@ class QuickActionMenu(QWidget):
             return
 
         tool_button = QToolButton()
+        if enabled is False:
+            tool_button.set_tool_tip(translate("Plugin doesn't support this file format"))
+
         tool_button.set_enabled(enabled)
         tool_button.set_text(text)
         tool_button.set_icon(icon)

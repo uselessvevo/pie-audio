@@ -3,16 +3,16 @@ import sys
 from PySide6.QtCore import QSettings
 from __feature__ import snake_case
 
-from pieapp.helpers.qt import except_hook
-from pieapp.helpers.qt import get_application
-from pieapp.helpers.modules import is_debug
-from pieapp.helpers.files import check_user_folders
-from pieapp.helpers.files import restore_user_folders
+from pieapp.utils.qt import except_hook
+from pieapp.utils.qt import get_application
+from pieapp.utils.modules import is_debug
+from pieapp.utils.files import check_user_folders
+from pieapp.utils.files import restore_user_folders
 
 from pieapp.api.gloader import Global
 from pieapp.api.registries.registry import Registry
 
-from pieapp.wizard.wizard import StartupWizard
+from pieapp.app.wizard.wizard import StartupWizard
 from pieapp.widgets.splashscreen import SplashScreen
 
 

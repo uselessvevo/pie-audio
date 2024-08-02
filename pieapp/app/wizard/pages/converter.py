@@ -7,7 +7,7 @@ from PySide6.QtCore import QThread, QSize, Slot, QDir
 from PySide6.QtGui import Qt, QAction
 from PySide6.QtWidgets import QStyle, QFileDialog
 
-from pieapp.helpers.ffmpeg import DownloadWorker
+from pieapp.api.converter.workers import DownloadWorker
 from pieapp.api.gloader import Global
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.locales.helpers import translate
@@ -91,7 +91,7 @@ class ConverterWizardPage(
 
     @Slot(str)
     def _show_downloader_ready(self, ffmpeg_path: str) -> None:
-        self._progress_bar.set_format(translate("Done!"))
+        self._progress_bar.set_format(f'{translate("Done")}!')
         self._line_edit.set_focus()
         self._line_edit.clear()
         self._line_edit.insert(ffmpeg_path)

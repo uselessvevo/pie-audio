@@ -1,3 +1,4 @@
+import os.path
 import uuid
 import dataclasses
 from typing import Union
@@ -12,10 +13,11 @@ from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QLabel, QFileDialog
 from PySide6.QtWidgets import QListWidgetItem
 
+from converter.widgets.submitdialog import SubmitConvertDialog
 from pieapp.api.models.statusbar import MessageStatus
 from pieapp.api.models.themes import ThemeProperties
 from pieapp.api.registries.registry import Registry
-from pieapp.helpers.files import delete_files
+from pieapp.utils.files import delete_files
 
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
@@ -27,14 +29,14 @@ from pieapp.api.plugins.mixins import LayoutAccessorsMixins
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.models import Scope, SysRegistry
 from pieapp.api.models.layouts import Layout
-from pieapp.api.models.media import MediaFile
+from pieapp.api.converter.models import MediaFile
 from pieapp.api.models.menus import MainMenu
 from pieapp.api.models.menus import MainMenuItem
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.workbench import WorkbenchItem
 
 from pieapp.api.models.indexes import Index
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 from pieapp.widgets.waitingspinner import create_wait_spinner
 
 from converter.models import ConverterThemeProperties
@@ -44,9 +46,8 @@ from converter.widgets.search import ConverterSearch
 from converter.widgets.item import ConverterItem
 from converter.widgets.list import ConverterListWidget
 
-from converter.services.workers import CopyFilesWorker
-from converter.services.workers import ConverterProbeWorker
-from converter.services.observers import FileSystemWatcher
+from pieapp.api.converter.workers import CopyFilesWorker, ProbeWorker, ConverterWorker
+from pieapp.api.converter.observers import FileSystemWatcher
 
 
 class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
@@ -55,7 +56,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     optional = [SysPlugin.MainMenuBar, SysPlugin.StatusBar]
 
     # Emit on converter table item added to list
-    sig_table_item_added = Signal()
+    sig_table_item_added = Signal(MediaFile, int)
 
     # Emit on snapshot created
     sig_on_snapshot_created = Signal(MediaFile)
@@ -77,21 +78,20 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         return ConverterConfigPage()
 
     def init(self) -> None:
-        # Define SnapshotRegistry reference
-        self._snapshots = Registry(SysRegistry.Snapshots)
-
-        # Connect snapshot signals
-        self._connect_snapshot_signals()
-
-        # Setup FS watcher
-        self._watcher = FileSystemWatcher(self)
-        self._watcher.connect_signals(self)
-
         # Get configurations
         self._temp_directory = Path(self.get_config("workflow.temp_directory", Scope.User))
+        self._output_directory = Path(self.get_config("workflow.output_directory", Scope.User))
         self._chunk_size = self.get_config("ffmpeg.chunk_size", Scope.User, 10)
         self._ffmpeg_command = Path(self.get_config("ffmpeg.ffmpeg", Scope.User, "ffmpeg"))
         self._ffprobe_command = Path(self.get_config("ffmpeg.ffprobe", Scope.User, "ffprobe"))
+
+        # Define SnapshotRegistry reference
+        self._snapshots = Registry(SysRegistry.Snapshots)
+        # Connect snapshot signals
+        self._connect_snapshot_signals()
+        # Setup FS watcher
+        self._watcher = FileSystemWatcher(self)
+        self._watcher.connect_signals(self)
 
         # Setup layouts and widgets
         self._converter_item_widgets: list[ConverterItem] = []
@@ -160,12 +160,13 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         callback: callable = None,
         before: str = None,
         after: str = None,
+        enabled: bool = True
     ) -> None:
         """
         A proxy method to add an item in the QuickActionMenu
         """
         for index, item in enumerate(self._converter_item_widgets):
-            tool_button = item.add_quick_action(name, text, icon, callback, before, after)
+            tool_button = item.add_quick_action(name, text, icon, callback, before, after, enabled)
             self._quick_action_items.insert(index, {name: tool_button})
 
     # Protected widget methods
@@ -194,6 +195,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
                 text=translate("Delete"),
                 icon=self.get_svg_icon("icons/delete.svg", self.get_theme_property(ThemeProperties.ErrorColor)),
                 callback=self._delete_tool_button_connect,
+                enabled=True
             )
 
             widget_layout = QHBoxLayout()
@@ -210,7 +212,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             self._content_list.set_item_widget(item, widget)
 
             self._converter_item_widgets.append(widget)
-            self.sig_table_item_added.emit()
+            self.sig_table_item_added.emit(media_file, index)
 
         self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(False)
 
@@ -281,7 +283,11 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     # Public methods
 
     def open_files(self) -> None:
-        selected_files = QFileDialog.get_open_file_names(caption=translate("Open files"))[0]
+        selected_files = QFileDialog.get_open_file_names(
+            caption=translate("Open files"),
+            dir=os.path.expanduser("~")
+        )
+        selected_files = selected_files[0]
         if not selected_files:
             return
 
@@ -289,7 +295,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
         copy_files_worker = CopyFilesWorker(selected_files, self._temp_directory)
         copy_files_worker.signals.failed.connect(self._copy_files_worker_failed)
-        copy_files_worker.signals.completed.connect(lambda: self._start_converter_worker(selected_files))
+        copy_files_worker.signals.completed.connect(lambda: self._start_converter_probe_worker(selected_files))
         copy_files_worker.signals.destroyed.connect(self.destroyed)
 
         pool = QThreadPool.global_instance()
@@ -345,7 +351,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         if status_bar:
             status_bar.show_message(f'{translate("Failed to copy files")}: {exception!s}', MessageStatus.Error)
 
-    def _start_converter_worker(self, selected_files: list[Path]) -> None:
+    def _start_converter_probe_worker(self, selected_files: list[Path]) -> None:
         """
         Start `ConverterProbeWorker` with selected files after `CopyFilesWorker` is finished
         """
@@ -354,7 +360,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             media_file = MediaFile(
                 uuid=str(uuid.uuid4()),
                 name=f"{selected_file.parts[-2]}/{selected_file.name}",
-                path=Path(selected_file)
+                path=Path(selected_file),
+                output_path=self._output_directory / selected_file.name
             )
             selected_media_files.append(media_file)
 
@@ -364,27 +371,27 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             else:
                 del selected_media_files[index]
 
-        converter_worker = ConverterProbeWorker(
+        probe_worker = ProbeWorker(
             media_files=selected_media_files,
             temp_folder=self._temp_directory,
-            ffmpeg_cmd=self._ffmpeg_command,
-            ffprobe_cmd=self._ffprobe_command,
+            ffmpeg_command=self._ffmpeg_command,
+            ffprobe_command=self._ffprobe_command,
         )
-        converter_worker.signals.started.connect(self._converter_worker_started)
-        converter_worker.signals.completed.connect(self._converter_worker_finished)
-        converter_worker.signals.failed.connect(self._converter_worker_failed)
-        converter_worker.signals.destroyed.connect(self.destroyed)
+        probe_worker.signals.started.connect(self._converter_probe_worker_started)
+        probe_worker.signals.completed.connect(self._converter_probe_worker_finished)
+        probe_worker.signals.failed.connect(self._converter_probe_worker_failed)
+        probe_worker.signals.destroyed.connect(self.destroyed)
 
         pool = QThreadPool.global_instance()
-        pool.start(converter_worker)
+        pool.start(probe_worker)
 
-    def _converter_worker_started(self) -> None:
+    def _converter_probe_worker_started(self) -> None:
         self._clear_placeholder()
         self._list_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
         self._spinner.start()
 
     @Slot(Path)
-    def _converter_worker_finished(self, models_list: list[MediaFile]) -> None:
+    def _converter_probe_worker_finished(self, models_list: list[MediaFile]) -> None:
         self._watcher.start(str(self._temp_directory))
         self._spinner.stop()
 
@@ -398,21 +405,45 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             status_bar.show_message(translate(f"Loaded %s files", len(models_list)), MessageStatus.Info)
 
     @Slot(Exception)
-    def _converter_worker_failed(self, exception: Exception) -> None:
+    def _converter_probe_worker_failed(self, exception: Exception) -> None:
         self._spinner.stop()
         status_bar = get_plugin(SysPlugin.StatusBar)
         if status_bar:
             status_bar.show_message(f'{translate("Failed to process files")}: {exception!s}', MessageStatus.Error)
+
+    def _open_submit_convert_dialog(self) -> None:
+        # SubmitConvertDialog(self._snapshots.values()[0].path, self._start_converter_process_worker)
+        SubmitConvertDialog(None, self._start_converter_process_worker)
+
+    @Slot(Path)
+    def _start_converter_process_worker(self, output_folder: Path) -> None:
+        media_files = self._snapshots.values()
+        converter_worker = ConverterWorker(media_files, self._ffmpeg_command)
+        converter_worker.signals.started.connect(self._converter_process_worker_started)
+        converter_worker.signals.failed.connect(self._converter_probe_worker_failed)
+        converter_worker.signals.completed.connect(self._converter_probe_worker_finished)
+
+        pool = QThreadPool.global_instance()
+        pool.start(converter_worker)
+
+    @Slot()
+    def _converter_process_worker_started(self) -> None:
+        pass
 
     # SnapshotRegistry protected proxy methods
 
     @Slot(MediaFile)
     def _on_snapshot_created(self, snapshot: MediaFile) -> None:
         self.sig_on_snapshot_created.emit(snapshot)
+        self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(False)
 
     @Slot(MediaFile)
     def _on_snapshot_deleted(self, snapshot: MediaFile) -> None:
         self.sig_on_snapshot_deleted.emit(snapshot)
+        if self._snapshots.count() > 0:
+            self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(False)
+        else:
+            self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(True)
 
     @Slot(MediaFile)
     def _on_snapshot_modified(self, snapshot: MediaFile) -> None:
@@ -421,6 +452,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     @Slot(MediaFile)
     def _on_snapshot_restored(self) -> None:
         self.sig_on_snapshot_restored.emit()
+        self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(True)
 
     # Debug methods
 
@@ -447,8 +479,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         layout_manager = get_plugin(SysPlugin.Layout)
         main_layout = layout_manager.get_layout(Layout.Main)
         if main_layout:
-            main_layout.add_layout(self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
-            layout_manager.add_layout(self.name, main_layout)
+            layout_manager.add_layout(self.name, main_layout, self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
 
     @on_plugin_available(plugin=SysPlugin.Shortcut)
     def _on_shortcut_manager_available(self) -> None:
@@ -537,13 +568,15 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             triggered=self.open_files
         )
 
-        self.add_tool_button(
+        convert_tool_button = self.add_tool_button(
             scope=self.name,
             name=WorkbenchItem.Convert,
             text=translate("Convert"),
             tooltip=translate("Convert"),
             icon=self.get_svg_icon("icons/bolt.svg")
-        ).set_enabled(False)
+        )
+        convert_tool_button.set_disabled(True)
+        convert_tool_button.clicked.connect(self._start_converter_process_worker)
 
         clear_tool_button = self.add_tool_button(
             scope=self.name,

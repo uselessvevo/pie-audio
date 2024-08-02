@@ -3,7 +3,7 @@ from __feature__ import snake_case
 from PySide6 import QtWidgets
 
 from pieapp.api.gloader import Global
-from pieapp.helpers.qt import restart_application
+from pieapp.utils.qt import restart_application
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.models import Scope

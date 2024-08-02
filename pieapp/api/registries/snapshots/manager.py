@@ -2,13 +2,13 @@ from typing import Union, Any
 
 from PySide6.QtCore import QObject, Signal
 
-from pieapp.helpers.logger import logger
+from pieapp.utils.logger import logger
 from pieapp.api.exceptions import PieException
 from pieapp.api.registries.base import BaseRegistry
 from pieapp.api.registries.models import SysRegistry
 
 from pieapp.api.models.indexes import Index
-from pieapp.api.models.media import MediaFile
+from pieapp.api.converter.models import MediaFile
 
 
 class SnapshotRegistry(QObject, BaseRegistry):
@@ -260,6 +260,9 @@ class SnapshotRegistry(QObject, BaseRegistry):
 
     def values(self, as_path: bool = False) -> list[Any]:
         return [i[-1].path if as_path else i[-1] for i in self._inner_snapshots]
+
+    def count(self) -> int:
+        return len(self._inner_snapshots)
 
     def index(self, name: str) -> int:
         return list(self._inner_snapshots_keys).index(name)

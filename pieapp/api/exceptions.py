@@ -27,4 +27,4 @@ class PieException(Exception):
         }
 
     def __str__(self) -> str:
-        return f"{self._title}[{self._code}] - {self._description}"
+        return f"{self._title} - {self._description}"

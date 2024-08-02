@@ -18,13 +18,23 @@ class AlbumCover:
 class Codec:
     name: str
     type: str
-    long_name: str
+    long_name: Optional[str]
 
 
 @dt.dataclass(frozen=True)
 class ChannelsLayout:
-    mono: str = "mono"
-    stereo: str = "stereo"
+    """
+    Video
+    Front Left
+    Front Right
+    Mono (should be Center)
+    Left Surround
+    Right Surround
+    Mono (should be Left Total)
+    Mono (shold be Right Total)
+    """
+    Mono: str = "mono"
+    Stereo: str = "stereo"
 
 
 @dt.dataclass
@@ -32,12 +42,21 @@ class FileInfo:
     filename: str
     file_format: str
     bit_rate: int
-    bit_depth: int
+    bit_depth: Optional[int]
     sample_rate: float
     duration: float
     codec: Codec
     channels: int = dt.field(default=2)
-    channels_layout: ChannelsLayout = dt.field(default=ChannelsLayout.stereo)
+    channels_layout: str = dt.field(default=ChannelsLayout.Stereo)
+
+    def build(self) -> dict[str, str]:
+        arguments = []
+        for field, value in dt.asdict(self).items():
+            if value is not None:
+                arguments.append(f"{field}={value}")
+
+        arguments.extend(arguments)
+        return {f"metadata:g:{i}": e for i, e in enumerate(arguments)}
 
 
 @dt.dataclass
@@ -54,8 +73,8 @@ class Metadata:
     lyrics_publisher: Optional[str] = None
     composition_owner: Optional[str] = None
     release_language: Optional[str] = None
-    featured_artist: str = dt.field(default_factory=str)
-    additional_contributors: list[str] = dt.field(default_factory=list)
+    featured_artist: Optional[str] = dt.field(default_factory=str)
+    additional_contributors: Optional[list[str]] = dt.field(default_factory=list)
     year_of_composition: datetime.date = dt.field(default=datetime.date(1970, 1, 1))
 
 
@@ -64,6 +83,7 @@ class MediaFile:
     uuid: str
     name: str
     path: Path
+    output_path: Path
     info: Optional[FileInfo] = None
     metadata: Optional[Metadata] = None
 
