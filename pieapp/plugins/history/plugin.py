@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QGridLayout
 
-from pieapp.api.models.workbench import WorkbenchItem
+from pieapp.api.models.toolbar import ToolBarItem
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.helpers import get_plugin
@@ -25,7 +25,7 @@ class History(PiePlugin, ThemeAccessorMixin, ToolButtonAccessorMixin):
         main_toolbar = get_plugin(SysPlugin.MainToolBar)
         history_tool_button = self.add_tool_button(
             scope=self.name,
-            name=WorkbenchItem.History,
+            name=ToolBarItem.History,
             text=translate("History"),
             tooltip=translate("Show files history"),
             icon=self.get_svg_icon("icons/delete.svg")

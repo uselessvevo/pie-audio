@@ -53,3 +53,6 @@ class ActionRegistry(BaseRegistry):
         *names: str
     ) -> list[QAction]:
         return [self.get(scope, n) for n in names]
+
+
+Actions = ActionRegistry()

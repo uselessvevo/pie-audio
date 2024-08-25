@@ -278,3 +278,6 @@ class SnapshotRegistry(QObject, BaseRegistry):
         self.sig_on_snapshot_restored.emit()
         self.sig_on_global_snapshot_restored.emit()
         logger.debug("Snapshots restored")
+
+
+Snapshots = SnapshotRegistry()

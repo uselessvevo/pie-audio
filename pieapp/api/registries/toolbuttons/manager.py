@@ -44,3 +44,6 @@ class ToolButtonRegistry(BaseRegistry):
 
     def get_tool_buttons(self, scope: Union[str, Scope], *names: str) -> list[QToolButton]:
         return [self.get_tool_button(scope, n) for n in names]
+
+
+ToolButtons = ToolButtonRegistry()

@@ -4,8 +4,8 @@ from typing import Any, Union
 
 from PySide6.QtGui import QPixmap, QPainter, QColor, QIcon
 
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry, Scope
+from pieapp.api.registries.models import Scope
+from pieapp.api.registries.themes.manager import Themes
 
 
 def as_svg(file: str, color: Union[str, list] = None) -> QIcon:
@@ -27,7 +27,7 @@ def get_file_path(
     default: Any = None,
     scope: Union[str, Scope] = Scope.Shared
 ) -> Any:
-    return Registry(SysRegistry.Themes).get(scope, key, default)
+    return Themes.get(scope, key, default)
 
 
 def get_icon(
@@ -35,7 +35,7 @@ def get_icon(
     default: Any = None,
     scope: Union[str, Scope] = Scope.Shared
 ) -> QIcon:
-    return QIcon(Registry(SysRegistry.Themes).get(scope, key, default))
+    return QIcon(Themes.get(scope, key, default))
 
 
 def get_svg_icon(
@@ -44,17 +44,17 @@ def get_svg_icon(
     default: Any = None,
     scope: Union[str, Scope] = Scope.Shared
 ) -> QIcon:
-    icon_path = Registry(SysRegistry.Themes).get(scope, key, default)
+    icon_path = Themes.get(scope, key, default)
     return as_svg(icon_path, color)
 
 
 def get_current_theme() -> str:
-    return Registry(SysRegistry.Themes).get_theme()
+    return Themes.get_theme()
 
 
 def get_themes() -> list[str]:
-    return Registry(SysRegistry.Themes).get_themes()
+    return Themes.get_themes()
 
 
 def get_theme_property(prop_name: str, default: Any = None) -> Any:
-    return Registry(SysRegistry.Themes).get_theme_property(prop_name, default)
+    return Themes.get_theme_property(prop_name, default)

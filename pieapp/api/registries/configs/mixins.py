@@ -1,7 +1,7 @@
 from typing import Any
 
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry, Scope
+from pieapp.api.registries.configs.manager import Configs
+from pieapp.api.registries.models import Scope
 
 
 class ConfigAccessorMixin:
@@ -42,14 +42,14 @@ class ConfigAccessorMixin:
     # Private proxy methods
 
     def _save_config(self, scope: str, inner_scope: str, create) -> None:
-        return Registry(SysRegistry.Configs).save(f"{scope}.{inner_scope}", create)
+        return Configs.save(f"{scope}.{inner_scope}", create)
 
     def _get_config(self, scope: str, inner_scope: str, key: str, default: Any) -> Any:
-        return Registry(SysRegistry.Configs).get(f"{scope}.{inner_scope}", key, default)
+        return Configs.get(f"{scope}.{inner_scope}", key, default)
 
     def _update_config(self, scope: str, inner_scope: str, key: str, data: Any,
                        save: bool, temp: bool = False, create: bool = False) -> Any:
-        return Registry(SysRegistry.Configs).update(f"{scope}.{inner_scope}", key, data, temp, save, create)
+        return Configs.update(f"{scope}.{inner_scope}", key, data, temp, save, create)
 
     def _restore_config(self, scope: str, inner_scope: str) -> Any:
-        return Registry(SysRegistry.Configs).restore(f"{scope}.{inner_scope}")
+        return Configs.restore(f"{scope}.{inner_scope}")

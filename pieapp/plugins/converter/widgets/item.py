@@ -13,12 +13,11 @@ from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
 from pieapp.api.converter.models import MediaFile
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry
 
 from converter.models import ConverterThemeProperties
 from converter.widgets.list import ConverterListWidget
 from converter.widgets.menu import QuickActionMenu
+from pieapp.api.registries.snapshots.manager import Snapshots
 
 
 class ConverterItem(QWidget):
@@ -36,7 +35,6 @@ class ConverterItem(QWidget):
         self._list_widget = None
         self._color_props = color_props or {}
         self._media_file = media_file
-        self._snapshots = Registry(SysRegistry.Snapshots)
 
         self.set_object_name("ConverterItem")
 
@@ -84,7 +82,7 @@ class ConverterItem(QWidget):
         if self._media_file.name != media_file_name:
             return
 
-        media_file = self._snapshots.get(media_file_name)
+        media_file = Snapshots.get(media_file_name)
         if not media_file:
             return
 
@@ -98,9 +96,9 @@ class ConverterItem(QWidget):
         return self._media_file
 
     def set_items_disabled(self) -> None:
-        self._quick_action_menu.set_disabled(True)
+        self._quick_action_menu.set_enabled(False)
         for item in self._quick_action_menu.get_items():
-            item.set_disabled(True)
+            item.set_enabled(False)
 
     def add_quick_action(
         self,

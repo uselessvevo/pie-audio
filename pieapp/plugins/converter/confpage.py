@@ -12,7 +12,6 @@ from PySide6.QtCore import QThread
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QLineEdit
-from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QProgressBar
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QHBoxLayout
@@ -28,6 +27,7 @@ from pieapp.api.registries.models import Scope
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
+from pieapp.widgets.buttons import Button, ButtonRole
 
 
 class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
@@ -78,9 +78,9 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
         ))
         page_description.set_object_name("PageDescription")
 
-        self._download_button = QPushButton()
+        self._download_button = Button()
         self._download_button.set_tool_tip(translate("Press me to download newest ffmpeg release"))
-        self._download_button.set_maximum_width(self.get_theme_property("downloadButtonSize"))
+        self._download_button.set_maximum_width(self.get_theme_property("downloadButtonSize", 10))
         self._download_button.set_icon(self.get_svg_icon("icons/download.svg"))
         self._download_button.clicked.connect(self._start_downloader_thread)
 
@@ -103,18 +103,18 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
         self._main_widget.set_layout(main_form_layout)
 
     def _start_downloader_thread(self) -> None:
-        self.set_disabled(False)
+        self.set_enabled(True)
         self._progress_bar.set_visible(True)
-        self._ffmpeg_line_edit.set_disabled(True)
-        self._download_button.set_disabled(True)
+        self._ffmpeg_line_edit.set_enabled(False)
+        self._download_button.set_enabled(False)
         self._download_thread.start(QThread.Priority.HighPriority)
 
     @Slot(int)
     def _show_downloader_progress(self, progress: int) -> None:
         self._progress_bar.set_value(progress)
         if round(progress, 0) >= 100:
-            self._ffmpeg_line_edit.set_disabled(False)
-            self._download_button.set_disabled(False)
+            self._ffmpeg_line_edit.set_enabled(True)
+            self._download_button.set_enabled(True)
             self._progress_bar.set_value(0)
 
     @Slot(str)
@@ -131,7 +131,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
     @Slot(str)
     def _unpack_ready(self, ffmpeg_path: str) -> None:
         self.set_modified(True)
-        self.set_disabled(False)
+        self.set_enabled(True)
         self._progress_bar.set_visible(False)
         self._download_thread.terminate()
 

@@ -1,13 +1,13 @@
 """
-Workbench items
+Main ToolBar items
 """
 
 
-class WorkbenchItem:
-    OpenFiles = "openFiles"
+class ToolBarItem:
+    OpenFiles = "open-files"
     Clear = "clear"
     Convert = "convert"
-    Preferences = "Preferences"
+    Preferences = "preferences"
     Spacer = "spacer"
     Exit = "exit"
     Search = "search"

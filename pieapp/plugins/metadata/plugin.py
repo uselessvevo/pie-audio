@@ -15,6 +15,7 @@ from pieapp.api.gloader import Global
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
+from pieapp.api.registries.snapshots.manager import Snapshots
 
 from pieapp.utils.logger import logger
 from pieapp.api.validators import date_validator
@@ -27,8 +28,6 @@ from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.themes import ThemeProperties
 
 from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
@@ -50,11 +49,11 @@ class MetadataEditor(
         return self.get_svg_icon("icons/app.svg", scope=self.name)
 
     def _close_event(self, _, local_snapshot_name: str) -> None:
-        self._save_button.set_disabled(True)
-        self._redo_button.set_disabled(True)
-        self._undo_button.set_disabled(True)
-        self._snapshots.sync_global_to_inner()
-        self._snapshots.restore_local_snapshots(local_snapshot_name)
+        self._save_button.set_enabled(False)
+        self._redo_button.set_enabled(False)
+        self._undo_button.set_enabled(False)
+        Snapshots.sync_global_to_inner()
+        Snapshots.restore_local_snapshots(local_snapshot_name)
 
     def _key_press_event(self, event) -> None:
         if event.key() != Qt.Key.Key_Escape:
@@ -62,7 +61,6 @@ class MetadataEditor(
 
     @on_plugin_available(plugin=SysPlugin.Converter)
     def on_converter_available(self) -> None:
-        self._snapshots = Registry(SysRegistry.Snapshots)
         self._converter = get_plugin(SysPlugin.Converter)
         self._converter.sig_table_item_added.connect(self._on_table_item_added)
 
@@ -89,7 +87,7 @@ class MetadataEditor(
             tooltip=translate("Save"),
             icon=self.get_svg_icon("icons/save.svg")
         )
-        self._save_button.set_disabled(True)
+        self._save_button.set_enabled(False)
 
         self._undo_button = self.add_tool_button(
             scope=self.name,
@@ -98,7 +96,7 @@ class MetadataEditor(
             tooltip=translate("Undo"),
             icon=self.get_svg_icon("icons/undo.svg")
         )
-        self._undo_button.set_disabled(True)
+        self._undo_button.set_enabled(False)
 
         self._redo_button = self.add_tool_button(
             scope=self.name,
@@ -107,7 +105,7 @@ class MetadataEditor(
             tooltip=translate("Redo"),
             icon=self.get_svg_icon("icons/redo.svg")
         )
-        self._redo_button.set_disabled(True)
+        self._redo_button.set_enabled(False)
 
         self.add_toolbar_item(self._toolbar.name, "save", self._save_button)
         self.add_toolbar_item(self._toolbar.name, "undo", self._undo_button)
@@ -149,9 +147,9 @@ class MetadataEditor(
         -metadata:s:v title="album cover"
         -metadata:s:v comment="cover (front)" out.mp3
         """
-        media_file: MediaFile = self._snapshots.get(media_file_name)
+        media_file: MediaFile = Snapshots.get(media_file_name)
         self._dialog.close_event = lambda event: self._close_event(event, media_file.name)
-        self._snapshots.add_local_snapshot(media_file.name, media_file)
+        Snapshots.add_local_snapshot(media_file.name, media_file)
         self._dialog.set_window_title(f"{translate('Edit metadata')} - {media_file.info.filename}")
 
         self._save_button.clicked.connect(lambda: self._save_button_connect(media_file))
@@ -255,37 +253,37 @@ class MetadataEditor(
 
         item.set_text(item.text())
         media_file_name = item.media_file_name
-        media_file_copy = copy.deepcopy(self._snapshots.get_local_snapshot(media_file_name, Index.End))
+        media_file_copy = copy.deepcopy(Snapshots.get_local_snapshot(media_file_name, Index.End))
         media_file_copy = update_media_file(media_file_copy, item.field, item.value)
 
-        if not self._snapshots.contains_local(media_file_copy.name, media_file_copy):
-            self._snapshots.add_local_snapshot(media_file_copy.name, media_file_copy)
-            # self._snapshots.sync_local_to_global(media_file_copy.name)
-            # self._snapshots.sync_global_to_inner()
-            self._save_button.set_disabled(False)
-            self._undo_button.set_disabled(False)
-            self._redo_button.set_disabled(True)
+        if not Snapshots.contains_local(media_file_copy.name, media_file_copy):
+            Snapshots.add_local_snapshot(media_file_copy.name, media_file_copy)
+            # Snapshots.sync_local_to_global(media_file_copy.name)
+            # Snapshots.sync_global_to_inner()
+            self._save_button.set_enabled(True)
+            self._undo_button.set_enabled(True)
+            self._redo_button.set_enabled(False)
 
     def _save_button_connect(self, media_file: MediaFile) -> None:
         # Sync local and global snapshots
-        local_snapshot = self._snapshots.get_local_snapshot(media_file.name, Index.End)
-        self._snapshots.sync_local_to_global(local_snapshot.name)
-        self._save_button.set_disabled(True)
-        self._undo_button.set_disabled(False)
-        self._redo_button.set_disabled(True)
+        local_snapshot = Snapshots.get_local_snapshot(media_file.name, Index.End)
+        Snapshots.sync_local_to_global(local_snapshot.name)
+        self._save_button.set_enabled(False)
+        self._undo_button.set_enabled(True)
+        self._redo_button.set_enabled(False)
 
     def _undo_button_connect(self, media_file: MediaFile) -> None:
-        media_file, is_array_end = self._snapshots.update_local_snapshot_index(media_file.name, -1)
+        media_file, is_array_end = Snapshots.update_local_snapshot_index(media_file.name, -1)
         self._fill_metadata_table(media_file)
-        self._save_button.set_disabled(False)
+        self._save_button.set_enabled(True)
         self._undo_button.set_disabled(is_array_end)
-        self._redo_button.set_disabled(False)
+        self._redo_button.set_enabled(True)
 
     def _redo_button_connect(self, media_file: MediaFile) -> None:
-        media_file, is_array_end = self._snapshots.update_local_snapshot_index(media_file.name, +1)
+        media_file, is_array_end = Snapshots.update_local_snapshot_index(media_file.name, +1)
         self._fill_metadata_table(media_file)
-        self._save_button.set_disabled(False)
-        self._undo_button.set_disabled(False)
+        self._save_button.set_enabled(True)
+        self._undo_button.set_enabled(True)
         self._redo_button.set_disabled(is_array_end)
 
 

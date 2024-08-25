@@ -46,3 +46,6 @@ class LocaleRegistry(BaseRegistry, ConfigAccessorMixin):
     @property
     def locale(self):
         return self._locale
+
+
+Locales = LocaleRegistry()

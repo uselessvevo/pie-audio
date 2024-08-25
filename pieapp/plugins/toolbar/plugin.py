@@ -25,8 +25,8 @@ class MainToolBar(PiePlugin, ToolBarAccessorMixin):
         self._toolbar.set_contents_margins(6, 0, 10, 0)
         self._toolbar.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
-        self._workbench_layout = QGridLayout()
-        self._workbench_layout.add_widget(self._toolbar)
+        self._main_layout = QGridLayout()
+        self._main_layout.add_widget(self._toolbar)
 
     def on_plugins_ready(self) -> None:
         self._toolbar.call()
@@ -36,7 +36,7 @@ class MainToolBar(PiePlugin, ToolBarAccessorMixin):
         layout_manager = get_plugin(SysPlugin.Layout)
         main_layout = layout_manager.get_layout(Layout.Main)
         if main_layout:
-            layout_manager.add_layout(self.name, main_layout, self._workbench_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
+            layout_manager.add_layout(self.name, main_layout, self._main_layout, 0, 0, Qt.AlignmentFlag.AlignTop)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path"):

@@ -4,20 +4,21 @@ import dataclasses
 from typing import Union
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThreadPool
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QGridLayout, QToolButton
-from PySide6.QtWidgets import QHBoxLayout
-from PySide6.QtWidgets import QLabel, QFileDialog
-from PySide6.QtWidgets import QListWidgetItem
+from PySide6.QtCore import Signal
+from PySide6.QtCore import QThreadPool
 
-from converter.widgets.submitdialog import SubmitConvertDialog
-from pieapp.api.models.statusbar import MessageStatus
-from pieapp.api.models.themes import ThemeProperties
-from pieapp.api.registries.registry import Registry
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QListWidgetItem
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QToolButton
+from PySide6.QtWidgets import QHBoxLayout
+
+from pieapp.api.registries.snapshots.manager import Snapshots
 from pieapp.utils.files import delete_files
+from converter.widgets.submitdialog import SubmitConvertDialog
 
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
@@ -30,14 +31,22 @@ from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.models import Scope, SysRegistry
 from pieapp.api.models.layouts import Layout
 from pieapp.api.converter.models import MediaFile
+
+from pieapp.api.models.indexes import Index
 from pieapp.api.models.menus import MainMenu
 from pieapp.api.models.menus import MainMenuItem
 from pieapp.api.models.plugins import SysPlugin
-from pieapp.api.models.workbench import WorkbenchItem
+from pieapp.api.models.toolbar import ToolBarItem
+from pieapp.api.models.statusbar import MessageStatus
+from pieapp.api.models.themes import ThemeProperties
 
-from pieapp.api.models.indexes import Index
 from pieapp.utils.logger import logger
 from pieapp.widgets.waitingspinner import create_wait_spinner
+
+from pieapp.api.converter.workers import ProbeWorker
+from pieapp.api.converter.workers import ConverterWorker
+from pieapp.api.converter.workers import CopyFilesWorker
+from pieapp.api.converter.observers import FileSystemWatcher
 
 from converter.models import ConverterThemeProperties
 from converter.confpage import ConverterConfigPage
@@ -45,9 +54,6 @@ from converter.confpage import ConverterConfigPage
 from converter.widgets.search import ConverterSearch
 from converter.widgets.item import ConverterItem
 from converter.widgets.list import ConverterListWidget
-
-from pieapp.api.converter.workers import CopyFilesWorker, ProbeWorker, ConverterWorker
-from pieapp.api.converter.observers import FileSystemWatcher
 
 
 class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
@@ -85,8 +91,6 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._ffmpeg_command = Path(self.get_config("ffmpeg.ffmpeg", Scope.User, "ffmpeg"))
         self._ffprobe_command = Path(self.get_config("ffmpeg.ffprobe", Scope.User, "ffprobe"))
 
-        # Define SnapshotRegistry reference
-        self._snapshots = Registry(SysRegistry.Snapshots)
         # Connect snapshot signals
         self._connect_snapshot_signals()
         # Setup FS watcher
@@ -132,10 +136,10 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         """
         Connect SnapshotRegistry to proxy methods
         """
-        self._snapshots.sig_on_snapshot_created.connect(self._on_snapshot_created)
-        self._snapshots.sig_on_snapshot_deleted.connect(self._on_snapshot_deleted)
-        self._snapshots.sig_on_snapshot_modified.connect(self._on_snapshot_modified)
-        self._snapshots.sig_on_snapshot_restored.connect(self._on_snapshot_restored)
+        Snapshots.sig_on_snapshot_created.connect(self._on_snapshot_created)
+        Snapshots.sig_on_snapshot_deleted.connect(self._on_snapshot_deleted)
+        Snapshots.sig_on_snapshot_modified.connect(self._on_snapshot_modified)
+        Snapshots.sig_on_snapshot_restored.connect(self._on_snapshot_restored)
 
     # QuickAction public proxy methods
 
@@ -156,7 +160,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self,
         name: str,
         text: str,
-        icon: QIcon,
+        icon: "QIcon",
         callback: callable = None,
         before: str = None,
         after: str = None,
@@ -214,7 +218,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             self._converter_item_widgets.append(widget)
             self.sig_table_item_added.emit(media_file, index)
 
-        self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(False)
+        self.get_tool_button(self.name, ToolBarItem.Clear).set_enabled(True)
 
     # ConverterListWidget protected methods
 
@@ -223,7 +227,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         Disable `clear` button on empty `content_list`
         """
         if self._content_list.count() == 0:
-            self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
+            self.get_tool_button(self.name, ToolBarItem.Clear).set_enabled(False)
 
     def _set_placeholder(self) -> None:
         """
@@ -246,8 +250,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         """
         Clear content list, remove it from the `list_grid_layout` and disable clear button
         """
-        delete_files(self._snapshots.values(as_path=True))
-        self._snapshots.restore()
+        delete_files(Snapshots.values(as_path=True))
+        Snapshots.restore()
 
         self._converter_item_widgets = []
         self._content_list.clear()
@@ -255,10 +259,10 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._list_grid_layout.remove_widget(self._search)
         self._list_grid_layout.remove_widget(self._content_list)
         self._set_placeholder()
-        self.get_tool_button(self.name, WorkbenchItem.Clear).set_disabled(True)
+        self.get_tool_button(self.name, ToolBarItem.Clear).set_enabled(False)
 
     def _delete_tool_button_connect(self, media_file_name: str) -> None:
-        media_file: MediaFile = self._snapshots.get(media_file_name)
+        media_file: MediaFile = Snapshots.get(media_file_name)
         delete_files([media_file.path])
 
     # ConverterSearch protected methods
@@ -295,7 +299,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
         copy_files_worker = CopyFilesWorker(selected_files, self._temp_directory)
         copy_files_worker.signals.failed.connect(self._copy_files_worker_failed)
-        copy_files_worker.signals.completed.connect(lambda: self._start_converter_probe_worker(selected_files))
+        copy_files_worker.signals.completed.connect(lambda: self._copy_files_worker_finished(selected_files))
         copy_files_worker.signals.destroyed.connect(self.destroyed)
 
         pool = QThreadPool.global_instance()
@@ -313,19 +317,19 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     @Slot(Path, str, bool)
     def on_file_moved(self, file_path: Path, new_media_file: str, is_directory: bool) -> None:
         # TODO: Show message that files were moved and user need to do something about it
-        media_file = self._snapshots.get(f"{file_path.parts[-2]}/{file_path.name}")
-        self._snapshots.update(media_file.name, new_media_file)
+        media_file = Snapshots.get(f"{file_path.parts[-2]}/{file_path.name}")
+        Snapshots.update(media_file.name, new_media_file)
 
     @Slot(Path, bool)
     def on_file_deleted(self, file_path: Path, is_directory: bool) -> None:
         media_file_name = f"{file_path.parts[-2]}/{file_path.name}"
-        if not self._snapshots.contains(media_file_name):
+        if not Snapshots.contains(media_file_name):
             # Ignore `watchdog` emitting multiple events
             return
 
-        media_file = self._snapshots.get(media_file_name)
-        index = self._snapshots.index(media_file.name)
-        self._snapshots.remove(media_file.name)
+        media_file = Snapshots.get(media_file_name)
+        index = Snapshots.index(media_file.name)
+        Snapshots.remove(media_file.name)
         self._content_list.take_item(index)
 
     @Slot(Path, bool)
@@ -335,23 +339,16 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             return
 
         media_file_name = f"{file_path.parts[-2]}/{file_path.name}"
-        if not self._snapshots.contains(media_file_name):
+        if not Snapshots.contains(media_file_name):
             # Ignore this event after we deleted file(-s)
             return
 
-        media_file = self._snapshots.get(media_file_name)
-        self._snapshots.update(media_file.name, media_file, Index.End)
+        media_file = Snapshots.get(media_file_name)
+        Snapshots.update(media_file.name, media_file, Index.End)
 
-    # Protected background workers and observers methods
+    # CopyFilesWorker handlers
 
-    @Slot(Exception)
-    def _copy_files_worker_failed(self, exception: Exception):
-        self._spinner.stop()
-        status_bar = get_plugin(SysPlugin.StatusBar)
-        if status_bar:
-            status_bar.show_message(f'{translate("Failed to copy files")}: {exception!s}', MessageStatus.Error)
-
-    def _start_converter_probe_worker(self, selected_files: list[Path]) -> None:
+    def _copy_files_worker_finished(self, selected_files: list[Path]) -> None:
         """
         Start `ConverterProbeWorker` with selected files after `CopyFilesWorker` is finished
         """
@@ -361,37 +358,50 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
                 uuid=str(uuid.uuid4()),
                 name=f"{selected_file.parts[-2]}/{selected_file.name}",
                 path=Path(selected_file),
-                output_path=self._output_directory / selected_file.name
+                output_path=self._output_directory / selected_file.name,
+                is_origin=True
             )
             selected_media_files.append(media_file)
 
         for index, media_file in enumerate(selected_media_files):
-            if media_file.name not in self._snapshots:
-                self._snapshots.add(media_file)
+            if media_file.name not in Snapshots:
+                Snapshots.add(media_file)
             else:
                 del selected_media_files[index]
 
+        self._start_probe_worker(selected_media_files)
+
+    @Slot(Exception)
+    def _copy_files_worker_failed(self, exception: Exception):
+        self._spinner.stop()
+        status_bar = get_plugin(SysPlugin.StatusBar)
+        if status_bar:
+            status_bar.show_message(f'{translate("Failed to copy files")}: {exception!s}', MessageStatus.Error)
+
+    def _start_probe_worker(self, media_files) -> None:
         probe_worker = ProbeWorker(
-            media_files=selected_media_files,
+            media_files=media_files,
             temp_folder=self._temp_directory,
             ffmpeg_command=self._ffmpeg_command,
             ffprobe_command=self._ffprobe_command,
         )
-        probe_worker.signals.started.connect(self._converter_probe_worker_started)
-        probe_worker.signals.completed.connect(self._converter_probe_worker_finished)
-        probe_worker.signals.failed.connect(self._converter_probe_worker_failed)
+        probe_worker.signals.started.connect(self._probe_worker_started)
+        probe_worker.signals.completed.connect(self._probe_worker_finished)
+        probe_worker.signals.failed.connect(self._probe_worker_failed)
         probe_worker.signals.destroyed.connect(self.destroyed)
 
         pool = QThreadPool.global_instance()
         pool.start(probe_worker)
 
-    def _converter_probe_worker_started(self) -> None:
+    # ProbeWorker handlers
+
+    def _probe_worker_started(self) -> None:
         self._clear_placeholder()
         self._list_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
         self._spinner.start()
 
     @Slot(Path)
-    def _converter_probe_worker_finished(self, models_list: list[MediaFile]) -> None:
+    def _probe_worker_finished(self, models_list: list[MediaFile]) -> None:
         self._watcher.start(str(self._temp_directory))
         self._spinner.stop()
 
@@ -405,29 +415,39 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             status_bar.show_message(translate(f"Loaded %s files", len(models_list)), MessageStatus.Info)
 
     @Slot(Exception)
-    def _converter_probe_worker_failed(self, exception: Exception) -> None:
+    def _probe_worker_failed(self, exception: Exception) -> None:
         self._spinner.stop()
         status_bar = get_plugin(SysPlugin.StatusBar)
         if status_bar:
             status_bar.show_message(f'{translate("Failed to process files")}: {exception!s}', MessageStatus.Error)
 
     def _open_submit_convert_dialog(self) -> None:
-        # SubmitConvertDialog(self._snapshots.values()[0].path, self._start_converter_process_worker)
-        SubmitConvertDialog(None, self._start_converter_process_worker)
+        # SubmitConvertDialog(Snapshots.values()[0].path, self._start_converter_process_worker)
+        SubmitConvertDialog(None, self._start_converter_worker)
+
+    # ConverterWorker handlers
 
     @Slot(Path)
-    def _start_converter_process_worker(self, output_folder: Path) -> None:
-        media_files = self._snapshots.values()
+    def _start_converter_worker(self, output_folder: Path) -> None:
+        media_files = Snapshots.values()
         converter_worker = ConverterWorker(media_files, self._ffmpeg_command)
-        converter_worker.signals.started.connect(self._converter_process_worker_started)
-        converter_worker.signals.failed.connect(self._converter_probe_worker_failed)
-        converter_worker.signals.completed.connect(self._converter_probe_worker_finished)
+        converter_worker.signals.started.connect(self._converter_worker_started)
+        converter_worker.signals.failed.connect(self._converter_worker_failed)
+        converter_worker.signals.completed.connect(self._converter_worker_finished)
 
         pool = QThreadPool.global_instance()
         pool.start(converter_worker)
 
     @Slot()
-    def _converter_process_worker_started(self) -> None:
+    def _converter_worker_finished(self) -> None:
+        logger.debug("Finished")
+
+    @Slot()
+    def _converter_worker_started(self) -> None:
+        pass
+
+    @Slot(Exception, int)
+    def _converter_worker_failed(self, exception: Exception, index: int) -> None:
         pass
 
     # SnapshotRegistry protected proxy methods
@@ -435,29 +455,36 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     @Slot(MediaFile)
     def _on_snapshot_created(self, snapshot: MediaFile) -> None:
         self.sig_on_snapshot_created.emit(snapshot)
-        self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(False)
-
-    @Slot(MediaFile)
-    def _on_snapshot_deleted(self, snapshot: MediaFile) -> None:
-        self.sig_on_snapshot_deleted.emit(snapshot)
-        if self._snapshots.count() > 0:
-            self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(False)
-        else:
-            self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(True)
+        if len(Snapshots.values()) > 0:
+            self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
 
     @Slot(MediaFile)
     def _on_snapshot_modified(self, snapshot: MediaFile) -> None:
         self.sig_on_snapshot_modified.emit(snapshot)
+        if len(Snapshots.values()) > 0:
+            self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
+
+    @Slot(MediaFile)
+    def _on_snapshot_deleted(self, snapshot: MediaFile) -> None:
+        self.sig_on_snapshot_deleted.emit(snapshot)
+        convert_button = self.get_tool_button(self.name, ToolBarItem.Convert)
+        if Snapshots.count() > 0:
+            convert_button.set_enabled(True)
+        else:
+            convert_button.set_enabled(False)
 
     @Slot(MediaFile)
     def _on_snapshot_restored(self) -> None:
         self.sig_on_snapshot_restored.emit()
-        self.get_tool_button(self.name, WorkbenchItem.Convert).set_disabled(True)
+        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(False)
 
     # Debug methods
 
+    def _debug_print_values(self) -> None:
+        Snapshots.values()
+
     def _debug_print_metadata(self) -> None:
-        snapshots = self._snapshots.values()
+        snapshots = Snapshots.values()
         for snapshot in snapshots:
             for field, value in dataclasses.asdict(snapshot.metadata).items():
                 logger.debug(f"{field} - {value}")
@@ -465,12 +492,10 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     # Shortcut methods
 
     def _undo_button_connect(self) -> None:
-        self._snapshots.update_global_snapshot_index(-1)
-        self._snapshots.sync_global_to_inner()
+        Snapshots.update_global_snapshot_index(-1)
 
     def _redo_button_connect(self) -> None:
-        self._snapshots.update_global_snapshot_index(+1)
-        self._snapshots.sync_global_to_inner()
+        Snapshots.update_global_snapshot_index(+1)
 
     # Plugin event method
 
@@ -527,6 +552,15 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             description=translate("Print snapshots"),
             hidden=True
         )
+        shortcut.add_shortcut(
+            name="debug.print_values",
+            shortcut="Ctrl+L",
+            target=self._content_list,
+            triggered=self._debug_print_values,
+            title=translate("Print values"),
+            description=translate("Print values"),
+            hidden=True
+        )
 
     @on_plugin_available(plugin=SysPlugin.Preferences)
     def _on_preferences_available(self) -> None:
@@ -561,7 +595,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         """
         self.add_tool_button(
             scope=self.name,
-            name=WorkbenchItem.OpenFiles,
+            name=ToolBarItem.OpenFiles,
             text=translate("Open file"),
             tooltip=translate("Open file"),
             icon=self.get_svg_icon("icons/folder.svg"),
@@ -570,19 +604,19 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
         convert_tool_button = self.add_tool_button(
             scope=self.name,
-            name=WorkbenchItem.Convert,
+            name=ToolBarItem.Convert,
             text=translate("Convert"),
             tooltip=translate("Convert"),
             icon=self.get_svg_icon("icons/bolt.svg")
         )
-        convert_tool_button.set_disabled(True)
-        convert_tool_button.clicked.connect(self._start_converter_process_worker)
+        convert_tool_button.set_enabled(False)
+        convert_tool_button.clicked.connect(self._start_converter_worker)
 
         clear_tool_button = self.add_tool_button(
             scope=self.name,
-            name=WorkbenchItem.Clear,
+            name=ToolBarItem.Clear,
             text=translate("Clear"),
-            tooltip=translate("Clear"),
+            tooltip=translate("Click to clear list of files"),
             icon=self.get_svg_icon("icons/delete.svg")
         )
         clear_tool_button.set_enabled(False)
@@ -590,22 +624,22 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
         self.add_toolbar_item(
             toolbar=SysPlugin.MainToolBar,
-            name=WorkbenchItem.OpenFiles,
-            item=self.get_tool_button(self.name, WorkbenchItem.OpenFiles),
+            name=ToolBarItem.OpenFiles,
+            item=self.get_tool_button(self.name, ToolBarItem.OpenFiles),
         )
 
         self.add_toolbar_item(
             toolbar=SysPlugin.MainToolBar,
-            name=WorkbenchItem.Convert,
-            item=self.get_tool_button(self.name, WorkbenchItem.Convert),
-            after=WorkbenchItem.OpenFiles
+            name=ToolBarItem.Convert,
+            item=self.get_tool_button(self.name, ToolBarItem.Convert),
+            after=ToolBarItem.OpenFiles
         )
 
         self.add_toolbar_item(
             toolbar=SysPlugin.MainToolBar,
-            name=WorkbenchItem.Clear,
-            item=self.get_tool_button(self.name, WorkbenchItem.Clear),
-            after=WorkbenchItem.Convert
+            name=ToolBarItem.Clear,
+            item=self.get_tool_button(self.name, ToolBarItem.Clear),
+            after=ToolBarItem.Convert
         )
 
 

@@ -4,10 +4,10 @@ from PySide6.QtGui import QIcon
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget
 
+from pieapp.api.registries.menus.manager import Menus
 from pieapp.widgets.menus import PieMenu
 from pieapp.widgets.menus import PieMenuBar
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry, Scope
+from pieapp.api.registries.models import Scope
 
 
 class MenuAccessorMixin:
@@ -18,11 +18,11 @@ class MenuAccessorMixin:
         name: str = None
     ) -> PieMenuBar:
         menu_bar = PieMenuBar(parent)
-        return Registry(SysRegistry.Menus).add_menu_bar(name or Scope.Shared, menu_bar)
+        return Menus.add_menu_bar(name or Scope.Shared, menu_bar)
 
     @staticmethod
     def get_menu_bar(name: str) -> PieMenuBar:
-        return Registry(SysRegistry.Menus).get_menu_bar(name or Scope.Shared)
+        return Menus.get_menu_bar(name or Scope.Shared)
 
     @staticmethod
     def add_menu(
@@ -37,7 +37,7 @@ class MenuAccessorMixin:
             menu.menu_action().set_icon_visible_in_menu(True)
             menu.set_icon(icon)
 
-        return Registry(SysRegistry.Menus).add_menu(scope or Scope.Shared, name, menu)
+        return Menus.add_menu(scope or Scope.Shared, name, menu)
 
     @staticmethod
     def add_menu_item(
@@ -51,14 +51,14 @@ class MenuAccessorMixin:
         after: str = None,
         index: Union[int] = None
     ) -> QAction:
-        menu_instance: PieMenu = Registry(SysRegistry.Menus).get_menu(scope, menu)
+        menu_instance: PieMenu = Menus.get_menu(scope, menu)
         menu_instance.add_menu_item(name, text, triggered, icon, before, after, index)
-        return Registry(SysRegistry.Menus).add_menu_item(scope or Scope.Shared, menu, name, menu_instance)
+        return Menus.add_menu_item(scope or Scope.Shared, menu, name, menu_instance)
 
     @staticmethod
     def get_menu(scope: str, name: str) -> PieMenu:
-        return Registry(SysRegistry.Menus).get_menu(scope or Scope.Shared, name)
+        return Menus.get_menu(scope or Scope.Shared, name)
 
     @staticmethod
     def get_menu_item(scope: str, menu: str, name: str) -> QAction:
-        return Registry(SysRegistry.Menus).get_menu_item(scope, menu, name)
+        return Menus.get_menu_item(scope, menu, name)

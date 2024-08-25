@@ -87,17 +87,17 @@ USE_EXCEPTION_HOOK = os.getenv("PIE_USE_EXCEPTION_HOOK", True)
 
 # Managers startup configuration
 CORE_MANAGERS = [
-    "pieapp.api.registries.configs.manager.ConfigRegistry",
-    "pieapp.api.registries.locales.manager.LocaleRegistry",
-    "pieapp.api.registries.themes.manager.ThemeRegistry",
-    "pieapp.api.registries.snapshots.manager.SnapshotRegistry"
+    "pieapp.api.registries.configs.manager.Configs",
+    "pieapp.api.registries.locales.manager.Locales",
+    "pieapp.api.registries.themes.manager.Themes",
+    "pieapp.api.registries.snapshots.manager.Snapshots"
 ]
 
 LAYOUT_MANAGERS = [
-    "pieapp.api.registries.layouts.manager.LayoutRegistry",
-    "pieapp.api.registries.menus.manager.MenuRegistry",
-    "pieapp.api.registries.toolbars.manager.ToolBarRegistry",
-    "pieapp.api.registries.toolbuttons.manager.ToolButtonRegistry",
-    "pieapp.api.registries.shortcuts.manager.ShortcutRegistry",
-    "pieapp.api.registries.confpages.manager.ConfPageRegistry",
+    "pieapp.api.registries.layouts.manager.Layouts",
+    "pieapp.api.registries.menus.manager.Menus",
+    "pieapp.api.registries.toolbars.manager.ToolBars",
+    "pieapp.api.registries.toolbuttons.manager.ToolButtons",
+    "pieapp.api.registries.shortcuts.manager.Shortcuts",
+    "pieapp.api.registries.confpages.manager.ConfigPages",
 ]

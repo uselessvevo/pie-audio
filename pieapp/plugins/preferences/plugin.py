@@ -11,9 +11,8 @@ from PySide6.QtWidgets import QTreeWidget
 from PySide6.QtWidgets import QDialogButtonBox
 
 from pieapp.api.exceptions import PieException
-from pieapp.api.registries.base import BaseRegistry
+from pieapp.api.registries.confpages.manager import ConfigPages
 from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.registry import Registry
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.menus import MainMenu
 from pieapp.api.models.menus import MainMenuItem
@@ -24,7 +23,7 @@ from pieapp.api.plugins.mixins import CoreAccessorsMixin
 from pieapp.api.plugins.mixins import LayoutAccessorsMixins
 
 from pieapp.api.plugins.plugins import PiePlugin
-from pieapp.api.registries.models import Scope, SysRegistry
+from pieapp.api.registries.models import Scope
 from pieapp.api.plugins.decorators import on_plugin_available
 from pieapp.utils.logger import logger
 
@@ -46,7 +45,6 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         # Define registry
         self._tree_item_index: int = 0
         self._tree_items: dict[str, ConfigPageTreeWidgetItem] = {}
-        self._registry: BaseRegistry = Registry(SysRegistry.ConfigPages)
 
         # Main window dialog
         self._dialog = QDialog(self._parent)
@@ -130,7 +128,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         plugin_config_page = getattr(plugin, "get_config_page")
         if plugin_config_page and callable(plugin_config_page):
             config_page: ConfigPage = plugin_config_page()
-            self._registry.add(plugin.name, config_page)
+            ConfigPages.add(plugin.name, config_page)
 
             config_page.sig_toggle_apply_button.connect(
                 lambda: self._toggle_apply_button(config_page._is_modified)
@@ -173,9 +171,9 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._tree_widget.add_top_level_item(new_tree_item)
 
     def deregister_config_page(self, plugin: PiePlugin) -> None:
-        if plugin.name in self._registry:
-            self._registry.remove(plugin.name)
-            for index, tree_item in enumerate(self._registry.items()):
+        if plugin.name in ConfigPages:
+            ConfigPages.remove(plugin.name)
+            for index, tree_item in enumerate(ConfigPages.items()):
                 if tree_item.confpage.name == plugin.name:
                     self._tree_widget.remove_item_widget(tree_item, index)
 
@@ -204,7 +202,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._current_widget.set_visible(True)
 
     def _on_pages_accept(self) -> None:
-        pages = self._registry.values()
+        pages = ConfigPages.values()
         for page in pages:
             try:
                 page.accept()
@@ -215,7 +213,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
     def _on_pages_cancel(self) -> None:
         # TODO: Add changes tracker subscription
-        pages = self._registry.values()
+        pages = ConfigPages.values()
         for page in pages:
             try:
                 page.cancel()
@@ -225,7 +223,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         self._dialog.accept()
 
     def _on_pages_apply(self) -> None:
-        pages = self._registry.values()
+        pages = ConfigPages.values()
         for page in pages:
             try:
                 page.accept()

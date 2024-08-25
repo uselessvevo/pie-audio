@@ -86,13 +86,15 @@ class MediaFile:
     output_path: Path
     info: Optional[FileInfo] = None
     metadata: Optional[Metadata] = None
+    is_origin: Optional[bool] = dt.field(default=False)
 
 
-def update_media_file(media_file: MediaFile, field_path: str, value: Any) -> MediaFile:
+def update_media_file(media_file: MediaFile, field_path: str, value: Any, is_origin: bool = False) -> MediaFile:
     path, _, target = field_path.rpartition(".")
     for attrname in path.split("."):
         base = getattr(media_file, attrname)
         setattr(base, target, value)
 
+    media_file.is_origin = is_origin
     media_file.uuid = str(uuid.uuid4())
     return media_file

@@ -60,6 +60,3 @@ class Scope:
     
     # Shared access scope
     Shared = "shared"
-
-
-AllPlugins = "__ALL__"

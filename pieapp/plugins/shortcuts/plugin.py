@@ -3,6 +3,7 @@ from typing import Union
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QShortcut, QKeySequence
 
+from pieapp.api.registries.shortcuts.manager import Shortcuts
 from pieapp.utils.logger import logger
 from pieapp.api.exceptions import PieException
 
@@ -15,8 +16,6 @@ from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
 from pieapp.api.plugins.decorators import on_plugin_shutdown
 
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 
@@ -36,7 +35,6 @@ class ShortcutManager(PiePlugin, ThemeAccessorMixin):
 
     def init(self) -> None:
         # TODO: Add shortcuts manifest file
-        self._shortcut_registry = Registry(SysRegistry.Shortcuts)
         self._config_page_class = ShortcutBlankConfigPage
 
     def on_plugins_ready(self) -> None:
@@ -78,26 +76,26 @@ class ShortcutManager(PiePlugin, ThemeAccessorMixin):
         hidden: bool = False
     ) -> None:
         name = f"{self.__class__.__name__}.{name}"
-        if self._shortcut_registry.contains(name):
+        if Shortcuts.contains(name):
             raise PieException(f"Shortcut \"{name}/{shortcut}\" is already registered")
 
         shortcut_instance = QShortcut(QKeySequence(shortcut), target)
         shortcut_instance.activated.connect(triggered)
         setattr(self, name, shortcut_instance)
         target_name: str = getattr(target, "name", target.__class__.__name__)
-        self._shortcut_registry.add(name, shortcut_instance, target_name, title, shortcut, description, hidden)
+        Shortcuts.add(name, shortcut_instance, target_name, title, shortcut, description, hidden)
         logger.debug(f"Shortcut {shortcut} was added in {target!s}")
 
     def remove_shortcut(self, shortcut_name: str) -> None:
         key_path = f"{self.__class__.__name__}.{shortcut_name}"
         delattr(self, key_path)
-        self._shortcut_registry.delete_shortcut()
+        Shortcuts.delete_shortcut()
 
     def get_shortcuts(self) -> list[ShortcutDict]:
-        return self._shortcut_registry.values()
+        return Shortcuts.values()
 
     def contains_shortcut(self, name: str) -> bool:
-        return self._shortcut_registry.contains(name)
+        return Shortcuts.contains(name)
 
 
 def main(parent: "QMainWindow", plugin_path: "Path"):

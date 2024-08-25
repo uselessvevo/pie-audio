@@ -8,13 +8,11 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QGridLayout
-from PySide6.QtWidgets import QStyledItemDelegate
 
-from pieapp.api.registries.registry import Registry
 from pieapp.api.registries.models import Scope
-from pieapp.api.registries.models import SysRegistry
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
+from pieapp.api.registries.shortcuts.manager import Shortcuts
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 
 from pieapp.api.plugins import ConfigPage
@@ -61,9 +59,6 @@ class ShortcutConfigPage(
         return self._main_widget
 
     def init(self) -> None:
-        # Registry reference
-        self._registry = Registry(SysRegistry.Shortcuts)
-
         self._main_widget = QWidget()
         self._main_widget.set_object_name("ConfigPageWidget")
         grid_layout = QGridLayout()
@@ -83,7 +78,7 @@ class ShortcutConfigPage(
         table_widget.set_item(0, 1, QTableWidgetItem(translate(translate("Description"))))
         table_widget.set_item(0, 2, QTableWidgetItem(translate(translate("Shortcut key"))))
 
-        registry_values = list(filter(lambda v: v["hidden"] is False, self._registry.values()))
+        registry_values = list(filter(lambda v: v["hidden"] is False, Shortcuts.values()))
         for row, data in enumerate(registry_values, 1):
             table_widget.set_item(row, 0, QTableWidgetItem(data["title"]))
             table_widget.set_item(row, 1, QTableWidgetItem(data["description"]))

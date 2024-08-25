@@ -189,3 +189,6 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
     getTheme = get_theme
     getThemes = get_themes
     getProperty = get_theme_property
+
+
+Themes = ThemeRegistry()

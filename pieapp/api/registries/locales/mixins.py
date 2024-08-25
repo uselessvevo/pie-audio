@@ -1,7 +1,7 @@
 from typing import Any, Union
 
-from pieapp.api.registries.registry import Registry
-from pieapp.api.registries.models import SysRegistry, Scope
+from pieapp.api.registries.locales.manager import Locales
+from pieapp.api.registries.models import Scope
 
 
 class LocalesAccessorMixin:
@@ -14,4 +14,4 @@ class LocalesAccessorMixin:
         key: Any,
         scope: Union[str, Scope] = Scope.Shared
     ) -> Any:
-        return Registry(SysRegistry.Locales).get(scope or self.scope, key)
+        return Locales.get(scope or self.scope, key)

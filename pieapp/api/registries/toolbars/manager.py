@@ -79,3 +79,6 @@ class ToolBarRegistry(BaseRegistry):
         *names: Union[str, Scope],
     ) -> list[PieToolBar]:
         return [self.get_toolbar(n) for n in names]
+
+
+ToolBars = ToolBarRegistry()

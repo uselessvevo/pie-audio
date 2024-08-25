@@ -88,3 +88,6 @@ class MenuRegistry(BaseRegistry):
             raise PieException(f"MenuItem {scope}.{name} not found")
 
         return self._items[scope][name]
+
+
+Menus = MenuRegistry()

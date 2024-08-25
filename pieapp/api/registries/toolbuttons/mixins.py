@@ -6,8 +6,7 @@ from PySide6.QtWidgets import QToolButton
 
 from pieapp.api.gloader import Global
 from pieapp.api.registries.models import Scope
-from pieapp.api.registries.models import SysRegistry
-from pieapp.api.registries.registry import Registry
+from pieapp.api.registries.toolbuttons.manager import ToolButtons
 from pieapp.widgets.toolbutton import create_tool_button
 
 
@@ -30,10 +29,10 @@ class ToolButtonAccessorMixin:
             icon=icon, triggered=triggered, only_icon=only_icon,
             icon_size=Global.TOOL_BUTTON_ICON_SIZE, object_name=object_name
         )
-        return Registry(SysRegistry.ToolButton).add_tool_button(scope or Scope.Shared, name, tool_button)
+        return ToolButtons.add_tool_button(scope or Scope.Shared, name, tool_button)
 
     def get_tool_buttons(self, scope: str, *names: str) -> list[QObject]:
-        return Registry(SysRegistry.ToolButton).get_tool_buttons(scope, *names)
+        return ToolButtons.get_tool_buttons(scope, *names)
 
     def get_tool_button(self, scope: str, name: str) -> QToolButton:
-        return Registry(SysRegistry.ToolButton).get_tool_button(scope or Scope.Shared, name)
+        return ToolButtons.get_tool_button(scope or Scope.Shared, name)

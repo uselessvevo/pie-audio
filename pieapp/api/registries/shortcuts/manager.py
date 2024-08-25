@@ -57,3 +57,6 @@ class ShortcutRegistry(BaseRegistry):
 
     def values(self, *args, **kwargs) -> list[ShortcutDict]:
         return list(self._shortcuts.values())
+
+
+Shortcuts = ShortcutRegistry()

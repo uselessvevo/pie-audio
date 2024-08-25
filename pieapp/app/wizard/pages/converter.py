@@ -77,16 +77,16 @@ class ConverterWizardPage(
 
     def _start_downloader_thread(self) -> None:
         self.wizard().button(QtWidgets.QWizard.WizardButton.BackButton).set_enabled(False)
-        self._line_edit.set_disabled(True)
-        self._download_button.set_disabled(True)
+        self._line_edit.set_enabled(False)
+        self._download_button.set_enabled(False)
         self._download_thread.start(QThread.Priority.HighPriority)
 
     @Slot(int)
     def _show_downloader_progress(self, progress: int) -> None:
         self._progress_bar.set_value(progress)
         if round(progress, 0) >= 100:
-            self._line_edit.set_disabled(False)
-            self._download_button.set_disabled(False)
+            self._line_edit.set_enabled(True)
+            self._download_button.set_enabled(True)
             self._progress_bar.set_value(0)
 
     @Slot(str)

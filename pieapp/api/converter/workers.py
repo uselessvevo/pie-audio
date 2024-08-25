@@ -229,8 +229,11 @@ class ConverterWorker(QRunnable):
 
     def __init__(self, media_files: list[MediaFile], ffmpeg_command: Path) -> None:
         super(ConverterWorker, self).__init__()
+        # Chunk of MediaFile models
         self._media_files = media_files
+        # Binary path
         self._ffmpeg_command = ffmpeg_command
+        # Structure of signals
         self._signals = ConverterProcessSignals()
 
     @property

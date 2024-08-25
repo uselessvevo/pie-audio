@@ -89,3 +89,6 @@ class ConfigRegistry(BaseRegistry):
         logger.debug(f"Saving config file {config_file!s}")
         logger.debug(update_configuration_data)
         write_json(config_file, update_configuration_data, create)
+
+
+Configs = ConfigRegistry()

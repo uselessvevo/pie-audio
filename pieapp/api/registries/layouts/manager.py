@@ -35,3 +35,6 @@ class LayoutRegistry(BaseRegistry):
             raise PieException(f"Layout \"{name}\" not found")
 
         del self._layouts[name]
+
+
+Layouts = LayoutRegistry()

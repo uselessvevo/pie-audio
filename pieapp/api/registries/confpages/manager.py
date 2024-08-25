@@ -43,3 +43,6 @@ class ConfPageRegistry(BaseRegistry):
             raise PieException(f"ConfigPage \"{name}\" not found")
 
         del self._config_pages[name]
+
+
+ConfigPages = ConfPageRegistry()
