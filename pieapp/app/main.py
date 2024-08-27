@@ -1,8 +1,7 @@
-from pathlib import Path
-
 from __feature__ import snake_case
 
 import os
+from pathlib import Path
 
 from PySide6.QtCore import QSettings, Signal
 from PySide6.QtWidgets import QMainWindow, QApplication
@@ -88,6 +87,7 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
             message_box.exec()
             if message_box.is_checked():
                 self.update_config("ui.show_exit_dialog", Scope.User, False, True)
+                self.sig_on_main_window_close.emit()
 
             if message_box.clicked_button() == message_box.no_button:
                 return False

@@ -168,7 +168,7 @@ class PluginRegistry(QObject):
                 plugin_module = import_by_path(str(plugin_path / "plugin.py"))
 
                 # Initializing plugin instance
-                plugin_instance: PiePlugin = getattr(plugin_module, "main")(self._main_window, plugin_path)
+                plugin_instance = getattr(plugin_module, "main")(self._main_window, plugin_path)
                 if plugin_instance:
                     self._initialize_plugin(plugin_instance)
 
@@ -188,7 +188,6 @@ class PluginRegistry(QObject):
         # Hashing PiePlugin instance
         self._plugin_registry[plugin_instance.name] = plugin_instance
         self._plugin_type_registry[plugin_instance.type].add(plugin_instance.name)
-        self._connect_plugin_with_main_window(plugin_instance)
 
         self.sig_plugins_ready.connect(plugin_instance.sig_plugins_ready)
         self._main_window.sig_on_main_window_show.connect(plugin_instance.sig_on_main_window_show)
@@ -314,7 +313,7 @@ class PluginRegistry(QObject):
         for plugin in required_plugins + optional_plugins:
             if plugin in self._plugin_registry:
                 if self._plugin_availability.get(plugin, False):
-                    plugin_instance: PiePlugin = self._plugin_registry[plugin]
+                    plugin_instance = self._plugin_registry[plugin]
                     logger.debug(
                         f"Notifying {plugin_instance.type.value.capitalize()} "
                         f"that {plugin_name} is going to be turned off"
@@ -323,7 +322,7 @@ class PluginRegistry(QObject):
 
     def _shutdown_plugin(self, plugin_name: str):
         """ Shutdown a plugin from its dependencies """
-        plugin_instance: PiePlugin = self._plugin_registry[plugin_name]
+        plugin_instance = self._plugin_registry[plugin_name]
         plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
         required_plugins = plugin_dependencies.get("requires", [])
         optional_plugins = plugin_dependencies.get("optional", [])
