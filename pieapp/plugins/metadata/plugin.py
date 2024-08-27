@@ -25,7 +25,7 @@ from pieapp.widgets.tables import MediaTableItemValue
 from pieapp.api.models.indexes import Index
 from pieapp.api.converter.models import MediaFile, update_media_file
 from pieapp.api.models.plugins import SysPlugin
-from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.themes import ThemeProperties, IconName
 
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
@@ -46,7 +46,7 @@ class MetadataEditor(
     file_formats = ["mp3", "mp4", "wav", "m4a", "wma", "asf"]
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", scope=self.name)
+        return self.get_svg_icon(IconName.App, scope=self.name)
 
     def _close_event(self, _, local_snapshot_name: str) -> None:
         self._save_button.set_enabled(False)
@@ -85,7 +85,7 @@ class MetadataEditor(
             name="save",
             text=translate("Save"),
             tooltip=translate("Save"),
-            icon=self.get_svg_icon("icons/save.svg")
+            icon=self.get_svg_icon(IconName.Save)
         )
         self._save_button.set_enabled(False)
 
@@ -94,7 +94,7 @@ class MetadataEditor(
             name="undo",
             text=translate("Undo"),
             tooltip=translate("Undo"),
-            icon=self.get_svg_icon("icons/undo.svg")
+            icon=self.get_svg_icon(IconName.Undo)
         )
         self._undo_button.set_enabled(False)
 
@@ -103,7 +103,7 @@ class MetadataEditor(
             name="redo",
             text=translate("Redo"),
             tooltip=translate("Redo"),
-            icon=self.get_svg_icon("icons/redo.svg")
+            icon=self.get_svg_icon(IconName.Redo)
         )
         self._redo_button.set_enabled(False)
 

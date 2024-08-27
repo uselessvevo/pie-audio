@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QGridLayout
 
 from pieapp.api.gloader import Global
-from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.themes import ThemeProperties, IconName
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.models.menus import MainMenu
 from pieapp.api.models.plugins import SysPlugin
@@ -29,7 +29,7 @@ class About(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
 
     def get_plugin_icon(self) -> "QIcon":
         return self.get_svg_icon(
-            key="icons/app.svg",
+            key=IconName.App,
             scope=self.name,
             prop=ThemeProperties.AppIconColor
         )
@@ -46,7 +46,7 @@ class About(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
         ok_button.clicked.connect(self._dialog.close)
 
         pixmap = QPixmap()
-        pixmap.load(self.get_file_path("icons/app.svg"))
+        pixmap.load(self.get_file_path(IconName.App))
 
         icon_label = QLabel()
         icon_label.set_pixmap(pixmap)
@@ -78,7 +78,7 @@ class About(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
             name="about",
             text=translate("About"),
             triggered=self.call,
-            icon=self.get_svg_icon("icons/info.svg"),
+            icon=self.get_svg_icon(IconName.Info),
         )
 
 

@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QWidget, QFormLayout
 
 from pieapp.api.gloader import Global
 from pieapp.api.models.plugins import SysPlugin
+from pieapp.api.models.themes import IconName
 from pieapp.api.registries.models import Scope
 from pieapp.api.plugins.confpage import ConfigPage
 from pieapp.api.registries.locales.helpers import translate
@@ -21,7 +22,7 @@ class AppearanceConfigPage(
     scope = Scope.Root
 
     def get_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", scope=self.name)
+        return self.get_svg_icon(IconName.App, scope=self.name)
 
     def get_title(self) -> str:
         return translate("Appearance")

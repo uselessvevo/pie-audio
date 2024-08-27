@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QGridLayout
 
+from pieapp.api.models.themes import IconName
 from pieapp.api.models.toolbar import ToolBarItem
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.models.plugins import SysPlugin
@@ -28,7 +29,7 @@ class History(PiePlugin, ThemeAccessorMixin, ToolButtonAccessorMixin):
             name=ToolBarItem.History,
             text=translate("History"),
             tooltip=translate("Show files history"),
-            icon=self.get_svg_icon("icons/delete.svg")
+            icon=self.get_svg_icon(IconName.Delete)
         )
         history_tool_button.set_enabled(False)
         history_tool_button.clicked.connect(self._show_files_history_dialog)

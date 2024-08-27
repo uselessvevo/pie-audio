@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QTreeWidget
 from PySide6.QtWidgets import QDialogButtonBox
 
 from pieapp.api.exceptions import PieException
+from pieapp.api.models.themes import IconName
 from pieapp.api.registries.confpages.manager import ConfigPages
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.models.plugins import SysPlugin
@@ -39,7 +40,7 @@ class Preferences(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     requires = [SysPlugin.MainMenuBar]
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", scope=self.name)
+        return self.get_svg_icon(IconName.App, scope=self.name)
 
     def init(self) -> None:
         # Define registry

@@ -28,9 +28,10 @@ from pieapp.api.plugins.mixins import CoreAccessorsMixin
 from pieapp.api.plugins.mixins import LayoutAccessorsMixins
 
 from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.models import Scope, SysRegistry
+from pieapp.api.registries.models import Scope
 from pieapp.api.models.layouts import Layout
 from pieapp.api.converter.models import MediaFile
+from pieapp.api.converter.constants import AUDIO_EXTENSIONS
 
 from pieapp.api.models.indexes import Index
 from pieapp.api.models.menus import MainMenu
@@ -38,7 +39,7 @@ from pieapp.api.models.menus import MainMenuItem
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.toolbar import ToolBarItem
 from pieapp.api.models.statusbar import MessageStatus
-from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.themes import ThemeProperties, IconName
 
 from pieapp.utils.logger import logger
 from pieapp.widgets.waitingspinner import create_wait_spinner
@@ -77,14 +78,39 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     sig_on_snapshot_restored = Signal()
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg")
+        return self.get_svg_icon(IconName.App)
 
     @staticmethod
     def get_config_page() -> ConverterConfigPage:
         return ConverterConfigPage()
 
+    def on_main_window_show(self) -> None:
+        last_opened_folder = self.get_config("folders.last_opened_folder", Scope.User, os.path.expanduser("~"))
+        self.update_config(
+            "workflow.last_opened_folder",
+            Scope.User,
+            last_opened_folder,
+            temp=True
+        )
+
+    def on_main_window_close(self) -> None:
+        last_opened_folder = self.get_config("workflow.last_opened_folder", Scope.User)
+        last_opened_folder = Path(last_opened_folder).parent
+        last_opened_folder = str(last_opened_folder)
+        self.update_config(
+            "folders.last_opened_folder",
+            Scope.User,
+            last_opened_folder,
+            save=True
+        )
+
     def init(self) -> None:
         # Get configurations
+        self._supported_formats = ""
+        for audio_extension in AUDIO_EXTENSIONS:
+            self._supported_formats += f"*.{audio_extension};"
+        self._supported_formats = f"{translate('Supported audio formats')} - ({self._supported_formats})"
+
         self._temp_directory = Path(self.get_config("workflow.temp_directory", Scope.User))
         self._output_directory = Path(self.get_config("workflow.output_directory", Scope.User))
         self._chunk_size = self.get_config("ffmpeg.chunk_size", Scope.User, 10)
@@ -197,7 +223,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             widget.add_quick_action(
                 name="delete",
                 text=translate("Delete"),
-                icon=self.get_svg_icon("icons/delete.svg", self.get_theme_property(ThemeProperties.ErrorColor)),
+                icon=self.get_svg_icon(IconName.Delete, prop=ThemeProperties.ErrorColor),
                 callback=self._delete_tool_button_connect,
                 enabled=True
             )
@@ -287,15 +313,24 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
     # Public methods
 
     def open_files(self) -> None:
+        last_opened_folder = self.get_config(
+            "workflow.last_opened_folder",
+            Scope.User,
+            os.path.expanduser("~")
+        )
+        last_opened_folder = str(last_opened_folder)
         selected_files = QFileDialog.get_open_file_names(
             caption=translate("Open files"),
-            dir=os.path.expanduser("~")
+            dir=last_opened_folder,
+            filter=self._supported_formats
         )
         selected_files = selected_files[0]
         if not selected_files:
             return
 
         selected_files = list(map(Path, selected_files))
+        last_opened_folder = selected_files[0]
+        self.update_config("workflow.last_opened_folder", Scope.User, last_opened_folder, temp=True)
 
         copy_files_worker = CopyFilesWorker(selected_files, self._temp_directory)
         copy_files_worker.signals.failed.connect(self._copy_files_worker_failed)
@@ -504,7 +539,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         layout_manager = get_plugin(SysPlugin.Layout)
         main_layout = layout_manager.get_layout(Layout.Main)
         if main_layout:
-            layout_manager.add_layout(self.name, main_layout, self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
+            layout_manager.add_layout(self.name, main_layout,
+                                      self._list_grid_layout, 0, 0, Qt.AlignmentFlag.AlignVCenter)
 
     @on_plugin_available(plugin=SysPlugin.Shortcut)
     def _on_shortcut_manager_available(self) -> None:
@@ -583,7 +619,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             menu=MainMenu.File,
             name=MainMenuItem.OpenFiles,
             text=translate("Open file"),
-            icon=self.get_svg_icon("icons/folder-open.svg"),
+            icon=self.get_svg_icon(IconName.FolderOpen),
             index=Index.Start,
             triggered=self.open_files
         )
@@ -598,7 +634,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             name=ToolBarItem.OpenFiles,
             text=translate("Open file"),
             tooltip=translate("Open file"),
-            icon=self.get_svg_icon("icons/folder.svg"),
+            icon=self.get_svg_icon(IconName.Folder),
             triggered=self.open_files
         )
 
@@ -607,7 +643,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             name=ToolBarItem.Convert,
             text=translate("Convert"),
             tooltip=translate("Convert"),
-            icon=self.get_svg_icon("icons/bolt.svg")
+            icon=self.get_svg_icon(IconName.Bolt)
         )
         convert_tool_button.set_enabled(False)
         convert_tool_button.clicked.connect(self._start_converter_worker)
@@ -617,7 +653,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
             name=ToolBarItem.Clear,
             text=translate("Clear"),
             tooltip=translate("Click to clear list of files"),
-            icon=self.get_svg_icon("icons/delete.svg")
+            icon=self.get_svg_icon(IconName.Delete)
         )
         clear_tool_button.set_enabled(False)
         clear_tool_button.clicked.connect(self._clear_content_list)

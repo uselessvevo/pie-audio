@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QGridLayout
 
+from pieapp.api.models.themes import IconName
 from pieapp.api.registries.models import Scope
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
@@ -25,7 +26,7 @@ class ShortcutBlankConfigPage(ConfigPage, ThemeAccessorMixin):
     scope = Scope.Root
 
     def get_icon(self) -> Union[QIcon, None]:
-        return self.get_svg_icon("icons/hourglass.svg")
+        return self.get_svg_icon(IconName.Hourglass)
 
     def get_title(self) -> str:
         return f'{translate("Shortcuts")} ({translate("Loading")}...)'
@@ -50,7 +51,7 @@ class ShortcutConfigPage(
     scope = Scope.Root
 
     def get_icon(self) -> QIcon:
-        return self.get_svg_icon("icons/keyboard.svg")
+        return self.get_svg_icon(IconName.Keyboard)
 
     def get_title(self) -> str:
         return translate("Shortcuts")

@@ -19,7 +19,7 @@ from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QFormLayout
 
 from pieapp.api.models.plugins import SysPlugin
-from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.themes import ThemeProperties, IconName
 from pieapp.api.plugins.confpage import ConfigPage
 from pieapp.api.converter.workers import DownloadWorker
 
@@ -34,7 +34,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
     name = SysPlugin.Converter
 
     def get_icon(self) -> "QIcon":
-        return self.get_svg_icon("icons/app.svg", scope=self.name)
+        return self.get_svg_icon(IconName.App, scope=self.name)
 
     def get_title(self) -> str:
         return translate("Converter")
@@ -61,7 +61,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
         self._download_worker.destroyed.connect(self._download_worker.destroyed)
 
         self.line_edit_action = QAction()
-        self.line_edit_action.set_icon(self.get_svg_icon("icons/folder-open.svg", prop=ThemeProperties.AppIconColor))
+        self.line_edit_action.set_icon(self.get_svg_icon(IconName.FolderOpen, prop=ThemeProperties.AppIconColor))
         # self.line_edit_action.set_icon(self._main_widget.style().standard_icon(QStyle.StandardPixmap.SP_DirIcon))
         self.line_edit_action.triggered.connect(self._select_ffmpeg_root_path)
 
@@ -81,7 +81,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
         self._download_button = Button()
         self._download_button.set_tool_tip(translate("Press me to download newest ffmpeg release"))
         self._download_button.set_maximum_width(self.get_theme_property("downloadButtonSize", 10))
-        self._download_button.set_icon(self.get_svg_icon("icons/download.svg"))
+        self._download_button.set_icon(self.get_svg_icon(IconName.Download))
         self._download_button.clicked.connect(self._start_downloader_thread)
 
         self._progress_bar = QProgressBar()

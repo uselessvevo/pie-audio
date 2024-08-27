@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QGridLayout
 
-from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.themes import ThemeProperties, IconName
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
@@ -24,14 +24,14 @@ class SubmitConvertDialog(QDialog, ConfigAccessorMixin, ThemeAccessorMixin):
         super().__init__()
         self.set_modal(True)
         self.set_window_title(translate("Start converter"))
-        self.set_window_icon(self.get_svg_icon("icons/bolt.svg", ThemeProperties.AppIconColor))
+        self.set_window_icon(self.get_svg_icon(IconName.Bolt, ThemeProperties.AppIconColor))
 
         line_edit_action = QAction()
         line_edit_action.set_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DirIcon))
         # line_edit_action.triggered.connect(self.select_ffmpeg_root_path)
 
         file_path_button = Button()
-        file_path_button.set_icon(self.get_svg_icon("icons/folder.svg", prop=ThemeProperties.AppIconColor))
+        file_path_button.set_icon(self.get_svg_icon(IconName.Folder, prop=ThemeProperties.AppIconColor))
         file_path_button.set_icon_size(QSize(27, 27))
         # start_converter_button.clicked.connect(self._start_downloader_thread)
 

@@ -8,7 +8,7 @@ from pieapp.utils.logger import logger
 from pieapp.api.exceptions import PieException
 
 from pieapp.api.models.plugins import SysPlugin
-from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.themes import ThemeProperties, IconName
 from pieapp.api.models.shortcuts import ShortcutDict
 
 from pieapp.api.plugins import PiePlugin
@@ -45,7 +45,7 @@ class ShortcutManager(PiePlugin, ThemeAccessorMixin):
 
     def get_plugin_icon(self) -> "QIcon":
         return self.get_svg_icon(
-            key="icons/app.svg",
+            key=IconName.App,
             scope=self.name,
             prop=ThemeProperties.AppIconColor
         )

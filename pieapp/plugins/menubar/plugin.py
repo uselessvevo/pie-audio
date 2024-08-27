@@ -1,6 +1,7 @@
 from __feature__ import snake_case
 
 from pieapp.api.models.plugins import SysPlugin
+from pieapp.api.models.themes import IconName
 from pieapp.api.registries.models import Scope
 
 from pieapp.api.models.indexes import Index
@@ -37,7 +38,7 @@ class MainMenuBar(PiePlugin, ThemeAccessorMixin, MenuAccessorMixin, ConfigAccess
             menu=MainMenu.File,
             name=MainMenuItem.Exit,
             text=translate("Exit"),
-            icon=self.get_svg_icon("icons/logout.svg"),
+            icon=self.get_svg_icon(IconName.Logout),
             triggered=self._parent.close,
             index=Index.End
         )
