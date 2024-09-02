@@ -70,7 +70,7 @@ LOCALES_FOLDER = "locales"
 
 # Main information
 PIEAPP_APPLICATION_NAME = "pie-audio"
-PIEAPP_VERSION = "1.0.2"
+PIEAPP_VERSION = "1.0.3"
 PIEAPP_VERSION_STAGE = "alpha"
 PIEAPP_ORGANIZATION_NAME = "CrabDevs"
 PIEAPP_ORGANIZATION_DOMAIN = "com.crabdevs.pieaudio"

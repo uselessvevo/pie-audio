@@ -9,7 +9,6 @@ from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
-
 from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 
 

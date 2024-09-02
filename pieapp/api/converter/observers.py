@@ -82,7 +82,7 @@ class FileSystemWatcher(QObject):
         try:
             self.observer.start()
         except Exception as e:
-            raise PieException(f'{translate("Can't start an observer in")} - {folder}', str(e))
+            raise PieException(f'{translate("Cant start an observer in")} - {folder}', str(e))
 
     def stop(self) -> None:
         if self.observer is not None:

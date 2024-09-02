@@ -25,7 +25,6 @@ class LayoutManager(PiePlugin):
         main_layout = QGridLayout()
         main_layout.set_spacing(0)
         main_layout.set_contents_margins(0, 0, 0, 0)
-        main_layout.set_alignment(Qt.AlignmentFlag.AlignHCenter)
         main_window = get_main_window()
         main_window.set_layout(main_layout)
 

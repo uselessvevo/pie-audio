@@ -95,7 +95,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
 
     def on_main_window_close(self) -> None:
         last_opened_folder = self.get_config("workflow.last_opened_folder", Scope.User)
-        last_opened_folder = Path(last_opened_folder).parent
+        last_opened_folder = Path(last_opened_folder).root
         last_opened_folder = str(last_opened_folder)
         self.update_config(
             "folders.last_opened_folder",
@@ -148,7 +148,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         )
 
         self._pixmap_label = QLabel()
-        self._pixmap_label.set_pixmap(self.get_icon("icons/package.svg", scope=self.name).pixmap(100))
+        self._pixmap_label.set_pixmap(self.get_icon(IconName.Package, scope=self.name).pixmap(100))
         self._pixmap_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
         self._text_label = QLabel()
@@ -260,10 +260,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         Show placeholder
         """
         if not self._list_grid_layout.find_child(self._pixmap_label.__class__, self._pixmap_label.object_name()):
-            self._list_grid_layout.add_widget(self._pixmap_label, 0, 0, alignment=Qt.AlignmentFlag.AlignVCenter)
-
-        if not self._list_grid_layout.find_child(self._text_label.__class__, self._text_label.object_name()):
-            self._list_grid_layout.add_widget(self._text_label, 1, 0, alignment=Qt.AlignmentFlag.AlignVCenter)
+            self._list_grid_layout.add_widget(self._pixmap_label, 0, 0, alignment=Qt.AlignmentFlag.AlignTop)
+            self._list_grid_layout.add_widget(self._text_label, 1, 0, alignment=Qt.AlignmentFlag.AlignTop)
 
     def _clear_placeholder(self) -> None:
         """
@@ -540,7 +538,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, LayoutAccessorsMixins):
         main_layout = layout_manager.get_layout(Layout.Main)
         if main_layout:
             layout_manager.add_layout(self.name, main_layout,
-                                      self._list_grid_layout, 0, 0, Qt.AlignmentFlag.AlignVCenter)
+                                      self._list_grid_layout, 1, 0, Qt.AlignmentFlag.AlignTop)
 
     @on_plugin_available(plugin=SysPlugin.Shortcut)
     def _on_shortcut_manager_available(self) -> None:
