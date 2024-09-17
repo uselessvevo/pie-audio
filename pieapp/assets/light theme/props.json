@@ -1,5 +1,6 @@
 {
-    "fontName": "GoogleSans.ttf",
+    "fontName": "system-ui",
+    "fontSize": "9pt",
     "fontColor": "#ffffff",
     "secondaryFontColor": "#000000",
 
