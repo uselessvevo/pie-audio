@@ -3,7 +3,7 @@ name = "pie-audio"
 version = "0.1.0"
 description = "A simple audio editor"
 authors = [
-    {name = "Ivanov Cyril", email = "jcommander13@yandex.ru"}
+    {name = "Ivanov Cyril", email = "woah.npc@yandex.ru"}
 ]
 license = { text = "GPLv2+" }
 readme = "README.md"
