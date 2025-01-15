@@ -17,3 +17,6 @@ class ConfigPageTreeWidgetItem(QTreeWidgetItem):
     @property
     def index(self) -> int:
         return self._index
+
+    def __repr__(self) -> str:
+        return f"{self._confpage.__class__.__name__} - {self._confpage.name}"
