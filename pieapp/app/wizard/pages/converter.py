@@ -8,10 +8,10 @@ from PySide6.QtGui import Qt, QAction
 from PySide6.QtWidgets import QStyle, QFileDialog
 
 from pieapp.api.converter.workers import DownloadWorker
-from pieapp.api.gloader import Global
+from pieapp.api.globals import Global
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
 
 
 class ConverterWizardPage(
@@ -31,10 +31,10 @@ class ConverterWizardPage(
 
         self._download_thread = QThread()
         self._download_worker = DownloadWorker()
-        self._download_worker.sig_download_progress.connect(self._show_downloader_progress)
-        self._download_worker.sig_download_done.connect(self._show_downloader_ready)
-        self._download_worker.sig_unpack_archive_message.connect(self._download_worker_unpack)
-        self._download_worker.sig_unpack_ready.connect(self._unpack_ready)
+        self._download_worker.signals.download_progress.connect(self._show_downloader_progress)
+        self._download_worker.signals.download_done.connect(self._show_downloader_ready)
+        self._download_worker.signals.unpack_archive_message.connect(self._download_worker_unpack)
+        self._download_worker.signals.unpack_ready.connect(self._unpack_ready)
         self._download_worker.move_to_thread(self._download_thread)
         self._download_thread.started.connect(self._download_worker.start)
         self._download_thread.finished.connect(self._download_worker.delete_later)
@@ -117,16 +117,16 @@ class ConverterWizardPage(
         directory_path = QDir.to_native_separators(ffmpeg_directory)
 
         if directory_path:
-            self.update_config("ffmpeg.root", Scope.User, directory_path)
+            self.update_app_config("ffmpeg.root", Scope.User, directory_path)
             binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
             for binary in binaries:
                 if not (directory_path / binary).exists():
                     raise FileNotFoundError(f"Binary file \"{binary.stem!s}\" not found. "
                                             f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html")
 
-                self.update_config(f"ffmpeg.{binary.stem!s}", Scope.User, str(directory_path / binary))
+                self.update_app_config(f"ffmpeg.{binary.stem!s}", Scope.User, str(directory_path / binary))
 
-            self.save_config(Scope.User, True)
+            self.save_app_config("ffmpeg", Scope.User)
             self._ffmpeg_path = Path(directory_path)
             self._line_edit.set_text(str(directory_path))
             self.completeChanged.emit()
@@ -134,15 +134,11 @@ class ConverterWizardPage(
     def finish(self) -> None:
         ffmpeg_path = Path(self._line_edit.text())
         # Converter root directory
-        self.update_config("ffmpeg.root", Scope.User, str(ffmpeg_path))
+        self.update_app_config("ffmpeg.root", Scope.User, str(ffmpeg_path))
         # Default chunk size
-        self.update_config("ffmpeg.chunk_size", Scope.User, 10)
+        self.update_app_config("ffmpeg.chunk_size", Scope.User, 10)
         # Binary extension name
         for binary in ffmpeg_path.rglob("*.exe"):
-            self.update_config(f"ffmpeg.{binary.stem}", Scope.User, str(binary))
+            self.update_app_config(f"ffmpeg.{binary.stem}", Scope.User, str(binary))
 
-        # Default converter temporary folder
-        self.update_config("folders.temp_directory", Scope.User,
-                           str(Global.USER_ROOT / Global.DEFAULT_TEMP_FOLDER_NAME))
-
-        self.save_config(Scope.User)
+        self.save_app_config("ffmpeg", Scope.User)
