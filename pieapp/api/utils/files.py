@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Union, Any
 from json import JSONDecodeError
 
-from pieapp.api.gloader import Global
+from pieapp.api.globals import Global
 
 
 # JSON methods
@@ -108,10 +108,8 @@ def create_empty_file(file_path: os.PathLike):
     Args:
         file_path (os.PathLike): full file path
     """
-    try:
-        os.utime(file_path, None)
-    except OSError:
-        open(file_path, "a").close()
+    with open(file_path, "w") as _:
+        pass
 
 
 def delete_directory(directory: Union[str, os.PathLike]) -> None:
@@ -150,7 +148,13 @@ def create_temp_directory(directory: Union[str, os.PathLike], prefix: str = None
 
 
 def create_output_directory(directory: os.PathLike = None) -> Path:
-    output_directory = Path(directory) if directory else os.path.expanduser("~")
+    """
+    Create output directory
+
+    Args:
+        directory (os.PathLike): a directory for converted (final) files
+    """
+    output_directory = Path(directory) if directory else Path(os.path.expanduser("~"))
     if not output_directory.exists():
         output_directory.mkdir()
     return output_directory
@@ -159,15 +163,15 @@ def create_output_directory(directory: os.PathLike = None) -> Path:
 def check_user_folders() -> bool:
     return (
         Global.USER_ROOT.exists()
-        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).exists()
-        and (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").exists()
-        and (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).exists()
+        and (Global.USER_ROOT / Global.CONFIGS_DIR_NAME).exists()
+        and (Global.USER_ROOT / Global.CONFIGS_DIR_NAME / "pieapp").exists()
+        and (Global.USER_ROOT / Global.PLUGINS_DIR_NAME).exists()
     )
 
 
 def restore_user_folders() -> None:
     if not Global.USER_ROOT.exists():
         Global.USER_ROOT.mkdir()
-        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME).mkdir()
-        (Global.USER_ROOT / Global.CONFIGS_FOLDER_NAME / "pieapp").mkdir()
-        (Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME).mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_DIR_NAME).mkdir()
+        (Global.USER_ROOT / Global.CONFIGS_DIR_NAME / "pieapp").mkdir()
+        (Global.USER_ROOT / Global.PLUGINS_DIR_NAME).mkdir()
