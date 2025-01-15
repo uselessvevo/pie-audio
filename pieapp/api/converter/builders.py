@@ -42,6 +42,7 @@ _BUILDER_FILE_FORMAT_MAP = {
     "mp3": QueryBuilder,
     "mp4": QueryBuilder,
     "wav": QueryBuilder,
+    "ogg": VorbisBuilder,
 }
 
 
