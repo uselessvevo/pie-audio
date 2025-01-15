@@ -1,7 +1,7 @@
-from pieapp.api.registries.locales.manager import Locales
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
+from pieapp.api.registries.locales.registry import LocaleRegistry
 
 
 def translate(text: str, *args, scope: Scope.Shared = Scope.Shared) -> str:
-    result: str = Locales.get(scope, text)
+    result: str = LocaleRegistry.get(scope, text)
     return result % args
