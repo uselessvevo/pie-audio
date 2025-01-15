@@ -2,43 +2,46 @@ from typing import Union, Any
 
 from PySide6.QtCore import QObject, Signal
 
-from pieapp.utils.logger import logger
-from pieapp.api.exceptions import PieException
+from pieapp.api.utils.logger import logger
+from pieapp.api.exceptions import PieError
 from pieapp.api.registries.base import BaseRegistry
-from pieapp.api.registries.models import SysRegistry
+from pieapp.api.registries.sysregs import SysRegistry
 
 from pieapp.api.models.indexes import Index
 from pieapp.api.converter.models import MediaFile
 
 
-class SnapshotRegistry(QObject, BaseRegistry):
+class SnapshotRegistryClass(QObject, BaseRegistry):
     name = SysRegistry.Snapshots
 
+    # Emit when all files are loaded
+    sig_snapshots_loaded = Signal()
+
     # Emit on snapshot created
-    sig_on_snapshot_created = Signal(MediaFile)
+    sig_snapshot_created = Signal(MediaFile)
 
     # Emit on snapshot deleted
-    sig_on_snapshot_deleted = Signal(MediaFile)
+    sig_snapshot_deleted = Signal(MediaFile)
 
     # Emit on snapshot modified
-    sig_on_snapshot_modified = Signal(MediaFile)
+    sig_snapshot_modified = Signal(MediaFile)
 
     # Emit on inner snapshots registry restored
-    sig_on_snapshot_restored = Signal()
+    sig_snapshot_restored = Signal()
 
     # Global snapshots
 
     # Emit on snapshot created
-    sig_on_global_snapshot_created = Signal(MediaFile)
+    sig_global_snapshot_created = Signal(MediaFile)
 
     # Emit on snapshot deleted
-    sig_on_global_snapshot_deleted = Signal(MediaFile, int)
+    sig_global_snapshot_deleted = Signal(MediaFile, int)
 
     # Emit on snapshot modified
-    sig_on_global_snapshot_modified = Signal(MediaFile)
+    sig_global_snapshot_modified = Signal(MediaFile)
 
     # Emit on global snapshots registry cleared
-    sig_on_global_snapshot_restored = Signal()
+    sig_global_snapshot_restored = Signal()
 
     def init(self) -> None:
         # List of MediaFile models
@@ -68,7 +71,7 @@ class SnapshotRegistry(QObject, BaseRegistry):
         self._global_snapshots.append(media_file)
         self._global_snapshots_index = len(self._global_snapshots) - 1
         logger.debug(f"File {media_file.name} added")
-        self.sig_on_global_snapshot_created.emit(media_file)
+        self.sig_global_snapshot_created.emit(media_file)
         return media_file
 
     def get_global_snapshot(self, index: int, default: Any = None) -> MediaFile:
@@ -103,12 +106,12 @@ class SnapshotRegistry(QObject, BaseRegistry):
 
     def remove_global_snapshot(self, index: int):
         del self._global_snapshots[index]
-        self.sig_on_global_snapshot_deleted.emit(index)
+        self.sig_global_snapshot_deleted.emit(index)
 
     def restore_global_snapshots(self) -> None:
         self._global_snapshots = []
         self._global_snapshots_index = 0
-        self.sig_on_global_snapshot_restored.emit()
+        self.sig_global_snapshot_restored.emit()
 
     # Local snapshot
 
@@ -177,7 +180,7 @@ class SnapshotRegistry(QObject, BaseRegistry):
         if self._global_snapshots_index > 0:
             self._global_snapshots_index += 1
 
-        self.sig_on_global_snapshot_modified.emit(local_snapshot)
+        self.sig_global_snapshot_modified.emit(local_snapshot)
         logger.debug("Local synced with global")
 
     def sync_global_to_inner(self) -> None:
@@ -192,7 +195,7 @@ class SnapshotRegistry(QObject, BaseRegistry):
         self._inner_snapshots[inner_index].append(global_snapshot)
         self._inner_snapshot_indexes[global_snapshot.name] = len(self._inner_snapshots[inner_index]) - 1
 
-        self.sig_on_snapshot_modified.emit(global_snapshot)
+        self.sig_snapshot_modified.emit(global_snapshot)
         logger.debug("Global synced with inner")
 
     # Snapshot versions
@@ -206,9 +209,9 @@ class SnapshotRegistry(QObject, BaseRegistry):
             self._inner_snapshot_indexes[media_file.name] = 0
             self._inner_snapshots_keys.append(media_file.name)
         else:
-            raise PieException(f"File {media_file.name} is already exists")
+            raise PieError(f"File {media_file.name} is already exists")
 
-        self.sig_on_snapshot_created.emit(media_file)
+        self.sig_snapshot_created.emit(media_file)
         logger.debug(f"File {media_file.name} added")
 
     def get(self, name: str, version: int = None) -> Union[list[MediaFile], MediaFile]:
@@ -239,7 +242,7 @@ class SnapshotRegistry(QObject, BaseRegistry):
         else:
             snapshots.append(new_media_file)
 
-        self.sig_on_snapshot_modified.emit(new_media_file)
+        self.sig_snapshot_modified.emit(new_media_file)
 
     def remove(self, name: str, version: int = None) -> None:
         logger.debug(f"Snapshot {name}:{version} was removed")
@@ -275,9 +278,9 @@ class SnapshotRegistry(QObject, BaseRegistry):
         self._global_snapshots_index = 0
         self._local_snapshots = {}
         self._local_snapshots_index = {}
-        self.sig_on_snapshot_restored.emit()
-        self.sig_on_global_snapshot_restored.emit()
+        self.sig_snapshot_restored.emit()
+        self.sig_global_snapshot_restored.emit()
         logger.debug("Snapshots restored")
 
 
-Snapshots = SnapshotRegistry()
+SnapshotRegistry = SnapshotRegistryClass()

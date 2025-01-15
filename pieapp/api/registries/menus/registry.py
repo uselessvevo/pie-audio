@@ -5,11 +5,11 @@ from PySide6.QtWidgets import QMenu, QMenuBar
 
 from pieapp.widgets.menus import PieMenu
 from pieapp.api.registries.base import BaseRegistry
-from pieapp.api.registries.models import SysRegistry
-from pieapp.api.exceptions import PieException
+from pieapp.api.registries.sysregs import SysRegistry
+from pieapp.api.exceptions import PieError
 
 
-class MenuRegistry(BaseRegistry):
+class MenuRegistryClass(BaseRegistry):
     name = SysRegistry.Menus
 
     def init(self):
@@ -27,14 +27,14 @@ class MenuRegistry(BaseRegistry):
         menu_bar: QMenuBar
     ) -> QMenuBar:
         if name in self._bars:
-            raise PieException(f"MenuBar {name} already registered")
+            raise PieError(f"MenuBar {name} already registered")
 
         self._bars[name] = menu_bar
         return menu_bar
 
     def get_menu_bar(self, name: str) -> QMenuBar:
         if name not in self._bars:
-            raise PieException(f"MenuBar {name} doesn't exist")
+            raise PieError(f"MenuBar {name} doesn't exist")
 
         return self._bars[name]
 
@@ -48,7 +48,7 @@ class MenuRegistry(BaseRegistry):
             self._menus[scope] = {}
 
         if name in self._menus:
-            raise PieException(f"Menu {scope}.{name} already registered")
+            raise PieError(f"Menu {scope}.{name} already registered")
 
         self._menus[scope][name] = menu
 
@@ -65,7 +65,7 @@ class MenuRegistry(BaseRegistry):
             self._items[scope] = {}
 
         if menu not in self._menus[scope]:
-            raise PieException(f"Menu {scope}.{menu} not found")
+            raise PieError(f"Menu {scope}.{menu} not found")
 
         self._items[scope][name] = item
 
@@ -73,21 +73,21 @@ class MenuRegistry(BaseRegistry):
 
     def get_menu(self, scope: str, name: str) -> QMenu:
         if scope not in self._menus:
-            raise PieException(f"Section {scope} doesn't exist")
+            raise PieError(f"Section {scope} doesn't exist")
 
         if name not in self._menus[scope]:
-            raise PieException(f"Menu {scope}.{name} not found")
+            raise PieError(f"Menu {scope}.{name} not found")
 
         return self._menus[scope][name]
 
     def get_menu_item(self, scope: str, name: str) -> QAction:
         if scope not in self._menus:
-            raise PieException(f"Section {scope} doesn't exist")
+            raise PieError(f"Section {scope} doesn't exist")
 
         if name not in self._menus[scope]:
-            raise PieException(f"MenuItem {scope}.{name} not found")
+            raise PieError(f"MenuItem {scope}.{name} not found")
 
         return self._items[scope][name]
 
 
-Menus = MenuRegistry()
+MenuRegistry = MenuRegistryClass()

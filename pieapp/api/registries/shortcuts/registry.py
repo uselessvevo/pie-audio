@@ -4,10 +4,10 @@ from PySide6.QtGui import QShortcut
 
 from pieapp.api.models.shortcuts import ShortcutDict
 from pieapp.api.registries.base import BaseRegistry
-from pieapp.api.registries.models import SysRegistry
+from pieapp.api.registries.sysregs import SysRegistry
 
 
-class ShortcutRegistry(BaseRegistry):
+class ShortcutRegistryClass(BaseRegistry):
     name = SysRegistry.Shortcuts
 
     def init(self) -> None:
@@ -59,4 +59,4 @@ class ShortcutRegistry(BaseRegistry):
         return list(self._shortcuts.values())
 
 
-Shortcuts = ShortcutRegistry()
+ShortcutRegistry = ShortcutRegistryClass()

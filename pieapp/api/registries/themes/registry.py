@@ -1,3 +1,4 @@
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -5,19 +6,19 @@ from typing import Any, Union
 
 from PySide6.QtWidgets import QApplication
 
-from pieapp.api.gloader import Global
+from pieapp.api.globals import Global
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
-from pieapp.utils.files import read_json
-from pieapp.utils.logger import logger
-from pieapp.utils.qt import get_application
-from pieapp.utils.modules import import_by_path
+from pieapp.api.utils.files import read_json
+from pieapp.api.utils.logger import logger
+from pieapp.api.utils.qapp import get_application
+from pieapp.api.utils.modules import import_by_path
 
-from pieapp.api.registries.models import Scope
-from pieapp.api.registries.models import SysRegistry
+from pieapp.api.models.scopes import Scope
+from pieapp.api.registries.sysregs import SysRegistry
 from pieapp.api.registries.base import BaseRegistry
 
 
-class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
+class ThemeRegistryClass(BaseRegistry, ConfigAccessorMixin):
     name = SysRegistry.Themes
 
     def init(self) -> None:
@@ -36,40 +37,40 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
         self._themes: list[str] = None
 
         # Registries
-        self._files: dict[str, dict[str, Path]] = {}
+        self._files: dict[str, dict[str, Union[str, os.PathLike]]] = {}
         self._stylesheet: str = ""
         self._stylesheet_props: dict[str, str] = {}
 
-        self._current_theme = self.get_config("assets.theme", Scope.User, Global.DEFAULT_THEME)
-        self._themes = self._get_themes()
-        self._load_app_theme()
-        self._load_plugins_theme(Global.APP_ROOT / Global.PLUGINS_FOLDER_NAME)
-        self._load_plugins_theme(Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME)
+        self._current_theme = self.get_app_config("config.theme", Scope.User, Global.DEFAULT_THEME)
+        self._themes = self.load_themes()
+        self.load_app_theme()
+        self.load_plugins_theme(Global.APP_ROOT / Global.PLUGINS_DIR_NAME)
+        self.load_plugins_theme(Global.USER_ROOT / Global.PLUGINS_DIR_NAME)
 
-    def _get_themes(self) -> list[str]:
+    def load_themes(self) -> list[str]:
         themes: list[str] = []
-        for folder in (Global.APP_ROOT / Global.ASSETS_FOLDER).iterdir():
+        for folder in (Global.APP_ROOT / Global.ASSETS_DIR_NAME).iterdir():
             if folder.is_dir() and not folder.name.startswith("__"):
                 themes.append(folder.name)
 
         return themes
 
-    def _load_app_theme(self) -> None:
-        theme_folder = Global.APP_ROOT / Global.ASSETS_FOLDER / self._current_theme
+    def load_app_theme(self) -> None:
+        theme_folder = Global.APP_ROOT / Global.ASSETS_DIR_NAME / self._current_theme
         for file in theme_folder.rglob("*.*"):
-            if not self._check_file(file):
+            if not self.check_file(file):
                 continue
 
-            self._add_file(Scope.Shared, theme_folder, file)
+            self.add_file(Scope.Shared, theme_folder, file)
 
         self._stylesheet_props["THEME_ROOT"] = theme_folder.as_posix()
 
         self._app = get_application()
         if Global.USE_THEME:
-            self._load_style_sheet(theme_folder)
-        self._load_palette(theme_folder)
+            self.load_style_sheet(theme_folder)
+        self.load_palette(theme_folder)
 
-    def _load_plugins_theme(self, plugins_folder: Path) -> None:
+    def load_plugins_theme(self, plugins_folder: Path) -> None:
         """
         Load theme and icons in the plugin folder
 
@@ -79,26 +80,26 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
             plugins_folder (pathlib.Path): Plugins folder
         """
         for plugin_folder in plugins_folder.iterdir():
-            theme_folder = plugin_folder / Global.ASSETS_FOLDER / self._current_theme
+            theme_folder = plugin_folder / Global.ASSETS_DIR_NAME / self._current_theme
             if theme_folder.exists():
                 icons_folder = theme_folder / "icons"
             else:
-                icons_folder = plugin_folder / Global.ASSETS_FOLDER
+                icons_folder = plugin_folder / Global.ASSETS_DIR_NAME
 
             self._stylesheet_props[f"{plugin_folder.name.upper()}_PLUGIN"] = theme_folder.as_posix()
 
             for file in icons_folder.rglob("*.*"):
-                if not self._check_file(file):
+                if not self.check_file(file):
                     continue
 
-                self._add_file(plugin_folder.name, theme_folder, file)
+                self.add_file(plugin_folder.name, theme_folder, file)
 
             if Global.USE_THEME:
-                self._load_style_sheet(theme_folder)
-            self._load_palette(theme_folder)
+                self.load_style_sheet(theme_folder)
+            self.load_palette(theme_folder)
             self._app.set_style_sheet(self._stylesheet)
 
-    def _add_file(self, scope: Union[str, Scope], theme_folder: Path, file: Path) -> None:
+    def add_file(self, scope: str, theme_folder: Path, file: Path) -> None:
         """
         Add file to the files registry
 
@@ -107,17 +108,19 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
             theme_folder (pathlib.Path): Theme full path
             file (pathlib.Path): File path
         """
+        parts_index = len(theme_folder.parts)
+        filename_key = file.parts[parts_index:]
+        filename_key = "/".join(filename_key)
+
         if not self._files.get(scope):
             self._files[scope] = {}
 
-        if not self._files.get(file.name):
-            file_key = file.as_posix().replace(theme_folder.as_posix(), "")
-            file_key = file_key.replace("/", "", 1)
-            self._files[scope][file_key] = {}
+        if not self._files[scope].get(filename_key):
+            self._files[scope][filename_key] = {}
 
-        self._files[scope].update({f"{file.parent.name}/{file.name}": file.as_posix()})
+        self._files[scope][filename_key] = file.as_posix()
 
-    def _check_file(self, file: Path) -> bool:
+    def check_file(self, file: Path) -> bool:
         """
         Check if file is not a directory, or it has the right file format
 
@@ -129,7 +132,7 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
 
         return True
 
-    def _parse_template(self, template_file: Path) -> None:
+    def parse_template(self, template_file: Path) -> None:
         """
         Parse template file
         """
@@ -145,24 +148,23 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
                         logger.debug(f"Can't find {match}/{line}")
                 self._stylesheet += line
 
-    def _load_style_sheet(self, theme_folder: Path) -> None:
+    def load_style_sheet(self, theme_folder: Path) -> None:
         theme_file = theme_folder / "theme.qss"
         if not theme_file.exists():
             return
 
         props_data = read_json(theme_folder / "props.json", raise_exception=False, default={})
         self._stylesheet_props.update(**props_data)
-        self._parse_template(theme_file)
+        self.parse_template(theme_file)
 
-    def _load_palette(self, theme_folder: Path) -> None:
+    def load_palette(self, theme_folder: Path) -> None:
         palette_file = theme_folder / "palette.py"
         if palette_file.exists():
             palette_module = import_by_path(str(palette_file))
             palette = palette_module.get_palette()
             self._app.set_palette(palette)
 
-    @lru_cache
-    def get(self, scope: Union[str, Scope], key: str, default: Any = None) -> Any:
+    def get(self, scope: str, key: str, default: Any = None) -> Any:
         """
         Get icon
 
@@ -186,9 +188,5 @@ class ThemeRegistry(BaseRegistry, ConfigAccessorMixin):
     def get_theme_property(self, prop_name: str, default: Any = None) -> str:
         return self._stylesheet_props.get(prop_name, default)
 
-    getTheme = get_theme
-    getThemes = get_themes
-    getProperty = get_theme_property
 
-
-Themes = ThemeRegistry()
+ThemeRegistry = ThemeRegistryClass()
