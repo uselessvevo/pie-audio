@@ -6,9 +6,9 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QStyle
 
-from pieapp.api.gloader import Global
-from pieapp.utils.qt import restart_application
-from pieapp.api.registries.models import Scope
+from pieapp.api.globals import Global
+from pieapp.api.utils.qapp import get_application
+from pieapp.api.models.scopes import Scope
 from pieapp.api.registries.locales.helpers import translate
 
 from pieapp.app.wizard.pages.converter import ConverterWizardPage
@@ -67,6 +67,6 @@ class StartupWizard(QtWidgets.QWizard):
             if hasattr(page, "finish"):
                 page.finish()
 
-        restart_application()
         settings = QSettings()
-        settings.set_value("first_run", False)
+        settings.set_value("FreshStart", False)
+        get_application().restart()

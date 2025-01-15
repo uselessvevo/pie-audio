@@ -1,7 +1,7 @@
 """"
 Plugin notification observer
 """
-from pieapp.api.exceptions import PieException
+from pieapp.api.exceptions import PieError
 
 
 class PluginsObserverMixin:
@@ -13,20 +13,20 @@ class PluginsObserverMixin:
 
         for method_name in dir(self):
             method = getattr(self, method_name, None)
-            if hasattr(method, "plugin_listen"):
-                plugin_listen = method.plugin_listen
+            if hasattr(method, "plugin_listen_event"):
+                plugin_listen = method.plugin_listen_event
                 if plugin_listen not in self.requires + self.optional:
-                    raise PieException(
+                    raise PieError(
                         f"Method {method_name} of {self} is trying to watch "
                         f"plugin {plugin_listen}, but that plugin is not "
                         f"listed in `requires` nor `optional`."
                     )
                 self._plugin_listeners[plugin_listen] = method_name
 
-            if hasattr(method, "plugin_teardown"):
-                plugin_teardown = method.plugin_teardown
+            if hasattr(method, "plugin_teardown_event"):
+                plugin_teardown = method.plugin_teardown_event
                 if plugin_teardown not in self.requires + self.optional:
-                    raise PieException(
+                    raise PieError(
                         f"Method {method_name} of {self} is trying to watch "
                         f"plugin {plugin_teardown}, but that plugin is not "
                         f"listed in `requires` nor `optional`."

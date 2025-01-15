@@ -13,20 +13,16 @@ class Appearance(PiePlugin):
     name = SysPlugin.Appearance
     requires = [SysPlugin.Preferences]
 
-    @staticmethod
-    def get_config_page() -> AppearanceConfigPage:
-        return AppearanceConfigPage()
-
     @on_plugin_available(plugin=SysPlugin.Preferences)
     def _on_preferences_available(self) -> None:
         preferences = get_plugin(SysPlugin.Preferences)
-        preferences.register_config_page(self)
+        preferences.register_config_page(AppearanceConfigPage)
 
     @on_plugin_shutdown(plugin=SysPlugin.Preferences)
     def _on_preferences_teardown(self) -> None:
         preferences = get_plugin(SysPlugin.Preferences)
-        preferences.deregister_config_page(self)
+        preferences.deregister_config_page(AppearanceConfigPage)
 
 
-def main(parent: "QMainWindow", plugin_path: "Path"):
+def main(parent, plugin_path):
     return Appearance(parent, plugin_path)

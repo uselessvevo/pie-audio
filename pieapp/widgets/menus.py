@@ -9,7 +9,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QMenuBar, QMenu
 
-from pieapp.api.exceptions import PieException
+from pieapp.api.exceptions import PieError
 
 
 class PieMenuBar(QMenuBar):
@@ -57,7 +57,7 @@ class PieMenu(QMenu):
         index: Union[int] = None
     ) -> QAction:
         if name in self._items:
-            raise PieException(f"Menu item {name} already registered")
+            raise PieError(f"Menu item {name} already registered")
 
         item = QAction(parent=self, text=text, icon=icon)
         if triggered:

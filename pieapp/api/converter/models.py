@@ -49,14 +49,9 @@ class FileInfo:
     channels: int = dt.field(default=2)
     channels_layout: str = dt.field(default=ChannelsLayout.Stereo)
 
-    def build(self) -> dict[str, str]:
-        arguments = []
-        for field, value in dt.asdict(self).items():
-            if value is not None:
-                arguments.append(f"{field}={value}")
-
-        arguments.extend(arguments)
-        return {f"metadata:g:{i}": e for i, e in enumerate(arguments)}
+    @property
+    def bit_rate_string(self, convert: str = "kbs") -> str:
+        return f"{self.bit_rate} kb/s"
 
 
 @dt.dataclass
@@ -86,10 +81,27 @@ class MediaFile:
     output_path: Path
     info: Optional[FileInfo] = None
     metadata: Optional[Metadata] = None
+    # Snapshot is original file (without any new edits)
     is_origin: Optional[bool] = dt.field(default=False)
+    # Snapshot is marked for deletion and will be deleted after application restart
+    is_deleted: bool = dt.field(default=False)
 
 
-def update_media_file(media_file: MediaFile, field_path: str, value: Any, is_origin: bool = False) -> MediaFile:
+@dt.dataclass(eq=True, slots=True)
+class Project:
+    uuid: str
+    title: Optional[str]
+    description: Optional[str]
+    directory: str
+    files: list[MediaFile]
+
+
+def update_media_file(
+    media_file: MediaFile,
+    field_path: str,
+    value: Any,
+    is_origin: bool = False
+) -> MediaFile:
     path, _, target = field_path.rpartition(".")
     for attrname in path.split("."):
         base = getattr(media_file, attrname)

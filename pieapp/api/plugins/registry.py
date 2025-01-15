@@ -1,6 +1,5 @@
 from __feature__ import snake_case
 
-from typing import Any
 from types import ModuleType
 
 import sys
@@ -9,23 +8,24 @@ from version_parser import Version
 
 from PySide6.QtCore import Signal, QObject
 
-from pieapp.api.exceptions import PieException
-from pieapp.api.gloader import Global
+from pieapp.api.exceptions import PieError
+from pieapp.api.globals import Global
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.types import PluginType
-from pieapp.utils.modules import import_by_path
-from pieapp.utils.qt import get_main_window
-from pieapp.utils.logger import logger
+from pieapp.api.utils.modules import import_by_path
+from pieapp.api.utils.qt import get_main_window
+from pieapp.api.utils.logger import logger
 
 
-class PluginRegistry(QObject):
+class PluginRegistryClass(QObject):
     """
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
-    sig_plugins_ready = Signal()
+    plugins_ready = Signal()
+    plugins_teardown = Signal()
 
     def __init__(self) -> None:
-        super(PluginRegistry, self).__init__()
+        super(PluginRegistryClass, self).__init__()
 
         # MainWindow reference
         self._main_window: "QMainWindow" = None
@@ -44,16 +44,21 @@ class PluginRegistry(QObject):
 
         self._plugin_type_registry: dict[str, set] = {k: set() for k in PluginType.fields()}
 
+    def init_globals(self) -> None:
+        """
+        Collect all "globals.py" files before the core registries start
+        """
+
     def init_plugins(self) -> None:
         """ Initialize all built-in or third-party PiePlugins, components and user plugins """
         self._main_window = get_main_window()
         if not self._main_window:
-            raise PieException(f"Can't find an initialized QMainWindow instance")
+            raise PieError(f"Can't find an initialized QMainWindow instance")
 
         # Initialize plugins then
-        self._initialize_from_packages(Global.APP_ROOT / Global.PLUGINS_FOLDER_NAME)
-        self._initialize_from_packages(Global.USER_ROOT / Global.PLUGINS_FOLDER_NAME)
-        self.sig_plugins_ready.emit()
+        self.initialize_from_packages(Global.APP_ROOT / Global.PLUGINS_DIR_NAME)
+        self.initialize_from_packages(Global.USER_ROOT / Global.PLUGINS_DIR_NAME)
+        self.plugins_ready.emit()
 
     def shutdown_plugins(self, *plugins: str, all_plugins: bool = False) -> None:
         """
@@ -67,14 +72,14 @@ class PluginRegistry(QObject):
         for plugin in plugins:
             logger.debug(f"Shutting down plugin \"{plugin}\" from {self.__class__.__name__}")
             if plugin in self._plugin_registry:
-                self._shutdown_plugin(plugin)
+                self.shutdown_plugin(plugin)
 
     def reload_plugins(self, *plugins: str, all_plugins: bool = False) -> None:
         """ Reload listed or all objects and components """
         self.shutdown_plugins(*plugins, all_plugins=all_plugins)
         for plugin in self._plugin_registry:
             plugin_instance = self._plugin_registry.get(plugin)
-            self._initialize_plugin(plugin_instance)
+            self.initialize_plugin(plugin_instance)
 
     def delete_plugin(
         self,
@@ -98,28 +103,28 @@ class PluginRegistry(QObject):
 
         if teardown:
             # Disconnect plugin from other plugins
-            self._shutdown_plugin(plugin_name)
+            self.shutdown_plugin(plugin_name)
 
             # Disconnect depending on plugins from the plugin to delete
             self._notify_plugin_shutdown(plugin_name)
 
         try:
             plugin_instance.on_close()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.critical(str(e))
 
         return True
 
-    def get_plugin(self, plugin_name: str) -> Any:
+    def get_plugin(self, plugin_name: str) -> PiePlugin:
         """ Get PiePlugin instance by its name """
-        if plugin_name in self._plugin_registry:
-            return self._plugin_registry[plugin_name]
+        return self._plugin_registry.get(plugin_name, None)
 
-        raise PieException(f"Plugin \"{plugin_name}\" was not found")
+    def get_plugins(self) -> list[PiePlugin]:
+        return list(self._plugin_registry.values())
 
     # Prepare methods
 
-    def _check_versions(self, plugin_package: ModuleType) -> None:
+    def check_versions(self, plugin_package: ModuleType) -> None:
         """
         Check application/pieapp, piekit and plugin version
         """
@@ -140,7 +145,7 @@ class PluginRegistry(QObject):
             raise AttributeError(f"PieKit version ({sys_piekit_version}) is not compatible with plugin"
                                  f"{plugin_package.name} version ({plugin_package.piekit_version})")
 
-    def _initialize_from_packages(self, folder: "Path") -> None:
+    def initialize_from_packages(self, folder: "Path") -> None:
         if not folder.exists():
             logger.warning(f"Plugins folder {folder.name} doesn't exist")
             return
@@ -160,7 +165,7 @@ class PluginRegistry(QObject):
                 # Add our plugin into sys.path
                 plugin_package_module = import_by_path(str(plugin_path / "__init__.py"))
                 try:
-                    self._check_versions(plugin_package_module)
+                    self.check_versions(plugin_package_module)
                 except AttributeError:
                     self.delete_plugin(package.name)
 
@@ -170,13 +175,24 @@ class PluginRegistry(QObject):
                 # Initializing plugin instance
                 plugin_instance = getattr(plugin_module, "main")(self._main_window, plugin_path)
                 if plugin_instance:
-                    self._initialize_plugin(plugin_instance)
+                    self.initialize_plugin(plugin_instance)
 
-    def _connect_plugin_with_main_window(self, plugin_instance: PiePlugin) -> None:
-        self._main_window.sig_on_main_window_show.connect(plugin_instance.sig_on_main_window_show)
-        self._main_window.sig_on_main_window_close.connect(plugin_instance.sig_on_main_window_close)
+    def shutdown_plugin(self, plugin_name: str):
+        """ Shutdown a plugin from its dependencies """
+        plugin_instance = self._plugin_registry[plugin_name]
+        plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
+        required_plugins = plugin_dependencies.get("requires", [])
+        optional_plugins = plugin_dependencies.get("optional", [])
 
-    def _initialize_plugin(self, plugin_instance: PiePlugin) -> None:
+        for plugin in required_plugins + optional_plugins:
+            if plugin in self._plugin_registry:
+                if self._plugin_availability.get(plugin, False):
+                    logger.debug(f"Shutting down {plugin_name} from {plugin}")
+                    plugin_instance.on_plugin_teardown(plugin)
+
+    # Notification methods
+
+    def initialize_plugin(self, plugin_instance: PiePlugin) -> None:
         logger.debug(f"Initializing plugin {plugin_instance.name}")
 
         self._update_plugin_info(
@@ -185,14 +201,19 @@ class PluginRegistry(QObject):
             plugin_instance.optional
         )
 
-        # Hashing PiePlugin instance
+        # Hash plugin instance
         self._plugin_registry[plugin_instance.name] = plugin_instance
         self._plugin_type_registry[plugin_instance.type].add(plugin_instance.name)
 
-        self.sig_plugins_ready.connect(plugin_instance.sig_plugins_ready)
-        self._main_window.sig_on_main_window_show.connect(plugin_instance.sig_on_main_window_show)
-        self._main_window.sig_on_main_window_close.connect(plugin_instance.sig_on_main_window_close)
+        # Connect registry with plugin instance
+        self.plugins_ready.connect(plugin_instance.sig_reg_plugins_ready)
+        self.plugins_teardown.connect(plugin_instance.sig_reg_plugins_teardown)
 
+        self._main_window.sig_on_main_window_close.connect(plugin_instance.sig_on_main_window_close)
+        self._main_window.sig_on_main_window_show.connect(plugin_instance.sig_on_main_window_show)
+        self._main_window.sig_on_before_main_window_show.connect(plugin_instance.sig_on_before_main_window_show)
+
+        # Connect plugin observer signals
         plugin_instance.sig_plugin_ready.connect(lambda: (
             self._notify_plugin_dependencies(plugin_instance.name),
             self._notify_plugin_availability(plugin_instance.name)
@@ -204,8 +225,6 @@ class PluginRegistry(QObject):
             logger.debug(f"Error {plugin_instance.name}: {e!s}")
             self.delete_plugin(plugin_instance.name)
             raise e
-
-    # Notification methods
 
     def _notify_plugin_availability(
         self,
@@ -320,23 +339,10 @@ class PluginRegistry(QObject):
                     )
                     plugin_instance.on_plugin_teardown(plugin_name)
 
-    def _shutdown_plugin(self, plugin_name: str):
-        """ Shutdown a plugin from its dependencies """
-        plugin_instance = self._plugin_registry[plugin_name]
-        plugin_dependencies = self._plugin_dependencies.get(plugin_name, {})
-        required_plugins = plugin_dependencies.get("requires", [])
-        optional_plugins = plugin_dependencies.get("optional", [])
-
-        for plugin in required_plugins + optional_plugins:
-            if plugin in self._plugin_registry:
-                if self._plugin_availability.get(plugin, False):
-                    logger.debug(f"Shutting down {plugin_name} from {plugin}")
-                    plugin_instance.on_plugin_teardown(plugin)
-
     # PluginManager public methods
 
     def is_plugin_available(self, plugin_name: str) -> bool:
         return self._plugin_availability.get(plugin_name, False)
 
 
-Plugins = PluginRegistry()
+PluginRegistry = PluginRegistryClass()

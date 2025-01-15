@@ -5,7 +5,7 @@ import dataclasses as dt
 class PluginType:
     Object: str = "object"
     Plugin: str = "plugin"
-    Registry: str = "registry"
+    Manager: str = "manager"
 
     @classmethod
     def fields(cls) -> list[str]:

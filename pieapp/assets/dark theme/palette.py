@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 from PySide6.QtGui import QPalette
 from PySide6.QtGui import QColor
 

@@ -1,7 +1,7 @@
 from typing import Any, Union
 
-from pieapp.api.registries.locales.manager import Locales
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
+from pieapp.api.registries.locales.registry import LocaleRegistry
 
 
 class LocalesAccessorMixin:
@@ -12,6 +12,6 @@ class LocalesAccessorMixin:
     def translate(
         self,
         key: Any,
-        scope: Union[str, Scope] = Scope.Shared
+        scope: str = Scope.Shared
     ) -> Any:
-        return Locales.get(scope or self.scope, key)
+        return LocaleRegistry.get(scope or self.scope, key)

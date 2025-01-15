@@ -9,14 +9,24 @@ from urllib import request
 import ffmpeg
 from dotty_dict import Dotty
 
-from PySide6.QtCore import QObject, Signal, QRunnable, Slot
+from PySide6.QtCore import Slot
+from PySide6.QtCore import Signal
+from PySide6.QtCore import QObject
+from PySide6.QtCore import QRunnable
 
+from pieapp.api.globals import Global
+from pieapp.api.utils.logger import logger
+from pieapp.api.exceptions import NotificationError
+
+from pieapp.api.converter.models import Codec
+from pieapp.api.converter.models import FileInfo
+from pieapp.api.converter.models import AlbumCover
+from pieapp.api.converter.models import Metadata
+from pieapp.api.converter.models import MediaFile
 from pieapp.api.converter.builders import get_query_builder
-from pieapp.api.gloader import Global
-from pieapp.api.converter.models import MediaFile, AlbumCover, Metadata, Codec, FileInfo
+
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.converter.utils import get_cover_album
-from pieapp.utils.logger import logger
 
 
 ARCHIVE_URL_NAME: dict[str, str] = {
@@ -49,13 +59,19 @@ class ConverterProcessSignals(QObject):
     failed = Signal(Exception)
 
 
+class DownloadWorkerSignals(QObject):
+    download_done = Signal(str)
+    unpack_ready = Signal(str)
+    download_progress = Signal(int)
+    unpack_archive_message = Signal(str)
+
+
 class DownloadWorker(QObject):
-    sig_download_done = Signal(str)
-    sig_unpack_ready = Signal(str)
-    sig_download_progress = Signal(int)
-    sig_unpack_archive_message = Signal(str)
 
     def __init__(self, release_url: str = None, archive_path: str = None) -> None:
+        super(DownloadWorker, self).__init__()
+
+        self._signals = DownloadWorkerSignals()
         self._ffmpeg_binaries_path = str(Global.USER_ROOT / "ffmpeg")
         self._ffmpeg_build_url: str = None
 
@@ -68,13 +84,15 @@ class DownloadWorker(QObject):
         self._archive_path: str = os.path.join(archive_path or Global.USER_ROOT, f"ffmpeg.{archive_file_type}")
         self._ffmpeg_build_url: str = f"{release_url}/{archive_name}"
 
-        super(DownloadWorker, self).__init__()
+    @property
+    def signals(self) -> DownloadWorkerSignals:
+        return self._signals
 
     def _download_progress_hook(self, block_num: int, block_size: float, total_size: float) -> None:
         read_data = block_num * block_size
         progress = read_data * 100 / total_size
         if total_size > 0:
-            self.sig_download_progress.emit(progress)
+            self._signals.download_progress.emit(progress)
 
     def _unpack_archive(self) -> None:
         def unpack_windows():
@@ -85,7 +103,7 @@ class DownloadWorker(QObject):
             tar_file = tarfile.TarFile(self._archive_path)
             tar_file.extractall(self._ffmpeg_binaries_path)
 
-        self.sig_unpack_archive_message.emit(f'{translate("Unpacking archive")}...')
+        self._signals.unpack_archive_message.emit(f'{translate("Unpacking archive")}...')
 
         if os.name == "nt":
             unpack_windows()
@@ -94,12 +112,12 @@ class DownloadWorker(QObject):
             unpack_linux()
 
         os.unlink(self._archive_path)
-        self.sig_download_done.emit(str(self._ffmpeg_directory))
-        self.sig_unpack_archive_message.emit(f'{translate("Done")}!')
+        self._signals.download_done.emit(str(self._ffmpeg_directory))
+        self._signals.unpack_archive_message.emit(f'{translate("Done")}!')
 
-        self.sig_unpack_archive_message.emit(translate("Checking files"))
-        self.sig_unpack_archive_message.emit(f"{translate('All done')}!")
-        self.sig_unpack_ready.emit(str(self._ffmpeg_directory))
+        self._signals.unpack_archive_message.emit(translate("Checking files"))
+        self._signals.unpack_archive_message.emit(f"{translate('All done')}!")
+        self._signals.unpack_ready.emit(str(self._ffmpeg_directory))
 
     def start(self) -> None:
         """
@@ -116,17 +134,18 @@ class DownloadWorker(QObject):
 class CopyFilesWorker(QRunnable):
 
     def __init__(self, selected_files: list[Path], destination: Path) -> None:
+        super(CopyFilesWorker, self).__init__()
+
         self._signals = CopyFilesSignals()
         self._selected_files = selected_files
         self._destination = destination
-        super(CopyFilesWorker, self).__init__()
 
     @property
     def signals(self) -> CopyFilesSignals:
         return self._signals
 
     def _wait_files_to_copy(self) -> None:
-        files_ready: bool = False
+        files_ready = False
         while not files_ready:
             if all([i.exists() for i in self._selected_files]):
                 files_ready = True
@@ -242,17 +261,18 @@ class ConverterWorker(QRunnable):
 
     @Slot()
     def run(self) -> None:
-        self.signals.started.emit()
-        try:
-            for media_file in self._media_files:
-                audio_stream = ffmpeg.input(media_file.path.as_posix()).audio
-                query_builder = get_query_builder(media_file)
-                if not query_builder:
-                    continue
+        self._signals.started.emit()
+        for media_file in self._media_files:
+            audio_stream = ffmpeg.input(media_file.path.as_posix()).audio
+            query_builder = get_query_builder(media_file)
+            if not query_builder:
+                continue
+            try:
                 converter_query = query_builder.build()
                 # output_file = (media_file.output_path.parent / f"{media_file.path.stem}.mp3").as_posix()
                 audio_stream = audio_stream.output(media_file.output_path.as_posix(), **converter_query)
                 ffmpeg.run(audio_stream, cmd=self._ffmpeg_command.as_posix(), overwrite_output=True)
-        except Exception as e:
-            print(e)
-            # raise PieException(translate("Can't convert file"), str(e))
+            except Exception as e:
+                raise NotificationError(
+                    title=translate("Converter error"),
+                    description=f"{translate('An error has been occurred while processing file')} - {media_file.name}")

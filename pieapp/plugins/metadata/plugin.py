@@ -9,16 +9,15 @@ from PySide6.QtWidgets import QListWidget
 from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtWidgets import QStyledItemDelegate
 
-from pieapp.api.gloader import Global
+from pieapp.api.globals import Global
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
-from pieapp.api.registries.snapshots.manager import Snapshots
+from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 
-from pieapp.utils.logger import logger
-from pieapp.api.validators import date_validator
+from pieapp.api.utils.logger import logger
+from pieapp.api.utils.validators import date_validator
 from pieapp.widgets.delegates import ReadOnlyDelegate
 from pieapp.widgets.tables import MediaTableItemValue
 
@@ -33,6 +32,7 @@ from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
 
 from metadata.widgets.albumpicker import AlbumCoverPicker
+from metadata.widgets.quickaction import MetadataEditorQuickAction
 
 
 class MetadataEditor(
@@ -46,14 +46,14 @@ class MetadataEditor(
     file_formats = ["mp3", "mp4", "wav", "m4a", "wma", "asf"]
 
     def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon(IconName.App, scope=self.name)
+        return self.get_svg_icon(IconName.App, self.name)
 
     def _close_event(self, _, local_snapshot_name: str) -> None:
         self._save_button.set_enabled(False)
         self._redo_button.set_enabled(False)
         self._undo_button.set_enabled(False)
-        Snapshots.sync_global_to_inner()
-        Snapshots.restore_local_snapshots(local_snapshot_name)
+        SnapshotRegistry.sync_global_to_inner()
+        SnapshotRegistry.restore_local_snapshots(local_snapshot_name)
 
     def _key_press_event(self, event) -> None:
         if event.key() != Qt.Key.Key_Escape:
@@ -62,17 +62,19 @@ class MetadataEditor(
     @on_plugin_available(plugin=SysPlugin.Converter)
     def on_converter_available(self) -> None:
         self._converter = get_plugin(SysPlugin.Converter)
+        # self._converter.register_quick_action(MetadataEditorQuickAction)
+
         self._converter.sig_table_item_added.connect(self._on_table_item_added)
 
         self._dialog = QDialog(self._parent)
         # self._dialog.key_press_event = self._key_press_event
         self._dialog.set_object_name("MetadataEditor")
         self._dialog.set_window_icon(self.get_plugin_icon())
-        self._dialog.resize(*Global.DEFAULT_MIN_WINDOW_SIZE)
+        self._dialog.resize(*Global.DEFAULT_WINDOW_SIZE)
         self._main_grid_layout = QGridLayout()
 
-        # Setup toolbar
-        self._toolbar = self.add_toolbar(self._dialog, self.name)
+        # Setup maintoolbar
+        self._toolbar = self.add_toolbar(self.name)
         self._toolbar.set_fixed_height(50)
         self._toolbar.set_contents_margins(6, 0, 10, 0)
         self._toolbar.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
@@ -147,9 +149,9 @@ class MetadataEditor(
         -metadata:s:v title="album cover"
         -metadata:s:v comment="cover (front)" out.mp3
         """
-        media_file: MediaFile = Snapshots.get(media_file_name)
+        media_file: MediaFile = SnapshotRegistry.get(media_file_name)
         self._dialog.close_event = lambda event: self._close_event(event, media_file.name)
-        Snapshots.add_local_snapshot(media_file.name, media_file)
+        SnapshotRegistry.add_local_snapshot(media_file.name, media_file)
         self._dialog.set_window_title(f"{translate('Edit metadata')} - {media_file.info.filename}")
 
         self._save_button.clicked.connect(lambda: self._save_button_connect(media_file))
@@ -253,39 +255,39 @@ class MetadataEditor(
 
         item.set_text(item.text())
         media_file_name = item.media_file_name
-        media_file_copy = copy.deepcopy(Snapshots.get_local_snapshot(media_file_name, Index.End))
+        media_file_copy = copy.deepcopy(SnapshotRegistry.get_local_snapshot(media_file_name, Index.End))
         media_file_copy = update_media_file(media_file_copy, item.field, item.value)
 
-        if not Snapshots.contains_local(media_file_copy.name, media_file_copy):
-            Snapshots.add_local_snapshot(media_file_copy.name, media_file_copy)
-            # Snapshots.sync_local_to_global(media_file_copy.name)
-            # Snapshots.sync_global_to_inner()
+        if not SnapshotRegistry.contains_local(media_file_copy.name, media_file_copy):
+            SnapshotRegistry.add_local_snapshot(media_file_copy.name, media_file_copy)
+            # SnapshotRegistry.sync_local_to_global(media_file_copy.name)
+            # SnapshotRegistry.sync_global_to_inner()
             self._save_button.set_enabled(True)
             self._undo_button.set_enabled(True)
             self._redo_button.set_enabled(False)
 
     def _save_button_connect(self, media_file: MediaFile) -> None:
         # Sync local and global snapshots
-        local_snapshot = Snapshots.get_local_snapshot(media_file.name, Index.End)
-        Snapshots.sync_local_to_global(local_snapshot.name)
+        local_snapshot = SnapshotRegistry.get_local_snapshot(media_file.name, Index.End)
+        SnapshotRegistry.sync_local_to_global(local_snapshot.name)
         self._save_button.set_enabled(False)
         self._undo_button.set_enabled(True)
         self._redo_button.set_enabled(False)
 
     def _undo_button_connect(self, media_file: MediaFile) -> None:
-        media_file, is_array_end = Snapshots.update_local_snapshot_index(media_file.name, -1)
+        media_file, is_array_end = SnapshotRegistry.update_local_snapshot_index(media_file.name, -1)
         self._fill_metadata_table(media_file)
         self._save_button.set_enabled(True)
         self._undo_button.set_disabled(is_array_end)
         self._redo_button.set_enabled(True)
 
     def _redo_button_connect(self, media_file: MediaFile) -> None:
-        media_file, is_array_end = Snapshots.update_local_snapshot_index(media_file.name, +1)
+        media_file, is_array_end = SnapshotRegistry.update_local_snapshot_index(media_file.name, +1)
         self._fill_metadata_table(media_file)
         self._save_button.set_enabled(True)
         self._undo_button.set_enabled(True)
         self._redo_button.set_disabled(is_array_end)
 
 
-def main(parent: "QMainWindow", plugin_path: "Path"):
+def main(parent, plugin_path):
     return MetadataEditor(parent, plugin_path)

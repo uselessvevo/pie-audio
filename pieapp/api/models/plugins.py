@@ -8,19 +8,27 @@ class SysPlugin:
 
     # Plugins
     About = "about"
-    MainMenuBar = "menu-bar"
     Preferences = "preferences"
-    MainToolBar = "workbench"
     StatusBar = "status-bar"
     Converter = "converter"
     MetadataEditor = "metadata"
 
+    # Layout
+    MainToolBar = "main-toolbar-layout"
+    MainMenuBar = "main-menu-layout"
+
     # Managers
     Layout = "layout"
-    Shortcut = "shortcuts"
+    ShortcutManager = "shortcut-manager"
+    MenuManager = "menu-manager"
+    ToolBarManager = "maintoolbar-manager"
+    ConfPageManager = "confpage-manager"
+    ProjectsManager = "projects-manager"
+
+    # Decoy
     ShortcutBlank = "shortcuts-blank"
-    ConfPage = "confpage"
 
     # Configuration pages
     Appearance = "appearance"
     History = "history"
+

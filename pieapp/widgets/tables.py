@@ -4,7 +4,7 @@ from typing import Any
 
 from PySide6.QtWidgets import QTableWidgetItem
 
-from pieapp.api.exceptions import PieException
+from pieapp.api.exceptions import PieError
 from pieapp.api.registries.locales.helpers import translate
 
 
@@ -35,7 +35,7 @@ class MediaTableItemValue(QTableWidgetItem):
             try:
                 value = self._validator(value)
             except Exception as e:
-                raise PieException(translate("Validation error"), str(e))
+                raise PieError(translate("Validation error"), str(e))
 
         self._value = value
         super().set_text(str(value))

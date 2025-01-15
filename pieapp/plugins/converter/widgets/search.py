@@ -13,7 +13,6 @@ class ConverterSearch(QLineEdit, ThemeAccessorMixin):
         super().__init__(parent)
 
         self.set_object_name("ConverterSearch")
-        self.set_placeholder_text("Search...")
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
         self.add_action(self.get_svg_icon(IconName.Search), QLineEdit.ActionPosition.LeadingPosition)
 

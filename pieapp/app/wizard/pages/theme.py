@@ -4,7 +4,7 @@ from PySide6.QtGui import Qt
 
 from PySide6 import QtWidgets
 
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 
@@ -47,4 +47,4 @@ class ThemeWizardPage(ConfigAccessorMixin, QtWidgets.QWizardPage):
             self._current_theme = getattr(radio_button, "theme", "light theme")
 
     def finish(self) -> None:
-        self.update_config("assets.theme", Scope.User, self._current_theme)
+        self.update_app_config("config.theme", Scope.User, self._current_theme, True)

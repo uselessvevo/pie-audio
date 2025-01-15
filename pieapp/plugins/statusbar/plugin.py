@@ -1,21 +1,20 @@
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QWidget, QStatusBar
 
-from pieapp.api.exceptions import PieException
+from pieapp.api.exceptions import PieError
 from pieapp.api.models.indexes import Index
 from pieapp.api.models.plugins import SysPlugin
-from pieapp.api.models.statusbar import MessageStatus
+from pieapp.api.models.statusbars import MessageStatus
 
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.utils.qt import get_main_window
+from pieapp.api.utils.qt import get_main_window
 from pieapp.widgets.iconlabel import IconLabel
 
 
 class StatusBar(PiePlugin, ThemeAccessorMixin):
     name = SysPlugin.StatusBar
-    requires = [SysPlugin.Layout]
 
     def init(self) -> None:
         self._sb_widgets: dict[str, QWidget] = {}
@@ -43,18 +42,18 @@ class StatusBar(PiePlugin, ThemeAccessorMixin):
 
     def insert_widget(self, name: str, widget: QObject, side: int = Index.Start) -> None:
         if name in self._sb_widgets:
-            raise PieException(f"Status bar widget \"{name}\" is already registered")
+            raise PieError(f"Status bar widget \"{name}\" is already registered")
 
         self._sb_widgets[name] = widget
         self._status_bar.insert_widget(side, widget)
 
     def insert_permanent_widget(self, name: str, widget: QObject, side: int = Index.Start) -> None:
         if name in self._sb_widgets:
-            raise PieException(f"Status bar widget \"{name}\" is already registered")
+            raise PieError(f"Status bar widget \"{name}\" is already registered")
 
         self._sb_perm_widgets[name] = widget
         self._status_bar.insert_permanent_widget(side, widget)
 
 
-def main(parent: "QMainWindow", plugin_path: "Path"):
+def main(parent, plugin_path):
     return StatusBar(parent, plugin_path)

@@ -38,9 +38,14 @@ QListWidget::item:hover:!active
 #ConverterItemFormat {
     color: white;
     font-size: 18px;
-    border-radius: 17px;
+    border-radius: 10px;
+    padding-bottom: 5px;
 }
 
 #ConverterItemDescription {
     font-style: italic;
+}
+
+#ConverterSearch {
+
 }

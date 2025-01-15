@@ -6,8 +6,8 @@ from watchdog.observers import Observer
 from PySide6.QtCore import Signal
 from PySide6.QtCore import QObject
 
-from pieapp.utils.logger import logger
-from pieapp.api.exceptions import PieException
+from pieapp.api.utils.logger import logger
+from pieapp.api.exceptions import PieError
 from pieapp.api.registries.locales.helpers import translate
 
 
@@ -62,7 +62,7 @@ class FileSystemEventHandler(QObject, events.FileSystemEventHandler):
 class FileSystemWatcher(QObject):
     observer = None
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: QObject = None) -> None:
         QObject.__init__(self, parent)
         self._event_handler = FileSystemEventHandler(self)
 
@@ -82,7 +82,7 @@ class FileSystemWatcher(QObject):
         try:
             self.observer.start()
         except Exception as e:
-            raise PieException(f'{translate("Cant start an observer in")} - {folder}', str(e))
+            raise PieError(f'{translate("Cant start an observer in")} - {folder}', str(e))
 
     def stop(self) -> None:
         if self.observer is not None:
@@ -92,4 +92,4 @@ class FileSystemWatcher(QObject):
                 del self.observer
                 self.observer = None
             except RuntimeError as e:
-                raise PieException(translate(f"An error has been occurred while stopping observer"), str(e))
+                raise PieError(translate(f"An error has been occurred while stopping observer"), str(e))
