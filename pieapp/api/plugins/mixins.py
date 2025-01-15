@@ -1,41 +1,16 @@
 from __future__ import annotations
 
-from PySide6.QtCore import Signal
+from pieapp.api.globals import Global
+from pieapp.api.models.scopes import Scope
 
-from pieapp.api.converter.models import MediaFile
-from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.menus.mixins import MenuAccessorMixin
+from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
+
+from pieapp.api.registries.tabs.mixins import TabBarAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
-
-
-class MediaPluginMixin:
-    # Emit on snapshot created
-    sig_on_snapshot_created = Signal(MediaFile)
-
-    # Emit on snapshot deleted
-    sig_on_snapshot_deleted = Signal(MediaFile)
-
-    # Emit on snapshot modified
-    sig_on_snapshot_modified = Signal(MediaFile)
-
-    # Emit on global snapshot restored
-    sig_on_snapshot_restored = Signal()
-
-    # Global snapshots
-
-    # Emit on global snapshot created
-    sig_on_global_snapshot_created = Signal(MediaFile)
-
-    # Emit on global snapshot deleted
-    sig_on_global_snapshot_deleted = Signal(MediaFile, int)
-
-    # Emit on global snapshot modified
-    sig_on_global_snapshot_modified = Signal(MediaFile)
-
-    # Emit on global snapshot restored
-    sig_on_global_snapshot_restored = Signal()
+from pieapp.api.registries.shortcuts.mixins import ShortcutAccessorMixin
 
 
 class CoreAccessorsMixin(
@@ -45,9 +20,36 @@ class CoreAccessorsMixin(
     pass
 
 
-class LayoutAccessorsMixins(
-    MenuAccessorMixin,
+class WidgetsAccessorMixins(
+    ToolButtonAccessorMixin,
     ToolBarAccessorMixin,
-    ToolButtonAccessorMixin
+    TabBarAccessorMixin,
+    MenuAccessorMixin,
+    ShortcutAccessorMixin,
 ):
     pass
+
+
+class PluginWidgetMixin(ConfigAccessorMixin, WidgetsAccessorMixins):
+    """
+    Brand NEW "Essential and life improvement mixins for your plugin!"
+
+    Contains:
+        * Geometry methods
+        * ConfigAccessorMixin methods
+    """
+
+    def get_default_geometry(self) -> list:
+        main_window_geometry = self.parent().geometry()
+        main_window_geometry = main_window_geometry.x(), main_window_geometry.y()
+        return [*main_window_geometry, *Global.DEFAULT_WINDOW_SIZE]
+
+    def save_widget_geometry(self) -> None:
+        geometry = self.geometry()
+        self.update_plugin_config("ui.geometry", Scope.User, (
+            geometry.x(), geometry.y(), geometry.size().width(), geometry.size().height()
+        ))
+        self.save_plugin_config("ui", Scope.User, create=True)
+
+    def restore_widget_geometry(self) -> None:
+        self.set_geometry(*self.get_plugin_config("ui.geometry", Scope.User, self.get_default_geometry()))
