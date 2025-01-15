@@ -1,23 +1,24 @@
 from __feature__ import snake_case
 
 import os
-from pathlib import Path
 
-from PySide6.QtCore import QSettings, Signal
-from PySide6.QtWidgets import QMainWindow, QApplication
+from PySide6.QtCore import QSettings, Signal, QPoint
+from PySide6.QtWidgets import QMainWindow
 
-from pieapp.api.gloader import Global
-from pieapp.api.models.themes import ThemeProperties
-from pieapp.api.plugins import Plugins
-from pieapp.api.registries.models import Scope
+from pieapp.api.globals import Global
+from pieapp.api.models.scopes import Scope
+from pieapp.api.models.themes import ThemeProperties, IconName
+
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.utils.files import delete_directory, create_temp_directory, create_output_directory
-from pieapp.widgets.messagebox import MessageCheckBox
+from pieapp.api.utils.qapp import get_application
+
+from pieapp.widgets.messagebox import MessageBox
 
 
 class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
+    sig_on_before_main_window_show = Signal()
     sig_on_main_window_show = Signal()
     sig_on_main_window_close = Signal()
 
@@ -31,7 +32,7 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
                 Global.PIEAPP_ORGANIZATION_DOMAIN
             )
 
-        self.set_minimum_size(*Global.DEFAULT_MIN_WINDOW_SIZE)
+        self.set_minimum_size(*Global.DEFAULT_WINDOW_SIZE)
 
         settings = QSettings()
         self.restore_geometry(settings.value("geometry", self.save_geometry()))
@@ -40,45 +41,25 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
             f'{translate("Pie Audio • Simple Audio Editor")} '
             f'({Global.PIEAPP_VERSION} - {Global.PIEAPP_VERSION_STAGE})'
         )
-        self.set_window_icon(self.get_svg_icon(
-            key="icons/bolt.svg",
-            prop=ThemeProperties.AppIconColor
-        ))
+        self.set_window_icon(self.get_svg_icon(IconName.Bolt, prop=ThemeProperties.AppIconColor))
 
     def init(self) -> None:
-        root_temp_directory = self.get_config(
-            "folders.temp_directory",
-            Scope.User,
-            Global.USER_ROOT / Global.DEFAULT_TEMP_FOLDER_NAME
-        )
-        root_output_directory = self.get_config(
-            "folders.output_directory",
-            Scope.User,
-            Path(os.path.expanduser("~"), "output")
-        )
-
-        workflow_temp_directory = create_temp_directory(root_temp_directory)
-        self.update_config("workflow.temp_directory", Scope.User, str(workflow_temp_directory), temp=True)
-
-        workflow_output_directory = create_output_directory(root_output_directory)
-        self.update_config("workflow.output_directory", Scope.User, str(workflow_output_directory), temp=True)
-
-        Plugins.init_plugins()
+        self.sig_on_before_main_window_show.emit()
+        self.move_to_primary_screen()
+        self.show()
         self.sig_on_main_window_show.emit()
 
     def close_event(self, event) -> None:
         if self.close_handler(True):
             self.sig_on_main_window_close.emit()
-            temp_directory = self.get_config("workflow.temp_directory", Scope.User)
-            delete_directory(temp_directory)
             event.accept()
         else:
             event.ignore()
 
     def close_handler(self, cancellable: bool = True) -> bool:
-        show_exit_dialog = self.get_config("ui.show_exit_dialog", Scope.User, True)
+        show_exit_dialog = self.get_app_config("config.ui.show_exit_dialog", Scope.User, True)
         if cancellable and show_exit_dialog:
-            message_box = MessageCheckBox(
+            message_box = MessageBox(
                 parent=self,
                 window_title=translate("Exit"),
                 message_text=translate("Are you sure you want to exit?"),
@@ -86,7 +67,7 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
             message_box.set_check_box_text(translate("Don't show this message again?"))
             message_box.exec()
             if message_box.is_checked():
-                self.update_config("ui.show_exit_dialog", Scope.User, False, True)
+                self.update_app_config("config.ui.show_exit_dialog", Scope.User, False, True)
                 self.sig_on_main_window_close.emit()
 
             if message_box.clicked_button() == message_box.no_button:
@@ -95,6 +76,36 @@ class MainWindow(ConfigAccessorMixin, ThemeAccessorMixin, QMainWindow):
         settings = QSettings()
         settings.set_value("geometry", self.save_geometry())
 
-        QApplication.process_events()
+        get_application().process_events()
 
         return True
+
+    def _is_on_visible_screen(self):
+        """Detect if the window is placed on a visible screen."""
+        x, y = self.geometry().x(), self.geometry().y()
+        qapp = get_application().instance()
+        current_screen = qapp.screen_at(QPoint(x, y))
+
+        if current_screen is None:
+            return False
+        else:
+            return True
+
+    def move_to_primary_screen(self):
+        """Move the window to the primary screen if necessary."""
+        if self._is_on_visible_screen():
+            return
+
+        qapp = get_application().instance()
+        primary_screen_geometry = qapp.primary_screen().available_geometry()
+        x, y = primary_screen_geometry.x(), primary_screen_geometry.y()
+
+        if self.is_maximized():
+            self.show_normal()
+
+        self.move(QPoint(x, y))
+
+        # With this we want to maximize only the Spyder main window and not the
+        # plugin ones, which usually are not maximized.
+        if not hasattr(self, "is_window_widget"):
+            self.show_maximized()
