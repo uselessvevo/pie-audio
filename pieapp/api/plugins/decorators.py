@@ -5,7 +5,7 @@ def on_plugin_available(func: callable = None, plugin: str = None) -> callable:
     if func is None:
         return functools.partial(on_plugin_available, plugin=plugin)
 
-    func.plugin_listen = plugin
+    func.plugin_listen_event = plugin
     return func
 
 
@@ -13,5 +13,5 @@ def on_plugin_shutdown(func: callable = None, plugin: str = None) -> callable:
     if func is None:
         return functools.partial(on_plugin_shutdown, plugin=plugin)
 
-    func.plugin_teardown = plugin
+    func.plugin_teardown_event = plugin
     return func
