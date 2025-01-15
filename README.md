@@ -8,7 +8,7 @@
 ## Documentation
 [English](https://github.com/uselessvevo/pie-audio/tree/main/docs/en/piekit) • [Русский](https://github.com/uselessvevo/pie-audio/tree/main/docs/ru/piekit)
 
-Before I start, I want to say a special thanks to the creators of the [spyder-ide](https://github.com/spyder-ide/spyder) project, as some code is based on it.
+Before we start, I want to say a special thanks to the creators of the [spyder-ide](https://github.com/spyder-ide/spyder) project, as some code is based on it.
 
 ## Installing and running the application
 Since the project is under active development, the installation package available on pypi is not yet available. This means that you will need the git versioning program and the pip package manager. Let's get started.
@@ -29,7 +29,7 @@ Mark folder as source <br><br>
 Add or load environment variables <br><br>
 ![Pycharm](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/Pycharm.%20Add%20env%20file.png)
 <br>
-## In VS Code <br>
+## In Visual Studio Code <br>
 Add environment variables file <br><br>
 ![VSCode](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/VSCode.%20Add%20env%20file.png)
 
