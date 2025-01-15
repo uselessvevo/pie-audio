@@ -2,11 +2,11 @@ from __feature__ import snake_case
 
 from PySide6 import QtWidgets
 
-from pieapp.api.gloader import Global
-from pieapp.utils.qt import restart_application
+from pieapp.api.globals import Global
+from pieapp.api.utils.qapp import get_application
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
 from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
 
 
 class LocaleWizardPage(
@@ -20,7 +20,7 @@ class LocaleWizardPage(
 
         self._parent = parent
         self._locales = Global.LOCALES
-        self._cur_locale = self.get_config("locale.locale", Scope.User, default=Global.DEFAULT_LOCALE)
+        self._cur_locale = self.get_app_config("config.locale", Scope.User, default=Global.DEFAULT_LOCALE)
         self._locales_reversed = {v: k for (k, v) in self._locales.items()}
 
         self.combo_box = QtWidgets.QComboBox()
@@ -39,9 +39,8 @@ class LocaleWizardPage(
 
     def finish(self):
         new_locale = self._locales_reversed.get(self.combo_box.current_text())
-        self.update_config("locale", Scope.User, {"locale": new_locale})
-        self.save_config(Scope.User)
+        self.update_app_config("config.locale", Scope.User, new_locale, save=True)
         if self._cur_locale != new_locale:
-            restart_application()
+            get_application().restart()
 
         return new_locale
