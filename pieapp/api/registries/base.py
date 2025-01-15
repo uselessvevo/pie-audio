@@ -43,6 +43,9 @@ class BaseRegistry:
     def index(self, *args, **kwargs) -> int:
         pass
 
+    def destroy(self) -> None:
+        pass
+
     def __getitem__(self, *args, **kwargs) -> Any:
         return self.get(*args, **kwargs)
 

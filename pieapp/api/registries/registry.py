@@ -1,51 +1,61 @@
 from typing import Type
 
-from pieapp.utils.logger import logger
-from pieapp.utils.modules import import_by_string
+from pieapp.api.utils.logger import logger
+from pieapp.api.utils.modules import import_by_string
 from pieapp.api.registries.base import BaseRegistry
 
 
-class RegistryContainer:
+class _RegistryContainer:
 
     def __init__(self) -> None:
-        # Dictionary of `BaseRegistry` based classes
-        self._managers_instances: dict[str, BaseRegistry] = {}
+        # Dictionary of `BaseRegistry` based instances
+        self._registries: dict[str, BaseRegistry] = {}
 
-    def init_from_class(self, manager_class: Type[BaseRegistry]) -> None:
+    def init_from_class(self, registry_class: Type[BaseRegistry]) -> None:
         """
-        Initialize manager manualy. Pass manager class (not an instance) with args and kwargs
+        Initialize registry manualy. Pass registry class (not an instance) with args and kwargs
         For example:
-        >>> from pieapp.api.registries.registry import Registry
-        >>> from pieapp.api.registries.configs.manager import ConfigRegistry
-        >>> Registry.init(ConfigRegistry, PathConfig(...), ...)
+        >>> from pieapp.api.registries.registry import RegistryContainer
+        >>> from pieapp.api.registries.configs.registry import ConfigRegistry
+        >>> RegistryContainer.init_from_class(ConfigRegistry)
         """
-        manager_instance = manager_class()
-        self._managers_instances[manager_instance.name] = manager_instance
-        logger.debug(f"Initializing \"{manager_instance.__class__.__name__}\"")
-        manager_instance.init()
+        registry_instance = registry_class()
+        self._registries[registry_instance.name] = registry_instance
+        logger.debug(f"Initializing \"{registry_instance.__class__.__name__}\"")
+        registry_instance.init()
 
     def init_from_string(self, import_string: str) -> None:
         """
-        Initialize manager from import string
+        Initialize registry from import string
         """
-        manager_instance = import_by_string(import_string)
-        self._managers_instances[manager_instance.name] = manager_instance
-        logger.debug(f"Initializing \"{manager_instance.__class__.__name__}\"")
-        manager_instance.init()
+        registry_instance = import_by_string(import_string)
+        self._registries[registry_instance.name] = registry_instance
+        logger.debug(f"Initializing \"{registry_instance.__class__.__name__}\"")
+        registry_instance.init()
 
-    def restore(self, *managers: tuple[BaseRegistry], all_managers: bool = False):
-        managers = reversed(self._managers_instances.keys()) if all_managers else managers
-        managers_instances = (self._managers_instances.get(i) for i in managers)
-        for manager_instance in managers_instances:
-            logger.debug(f"Restoring \"{manager_instance.__class__.__name__}\"")
-            manager_instance.restore()
+    def shutdown(self, *registries: tuple[BaseRegistry], all_registries: bool = False):
+        registries = reversed(self._registries.keys()) if all_registries else registries
+        registries_instances = (self._registries.get(i) for i in registries)
+        for registry_instance in registries_instances:
+            logger.debug(f"Restoring \"{registry_instance.__class__.__name__}\"")
+            registry_instance.destroy()
 
-    def reload(self, *managers: tuple[BaseRegistry], all_managers: bool = False):
-        managers = reversed(self._managers_instances.keys()) if all_managers else managers
-        managers_instances = (self._managers_instances.get(i) for i in managers)
-        for manager_instance in managers_instances:
-            logger.debug(f"Reloading \"{manager_instance.__class__.__name__}\"")
-            manager_instance.reload()
+    def restore(self, *registries: tuple[BaseRegistry], all_registries: bool = False):
+        registries = reversed(self._registries.keys()) if all_registries else registries
+        registries_instances = (self._registries.get(i) for i in registries)
+        for registry_instance in registries_instances:
+            logger.debug(f"Restoring \"{registry_instance.__class__.__name__}\"")
+            registry_instance.restore()
+
+    def reload(self, *registries: tuple[BaseRegistry], all_registries: bool = False):
+        registries = reversed(self._registries.keys()) if all_registries else registries
+        registries_instances = (self._registries.get(i) for i in registries)
+        for registry_instance in registries_instances:
+            logger.debug(f"Reloading \"{registry_instance.__class__.__name__}\"")
+            registry_instance.reload()
+
+    def get_registry(self, registry_name: str) -> BaseRegistry:
+        return self._registries.get(registry_name, None)
 
 
-Registry = RegistryContainer()
+RegistryContainer = _RegistryContainer()
