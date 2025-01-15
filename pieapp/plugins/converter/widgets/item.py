@@ -12,12 +12,14 @@ from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
+from pieapp.widgets.buttons import Button
+from pieapp.widgets.buttons import ButtonRole
 from pieapp.api.converter.models import MediaFile
+from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 
 from converter.models import ConverterThemeProperties
 from converter.widgets.list import ConverterListWidget
 from converter.widgets.menu import QuickActionMenu
-from pieapp.api.registries.snapshots.manager import Snapshots
 
 
 class ConverterItem(QWidget):
@@ -27,7 +29,7 @@ class ConverterItem(QWidget):
         parent: ConverterListWidget,
         media_file: MediaFile,
         color_props: dict,
-        sig_on_snapshot_modified: Signal
+        sig_snapshot_modified: Signal
     ) -> None:
         super().__init__(parent)
 
@@ -61,35 +63,35 @@ class ConverterItem(QWidget):
         item_hbox_layout = QHBoxLayout()
         item_hbox_layout.set_contents_margins(12, 15, 10, 15)
 
-        self._file_format_label = QLabel()
-        self._file_format_label.set_fixed_size(48, 48)
-        self._file_format_label.set_object_name("ConverterItemFormat")
-        self._file_format_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
+        self._action_button = Button(ButtonRole.Default)
+        self._action_button.set_fixed_size(48, 48)
+        self._action_button.set_object_name("ConverterItemFormat")
+        # self._file_format_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
         self._get_file_format_color()
 
-        item_hbox_layout.add_widget(self._file_format_label, 0)
+        item_hbox_layout.add_widget(self._action_button, 0)
         item_hbox_layout.add_layout(main_grid_layout, 1)
         self.set_layout(item_hbox_layout)
 
         self.set_title(media_file.info.filename)
-        self.set_description(f"{media_file.info.bit_rate}kb/s")
-        self.set_icon(media_file.info.file_format)
+        self.set_description(media_file.info.bit_rate_string)
+        # self.set_icon()
 
-        sig_on_snapshot_modified.connect(lambda: self._on_snapshot_modified(media_file.name))
+        sig_snapshot_modified.connect(lambda: self._on_snapshot_modified(media_file.name))
 
     @Slot(MediaFile)
     def _on_snapshot_modified(self, media_file_name: str) -> None:
         if self._media_file.name != media_file_name:
             return
 
-        media_file = Snapshots.get(media_file_name)
+        media_file = SnapshotRegistry.get(media_file_name)
         if not media_file:
             return
 
         self.set_title(media_file.info.filename)
         # TODO: Добавить список с ед. измерений в настройках конвертора
         self.set_description(f"{media_file.info.bit_rate}kb/s")
-        self.set_icon(media_file.info.file_format)
+        # self.set_icon()
 
     @property
     def media_file(self) -> MediaFile:
@@ -138,10 +140,10 @@ class ConverterItem(QWidget):
     def set_description(self, description: str) -> None:
         self._description_label.set_text(description)
 
-    def set_icon(self, file_format: str) -> None:
-        self._file_format_label.set_text(file_format)
+    def set_icon(self, icon: QIcon) -> None:
+        self._action_button.set_icon(icon)
 
     def _get_file_format_color(self) -> None:
         color = self._color_props.get(self._media_file.info.file_format,
                                       self._color_props.get(ConverterThemeProperties.DefaultColor))
-        self._file_format_label.set_style_sheet("#ConverterItemFormat {background-color: %s;}" % color)
+        # self._file_format_label.set_style_sheet("#ConverterItemFormat {background-color: %s;}" % color)
