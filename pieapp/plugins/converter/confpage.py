@@ -23,7 +23,7 @@ from pieapp.api.models.themes import ThemeProperties, IconName
 from pieapp.api.plugins.confpage import ConfigPage
 from pieapp.api.converter.workers import DownloadWorker
 
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
@@ -34,7 +34,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
     name = SysPlugin.Converter
 
     def get_icon(self) -> "QIcon":
-        return self.get_svg_icon(IconName.App, scope=self.name)
+        return self.get_svg_icon(IconName.App, self.name)
 
     def get_title(self) -> str:
         return translate("Converter")
@@ -44,17 +44,17 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
 
     def init(self) -> None:
         # Get config
-        self._ffmpeg_root = Path(self.get_config("ffmpeg.root", Scope.User))
+        self._ffmpeg_root = Path(self.get_app_config("ffmpeg.root", Scope.User))
 
         self._main_widget = QWidget()
         self._main_widget.set_object_name("ConfigPageWidget")
 
         self._download_thread = QThread()
         self._download_worker = DownloadWorker()
-        self._download_worker.sig_download_progress.connect(self._show_downloader_progress)
-        self._download_worker.sig_download_done.connect(self._show_downloader_ready)
-        self._download_worker.sig_unpack_archive_message.connect(self._download_worker_unpack)
-        self._download_worker.sig_unpack_ready.connect(self._unpack_ready)
+        self._download_worker.signals.download_progress.connect(self._show_downloader_progress)
+        self._download_worker.signals.download_done.connect(self._show_downloader_ready)
+        self._download_worker.signals.unpack_archive_message.connect(self._download_worker_unpack)
+        self._download_worker.signals.unpack_ready.connect(self._unpack_ready)
         self._download_worker.move_to_thread(self._download_thread)
         self._download_thread.started.connect(self._download_worker.start)
         self._download_thread.finished.connect(self._download_worker.delete_later)
@@ -103,7 +103,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
         self._main_widget.set_layout(main_form_layout)
 
     def _start_downloader_thread(self) -> None:
-        self.set_enabled(True)
+        self.set_disabled(True)
         self._progress_bar.set_visible(True)
         self._ffmpeg_line_edit.set_enabled(False)
         self._download_button.set_enabled(False)
@@ -131,7 +131,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
     @Slot(str)
     def _unpack_ready(self, ffmpeg_path: str) -> None:
         self.set_modified(True)
-        self.set_enabled(True)
+        self.set_disabled(False)
         self._progress_bar.set_visible(False)
         self._download_thread.terminate()
 
@@ -143,7 +143,7 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
         )
         directory_path = QDir.to_native_separators(ffmpeg_directory)
         if directory_path:
-            self.update_config("ffmpeg.root", Scope.User, directory_path)
+            self.update_app_config("ffmpeg.root", Scope.User, directory_path)
             directory_path_obj = Path(directory_path)
             binaries = list(map(Path, ("ffmpeg.exe", "ffprobe.exe", "ffplay.exe")))
             for binary in binaries:
@@ -153,18 +153,18 @@ class ConverterConfigPage(ConfigPage, ConfigAccessorMixin, ThemeAccessorMixin):
                         f"Please, download ffmpeg bundle from https://ffmpeg.org/download.html"
                     )
 
-                self.update_config(f"ffmpeg.{binary.stem!s}", Scope.User, str(directory_path_obj / binary))
+                self.update_app_config(f"ffmpeg.{binary.stem!s}", Scope.User, str(directory_path_obj / binary))
 
             self._ffmpeg_root = directory_path
             self._ffmpeg_line_edit.set_text(directory_path)
             self.set_modified(True)
 
     def accept(self) -> None:
-        self.save_config(Scope.User)
+        self.save_app_config("config", Scope.User)
         self.set_modified(False)
 
     def cancel(self) -> None:
-        self.restore_config(Scope.User)
+        self.restore_app_config("config", Scope.User)
 
     def set_page_state(self, disable: bool) -> None:
         self._ffmpeg_line_edit.set_disabled(disable)

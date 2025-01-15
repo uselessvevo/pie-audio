@@ -6,30 +6,30 @@ from typing import Union, Any
 
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QObject, Qt
-from PySide6.QtWidgets import QWidget, QToolBar, QToolButton
+from PySide6.QtWidgets import QWidget, QToolBar, QToolButton, QSizePolicy
 
-from pieapp.api.exceptions import PieException
+from pieapp.api.exceptions import PieError
 
 
 class PieToolBar(QToolBar):
-    """ A really simplified horizontal toolbar-like layout """
+
+    def __init__(self, name: str = None, parent: QObject = None) -> None:
+        super().__init__(parent)
+        self._name = name
+        self._items: OrderedDict[str, dict] = OrderedDict({})
+        self._keys: list[Any] = list(self._items.keys())
+
+        self.set_object_name(self.name.capitalize())
+        self.set_floatable(False)
+        self.set_contents_margins(6, 0, 10, 0)
+        self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
 
     @property
     def name(self) -> str:
         return self._name
 
-    def __init__(self, parent: QObject = None, name: str = None) -> None:
-        super().__init__(parent)
-
-        self._name = name
-
-        # Toolbar items
-        self._items: OrderedDict[str, dict] = OrderedDict({})
-        self._keys: list[Any] = list(self._items.keys())
-
-        self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)
-
-    def add_toolbar_item(
+    def add_item(
         self,
         name: str,
         item: Union[QWidget, QAction],
@@ -37,7 +37,7 @@ class PieToolBar(QToolBar):
         before: str = None
     ) -> QObject:
         if name in self._items:
-            raise PieException(f"PieToolBar \"{name}\" already registered")
+            raise PieError(f"PieToolBar \"{name}\" already registered")
 
         self._items[name] = {"item": item, "after": after, "before": before}
         self._keys.append(name)

@@ -4,37 +4,47 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget
 
-from pieapp.api.exceptions import PieException
-from pieapp.utils.qt import get_main_window
+from pieapp.api.exceptions import PieError
+from pieapp.api.utils.qt import get_main_window
 
 
 class ConfigPage(QObject):
+    # Config page name
     name: str
+
+    # Config page parent (to list in treeview)
     root: str
 
-    # Show page on top
+    # Set field as `True` to show page on top
     is_builtin_page: bool = False
+
+    # Config page signals
 
     # Emit when all plugins are ready
     sig_plugins_ready = Signal()
-    
+
     # Emit when application need to restart
     sig_restart_requested = Signal(str)
-    
+
     # Emit when page is registered
     sig_page_registered = Signal(bool)
-    
+
     # Emit to toggle apply button state
     sig_toggle_apply_button = Signal(bool)
 
     # Emit to block all form's elements and action buttons
     sig_toggle_config_page_state = Signal(bool)
 
-    def __int__(self, parent=None) -> None:
+    def __int__(self, name: str, parent: QObject = None) -> None:
         super().__init__(parent)
 
         self._is_modified = False
         self._is_blocked = False
+        self._name = name
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     def init(self) -> None:
         """ Initialize page """
@@ -49,13 +59,13 @@ class ConfigPage(QObject):
         """
         On accept event
         """
-        raise PieException(f"Method `accept` in \"{self.name}\" configuration page must be implemented")
+        raise PieError(f"Method `accept` in \"{self.name}\" configuration page must be implemented")
 
     def cancel(self) -> None:
         """
         On cancel event
         """
-        raise PieException(f"Method `cancel` in \"{self.name}\" configuration page must be implemented")
+        raise PieError(f"Method `cancel` in \"{self.name}\" configuration page must be implemented")
 
     def set_page_state(self, disable: bool) -> None:
         pass
@@ -64,13 +74,13 @@ class ConfigPage(QObject):
         raise NotImplementedError
 
     def get_icon(self) -> Union[QIcon, None]:
-        return None
+        raise NotImplementedError
 
     def get_page_widget(self) -> QWidget:
         """
         Retrieve page widget
         """
-        raise PieException(f"Method f`{self.__qualname__}` in \"{self.name}\" configuration page must be implemented")
+        raise NotImplementedError
 
     @property
     def is_modified(self) -> bool:
@@ -95,4 +105,4 @@ class ConfigPage(QObject):
             main_window.show_restart_dialog()
 
     def __repr__(self) -> str:
-        return f"({self.__class__.__name__}) <name: {self.name}, parent: {self.root}>"
+        return f"({self.__class__.__name__}) <name: {self.name}>"

@@ -10,10 +10,10 @@ from PySide6.QtWidgets import QHeaderView
 from PySide6.QtWidgets import QGridLayout
 
 from pieapp.api.models.themes import IconName
-from pieapp.api.registries.models import Scope
+from pieapp.api.models.scopes import Scope
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.configs.mixins import ConfigAccessorMixin
-from pieapp.api.registries.shortcuts.manager import Shortcuts
+from pieapp.api.registries.shortcuts.registry import ShortcutRegistry
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 
 from pieapp.api.plugins import ConfigPage
@@ -22,7 +22,7 @@ from pieapp.widgets.delegates import ReadOnlyDelegate
 
 
 class ShortcutBlankConfigPage(ConfigPage, ThemeAccessorMixin):
-    name = SysPlugin.ShortcutBlank
+    name = SysPlugin.ShortcutManager
     scope = Scope.Root
 
     def get_icon(self) -> Union[QIcon, None]:
@@ -47,7 +47,7 @@ class ShortcutConfigPage(
     ConfigAccessorMixin,
     ThemeAccessorMixin,
 ):
-    name = SysPlugin.Shortcut
+    name = SysPlugin.ShortcutManager
     scope = Scope.Root
 
     def get_icon(self) -> QIcon:
@@ -79,7 +79,7 @@ class ShortcutConfigPage(
         table_widget.set_item(0, 1, QTableWidgetItem(translate(translate("Description"))))
         table_widget.set_item(0, 2, QTableWidgetItem(translate(translate("Shortcut key"))))
 
-        registry_values = list(filter(lambda v: v["hidden"] is False, Shortcuts.values()))
+        registry_values = list(filter(lambda v: v["hidden"] is False, ShortcutRegistry.values()))
         for row, data in enumerate(registry_values, 1):
             table_widget.set_item(row, 0, QTableWidgetItem(data["title"]))
             table_widget.set_item(row, 1, QTableWidgetItem(data["description"]))

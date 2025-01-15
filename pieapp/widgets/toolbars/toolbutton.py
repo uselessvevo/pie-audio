@@ -38,6 +38,6 @@ def create_tool_button(
         tool_button.set_object_name(object_name)
 
     tool_button.set_focus_policy(focus_type)
-    tool_button.set_icon_size(QSize(*icon_size))
+    tool_button.set_icon_size(QSize(*icon_size or (24, 24)))
 
     return tool_button
