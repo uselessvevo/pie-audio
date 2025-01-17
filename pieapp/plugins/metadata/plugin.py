@@ -1,4 +1,5 @@
 import copy
+from pathlib import Path
 
 from PySide6.QtGui import Qt
 from PySide6.QtCore import Slot
@@ -19,7 +20,7 @@ from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 from pieapp.api.utils.logger import logger
 from pieapp.api.utils.validators import date_validator
 from pieapp.widgets.delegates import ReadOnlyDelegate
-from pieapp.widgets.tables import MediaTableItemValue
+from pieapp.widgets.mediatableitem import MediaTableWidgetItem
 
 from pieapp.api.models.indexes import Index
 from pieapp.api.converter.models import MediaFile, update_media_file
@@ -32,7 +33,6 @@ from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
 
 from metadata.widgets.albumpicker import AlbumCoverPicker
-from metadata.widgets.quickaction import MetadataEditorQuickAction
 
 
 class MetadataEditor(
@@ -187,81 +187,169 @@ class MetadataEditor(
         # TODO: Do something about this mess
         self._disconnect_signals()
         contributors_list_widget = QListWidget()
+        contributors_list_widget.itemChanged.connect(self._contributors_list_widget_changed)
         contributors_list_widget.add_items(media_file.metadata.additional_contributors)
 
         album_cover = media_file.metadata.album_cover
-        image_path = album_cover.image_path.as_posix() if album_cover.image_path.exists() else None
+        image_path = Path(album_cover.image_path).as_posix() if Path(album_cover.image_path).exists() else None
         picker_icon = self.get_svg_icon(
-            key="icons/folder-open.svg",
+            key=IconName.FolderOpen,
             prop=ThemeProperties.AppIconColor
         )
         album_cover_widget = AlbumCoverPicker(
             parent=self._dialog,
+            media_file_name=media_file.name,
             image_path=image_path,
             picker_icon=picker_icon,
             placeholder_text=translate("No image selected"),
             select_album_cover_text=translate("Select album cover image")
         )
+        album_cover_widget.sig_album_cover_changed.connect(self._album_cover_changed)
 
-        self._table_widget.set_item(0, 1, MediaTableItemValue(
-            media_file.name, "metadata.title", media_file.metadata.title
-        ))
-        self._table_widget.set_item(1, 1, MediaTableItemValue(
-            media_file.name, "metadata.genre", media_file.metadata.genre
-        ))
-        self._table_widget.set_item(2, 1, MediaTableItemValue(
-            media_file.name, "metadata.subgenre", media_file.metadata.subgenre
-        ))
-        self._table_widget.set_item(3, 1, MediaTableItemValue(
-            media_file.name, "metadata.track_number", media_file.metadata.track_number
-        ))
-        self._table_widget.set_cell_widget(4, 1, album_cover_widget)
-        self._table_widget.set_item(5, 1, MediaTableItemValue(
-            media_file.name, "metadata.primary_artist", media_file.metadata.primary_artist
-        ))
-        self._table_widget.set_item(6, 1, MediaTableItemValue(
-            media_file.name, "metadata.publisher", media_file.metadata.publisher
-        ))
-        self._table_widget.set_item(7, 1, MediaTableItemValue(
-            media_file.name, "metadata.explicit_content", media_file.metadata.explicit_content
-        ))
-        self._table_widget.set_item(8, 1, MediaTableItemValue(
-            media_file.name, "metadata.lyrics_language", media_file.metadata.lyrics_language
-        ))
-        self._table_widget.set_item(9, 1, MediaTableItemValue(
-            media_file.name, "metadata.lyrics_publisher", media_file.metadata.lyrics_publisher
-        ))
-        self._table_widget.set_item(10, 1, MediaTableItemValue(
-            media_file.name, "metadata.composition_owner", media_file.metadata.composition_owner
-        ))
-        self._table_widget.set_item(11, 1, MediaTableItemValue(
-            media_file.name, "metadata.release_language", media_file.metadata.release_language
-        ))
-        self._table_widget.set_item(12, 1, MediaTableItemValue(
-            media_file.name, "metadata.featured_artist", media_file.metadata.featured_artist
-        ))
-        self._table_widget.set_cell_widget(13, 1, contributors_list_widget)
-        self._table_widget.set_item(14, 1, MediaTableItemValue(
-            media_file.name, "metadata.year_of_composition",
-            media_file.metadata.year_of_composition, date_validator
-        ))
+        self._table_widget.set_item(
+            0, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.title",
+                value=media_file.metadata.title
+            )
+        )
+        self._table_widget.set_item(
+            1, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.genre",
+                value=media_file.metadata.genre
+            )
+        )
+        self._table_widget.set_item(
+            2, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.subgenre",
+                value=media_file.metadata.subgenre
+            )
+        )
+        self._table_widget.set_item(
+            3, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.track_number",
+                value=media_file.metadata.track_number
+            )
+        )
+        self._table_widget.set_cell_widget(
+            4, 1, album_cover_widget
+        )
+        self._table_widget.set_item(
+            5, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.primary_artist",
+                value=media_file.metadata.primary_artist
+            )
+        )
+        self._table_widget.set_item(
+            6, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.publisher",
+                value=media_file.metadata.publisher
+            )
+        )
+        self._table_widget.set_item(
+            7, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.explicit_content",
+                value=media_file.metadata.explicit_content
+            )
+        )
+        self._table_widget.set_item(
+            8, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.lyrics_language",
+                value=media_file.metadata.lyrics_language
+            )
+        )
+        self._table_widget.set_item(
+            9, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.lyrics_publisher",
+                value=media_file.metadata.lyrics_publisher
+            )
+        )
+        self._table_widget.set_item(
+            10, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.composition_owner",
+                value=media_file.metadata.composition_owner
+            )
+        )
+        self._table_widget.set_item(
+            11, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.release_language",
+                value=media_file.metadata.release_language
+            )
+        )
+        self._table_widget.set_item(
+            12, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.featured_artist",
+                value=media_file.metadata.featured_artist
+            )
+        )
+        self._table_widget.set_cell_widget(
+            13, 1, contributors_list_widget
+        )
+        self._table_widget.set_item(
+            14, 1,
+            MediaTableWidgetItem(
+                media_file_name=media_file.name,
+                field="metadata.year_of_composition",
+                value=media_file.metadata.year_of_composition,
+                validators=[date_validator]
+            )
+        )
 
-        self._table_widget.itemChanged.connect(self._item_changed)
+        self._table_widget.itemChanged.connect(self._table_item_changed)
 
-    def _item_changed(self, item: MediaTableItemValue) -> None:
+    @Slot(int)
+    def _contributors_list_widget_changed(self, index: int) -> None:
+        pass
+
+    @Slot(str, str)
+    def _album_cover_changed(self, media_file_name: str, image_path: str) -> None:
+        media_file_copy = copy.deepcopy(SnapshotRegistry.get_local_snapshot(media_file_name, Index.End))
+        # TODO: Save different image sizes
+        media_file_copy = update_media_file(
+            media_file_copy,
+            "metadata.album_cover.image_path",
+            image_path
+        )
+        self._change_controls_state(media_file_copy)
+
+    @Slot(MediaTableWidgetItem)
+    def _table_item_changed(self, item: MediaTableWidgetItem) -> None:
         item = self._table_widget.item(item.row(), item.column())
-        if not isinstance(item, MediaTableItemValue):
+        if not isinstance(item, MediaTableWidgetItem):
             return
 
         item.set_text(item.text())
         media_file_name = item.media_file_name
         media_file_copy = copy.deepcopy(SnapshotRegistry.get_local_snapshot(media_file_name, Index.End))
         media_file_copy = update_media_file(media_file_copy, item.field, item.value)
+        self._change_controls_state(media_file_copy)
 
-        if not SnapshotRegistry.contains_local(media_file_copy.name, media_file_copy):
-            SnapshotRegistry.add_local_snapshot(media_file_copy.name, media_file_copy)
-            # SnapshotRegistry.sync_local_to_global(media_file_copy.name)
-            # SnapshotRegistry.sync_global_to_inner()
+    def _change_controls_state(self, media_file: MediaFile) -> None:
+        if not SnapshotRegistry.contains_local(media_file.name, media_file):
+            SnapshotRegistry.add_local_snapshot(media_file.name, media_file)
             self._save_button.set_enabled(True)
             self._undo_button.set_enabled(True)
             self._redo_button.set_enabled(False)

@@ -1,6 +1,6 @@
 from __feature__ import snake_case
 
-from PySide6.QtCore import QEvent, QRect
+from PySide6.QtCore import QEvent, QRect, Signal
 from PySide6.QtGui import QAction
 from PySide6.QtGui import QCursor
 from PySide6.QtGui import QEnterEvent
@@ -27,10 +27,12 @@ class ImagePreview(QToolTip):
 
 
 class AlbumCoverPicker(QLineEdit):
+    sig_album_cover_changed = Signal(str, str)
 
     def __init__(
         self,
-        parent=None,
+        parent: "QObject" = None,
+        media_file_name: str = None,
         image_path: str = None,
         picker_icon: QIcon = None,
         placeholder_text: str = "No image selected",
@@ -38,6 +40,7 @@ class AlbumCoverPicker(QLineEdit):
     ) -> None:
         super(AlbumCoverPicker, self).__init__(parent)
 
+        self._media_file_name = media_file_name
         self._image_path = image_path
         self._placeholder_text = f"<{placeholder_text}>"
         self._select_album_cover_text = select_album_cover_text
@@ -76,17 +79,18 @@ class AlbumCoverPicker(QLineEdit):
     def prepare_image(self) -> None:
         pass
 
-    def load_image(self, image=None) -> None:
-        image = image if image else self._image_path
+    def load_image(self, image_path=None) -> None:
+        image_path = image_path if image_path else self._image_path
         file_path = QFileDialog.get_open_file_name(
             parent=self,
             caption=translate(self._select_album_cover_text),
-            dir=image or str(Global.USER_ROOT),
+            dir=image_path or str(Global.USER_ROOT),
         )
         if file_path[0]:
             self.clear()
-            image = file_path[0]
-            self.insert(image)
+            image_path = file_path[0]
+            self.insert(image_path)
             self._image_preview = ImagePreview(self, file_path[0])
 
-        self._image_path = image
+        self._image_path = image_path
+        self.sig_album_cover_changed.emit(self._media_file_name, image_path)

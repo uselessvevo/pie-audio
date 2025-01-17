@@ -103,8 +103,10 @@ def update_media_file(
     is_origin: bool = False
 ) -> MediaFile:
     path, _, target = field_path.rpartition(".")
+    prev_object = media_file
     for attrname in path.split("."):
-        base = getattr(media_file, attrname)
+        base = getattr(prev_object, attrname)
+        prev_object = base
         setattr(base, target, value)
 
     media_file.is_origin = is_origin
