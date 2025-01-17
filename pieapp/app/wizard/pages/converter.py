@@ -38,7 +38,7 @@ class ConverterWizardPage(
         self._download_worker.move_to_thread(self._download_thread)
         self._download_thread.started.connect(self._download_worker.start)
         self._download_thread.finished.connect(self._download_worker.delete_later)
-        self._download_worker.destroyed.connect(self._download_worker.destroyed)
+        self._download_thread.destroyed.connect(self._download_worker.destroyed)
 
         self.line_edit_action = QAction()
         self.line_edit_action.set_icon(self.style().standard_icon(QStyle.StandardPixmap.SP_DirIcon))
