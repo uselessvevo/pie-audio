@@ -135,8 +135,11 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
             temp_directory = Path(temp_directory)
             message_box = MessageBox(
                 parent=self._parent,
-                window_title=translate("Open previously opened files?"),
-                message_text=translate("Open previously opened files? Unless, all files will be removed!"),
+                yes_button_text=translate("Restore"),
+                no_button_text=translate("Discard"),
+                window_title=translate("Restore session?"),
+                message_text=translate("You have unsaved files from your previous session.\n"
+                                       "Would you like to restore them, or start fresh?"),
                 show_checkbox=False,
                 show_close_button=False
             )
