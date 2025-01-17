@@ -87,15 +87,6 @@ class MediaFile:
     is_deleted: bool = dt.field(default=False)
 
 
-@dt.dataclass(eq=True, slots=True)
-class Project:
-    uuid: str
-    title: Optional[str]
-    description: Optional[str]
-    directory: str
-    files: list[MediaFile]
-
-
 def update_media_file(
     media_file: MediaFile,
     field_path: str,
