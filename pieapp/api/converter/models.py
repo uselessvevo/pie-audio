@@ -87,15 +87,6 @@ class MediaFile:
     is_deleted: bool = dt.field(default=False)
 
 
-@dt.dataclass(eq=True, slots=True)
-class Project:
-    uuid: str
-    title: Optional[str]
-    description: Optional[str]
-    directory: str
-    files: list[MediaFile]
-
-
 def update_media_file(
     media_file: MediaFile,
     field_path: str,
@@ -103,8 +94,10 @@ def update_media_file(
     is_origin: bool = False
 ) -> MediaFile:
     path, _, target = field_path.rpartition(".")
+    prev_object = media_file
     for attrname in path.split("."):
-        base = getattr(media_file, attrname)
+        base = getattr(prev_object, attrname)
+        prev_object = base
         setattr(base, target, value)
 
     media_file.is_origin = is_origin
