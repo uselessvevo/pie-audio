@@ -30,7 +30,7 @@ class WidgetsAccessorMixins(
     pass
 
 
-class PluginWidgetMixin(ConfigAccessorMixin, WidgetsAccessorMixins):
+class DialogWidgetMixin(ConfigAccessorMixin, WidgetsAccessorMixins):
     """
     Brand NEW "Essential and life improvement mixins for your plugin!"
 
