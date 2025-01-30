@@ -10,6 +10,7 @@ from PySide6.QtCore import Signal, QObject
 
 from pieapp.api.exceptions import PieError
 from pieapp.api.globals import Global
+from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.types import PluginType
 from pieapp.api.utils.modules import import_by_path
@@ -174,6 +175,8 @@ class PluginRegistryClass(QObject):
 
                 # Initializing plugin instance
                 plugin_instance = getattr(plugin_module, "main")(self._main_window, plugin_path)
+                # if plugin_instance.name in (SysPlugin.Converter, SysPlugin.MetadataEditor):
+                #     continue
                 if plugin_instance:
                     self.initialize_plugin(plugin_instance)
 

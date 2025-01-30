@@ -5,10 +5,10 @@ from typing import Union
 from PySide6.QtGui import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import QSize, Slot, Signal
-from PySide6.QtWidgets import QWidget
-from PySide6.QtWidgets import QToolButton
+from PySide6.QtWidgets import QWidget, QToolButton
 from PySide6.QtWidgets import QHBoxLayout
 
+from pieapp.api.converter.models import MediaFile
 from pieapp.api.registries.locales.helpers import translate
 
 
@@ -77,7 +77,7 @@ class QuickActionMenu(QWidget):
         tool_button.set_icon(icon)
         tool_button.set_icon_size(QSize(14, 14))
         tool_button.set_object_name("QuickActionToolButton")
-        tool_button.clicked.connect(lambda: callback(self._media_file_name))
+        tool_button.clicked.connect(callback)
 
         self._items_dict[name] = tool_button
         item_index: Union[int, None] = None

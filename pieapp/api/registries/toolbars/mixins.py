@@ -30,7 +30,7 @@ class ToolBarAccessorMixin:
             PieToolBar
         """
         toolbar = PieToolBar(toolbar_name)
-        if tab_name is str:
+        if type(tab_name) is str:
             tab_registry = RegistryContainer.get_registry(SysRegistry.Tabs)
             if tab_registry is not None:
                 tab_registry.add_tab_item(tab_name, toolbar_name, toolbar)

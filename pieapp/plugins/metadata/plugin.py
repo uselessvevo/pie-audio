@@ -15,6 +15,8 @@ from pieapp.api.globals import Global
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
+from pieapp.api.plugins.mixins import DialogWidgetMixin, CoreAccessorsMixin
+from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 
 from pieapp.api.utils.logger import logger
@@ -27,43 +29,20 @@ from pieapp.api.converter.models import MediaFile, update_media_file
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.themes import ThemeProperties, IconName
 
-from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
-from pieapp.api.registries.toolbuttons.mixins import ToolButtonAccessorMixin
-
 from metadata.widgets.albumpicker import AlbumCoverPicker
 
 
-class MetadataEditor(
-    PiePlugin,
-    ThemeAccessorMixin,
-    ToolBarAccessorMixin,
-    ToolButtonAccessorMixin,
-):
+class MetadataEditor(PiePlugin, CoreAccessorsMixin, DialogWidgetMixin):
     name = SysPlugin.MetadataEditor
-    requires = [SysPlugin.Converter]
-    file_formats = ["mp3", "mp4", "wav", "m4a", "wma", "asf"]
+    requires = [SysPlugin.Converter, SysPlugin.MainToolBar]
 
     def get_plugin_icon(self) -> "QIcon":
         return self.get_svg_icon(IconName.App, self.name)
-
-    def _close_event(self, _, local_snapshot_name: str) -> None:
-        self._save_button.set_enabled(False)
-        self._redo_button.set_enabled(False)
-        self._undo_button.set_enabled(False)
-        SnapshotRegistry.sync_global_to_inner()
-        SnapshotRegistry.restore_local_snapshots(local_snapshot_name)
-
-    def _key_press_event(self, event) -> None:
-        if event.key() != Qt.Key.Key_Escape:
-            self._dialog.key_press_event(event)
 
     @on_plugin_available(plugin=SysPlugin.Converter)
     def on_converter_available(self) -> None:
         self._converter = get_plugin(SysPlugin.Converter)
         # self._converter.register_quick_action(MetadataEditorQuickAction)
-
         self._converter.sig_table_item_added.connect(self._on_table_item_added)
 
         self._dialog = QDialog(self._parent)
@@ -71,9 +50,12 @@ class MetadataEditor(
         self._dialog.set_object_name("MetadataEditor")
         self._dialog.set_window_icon(self.get_plugin_icon())
         self._dialog.resize(*Global.DEFAULT_WINDOW_SIZE)
-        self._main_grid_layout = QGridLayout()
 
-        # Setup maintoolbar
+    @on_plugin_available(plugin=SysPlugin.MainToolBar)
+    def on_toolbar_available(self) -> None:
+        # Setup main toolbar
+        main_grid_layout = QGridLayout()
+
         self._toolbar = self.add_toolbar(self.name)
         self._toolbar.set_fixed_height(50)
         self._toolbar.set_contents_margins(6, 0, 10, 0)
@@ -112,7 +94,6 @@ class MetadataEditor(
         self.add_toolbar_item(self._toolbar.name, "save", self._save_button)
         self.add_toolbar_item(self._toolbar.name, "undo", self._undo_button)
         self.add_toolbar_item(self._toolbar.name, "redo", self._redo_button)
-        self._toolbar.call()
 
         # Setup table widget
 
@@ -126,29 +107,26 @@ class MetadataEditor(
         self._table_widget.horizontal_header().set_section_resize_mode(1, QHeaderView.ResizeMode.Stretch)
         self._table_widget.set_item_delegate_for_column(0, ReadOnlyDelegate(self._dialog))
 
-        self._main_grid_layout.add_widget(self._toolbar, 0, 0, Qt.AlignmentFlag.AlignTop)
-        self._main_grid_layout.add_widget(self._table_widget)
+        main_grid_layout.add_widget(self._toolbar, 0, 0, Qt.AlignmentFlag.AlignTop)
+        main_grid_layout.add_widget(self._table_widget)
 
-        self._dialog.set_layout(self._main_grid_layout)
+        self._dialog.set_layout(main_grid_layout)
+
+    def on_plugins_ready(self) -> None:
+        self._toolbar.call()
 
     @Slot(MediaFile, int)
     def _on_table_item_added(self, media_file: MediaFile, index: int) -> None:
-        self._converter.add_quick_action(
+        self._converter.register_quick_action(
             name="edit",
             text=translate("Edit"),
             icon=self.get_plugin_icon(),
-            callback=self._edit_file_button_connect,
+            callback=lambda: self._edit_file_button_connect(media_file.name),
             before="delete",
-            enabled=media_file.info.file_format.lower() in self.file_formats
+            enabled=media_file.info.file_format.lower() in Global.METADATA_EDITOR_ALLOWED_FILE_FORMATS
         )
 
     def _edit_file_button_connect(self, media_file_name: str) -> None:
-        """
-        -map 0:0 -map 1:0
-        -c copy -id3v2_version 3
-        -metadata:s:v title="album cover"
-        -metadata:s:v comment="cover (front)" out.mp3
-        """
         media_file: MediaFile = SnapshotRegistry.get(media_file_name)
         self._dialog.close_event = lambda event: self._close_event(event, media_file.name)
         SnapshotRegistry.add_local_snapshot(media_file.name, media_file)
@@ -375,6 +353,17 @@ class MetadataEditor(
         self._save_button.set_enabled(True)
         self._undo_button.set_enabled(True)
         self._redo_button.set_disabled(is_array_end)
+
+    def _close_event(self, _, local_snapshot_name: str) -> None:
+        self._save_button.set_enabled(False)
+        self._redo_button.set_enabled(False)
+        self._undo_button.set_enabled(False)
+        SnapshotRegistry.sync_global_to_inner()
+        SnapshotRegistry.restore_local_snapshots(local_snapshot_name)
+
+    def _key_press_event(self, event) -> None:
+        if event.key() != Qt.Key.Key_Escape:
+            self._dialog.key_press_event(event)
 
 
 def main(parent, plugin_path):

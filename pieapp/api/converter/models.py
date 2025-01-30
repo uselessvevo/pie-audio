@@ -75,24 +75,21 @@ class Metadata:
 
 @dt.dataclass(eq=True, slots=True)
 class MediaFile:
+    # UUID field stays the same for all snapshots
     uuid: str
     name: str
     path: Path
     output_path: Path
     info: Optional[FileInfo] = None
     metadata: Optional[Metadata] = None
+    generation: int = dt.field(default=0)
     # Snapshot is original file (without any new edits)
     is_origin: Optional[bool] = dt.field(default=False)
     # Snapshot is marked for deletion and will be deleted after application restart
     is_deleted: bool = dt.field(default=False)
 
 
-def update_media_file(
-    media_file: MediaFile,
-    field_path: str,
-    value: Any,
-    is_origin: bool = False
-) -> MediaFile:
+def update_media_file(media_file: MediaFile, field_path: str, value: Any) -> MediaFile:
     path, _, target = field_path.rpartition(".")
     prev_object = media_file
     for attrname in path.split("."):
@@ -100,6 +97,6 @@ def update_media_file(
         prev_object = base
         setattr(base, target, value)
 
-    media_file.is_origin = is_origin
+    media_file.generation += 1
     media_file.uuid = str(uuid.uuid4())
     return media_file

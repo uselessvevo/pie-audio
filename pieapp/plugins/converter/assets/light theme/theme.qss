@@ -1,10 +1,19 @@
-QListWidget::item:hover,
-QListWidget::item:disabled:hover,
-QListWidget::item,
-QListWidget::item:selected
+QListWidget::item
 {
     background-color: transparent;
     border: none;
+}
+
+QListWidget::item:hover {
+    background-color: @contentListItemHovered;
+}
+
+QListWidget::item:selected {
+    background-color: @contentListItemSelected;
+}
+
+QListWidget::item:disabled {
+    background-color: @contentListItemDisabled;
 }
 
 QListWidget::item:hover:!active

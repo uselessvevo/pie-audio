@@ -6,10 +6,10 @@ from pieapp.api.models.indexes import Index
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.statusbars import MessageStatus
 
+from pieapp.api.utils.qt import get_main_window
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
-from pieapp.api.utils.qt import get_main_window
 from pieapp.widgets.iconlabel import IconLabel
 
 

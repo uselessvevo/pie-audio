@@ -14,9 +14,6 @@ from pieapp.api.converter.models import MediaFile
 class SnapshotRegistryClass(QObject, BaseRegistry):
     name = SysRegistry.Snapshots
 
-    # Emit when all files are loaded
-    sig_snapshots_loaded = Signal()
-
     # Emit on snapshot created
     sig_snapshot_created = Signal(MediaFile)
 
@@ -27,7 +24,7 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
     sig_snapshot_modified = Signal(MediaFile)
 
     # Emit on inner snapshots registry restored
-    sig_snapshot_restored = Signal()
+    sig_snapshots_restored = Signal()
 
     # Global snapshots
 
@@ -278,7 +275,7 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
         self._global_snapshots_index = 0
         self._local_snapshots = {}
         self._local_snapshots_index = {}
-        self.sig_snapshot_restored.emit()
+        self.sig_snapshots_restored.emit()
         self.sig_global_snapshot_restored.emit()
         logger.debug("Snapshots restored")
 

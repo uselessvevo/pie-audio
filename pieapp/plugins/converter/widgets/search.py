@@ -7,7 +7,7 @@ from pieapp.api.models.themes import IconName
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 
 
-class ConverterSearch(QLineEdit, ThemeAccessorMixin):
+class ContentListSearch(QLineEdit, ThemeAccessorMixin):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
