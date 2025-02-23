@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget, QToolButton
 from PySide6.QtWidgets import QHBoxLayout
 
 from pieapp.api.converter.models import MediaFile
+from pieapp.api.plugins.quickaction import QuickAction
 from pieapp.api.registries.locales.helpers import translate
 
 
@@ -43,54 +44,38 @@ class QuickActionMenu(QWidget):
     def get_items(self) -> list[QToolButton]:
         return list(self._items_dict.values())
 
-    def add_item(
-        self,
-        name: str,
-        text: str,
-        icon: QIcon,
-        callback: callable = None,
-        before: str = None,
-        after: str = None,
-        enabled: bool = True
-    ) -> QToolButton:
+    def add_item(self, quick_action: QuickAction) -> QToolButton:
         """
-        This method allows us to register a tool button on the shorcuts menu
-
-        Args:
-            * name (str): Button name
-            * text (str): Text displayed on tool button
-            * icon (QIcon): Icon displayed on tool button
-            * callback (callable|None): Method to call on button click event. Requires `media_file:<MediaFile>`
-            * before (str): Display a button before passed button
-            * after (str): Display a button after passed button
-            * enabled (bool): Enable button or not. Default is `True`
+        This method allows us to register a tool button to the shortcuts menu
         """
-        if self._items_dict.get(name):
+        if self._items_dict.get(quick_action.name):
             return
 
         tool_button = QToolButton()
-        if enabled is False:
-            tool_button.set_tool_tip(translate("Plugin doesn't support this file format"))
-
-        tool_button.set_enabled(enabled)
-        tool_button.set_text(text)
-        tool_button.set_icon(icon)
+        tool_button.set_text(quick_action.get_tooltip())
+        tool_button.set_icon(quick_action.get_icon())
         tool_button.set_icon_size(QSize(14, 14))
-        tool_button.set_object_name("QuickActionToolButton")
-        tool_button.clicked.connect(callback)
 
-        self._items_dict[name] = tool_button
+        is_enabled, reason = quick_action.get_enabled()
+        tool_button.set_enabled(is_enabled)
+        if is_enabled is False:
+            tool_button.set_tool_tip(reason)
+
+        tool_button.set_object_name("QuickActionToolButton")
+        tool_button.clicked.connect(lambda: quick_action.on_click())
+
+        self._items_dict[quick_action.full_name] = tool_button
         item_index: Union[int, None] = None
-        if before:
-            item_index = self._items_list.index((before, self._items_dict[before]))
-        elif after:
-            item_index = self._items_list.index((after, self._items_dict[after])) + 1
+        if quick_action.before:
+            item_index = self._items_list.index((quick_action.before, self._items_dict[quick_action.before]))
+        elif quick_action.after:
+            item_index = self._items_list.index((quick_action.after, self._items_dict[quick_action.after])) + 1
 
         if item_index is not None:
-            self._items_list.insert(item_index, (name, tool_button))
+            self._items_list.insert(item_index, (quick_action.name, tool_button))
             self._menu_hbox.insert_widget(item_index, tool_button, alignment=Qt.AlignmentFlag.AlignRight)
         else:
-            self._items_list.append((name, tool_button))
+            self._items_list.append((quick_action.name, tool_button))
             self._menu_hbox.add_widget(tool_button, alignment=Qt.AlignmentFlag.AlignRight)
 
         return tool_button

@@ -125,6 +125,7 @@ LAYOUT_REGISTRIES = [
     "pieapp.api.registries.tabs.registry.TabRegistry",
     "pieapp.api.registries.toolbars.registry.ToolBarRegistry",
     "pieapp.api.registries.toolbuttons.registry.ToolButtonRegistry",
+    "pieapp.api.registries.quickactions.registry.QuickActionRegistry"
 ]
 ALBUM_COVER_EXTENSIONS = [
     "jpeg", "jpg", "png",

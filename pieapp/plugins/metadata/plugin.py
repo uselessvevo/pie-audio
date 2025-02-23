@@ -11,11 +11,13 @@ from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
 
+from metadata.widgets.quickaction import EditQuickAction
 from pieapp.api.globals import Global
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
 from pieapp.api.plugins.mixins import DialogWidgetMixin, CoreAccessorsMixin
+from pieapp.api.plugins.quickaction import QuickAction
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 
@@ -36,14 +38,11 @@ class MetadataEditor(PiePlugin, CoreAccessorsMixin, DialogWidgetMixin):
     name = SysPlugin.MetadataEditor
     requires = [SysPlugin.Converter, SysPlugin.MainToolBar]
 
-    def get_plugin_icon(self) -> "QIcon":
-        return self.get_svg_icon(IconName.App, self.name)
-
     @on_plugin_available(plugin=SysPlugin.Converter)
     def on_converter_available(self) -> None:
-        self._converter = get_plugin(SysPlugin.Converter)
-        # self._converter.register_quick_action(MetadataEditorQuickAction)
-        self._converter.sig_table_item_added.connect(self._on_table_item_added)
+        converter = get_plugin(SysPlugin.Converter)
+        quick_action = EditQuickAction(self, enabled=False)
+        converter.register_quick_action(quick_action)
 
         self._dialog = QDialog(self._parent)
         # self._dialog.key_press_event = self._key_press_event
@@ -112,21 +111,9 @@ class MetadataEditor(PiePlugin, CoreAccessorsMixin, DialogWidgetMixin):
 
         self._dialog.set_layout(main_grid_layout)
 
-    def on_plugins_ready(self) -> None:
         self._toolbar.call()
 
-    @Slot(MediaFile, int)
-    def _on_table_item_added(self, media_file: MediaFile, index: int) -> None:
-        self._converter.register_quick_action(
-            name="edit",
-            text=translate("Edit"),
-            icon=self.get_plugin_icon(),
-            callback=lambda: self._edit_file_button_connect(media_file.name),
-            before="delete",
-            enabled=media_file.info.file_format.lower() in Global.METADATA_EDITOR_ALLOWED_FILE_FORMATS
-        )
-
-    def _edit_file_button_connect(self, media_file_name: str) -> None:
+    def show_editor_table(self, media_file_name: str) -> None:
         media_file: MediaFile = SnapshotRegistry.get(media_file_name)
         self._dialog.close_event = lambda event: self._close_event(event, media_file.name)
         SnapshotRegistry.add_local_snapshot(media_file.name, media_file)

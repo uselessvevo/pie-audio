@@ -12,6 +12,7 @@ from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
+from pieapp.api.plugins.quickaction import QuickAction
 from pieapp.widgets.buttons import Button
 from pieapp.widgets.buttons import ButtonRole
 from pieapp.api.converter.models import MediaFile
@@ -99,28 +100,11 @@ class QuickActionList(QWidget):
         for item in self._quick_action_menu.get_items():
             item.set_enabled(False)
 
-    def add_quick_action(
-        self,
-        name: str,
-        text: str,
-        icon: QIcon,
-        callback: callable = None,
-        before: str = None,
-        after: str = None,
-        enabled: bool = False,
-    ) -> QToolButton:
+    def add_quick_action(self, quick_action: QuickAction) -> QToolButton:
         """
         A proxy method to interact with `ConverterItemMenu`
         """
-        return self._quick_action_menu.add_item(
-            name=name,
-            text=text,
-            icon=icon,
-            callback=callback,
-            before=before,
-            after=after,
-            enabled=enabled
-        )
+        return self._quick_action_menu.add_item(quick_action)
 
     def set_list_widget(self, item: QListWidgetItem) -> None:
         self._list_widget = item

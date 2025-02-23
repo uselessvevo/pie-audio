@@ -7,14 +7,17 @@ import os
 from PySide6.QtCore import Signal, Qt, Slot
 from PySide6.QtWidgets import QLabel, QHBoxLayout, QListWidgetItem, QGridLayout, QFileDialog
 
+from converter.widgets.quickaction import DeleteQuickAction
 from pieapp.api.models.scopes import Scope
 from pieapp.api.converter.models import MediaFile
 from pieapp.api.globals import Global
 from pieapp.api.models.themes import ThemeProperties, IconName
 from pieapp.api.models.toolbars import ToolBarItem
 from pieapp.api.plugins.mixins import CoreAccessorsMixin, WidgetsAccessorMixins
+from pieapp.api.plugins.quickaction import QuickAction
 from pieapp.api.plugins.widgets import PiePluginWidget
 from pieapp.api.registries.locales.helpers import translate
+from pieapp.api.registries.quickactions.registry import QuickActionRegistry
 from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 from pieapp.api.utils.logger import logger
 from pieapp.widgets.waitingspinner import create_wait_spinner
@@ -41,7 +44,7 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
     sig_snapshots_restored = Signal()
 
     # Emit on new list item added
-    sig_table_item_added = Signal(MediaFile, int)
+    sig_table_item_added = Signal(MediaFile)
 
     def init(self) -> None:
         self.supported_formats = ""
@@ -214,51 +217,32 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
 
     def on_file_deleted(self, index) -> None:
         self._content_list_widget.take_item(index)
-
-    def on_file_modified(self, index: int, media_file: MediaFile) -> None:
-        pass
+        del self._converter_item_widgets[index]
+        if len(self._converter_item_widgets) < 1:
+            self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
 
     # Plugin to Widget methods - SnapshotRegistry signals handlers
 
-    def on_snapshot_created(self, state: bool):
+    def on_snapshot_created(self):
+        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
+
+    def on_snapshot_deleted(self, index: int, media_file: MediaFile):
+        self._content_list_widget.take_item(index)
+        del self._converter_item_widgets[index]
+        if len(self._converter_item_widgets) < 1:
+            self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
+
+    def on_snapshot_modified(self, state: bool, media_file: MediaFile):
         self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(state)
 
-    def on_snapshot_modified(self, state: bool):
-        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(state)
-
-    def on_snapshot_deleted(self, state: bool):
-        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(state)
-
-    def on_snapshot_restored(self, state: bool):
-        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(state)
+    def on_snapshots_restored(self):
+        self.clear_content_list()
+        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(False)
 
     # QuickAction methods
 
-    def register_quick_action(
-        self,
-        name: str,
-        text: str,
-        icon: "QIcon",
-        callback: callable = None,
-        before: str = None,
-        after: str = None,
-        enabled: bool = True,
-    ) -> None:
-        """
-        A proxy method to add an item in the QuickActionMenu
-        """
-        for index, item in enumerate(self._converter_item_widgets):
-            tool_button = item.add_quick_action(
-                name=name,
-                text=text,
-                icon=icon,
-                callback=callback,
-                before=before,
-                after=after,
-                enabled=enabled,
-            )
-
-    def fill_content_list(self, media_files: list):
+    def render_quick_actions(self, media_files: list):
+        # Проходимся по всем файлам и рендерим все элементы
         if not media_files:
             return
 
@@ -266,7 +250,7 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
         self._list_grid_layout.add_widget(self._search, 0, 0)
         self._list_grid_layout.add_widget(self._content_list_widget, 1, 0)
 
-        for index, media_file in enumerate(media_files):
+        for media_file in media_files:
             # TODO: Добавить встроенный элемент с краткой информацией по файлу
             # TODO: Добавить меню со второстепенными/неважными элементами, чтобы не переполнять меню
             quick_action_list = QuickActionList(
@@ -277,14 +261,15 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
             quick_action_list.set_description(media_file.info.bit_rate_string)
             quick_action_list.sig_snapshot_modified.connect(self.sig_snapshot_modified)
 
-            # Add default buttons
-            quick_action_list.add_quick_action(
-                name="delete",
-                text=translate("Delete"),
-                icon=self.get_svg_icon(IconName.Delete, prop=ThemeProperties.ErrorColor),
-                callback=self.delete_tool_button_clicked,
-                enabled=True
-            )
+            # Add default QuickActions
+            delete_quick_action = DeleteQuickAction(self.plugin, enabled=True)
+            delete_quick_action.set_snapshot_name(media_file.name)
+            quick_action_list.add_quick_action(delete_quick_action)
+
+            # Add registered QuickActions
+            for quick_action in QuickActionRegistry.values():
+                quick_action.set_snapshot_name(media_file.name)
+                quick_action_list.add_quick_action(quick_action)
 
             widget_layout = QHBoxLayout()
             widget_layout.add_stretch()
@@ -299,9 +284,6 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
             self._content_list_widget.add_item(item)
             self._content_list_widget.set_item_widget(item, quick_action_list)
             self._converter_item_widgets.append(quick_action_list)
-            self.sig_table_item_added.emit(media_file, index)
+            self.sig_table_item_added.emit(media_file)
 
         self.get_tool_button(self.name, ToolBarItem.Clear).set_enabled(True)
-
-    def delete_tool_button_clicked(self, media_file: MediaFile) -> None:
-        self.sig_snapshot_deleted.emit(media_file)

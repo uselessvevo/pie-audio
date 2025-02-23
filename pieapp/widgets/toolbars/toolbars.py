@@ -64,5 +64,8 @@ class PieToolBar(QToolBar):
         for item in items_list:
             if isinstance(item, QAction):
                 self.add_action(item)
-            elif isinstance(item, QToolButton):
+            elif isinstance(item, QWidget):
                 self.add_widget(item)
+
+    def __repr__(self) -> str:
+        return f"({self.__class__.__name__}) <id: {id(self)}, name: {self.name}>"

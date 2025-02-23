@@ -12,6 +12,8 @@ from PySide6.QtCore import QThreadPool
 
 from converter.widgets.mainwidget import ConverterPluginWidget
 from pieapp.api.globals import Global
+from pieapp.api.plugins.quickaction import QuickAction
+from pieapp.api.registries.quickactions.registry import QuickActionRegistry
 from pieapp.api.utils.files import delete_files
 from pieapp.api.utils.files import delete_directory
 from pieapp.api.utils.files import create_temp_directory
@@ -64,8 +66,10 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
     optional = [SysPlugin.MainMenuBar]
     widget_class = ConverterPluginWidget
 
+    sig_files_ready = Signal()
+
     # Emit on converter table item added to list
-    sig_table_item_added = Signal(MediaFile, int)
+    sig_table_item_added = Signal(MediaFile)
 
     # Emit on snapshot created
     sig_snapshot_created = Signal(MediaFile)
@@ -160,15 +164,15 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
         self.save_app_config("workflow", Scope.User)
 
     def _connect_snapshot_signals(self) -> None:
-        self.sig_snapshot_created.connect(SnapshotRegistry.sig_snapshot_created)
-        self.sig_snapshot_deleted.connect(SnapshotRegistry.sig_snapshot_deleted)
-        self.sig_snapshot_modified.connect(SnapshotRegistry.sig_snapshot_modified)
-        self.sig_snapshots_restored.connect(SnapshotRegistry.sig_snapshots_restored)
+        SnapshotRegistry.sig_snapshot_created.connect(self._on_snapshot_created)
+        SnapshotRegistry.sig_snapshot_modified.connect(self._on_snapshot_modified)
+        SnapshotRegistry.sig_snapshot_deleted.connect(self._on_snapshots_deleted)
+        SnapshotRegistry.sig_snapshots_restored.connect(self._on_snapshots_restored)
 
     def connect_widget_signals(self) -> None:
         widget = self.get_widget()
         widget.sig_files_selected.connect(self.on_files_selected)
-        widget.sig_snapshot_deleted.connect(self._on_delete_snapshot)
+        widget.sig_snapshot_deleted.connect(self._on_snapshots_deleted)
         widget.sig_table_item_added.connect(self._on_table_item_added)
 
     def init(self) -> None:
@@ -180,28 +184,11 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
 
     # QuickAction public proxy methods
 
-    def register_quick_action(
-        self,
-        name: str,
-        text: str,
-        icon: "QIcon",
-        callback: callable = None,
-        before: str = None,
-        after: str = None,
-        enabled: bool = True,
-    ) -> None:
+    def register_quick_action(self, quick_action: QuickAction) -> None:
         """
         A proxy method to add an item in the QuickActionMenu
         """
-        self.get_widget().register_quick_action(
-            name=name,
-            text=text,
-            icon=icon,
-            callback=callback,
-            before=before,
-            after=after,
-            enabled=enabled,
-        )
+        QuickActionRegistry.add(quick_action)
 
     def deregister_quick_action(self, index: int, name: str):
         pass
@@ -221,9 +208,6 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
         delete_files(SnapshotRegistry.values(as_path=True))
         SnapshotRegistry.restore()
         self.get_widget().clear_content_list()
-
-    def _on_delete_snapshot(self, media_file: MediaFile) -> None:
-        SnapshotRegistry.remove(media_file.name)
 
     # Public methods
 
@@ -266,7 +250,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
             return
 
         media_file = SnapshotRegistry.get(f"{file_path.parts[-2]}/{file_path.name}")
-        index = SnapshotRegistry.index(media_file.name)
+        index = len(SnapshotRegistry.values())
         self.get_widget().on_file_created(index, media_file)
 
     @Slot(Path, str, bool)
@@ -307,27 +291,22 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
     # SnapshotRegistry protected proxy methods
 
     @Slot(MediaFile)
-    def on_snapshot_created(self, snapshot: MediaFile) -> None:
-        self.sig_snapshot_created.emit(snapshot)
-        if len(SnapshotRegistry.values()) > 0:
-            self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
+    def _on_snapshot_created(self, snapshot: MediaFile) -> None:
+        self.get_widget().on_snapshot_created()
 
     @Slot(MediaFile)
-    def on_snapshot_modified(self, snapshot: MediaFile) -> None:
-        if len(SnapshotRegistry.values()) > 0:
-            self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(True)
+    def _on_snapshot_modified(self, snapshot: MediaFile) -> None:
+        index = SnapshotRegistry.index(snapshot.name)
+        self.get_widget().on_snapshot_modified(index, snapshot)
 
     @Slot(MediaFile)
-    def on_snapshot_deleted(self, snapshot: MediaFile) -> None:
-        convert_button = self.get_tool_button(self.name, ToolBarItem.Convert)
-        if SnapshotRegistry.count() > 0:
-            convert_button.set_enabled(True)
-        else:
-            convert_button.set_enabled(False)
+    def _on_snapshots_deleted(self, snapshot: MediaFile) -> None:
+        index = SnapshotRegistry.index(snapshot.name)
+        self.get_widget().on_snapshot_deleted(index, snapshot)
 
     @Slot(MediaFile)
-    def on_snapshot_restored(self) -> None:
-        self.get_tool_button(self.name, ToolBarItem.Convert).set_enabled(False)
+    def _on_snapshots_restored(self) -> None:
+        self.get_widget().on_snapshots_restored()
 
     # CopyFilesWorker handlers
 
@@ -386,7 +365,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
     def probe_worker_finished(self, models_list: list[MediaFile]) -> None:
         self._watcher.start(self.get_app_config("workflow.temp_directory", Scope.User))
         self.get_widget().probe_worker_finished()
-        self.get_widget().fill_content_list(models_list)
+        self.get_widget().render_quick_actions(models_list)
 
         status_bar = get_plugin(SysPlugin.StatusBar)
         if status_bar:
@@ -412,13 +391,15 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
         pool = QThreadPool.global_instance()
         pool.start(converter_worker)
 
-    @Slot()
-    def converter_worker_finished(self) -> None:
-        logger.debug("Finished")
+    # ConverterWorker handlers
 
     @Slot()
     def converter_worker_started(self) -> None:
         pass
+
+    @Slot()
+    def converter_worker_finished(self) -> None:
+        logger.debug("Finished")
 
     @Slot(Exception, int)
     def converter_worker_failed(self, exception: Exception, index: int) -> None:
@@ -445,8 +426,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
 
     # Widget methods
 
-    def _on_table_item_added(self, media_file: MediaFile, index: int) -> None:
-        self.sig_table_item_added.emit(media_file, index)
+    def _on_table_item_added(self, media_file: MediaFile) -> None:
+        self.sig_table_item_added.emit(media_file)
 
     # Plugin event methods
 
@@ -455,8 +436,8 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
         widget = self.get_widget()
         layout_manager = get_plugin(SysPlugin.Layout)
         main_layout = layout_manager.get_layout(Layout.Main)
-        main_layout.add_layout(widget.get_main_layout(), 0, 0, Qt.AlignmentFlag.AlignCenter)
         if main_layout:
+            main_layout.add_layout(widget.get_main_layout(), 0, 0, Qt.AlignmentFlag.AlignCenter)
             layout_manager.add_layout(self.name, widget.get_main_layout(), Layout.Main)
 
     @on_plugin_available(plugin=SysPlugin.Preferences)
@@ -539,7 +520,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
             index=Index.Start,
             triggered=self.get_widget().open_files
         )
- 
+
     @on_plugin_available(plugin=SysPlugin.MainToolBar)
     def on_toolbar_available(self) -> None:
         """
