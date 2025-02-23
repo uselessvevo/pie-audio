@@ -252,10 +252,8 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
             self.sig_snapshot_deleted.emit(snapshots[name][version:Index.End])
             del snapshots[name][version:Index.End]
         else:
-            logger.debug(f"{self._inner_snapshots[index]=}")
-            logger.debug(f"{self._inner_snapshots[index][Index.End]=}")
             self.sig_snapshot_deleted.emit(self._inner_snapshots[index][Index.End])
-            del self._inner_snapshots[index][-1]
+            del self._inner_snapshots[index]
             del self.inner_snapshots_keys[index]
 
         logger.debug(f"Snapshot {name}:{version} was removed")
