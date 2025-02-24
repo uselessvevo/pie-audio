@@ -131,13 +131,12 @@ ALBUM_COVER_EXTENSIONS = [
     "jpeg", "jpg", "png",
 ]
 AUDIO_EXTENSIONS = [
-    "m3u", "m3u8", "au", "snd", "mp3", "mp2", "aif",
-    "aifc", "aiff", "ra", "wav", "mpa", "aa", "aac",
-    "aax", "ac3", "adt", "adts", "ape", "ec3", "flac",
-    "lpcm", "m4b", "m4p", "m4r", "mid", "midi", "mka",
-    "mpc", "oga", "ogg", "opus", "pls", "rmi", "tak",
-    "wave", "wax", "weba", "wma", "wv", "m4a", "ogg",
-    "wav",
+    ("All supported file formats", "(*.mp3;*.wav;*.wave;*.wma;*.aiff;*.ogg;*.flac;*.m3u;*.aac)"),
+    ("MP3 audio format", "(*.mp3)"),
+    ("Uncompressed audio formats", "(*.wav;*.wave;*.flac;*.aiff)"),
+    ("Lossy audio format", "(*.ogg)"),
+    ("Apple's Advanced Audio Coding", "(*.aac)"),
+    ("All files", "(*.*)"),
 ]
 IMAGE_EXTENSIONS = [
     "bmp", "gif", "ief", "jpg", "jpe", "jpeg", "png",

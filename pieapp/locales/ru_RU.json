@@ -51,5 +51,11 @@
     "Checking files": "Проверяем файлы",
     "Shortcuts": "Раскладка клавиатуры",
     "Customize application appearance and behaviour: change theme, locale, etc.": "Настройка внешнего вида приложения: тема, язык и т.д.",
-    "Customize application shortcuts": "Настройка горячих клавиши"
+    "Customize application shortcuts": "Настройка горячих клавиши",
+    "All files": "Все файлы",
+    "All supported file formats": "Все поддерживаемые аудио-форматы",
+    "MP3 audio format": "Формат аудио-файлов MP3",
+    "Uncompressed audio formats": "Несжатые форматы аудио-файлов",
+    "Lossy audio format": "Сжатые форматы аудио-файлов",
+    "Apple's Advanced Audio Coding": "Аудио-формат Apple"
 }
