@@ -8,13 +8,13 @@ Application related fields
 """
 
 # API version
-PIEKIT_VERSION = "1.0.0"
+PIEKIT_VERSION = "1.0.4"
 
 # Applicatio name
 PIEAPP_APPLICATION_NAME = "pie-audio"
 
 # Application version
-PIEAPP_VERSION = "1.0.3"
+PIEAPP_VERSION = "1.0.4"
 
 # This field is used to show in what stage app is
 PIEAPP_VERSION_STAGE = "alpha"
