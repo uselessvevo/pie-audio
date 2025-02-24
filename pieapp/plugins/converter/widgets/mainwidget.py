@@ -49,8 +49,8 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
     def init(self) -> None:
         self.supported_formats = ""
         for audio_extension in Global.AUDIO_EXTENSIONS:
-            self.supported_formats += f"*.{audio_extension};"
-        self.supported_formats = f"{translate('Supported audio formats')} - ({self.supported_formats})"
+            description, file_format = audio_extension
+            self.supported_formats += f"{translate(description)} {file_format} ;; "
 
         # Prepare widget
         self._converter_item_widgets: list[QuickActionList] = []
