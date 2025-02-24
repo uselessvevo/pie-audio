@@ -192,10 +192,10 @@ class ProbeWorker(QRunnable):
         """
         Run ffprobe and get file information
         """
-        try:
-            self._signals.started.emit()
-            probe_results: list[MediaFile] = []
-            for media_file in self._media_files:
+        self._signals.started.emit()
+        probe_results: list[MediaFile] = []
+        for media_file in self._media_files:
+            try:
                 probe_result = Dotty(ffmpeg.probe(media_file.path.as_posix(), self._ffprobe_command.as_posix()))
                 album_cover_path = get_cover_album(self._ffmpeg_command, media_file.path, self._temp_folder)
                 album_cover = AlbumCover(
@@ -223,7 +223,7 @@ class ProbeWorker(QRunnable):
                     info = FileInfo(
                         filename=os.path.basename(probe_result.get("format.filename")),
                         file_format=media_file.path.suffix.replace(".", ""),
-                        bit_rate=int(probe_result.get("stream.bit_rate")),
+                        bit_rate=int(probe_result.get("stream.bit_rate", 0)),
                         bit_depth=probe_result.get("stream.bit_per_sample"),
                         sample_rate=int(probe_result.get("stream.sample_rate")),
                         duration=probe_result.get("stream.duration_ts"),
@@ -236,12 +236,15 @@ class ProbeWorker(QRunnable):
                     media_file.metadata = metadata
                     probe_results.append(media_file)
 
-            self._signals.completed.emit(probe_results)
+            except ffmpeg.Error as e:
+                logger.debug(e.stderr)
+                self._signals.failed.emit(e)
 
-        except ffmpeg.Error as e:
-            logger.debug(e.stderr)
-            self._signals.failed.emit(e)
-            raise e
+            except Exception as e:
+                logger.debug(e)
+                self._signals.failed.emit(e)
+
+        self._signals.completed.emit(probe_results)
 
 
 class ConverterWorker(QRunnable):

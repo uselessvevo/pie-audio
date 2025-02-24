@@ -2,7 +2,6 @@ import locale
 import os.path
 from pathlib import Path
 
-
 """
 Application related fields
 """
@@ -27,7 +26,6 @@ PIEAPP_ORGANIZATION_DOMAIN = "com.crabdevs.pieaudio"
 
 # Project URL
 PIEAPP_PROJECT_URL = "https://github.com/uselessvevo/pie-audio/"
-
 
 """
 Directories fields
@@ -70,7 +68,6 @@ ICONS_ALLOWED_FORMATS = [".svg", ".png", ".ico"]
 _themes_list = tuple(i for i in (APP_ROOT / ASSETS_DIR_NAME).rglob("*") if i.is_dir())
 DEFAULT_THEME = _themes_list[0].name if _themes_list else None
 USE_THEME = bool(int(os.getenv("PIE_USE_THEME", True)))
-
 
 """
 Configuration fields
@@ -130,8 +127,14 @@ LAYOUT_REGISTRIES = [
 ALBUM_COVER_EXTENSIONS = [
     "jpeg", "jpg", "png",
 ]
+AUDIO_EXTENSIONS_SUFFIXES = [
+    "mp3", "wav", "wave", "wma",
+    "aiff", "ogg", "flac", "m3u",
+    "aac", "mp3", "wav", "wave",
+    "flac", "aiff", "ogg", "aac"
+]
 AUDIO_EXTENSIONS = [
-    ("All supported file formats", "(*.mp3;*.wav;*.wave;*.wma;*.aiff;*.ogg;*.flac;*.m3u;*.aac)"),
+    ("All supported file formats", ";".join(f"*.{i}" for i in AUDIO_EXTENSIONS_SUFFIXES)),
     ("MP3 audio format", "(*.mp3)"),
     ("Uncompressed audio formats", "(*.wav;*.wave;*.flac;*.aiff)"),
     ("Lossy audio format", "(*.ogg)"),

@@ -150,7 +150,7 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
             elif message_box_reply == MessageBox.ButtonRole.YesRole:
                 selected_files = []
                 for file in Path(temp_directory).iterdir():
-                    if file.suffix.replace(".", "") in Global.AUDIO_EXTENSIONS:
+                    if file.suffix.replace(".", "") in Global.AUDIO_EXTENSIONS_SUFFIXES:
                         selected_files.append(file)
                 self.start_copy_files_worker(selected_files)
 
