@@ -133,8 +133,9 @@ class PieBasePlugin(QObject, PluginsObserverMixin):
         """
         raise NotImplementedError(f"Method \"get_name\" must be implemented")
 
-    def get_title(self) -> str:
-        raise NotImplementedError(f"Method \"get_title\" must be implemented ({self.__class__.__name__})")
+    @staticmethod
+    def get_title() -> str:
+        raise NotImplementedError(f"Method \"get_title\" must be implemented")
 
     @staticmethod
     def get_description() -> str:
