@@ -14,9 +14,6 @@ from pieapp.api.converter.models import MediaFile
 class SnapshotRegistryClass(QObject, BaseRegistry):
     name = SysRegistry.Snapshots
 
-    # Emit when all files are loaded
-    sig_snapshots_loaded = Signal()
-
     # Emit on snapshot created
     sig_snapshot_created = Signal(MediaFile)
 
@@ -27,7 +24,7 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
     sig_snapshot_modified = Signal(MediaFile)
 
     # Emit on inner snapshots registry restored
-    sig_snapshot_restored = Signal()
+    sig_snapshots_restored = Signal()
 
     # Global snapshots
 
@@ -48,7 +45,7 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
         self._inner_snapshots: list = []
 
         # List of snapshot names
-        self._inner_snapshots_keys: list[str] = []
+        self.inner_snapshots_keys: list[str] = []
 
         # <media file name>: <index of the version>
         self._inner_snapshot_indexes: dict[str, int] = {}
@@ -191,7 +188,7 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
         global_index = self._global_snapshots_index
         global_snapshot = self._global_snapshots[global_index]
 
-        inner_index = self._inner_snapshots_keys.index(global_snapshot.name)
+        inner_index = self.inner_snapshots_keys.index(global_snapshot.name)
         self._inner_snapshots[inner_index].append(global_snapshot)
         self._inner_snapshot_indexes[global_snapshot.name] = len(self._inner_snapshots[inner_index]) - 1
 
@@ -204,10 +201,10 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
         """
         Add new record into registry
         """
-        if media_file.name not in self._inner_snapshots_keys:
+        if media_file.name not in self.inner_snapshots_keys:
             self._inner_snapshots.append([media_file])
             self._inner_snapshot_indexes[media_file.name] = 0
-            self._inner_snapshots_keys.append(media_file.name)
+            self.inner_snapshots_keys.append(media_file.name)
         else:
             raise PieError(f"File {media_file.name} is already exists")
 
@@ -216,12 +213,12 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
 
     def get(self, name: str, version: int = None) -> Union[list[MediaFile], MediaFile]:
         logger.debug(f"Snapshot {name}:{version}")
-        logger.debug(self._inner_snapshots_keys)
-        if name not in self._inner_snapshots_keys:
+        logger.debug(self.inner_snapshots_keys)
+        if name not in self.inner_snapshots_keys:
             return
             # raise PieException(f"File with \"{name}\" was not found")
 
-        index = self._inner_snapshots_keys.index(name)
+        index = self.inner_snapshots_keys.index(name)
         snapshots = self._inner_snapshots[index]
         if version:
             return snapshots[version]
@@ -231,11 +228,11 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
 
     def update(self, name: str, new_media_file: MediaFile, version: int = None) -> None:
         logger.debug(f"Snapshot {name} was updated to {new_media_file}:{version}")
-        if name not in self._inner_snapshots_keys:
+        if name not in self.inner_snapshots_keys:
             return
             # raise PieException(f"File with \"{name}\" was not found")
 
-        index = self._inner_snapshots_keys.index(name)
+        index = self.inner_snapshots_keys.index(name)
         snapshots = self._inner_snapshots[index]
         if version:
             snapshots[version] = new_media_file
@@ -245,21 +242,24 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
         self.sig_snapshot_modified.emit(new_media_file)
 
     def remove(self, name: str, version: int = None) -> None:
-        logger.debug(f"Snapshot {name}:{version} was removed")
-        if name not in self._inner_snapshots_keys:
+        logger.debug(f"Removing snapshot {name}:{version}")
+        if name not in self.inner_snapshots_keys:
             return
-            # raise PieException(f"File with \"{name}\" was not found")
 
-        index = self._inner_snapshots_keys.index(name)
+        index = self.inner_snapshots_keys.index(name)
         snapshots = self._inner_snapshots[index]
         if version:
+            self.sig_snapshot_deleted.emit(snapshots[name][version:Index.End])
             del snapshots[name][version:Index.End]
         else:
+            self.sig_snapshot_deleted.emit(self._inner_snapshots[index][Index.End])
             del self._inner_snapshots[index]
-            del self._inner_snapshots_keys[index]
+            del self.inner_snapshots_keys[index]
+
+        logger.debug(f"Snapshot {name}:{version} was removed")
 
     def contains(self, name: MediaFile) -> bool:
-        return name in self._inner_snapshots_keys
+        return name in self.inner_snapshots_keys
 
     def values(self, as_path: bool = False) -> list[Any]:
         return [i[-1].path if as_path else i[-1] for i in self._inner_snapshots]
@@ -268,17 +268,17 @@ class SnapshotRegistryClass(QObject, BaseRegistry):
         return len(self._inner_snapshots)
 
     def index(self, name: str) -> int:
-        return list(self._inner_snapshots_keys).index(name)
+        return list(self.inner_snapshots_keys).index(name)
 
     def restore(self) -> None:
         self._inner_snapshots = []
-        self._inner_snapshots_keys = []
+        self.inner_snapshots_keys = []
         self._inner_snapshot_indexes = {}
         self._global_snapshots = []
         self._global_snapshots_index = 0
         self._local_snapshots = {}
         self._local_snapshots_index = {}
-        self.sig_snapshot_restored.emit()
+        self.sig_snapshots_restored.emit()
         self.sig_global_snapshot_restored.emit()
         logger.debug("Snapshots restored")
 

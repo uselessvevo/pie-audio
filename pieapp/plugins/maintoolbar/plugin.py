@@ -39,8 +39,8 @@ class MainToolBar(PiePlugin, TabBarAccessorMixin, ToolBarAccessorMixin):
     def _on_layout_manager_available(self) -> None:
         layout_manager = get_plugin(SysPlugin.Layout)
         tools_layout = layout_manager.get_layout(Layout.Tools)
-        tools_layout.add_layout(self.layout)
         if tools_layout:
+            tools_layout.add_layout(self.layout)
             layout_manager.add_layout(self.name, tools_layout, Layout.Tools)
 
 

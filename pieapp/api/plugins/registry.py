@@ -10,6 +10,7 @@ from PySide6.QtCore import Signal, QObject
 
 from pieapp.api.exceptions import PieError
 from pieapp.api.globals import Global
+from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.types import PluginType
 from pieapp.api.utils.modules import import_by_path
@@ -21,8 +22,8 @@ class PluginRegistryClass(QObject):
     """
     Based on SpyderPluginRegistry from the Spyder IDE project
     """
-    plugins_ready = Signal()
-    plugins_teardown = Signal()
+    sig_plugins_ready = Signal()
+    sig_plugins_teardown = Signal()
 
     def __init__(self) -> None:
         super(PluginRegistryClass, self).__init__()
@@ -58,7 +59,7 @@ class PluginRegistryClass(QObject):
         # Initialize plugins then
         self.initialize_from_packages(Global.APP_ROOT / Global.PLUGINS_DIR_NAME)
         self.initialize_from_packages(Global.USER_ROOT / Global.PLUGINS_DIR_NAME)
-        self.plugins_ready.emit()
+        self.sig_plugins_ready.emit()
 
     def shutdown_plugins(self, *plugins: str, all_plugins: bool = False) -> None:
         """
@@ -174,6 +175,8 @@ class PluginRegistryClass(QObject):
 
                 # Initializing plugin instance
                 plugin_instance = getattr(plugin_module, "main")(self._main_window, plugin_path)
+                # if plugin_instance.name in (SysPlugin.Converter, SysPlugin.MetadataEditor):
+                #     continue
                 if plugin_instance:
                     self.initialize_plugin(plugin_instance)
 
@@ -206,8 +209,8 @@ class PluginRegistryClass(QObject):
         self._plugin_type_registry[plugin_instance.type].add(plugin_instance.name)
 
         # Connect registry with plugin instance
-        self.plugins_ready.connect(plugin_instance.sig_reg_plugins_ready)
-        self.plugins_teardown.connect(plugin_instance.sig_reg_plugins_teardown)
+        self.sig_plugins_ready.connect(plugin_instance.sig_reg_plugins_ready)
+        self.sig_plugins_teardown.connect(plugin_instance.sig_reg_plugins_teardown)
 
         self._main_window.sig_on_main_window_close.connect(plugin_instance.sig_on_main_window_close)
         self._main_window.sig_on_main_window_show.connect(plugin_instance.sig_on_main_window_show)

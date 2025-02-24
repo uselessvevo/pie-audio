@@ -1,43 +1,70 @@
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject
+from PySide6.QtGui import QIcon
 
-from pieapp.api.exceptions import PieError
-from pieapp.api.converter.models import MediaFile
+from pieapp.api.plugins import PiePlugin
 
 
 class QuickAction(QObject):
-    sig_snapshots_loaded = Signal()
-    sig_toggle_item_state = Signal(bool)
-    sig_toggle_config_page_state = Signal(bool)
+    name: str
 
-    def __int__(self, name: str, snapshot_name: str, parent: QObject = None) -> None:
-        super().__init__(parent)
+    def __init__(
+        self,
+        plugin: PiePlugin,
+        enabled: bool = False,
+        before: str = None,
+        after: str = None,
+    ) -> None:
+        super(QuickAction, self).__init__(None)
 
-        self._name = name
-        self._is_blocked = False
+        self._plugin_call_method = plugin.call
+        self._plugin_name = plugin.name
+        self._full_name = f"{plugin.name}_{self.name}"
+        self._enabled = enabled
+        self._media_file_name = None
+        self._file_filter = None
+        self._before = before
+        self._after = after
 
     @property
-    def name(self) -> str:
-        return self._name
+    def plugin_call_method(self) -> callable:
+        return self._plugin_call_method
 
     @property
-    def is_blocked(self) -> bool:
-        return self._is_blocked
+    def full_name(self) -> str:
+        return self._full_name
 
-    def init(self) -> None:
-        pass
+    @property
+    def before(self) -> str:
+        return self._before
 
-    def call(self) -> None:
-        pass
+    @property
+    def after(self) -> str:
+        return self._after
 
-    def get_title(self) -> str:
+    def get_tooltip(self) -> str:
+        return ""
+
+    def get_icon(self) -> QIcon:
+        return QIcon()
+
+    def on_click(self) -> None:
         raise NotImplementedError
 
-    def get_icon(self) -> str:
-        raise NotImplementedError
+    def get_enabled(self) -> tuple[bool, str]:
+        """
+        Reimplement this method.
+        For example, you can filter file format to enable or disable button
+        """
+        return True, ""
 
-    def set_disabled(self, disabled: bool) -> None:
-        self._is_blocked = disabled
-        self.sig_toggle_config_page_state.emit(disabled)
+    def set_disabled(self, state: bool) -> None:
+        self.set_disabled(state)
+
+    def set_snapshot_name(self, media_file_name: str):
+        self._media_file_name = media_file_name
+
+    def get_media_file_name(self) -> str:
+        return self._media_file_name
 
     def __repr__(self) -> str:
-        return f"({self.__class__.__name__}) <name: {self.name}>"
+        return f"({self.__class__.__name__}) <name: {self.name}, enabled: {self._enabled}>"

@@ -44,3 +44,5 @@ class SysRegistry:
     # ToolButtonRegistry
     ToolButton = "toolbuttons"
 
+    # QuickActionRegistry
+    QuickAction = "quickactions"

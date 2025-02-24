@@ -1,0 +1,1 @@
+METADATA_EDITOR_ALLOWED_FILE_FORMATS = ["mp3", "mp4", "wav", "m4a", "wma", "asf"]

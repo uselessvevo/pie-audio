@@ -67,6 +67,9 @@ class PiePluginWidget(QWidget):
     def name(self) -> str:
         return self._name
 
+    def get_main_layout(self) -> None:
+        raise NotImplementedError
+
     def prepare(self) -> None:
         pass
 
@@ -140,4 +143,3 @@ class PiePluginDockableWidget(QDockWidget):
     def close_event(self, event):
         self.on_close()
         super().close_event(event)
-

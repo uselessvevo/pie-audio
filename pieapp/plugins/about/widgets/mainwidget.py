@@ -21,6 +21,8 @@ class AboutWidget(PiePluginWidget, ThemeAccessorMixin):
 
     def init(self) -> None:
         self.resize(400, 300)
+        self.set_minimum_size(400, 300)
+        self.set_maximum_size(400, 300)
 
         ok_button = Button(ButtonRole.Primary)
         ok_button.set_text(translate("Ok"))

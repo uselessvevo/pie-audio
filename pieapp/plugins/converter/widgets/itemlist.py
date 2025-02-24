@@ -12,31 +12,32 @@ from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QListWidgetItem
 
+from pieapp.api.plugins.quickaction import QuickAction
 from pieapp.widgets.buttons import Button
 from pieapp.widgets.buttons import ButtonRole
 from pieapp.api.converter.models import MediaFile
 from pieapp.api.registries.snapshots.registry import SnapshotRegistry
 
-from converter.models import ConverterThemeProperties
-from converter.widgets.list import ConverterListWidget
-from converter.widgets.menu import QuickActionMenu
+from converter.widgets.contentlist import ContentListWidget
+from converter.widgets.itemmenu import QuickActionMenu
 
 
-class ConverterItem(QWidget):
+class QuickActionList(QWidget):
+    """
+    This widget contains all buttons and is stored (rendered) on the QListWidgetItem.
+    """
+    sig_snapshot_modified = Signal(MediaFile)
 
     def __init__(
         self,
-        parent: ConverterListWidget,
-        media_file: MediaFile,
-        color_props: dict,
-        sig_snapshot_modified: Signal
+        parent: ContentListWidget,
+        media_file_name: str
     ) -> None:
         super().__init__(parent)
 
         self._parent = parent
         self._list_widget = None
-        self._color_props = color_props or {}
-        self._media_file = media_file
+        self._media_file_name = media_file_name
 
         self.set_object_name("ConverterItem")
 
@@ -46,7 +47,7 @@ class ConverterItem(QWidget):
 
         self._description_label = QLabel()
         self._description_label.set_object_name("ConverterItemDescription")
-        self._quick_action_menu = QuickActionMenu(self, media_file.name)
+        self._quick_action_menu = QuickActionMenu(self, media_file_name)
 
         main_grid_layout = QGridLayout()
         title_vbox = QVBoxLayout()
@@ -73,18 +74,15 @@ class ConverterItem(QWidget):
         item_hbox_layout.add_layout(main_grid_layout, 1)
         self.set_layout(item_hbox_layout)
 
-        self.set_title(media_file.info.filename)
-        self.set_description(media_file.info.bit_rate_string)
-        # self.set_icon()
-
-        sig_snapshot_modified.connect(lambda: self._on_snapshot_modified(media_file.name))
+        self.sig_snapshot_modified.connect(self.on_snapshot_modified)
 
     @Slot(MediaFile)
-    def _on_snapshot_modified(self, media_file_name: str) -> None:
-        if self._media_file.name != media_file_name:
+    def on_snapshot_modified(self, media_file: MediaFile) -> None:
+        media_file = SnapshotRegistry.get(media_file.name)
+        if self._media_file_name != media_file.name:
             return
 
-        media_file = SnapshotRegistry.get(media_file_name)
+        media_file = SnapshotRegistry.get(media_file.name)
         if not media_file:
             return
 
@@ -94,28 +92,19 @@ class ConverterItem(QWidget):
         # self.set_icon()
 
     @property
-    def media_file(self) -> MediaFile:
-        return self._media_file
+    def media_file_name(self) -> str:
+        return self._media_file_name
 
     def set_items_disabled(self) -> None:
         self._quick_action_menu.set_enabled(False)
         for item in self._quick_action_menu.get_items():
             item.set_enabled(False)
 
-    def add_quick_action(
-        self,
-        name: str,
-        text: str,
-        icon: QIcon,
-        callback: callable = None,
-        before: str = None,
-        after: str = None,
-        enabled: bool = False
-    ) -> QToolButton:
+    def add_quick_action(self, quick_action: QuickAction) -> QToolButton:
         """
         A proxy method to interact with `ConverterItemMenu`
         """
-        return self._quick_action_menu.add_item(name, text, icon, callback, before, after, enabled)
+        return self._quick_action_menu.add_item(quick_action)
 
     def set_list_widget(self, item: QListWidgetItem) -> None:
         self._list_widget = item
@@ -144,6 +133,5 @@ class ConverterItem(QWidget):
         self._action_button.set_icon(icon)
 
     def _get_file_format_color(self) -> None:
-        color = self._color_props.get(self._media_file.info.file_format,
-                                      self._color_props.get(ConverterThemeProperties.DefaultColor))
+        media_file = SnapshotRegistry.get(self._media_file_name)
         # self._file_format_label.set_style_sheet("#ConverterItemFormat {background-color: %s;}" % color)

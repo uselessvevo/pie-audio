@@ -7,6 +7,7 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMainWindow
 
+from pieapp.api.converter.models import MediaFile
 from pieapp.api.exceptions import PieError
 from pieapp.api.plugins.types import PluginType
 from pieapp.api.plugins.widgets import PiePluginWidget, PiePluginDockableWidget
@@ -105,7 +106,7 @@ class PieBasePlugin(QObject, PluginsObserverMixin):
         Initializes the plugin and required services after forming an instance of the class
         """
 
-    def call(self) -> None:
+    def call(self, *args, **kwargs) -> None:
         """
         This method calls the plugin.
         For example, it is usually used to display an already prepared plugin widget (window).
@@ -132,9 +133,8 @@ class PieBasePlugin(QObject, PluginsObserverMixin):
         """
         raise NotImplementedError(f"Method \"get_name\" must be implemented")
 
-    @staticmethod
-    def get_title() -> str:
-        raise NotImplementedError(f"Method \"get_title\" must be implemented")
+    def get_title(self) -> str:
+        raise NotImplementedError(f"Method \"get_title\" must be implemented ({self.__class__.__name__})")
 
     @staticmethod
     def get_description() -> str:
@@ -193,7 +193,7 @@ class PiePlugin(PieBasePlugin):
         """
         if self.widget_class:
             self._widget = self.widget_class(self._parent, self)
-            if isinstance(self._widget, (PiePluginWidget, PiePluginDockableWidget)):
+            if isinstance(self._widget, (PiePluginWidget, PiePluginDockableWidget, PieMediaPlugin)):
                 self._widget.set_icon(self.get_plugin_icon())
                 self._widget.set_title(self.get_title())
                 self._widget.prepare()
@@ -219,3 +219,9 @@ class PieDockablePlugin(PiePlugin):
 
     def call(self) -> None:
         self.get_widget().dock_widget()
+
+
+class PieMediaPlugin(PiePlugin):
+
+    def call(self, index: int, media_file: MediaFile) -> None:
+        raise NotImplementedError

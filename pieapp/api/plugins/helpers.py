@@ -11,4 +11,4 @@ def get_plugin(plugin: str) -> Any:
 
 
 def get_plugin_widget(plugin: str) -> Any:
-    return PluginRegistry.get_plugin(plugin).get_widget()
+    return PluginRegistry.get_plugin(plugin).on_click()

@@ -1,3 +1,5 @@
+from __feature__ import snake_case
+
 import os
 import sys
 
@@ -11,27 +13,24 @@ class Application(QApplication):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.aboutToQuit.connect(self._cleanup)
+        self.aboutToQuit.connect(self._cleanup_registries)
 
     def restart(self) -> None:
-        from pieapp.api.plugins.registry import PluginRegistry
-
-        if not Global.IS_DEV_ENV or False:
+        if Global.IS_DEV_ENV is False:
             file_extension = "exe" if os.name == "nt" else ""
             sys.argv[0] = f"{sys.argv[0]}.{file_extension}"
 
-        PluginRegistry.shutdown_plugins(all_plugins=True)
-        self._cleanup()
+        self._cleanup_registries()
         QProcess.start_detached(sys.executable, sys.argv)
+        sys.exit()
 
-    def _cleanup(self) -> None:
+    @staticmethod
+    def _cleanup_registries() -> None:
         from pieapp.api.plugins.registry import PluginRegistry
         from pieapp.api.registries.registry import RegistryContainer
 
         PluginRegistry.shutdown_plugins(all_plugins=True)
         RegistryContainer.shutdown(all_registries=True)
-
-        sys.exit()
 
 
 def get_application(*args, **kwargs) -> Application:
