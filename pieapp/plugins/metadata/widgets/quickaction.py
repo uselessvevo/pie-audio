@@ -18,7 +18,7 @@ class EditQuickAction(QuickAction, ThemeAccessorMixin):
         return self.get_svg_icon(IconName.App, self._plugin_name)
 
     def on_click(self) -> None:
-        return
+        self.plugin_call_method(self.get_media_file_name())
 
     def get_enabled(self) -> tuple[bool, str]:
         media_file = SnapshotRegistry.get(self._media_file_name)

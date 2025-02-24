@@ -106,7 +106,7 @@ class PieBasePlugin(QObject, PluginsObserverMixin):
         Initializes the plugin and required services after forming an instance of the class
         """
 
-    def call(self) -> None:
+    def call(self, *args, **kwargs) -> None:
         """
         This method calls the plugin.
         For example, it is usually used to display an already prepared plugin widget (window).
@@ -133,9 +133,8 @@ class PieBasePlugin(QObject, PluginsObserverMixin):
         """
         raise NotImplementedError(f"Method \"get_name\" must be implemented")
 
-    @staticmethod
-    def get_title() -> str:
-        raise NotImplementedError(f"Method \"get_title\" must be implemented")
+    def get_title(self) -> str:
+        raise NotImplementedError(f"Method \"get_title\" must be implemented ({self.__class__.__name__})")
 
     @staticmethod
     def get_description() -> str:

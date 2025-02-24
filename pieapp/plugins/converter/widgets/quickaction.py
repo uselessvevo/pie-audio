@@ -17,4 +17,4 @@ class DeleteQuickAction(QuickAction, ThemeAccessorMixin):
         return self.get_svg_icon(IconName.Delete, prop=ThemeProperties.ErrorColor)
 
     def on_click(self) -> None:
-        SnapshotRegistry.remove(self._media_file_name)
+        SnapshotRegistry.remove(self.get_media_file_name())

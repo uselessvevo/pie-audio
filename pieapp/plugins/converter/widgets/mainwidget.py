@@ -242,7 +242,6 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
     # QuickAction methods
 
     def render_quick_actions(self, media_files: list):
-        # Проходимся по всем файлам и рендерим все элементы
         if not media_files:
             return
 
@@ -253,23 +252,20 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
         for media_file in media_files:
             # TODO: Добавить встроенный элемент с краткой информацией по файлу
             # TODO: Добавить меню со второстепенными/неважными элементами, чтобы не переполнять меню
-            quick_action_list = QuickActionList(
-                parent=self._content_list_widget,
-                media_file_name=media_file.name,
-            )
+            quick_action_list = QuickActionList(self._content_list_widget, media_file.name)
             quick_action_list.set_title(media_file.info.filename)
             quick_action_list.set_description(media_file.info.bit_rate_string)
             quick_action_list.sig_snapshot_modified.connect(self.sig_snapshot_modified)
 
-            # Add default QuickActions
-            delete_quick_action = DeleteQuickAction(self.plugin, enabled=True)
-            delete_quick_action.set_snapshot_name(media_file.name)
-            quick_action_list.add_quick_action(delete_quick_action)
-
-            # Add registered QuickActions
+            # Render registered QuickActions
             for quick_action in QuickActionRegistry.values():
                 quick_action.set_snapshot_name(media_file.name)
                 quick_action_list.add_quick_action(quick_action)
+
+            # Render default QuickActions
+            delete_quick_action = DeleteQuickAction(self.plugin, enabled=True)
+            delete_quick_action.set_snapshot_name(media_file.name)
+            quick_action_list.add_quick_action(delete_quick_action)
 
             widget_layout = QHBoxLayout()
             widget_layout.add_stretch()

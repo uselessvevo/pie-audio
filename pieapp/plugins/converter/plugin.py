@@ -487,24 +487,25 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
             description=translate("Redo file state"),
             hidden=True
         )
-        self.add_shortcut(
-            name="debug.print_metadata",
-            shortcut="Ctrl+D",
-            target=widget.content_list_widget,
-            triggered=self.debug_print_metadata,
-            title=translate("Print snapshots"),
-            description=translate("Print snapshots"),
-            hidden=True
-        )
-        self.add_shortcut(
-            name="debug.print_values",
-            shortcut="Ctrl+L",
-            target=widget.content_list_widget,
-            triggered=self.debug_print_values,
-            title=translate("Print values"),
-            description=translate("Print values"),
-            hidden=True
-        )
+        if Global.IS_DEBUG:
+            self.add_shortcut(
+                name="debug.print_metadata",
+                shortcut="Ctrl+D",
+                target=widget.content_list_widget,
+                triggered=self.debug_print_metadata,
+                title=translate("Print snapshots"),
+                description=translate("Print snapshots"),
+                hidden=True
+            )
+            self.add_shortcut(
+                name="debug.print_values",
+                shortcut="Ctrl+L",
+                target=widget.content_list_widget,
+                triggered=self.debug_print_values,
+                title=translate("Print values"),
+                description=translate("Print values"),
+                hidden=True
+            )
 
     @on_plugin_available(plugin=SysPlugin.MainMenuBar)
     def on_menu_bar_available(self) -> None:
