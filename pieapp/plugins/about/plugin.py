@@ -16,7 +16,7 @@ from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from about.widgets.mainwidget import AboutWidget
 
 
-class About(PiePlugin, ThemeAccessorMixin, WidgetsAccessorMixins):
+class AboutPlugin(PiePlugin, ThemeAccessorMixin, WidgetsAccessorMixins):
     name = SysPlugin.About
     widget_class = AboutWidget
     requires = [SysPlugin.MainMenuBar]
@@ -41,4 +41,4 @@ class About(PiePlugin, ThemeAccessorMixin, WidgetsAccessorMixins):
 
 
 def main(parent, plugin_path):
-    return About(parent, plugin_path)
+    return AboutPlugin(parent, plugin_path)

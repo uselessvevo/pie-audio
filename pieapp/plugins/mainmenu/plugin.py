@@ -1,6 +1,3 @@
-from typing import Any
-
-from PySide6.QtGui import QAction
 from __feature__ import snake_case
 
 from pieapp.api.models.indexes import Index
@@ -9,17 +6,15 @@ from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.scopes import Scope
 from pieapp.api.models.themes import IconName
 
-from pieapp.api.plugins.decorators import on_plugin_available, on_plugin_shutdown
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.registries.locales.helpers import translate
 
 from pieapp.api.registries.menus.mixins import MenuAccessorMixin
 from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.api.utils.qt import get_main_window
-from pieapp.widgets.menus import PieMenuBar
 
 
-class MainMenuBar(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
+class MainMenuBarPlugin(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
     name = SysPlugin.MainMenuBar
     requires = [SysPlugin.Preferences]
 
@@ -72,5 +67,5 @@ class MainMenuBar(PiePlugin, MenuAccessorMixin, ThemeAccessorMixin):
 
 
 def main(parent, plugin_path):
-    return MainMenuBar(parent, plugin_path)
+    return MainMenuBarPlugin(parent, plugin_path)
 

@@ -18,7 +18,7 @@ from metadata.widgets.quickaction import EditQuickAction
 from metadata.widgets.mainwidget import MetadataEditorWidget
 
 
-class MetadataEditor(PiePlugin):
+class MetadataEditorPlugin(PiePlugin):
     name = SysPlugin.MetadataEditor
     widget_class = MetadataEditorWidget
     requires = [SysPlugin.Converter, SysPlugin.MainToolBar]
@@ -92,4 +92,4 @@ class MetadataEditor(PiePlugin):
 
 
 def main(parent, plugin_path):
-    return MetadataEditor(parent, plugin_path)
+    return MetadataEditorPlugin(parent, plugin_path)

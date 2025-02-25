@@ -12,10 +12,10 @@ from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 from pieapp.widgets.buttons import Button, ButtonRole
 
 
-class ToolBarManager(PiePlugin, ToolBarAccessorMixin):
+class ToolBarManagerPlugin(PiePlugin, ToolBarAccessorMixin):
     name = SysPlugin.ToolBarManager
     requires = [SysPlugin.ToolBarManager]
 
 
 def main(parent, plugin_path):
-    return ToolBarManager(parent, plugin_path)
+    return ToolBarManagerPlugin(parent, plugin_path)

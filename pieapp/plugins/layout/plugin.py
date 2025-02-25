@@ -10,7 +10,7 @@ from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.layouts.registry import LayoutRegistry
 
 
-class LayoutManager(PiePlugin):
+class MainLayoutPlugin(PiePlugin):
     name = SysPlugin.Layout
 
     @staticmethod
@@ -80,4 +80,4 @@ class LayoutManager(PiePlugin):
 
 
 def main(parent, plugin_path):
-    return LayoutManager(parent, plugin_path)
+    return MainLayoutPlugin(parent, plugin_path)

@@ -13,7 +13,7 @@ from pieapp.api.registries.tabs.mixins import TabBarAccessorMixin
 from pieapp.api.registries.toolbars.mixins import ToolBarAccessorMixin
 
 
-class MainToolBar(PiePlugin, TabBarAccessorMixin, ToolBarAccessorMixin):
+class MainToolBarPlugin(PiePlugin, TabBarAccessorMixin, ToolBarAccessorMixin):
     name = SysPlugin.MainToolBar
     requires = [SysPlugin.ToolBarManager, SysPlugin.Layout]
 
@@ -45,4 +45,4 @@ class MainToolBar(PiePlugin, TabBarAccessorMixin, ToolBarAccessorMixin):
 
 
 def main(parent, plugin_path):
-    return MainToolBar(parent, plugin_path)
+    return MainToolBarPlugin(parent, plugin_path)

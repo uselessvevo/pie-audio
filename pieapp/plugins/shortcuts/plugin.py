@@ -13,7 +13,7 @@ from shortcuts.confpage import ShortcutConfigPage
 from shortcuts.confpage import ShortcutBlankConfigPage
 
 
-class ShortcutsPreferences(PiePlugin, ThemeAccessorMixin):
+class ShortcutsPlugin(PiePlugin, ThemeAccessorMixin):
     name = SysPlugin.ShortcutManager
     requires = [SysPlugin.Preferences]
 
@@ -48,4 +48,4 @@ class ShortcutsPreferences(PiePlugin, ThemeAccessorMixin):
 
 
 def main(parent, plugin_path):
-    return ShortcutsPreferences(parent, plugin_path)
+    return ShortcutsPlugin(parent, plugin_path)
