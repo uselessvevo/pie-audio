@@ -9,7 +9,7 @@ from pieapp.api.plugins.decorators import on_plugin_shutdown
 from appearance.confpage import AppearanceConfigPage
 
 
-class Appearance(PiePlugin):
+class AppearancePlugin(PiePlugin):
     name = SysPlugin.Appearance
     requires = [SysPlugin.Preferences]
 
@@ -25,4 +25,4 @@ class Appearance(PiePlugin):
 
 
 def main(parent, plugin_path):
-    return Appearance(parent, plugin_path)
+    return AppearancePlugin(parent, plugin_path)

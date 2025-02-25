@@ -13,7 +13,7 @@ from pieapp.api.registries.themes.mixins import ThemeAccessorMixin
 from pieapp.widgets.iconlabel import IconLabel
 
 
-class StatusBar(PiePlugin, ThemeAccessorMixin):
+class StatusBarPlugin(PiePlugin, ThemeAccessorMixin):
     name = SysPlugin.StatusBar
 
     def init(self) -> None:
@@ -56,4 +56,4 @@ class StatusBar(PiePlugin, ThemeAccessorMixin):
 
 
 def main(parent, plugin_path):
-    return StatusBar(parent, plugin_path)
+    return StatusBarPlugin(parent, plugin_path)

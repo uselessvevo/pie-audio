@@ -54,7 +54,7 @@ from pieapp.api.converter.observers import FileSystemWatcher
 from converter.confpage import ConverterConfigPage
 
 
-class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
+class ConverterPlugin(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
     name = SysPlugin.Converter
     requires = [
         SysPlugin.MainToolBar,
@@ -578,4 +578,4 @@ class Converter(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
 
 
 def main(parent, plugin_path):
-    return Converter(parent, plugin_path)
+    return ConverterPlugin(parent, plugin_path)

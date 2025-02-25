@@ -22,7 +22,7 @@ from pieapp.api.registries.confpages.registry import ConfigPageRegistry
 from preferences.widgets.mainwidget import PreferencesWidget
 
 
-class Preferences(PiePlugin, ThemeAccessorMixin, WidgetsAccessorMixins):
+class PreferencesPlugin(PiePlugin, ThemeAccessorMixin, WidgetsAccessorMixins):
     name = SysPlugin.Preferences
     requires = [SysPlugin.MainMenuBar]
     widget_class = PreferencesWidget
@@ -123,4 +123,4 @@ class Preferences(PiePlugin, ThemeAccessorMixin, WidgetsAccessorMixins):
 
 
 def main(parent, plugin_path):
-    return Preferences(parent, plugin_path)
+    return PreferencesPlugin(parent, plugin_path)

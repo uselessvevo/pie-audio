@@ -11,7 +11,7 @@ from pieapp.api.plugins.decorators import on_plugin_available, on_plugin_shutdow
 from menuman.confpage import MenuManagerConfigPage
 
 
-class MenuManager(PiePlugin, ConfigAccessorMixin, MenuAccessorMixin):
+class MenuManagerPlugin(PiePlugin, ConfigAccessorMixin, MenuAccessorMixin):
     name = SysPlugin.MenuManager
     requires = [SysPlugin.Preferences]
 
@@ -27,5 +27,5 @@ class MenuManager(PiePlugin, ConfigAccessorMixin, MenuAccessorMixin):
 
 
 def main(parent, plugin_path):
-    return MenuManager(parent, plugin_path)
+    return MenuManagerPlugin(parent, plugin_path)
 
