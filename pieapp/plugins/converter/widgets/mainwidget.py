@@ -1,33 +1,48 @@
-from pathlib import Path
-
 from __feature__ import snake_case
 
 import os
 
-from PySide6.QtCore import Signal, Qt, Slot
-from PySide6.QtWidgets import QLabel, QHBoxLayout, QListWidgetItem, QGridLayout, QFileDialog
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Slot
+from PySide6.QtCore import Signal
+
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QListWidgetItem
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtWidgets import QSpacerItem
+from PySide6.QtWidgets import QSizePolicy
+
+from pieapp.api.globals import Global
+from pieapp.api.utils.qt import get_main_window
+from pieapp.api.utils.logger import logger
+
+from pieapp.api.models.scopes import Scope
+from pieapp.api.models.themes import IconName
+from pieapp.api.models.themes import ThemeProperties
+from pieapp.api.models.toolbars import ToolBarItem
+from pieapp.api.converter.models import MediaFile
+
+from pieapp.api.plugins.widgets import PiePluginWidget
+from pieapp.api.plugins.mixins import CoreAccessorsMixin
+from pieapp.api.plugins.mixins import WidgetsAccessorMixins
+
+from pieapp.api.registries.locales.helpers import translate
+from pieapp.api.registries.snapshots.registry import SnapshotRegistry
+from pieapp.api.registries.quickactions.registry import QuickActionRegistry
 
 from converter.widgets.quickaction import DeleteQuickAction
-from pieapp.api.models.scopes import Scope
-from pieapp.api.converter.models import MediaFile
-from pieapp.api.globals import Global
-from pieapp.api.models.themes import ThemeProperties, IconName
-from pieapp.api.models.toolbars import ToolBarItem
-from pieapp.api.plugins.mixins import CoreAccessorsMixin, WidgetsAccessorMixins
-from pieapp.api.plugins.quickaction import QuickAction
-from pieapp.api.plugins.widgets import PiePluginWidget
-from pieapp.api.registries.locales.helpers import translate
-from pieapp.api.registries.quickactions.registry import QuickActionRegistry
-from pieapp.api.registries.snapshots.registry import SnapshotRegistry
-from pieapp.api.utils.logger import logger
 from pieapp.widgets.waitingspinner import create_wait_spinner
 
 from converter.widgets.itemlist import QuickActionList
-from converter.widgets.contentlist import ContentListWidget
 from converter.widgets.search import ContentListSearch
+from converter.widgets.contentlist import ContentListWidget
 
 
-class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessorMixins):
+class ConverterWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessorMixins):
     # Emit on files selected in open file dialog
     sig_files_selected = Signal(list)
 
@@ -54,7 +69,9 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
 
         # Prepare widget
         self._converter_item_widgets: list[QuickActionList] = []
-        self._list_grid_layout = QGridLayout()
+        self._main_grid_layout = QGridLayout()
+        self._main_grid_layout.set_spacing(0)
+        self._main_grid_layout.set_contents_margins(0, 0, 0, 0)
 
         # Setup content list
         self._content_list_widget = ContentListWidget()
@@ -85,11 +102,27 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
         self._text_label.set_text(translate("No files selected"))
         self._text_label.set_alignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Setup placeholder
-        self._set_placeholder()
+        main_window = get_main_window()
+        self._spacer_widget = QSpacerItem(
+            main_window.width() // 2,
+            main_window.height() // 2,
+            QSizePolicy.Policy.Maximum,
+            QSizePolicy.Policy.Maximum
+        )
+
+        self._placeholder_layout = QVBoxLayout()
+        self._placeholder_layout.add_item(self._spacer_widget)
+        self._placeholder_layout.add_widget(self._pixmap_label)
+        self._placeholder_layout.add_widget(self._text_label)
+        self._placeholder_layout.add_item(self._spacer_widget)
+
+        self._placeholder_widget = QWidget()
+        self._placeholder_widget.set_layout(self._placeholder_layout)
+
+        self._main_grid_layout.add_widget(self._placeholder_widget, 0, 0, Qt.AlignmentFlag.AlignCenter)
 
     def get_main_layout(self) -> "QLayout":
-        return self._list_grid_layout
+        return self._main_grid_layout
 
     @property
     def content_list_widget(self) -> ContentListWidget:
@@ -126,16 +159,18 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
         """
         Show placeholder
         """
-        if not self._list_grid_layout.find_child(self._pixmap_label.__class__, self._pixmap_label.object_name()):
-            self._list_grid_layout.add_widget(self._pixmap_label, 0, 0, alignment=Qt.AlignmentFlag.AlignTop)
-            self._list_grid_layout.add_widget(self._text_label, 1, 0, alignment=Qt.AlignmentFlag.AlignTop)
+        if not self._placeholder_layout.find_child(self._pixmap_label.__class__, self._pixmap_label.object_name()):
+            self._placeholder_layout.add_widget(self._pixmap_label)
+            self._placeholder_layout.add_widget(self._text_label)
 
     def _clear_placeholder(self) -> None:
         """
         Remove placeholder
         """
-        self._text_label.set_visible(False)
-        self._pixmap_label.set_visible(False)
+        self._placeholder_widget.set_visible(False)
+        # self._placeholder_layout.remove_widget(self._text_label)
+        # self._placeholder_layout.remove_widget(self._pixmap_label)
+        # self._main_grid_layout.remove_item(self._placeholder_layout)
 
     # File system methods
 
@@ -185,12 +220,12 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
 
     def probe_worker_started(self) -> None:
         self._clear_placeholder()
-        self._list_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self._main_grid_layout.add_widget(self._spinner, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter)
         self._spinner.start()
 
     def probe_worker_finished(self) -> None:
         self._spinner.stop()
-        if not self._list_grid_layout.find_child(self._spinner.__class__, self._spinner.object_name()):
+        if not self._main_grid_layout.find_child(self._spinner.__class__, self._spinner.object_name()):
             self._spinner.set_visible(False)
 
     def probe_worker_failed(self) -> None:
@@ -246,8 +281,8 @@ class ConverterPluginWidget(PiePluginWidget, CoreAccessorsMixin, WidgetsAccessor
             return
 
         self._clear_placeholder()
-        self._list_grid_layout.add_widget(self._search, 0, 0)
-        self._list_grid_layout.add_widget(self._content_list_widget, 1, 0)
+        self._main_grid_layout.add_widget(self._search, 0, 0)
+        self._main_grid_layout.add_widget(self._content_list_widget, 1, 0)
 
         for media_file in media_files:
             # TODO: Добавить встроенный элемент с краткой информацией по файлу

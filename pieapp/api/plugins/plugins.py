@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QMainWindow
 from pieapp.api.converter.models import MediaFile
 from pieapp.api.exceptions import PieError
 from pieapp.api.plugins.types import PluginType
-from pieapp.api.plugins.widgets import PiePluginWidget, PiePluginDockableWidget
+from pieapp.api.plugins.widgets import PiePluginWidget, PieDockableWidget
 from pieapp.api.plugins.observer import PluginsObserverMixin
 
 
@@ -194,7 +194,7 @@ class PiePlugin(PieBasePlugin):
         """
         if self.widget_class:
             self._widget = self.widget_class(self._parent, self)
-            if isinstance(self._widget, (PiePluginWidget, PiePluginDockableWidget, PieMediaPlugin)):
+            if isinstance(self._widget, (PiePluginWidget, PieDockableWidget)):
                 self._widget.set_icon(self.get_plugin_icon())
                 self._widget.set_title(self.get_title())
                 self._widget.prepare()
@@ -216,13 +216,7 @@ class PieDockablePlugin(PiePlugin):
     """
     Dockable plugin class
     """
-    widget_class: Type[PiePluginDockableWidget] = None
+    widget_class: Type[PieDockableWidget] = None
 
     def call(self) -> None:
         self.get_widget().dock_widget()
-
-
-class PieMediaPlugin(PiePlugin):
-
-    def call(self, index: int, media_file: MediaFile) -> None:
-        raise NotImplementedError

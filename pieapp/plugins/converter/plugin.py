@@ -1,3 +1,4 @@
+from PySide6.QtWidgets import QDockWidget
 from __feature__ import snake_case
 
 import os.path
@@ -5,41 +6,38 @@ import uuid
 import dataclasses
 from pathlib import Path
 
-from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
 from PySide6.QtCore import Signal
 from PySide6.QtCore import QThreadPool
 
-from converter.widgets.mainwidget import ConverterPluginWidget
 from pieapp.api.globals import Global
-from pieapp.api.plugins.quickaction import QuickAction
-from pieapp.api.registries.quickactions.registry import QuickActionRegistry
 from pieapp.api.utils.files import delete_files
 from pieapp.api.utils.files import delete_directory
 from pieapp.api.utils.files import create_temp_directory
 from pieapp.api.utils.files import create_output_directory
 
-from pieapp.api.plugins import PiePlugin
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.decorators import on_plugin_available
 from pieapp.api.plugins.decorators import on_plugin_shutdown
+from pieapp.api.plugins import PiePlugin
+from pieapp.api.plugins.quickaction import QuickAction
 
-from pieapp.api.plugins.mixins import CoreAccessorsMixin, WidgetsAccessorMixins
-
+from pieapp.api.plugins.mixins import CoreAccessorsMixin
+from pieapp.api.plugins.mixins import WidgetsAccessorMixins
 from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.snapshots.registry import SnapshotRegistry
+from pieapp.api.registries.quickactions.registry import QuickActionRegistry
 
 from pieapp.api.models.scopes import Scope
 from pieapp.api.models.layouts import Layout
 from pieapp.api.converter.models import MediaFile
-
+from pieapp.api.models.themes import IconName
 from pieapp.api.models.indexes import Index
 from pieapp.api.models.menus import MainMenu
 from pieapp.api.models.menus import MainMenuItem
 from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.models.toolbars import ToolBarItem
 from pieapp.api.models.statusbars import MessageStatus
-from pieapp.api.models.themes import ThemeProperties, IconName
 
 from pieapp.api.utils.logger import logger
 from pieapp.api.utils.qapp import get_application
@@ -52,6 +50,7 @@ from pieapp.api.converter.workers import CopyFilesWorker
 from pieapp.api.converter.observers import FileSystemWatcher
 
 from converter.confpage import ConverterConfigPage
+from converter.widgets.mainwidget import ConverterWidget
 
 
 class ConverterPlugin(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
@@ -64,7 +63,7 @@ class ConverterPlugin(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
         SysPlugin.ShortcutManager
     ]
     optional = [SysPlugin.MainMenuBar]
-    widget_class = ConverterPluginWidget
+    widget_class = ConverterWidget
 
     sig_files_ready = Signal()
 
@@ -435,10 +434,9 @@ class ConverterPlugin(PiePlugin, CoreAccessorsMixin, WidgetsAccessorMixins):
     def on_layout_manager_available(self) -> None:
         widget = self.get_widget()
         layout_manager = get_plugin(SysPlugin.Layout)
-        main_layout = layout_manager.get_layout(Layout.Main)
-        if main_layout:
-            main_layout.add_layout(widget.get_main_layout(), 0, 0, Qt.AlignmentFlag.AlignCenter)
-            layout_manager.add_layout(self.name, widget.get_main_layout(), Layout.Main)
+        ws_center_layout = layout_manager.get_layout(Layout.WorkspaceCenter)
+        ws_center_layout.add_layout(widget.get_main_layout())
+        layout_manager.add_layout(self.name, widget.get_main_layout(), Layout.WorkspaceRight)
 
     @on_plugin_available(plugin=SysPlugin.Preferences)
     def on_preferences_available(self) -> None:
