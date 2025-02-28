@@ -1,5 +1,5 @@
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QGridLayout, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QWidget, QVBoxLayout
 
 from pieapp.api.plugins import PiePlugin
 from pieapp.api.utils.qt import get_main_window
@@ -10,7 +10,7 @@ from pieapp.api.registries.locales.helpers import translate
 from pieapp.api.registries.layouts.registry import LayoutRegistry
 
 
-class MainLayoutPlugin(PiePlugin):
+class LayoutPlugin(PiePlugin):
     name = SysPlugin.Layout
 
     @staticmethod
@@ -22,47 +22,54 @@ class MainLayoutPlugin(PiePlugin):
         return translate("Layout manager")
 
     def init(self) -> None:
-        self._root_layout = QGridLayout()
+        self._root_layout = QVBoxLayout()
         self._root_layout.set_spacing(0)
         self._root_layout.set_contents_margins(0, 0, 0, 0)
 
-        main_window = get_main_window()
-        main_window.set_layout(self._root_layout)
-        self.set_central_widget(QLabel())
-
         tools_layout = QHBoxLayout()
-        main_layout = QGridLayout()
-        info_layout = QHBoxLayout()
 
-        self._root_layout.add_layout(tools_layout, 0, 0)
-        self._root_layout.add_layout(main_layout, 1, 0)
-        self._root_layout.add_layout(info_layout, 2, 0)
+        workspace_layout = QGridLayout()
+        ws_center_layout = QVBoxLayout()
+        ws_right_layout = QVBoxLayout()
+        ws_bottom_layout = QHBoxLayout()
+        workspace_layout.add_layout(ws_center_layout, 0, 0)
+        workspace_layout.add_layout(ws_right_layout, 0, 1)
+        workspace_layout.add_layout(ws_bottom_layout, 1, 0, alignment=Qt.AlignmentFlag.AlignBottom)
 
-        self.add_layout(Layout.Tools, tools_layout, Layout.Tools)
-        self.add_layout(Layout.Main, main_layout, Layout.Main)
-        self.add_layout(Layout.Info, info_layout, Layout.Info)
+        self._root_layout.add_layout(tools_layout)
+        self._root_layout.add_layout(workspace_layout)
+
+        self.add_layout(Layout.Tools, tools_layout)
+        self.add_layout(Layout.Workspace, workspace_layout)
+        self.add_layout(Layout.WorkspaceCenter, ws_center_layout, Layout.Workspace)
+        self.add_layout(Layout.WorkspaceRight, ws_right_layout, Layout.Workspace)
+        self.add_layout(Layout.WorkspaceBottom, ws_bottom_layout, Layout.Workspace)
+
+        widget = QWidget()
+        self.set_central_widget(widget)
 
     def set_central_widget(self, widget: "QWidget") -> None:
         main_window = get_main_window()
         widget.set_layout(self._root_layout)
+        main_window.set_layout(self._root_layout)
         main_window.set_central_widget(widget)
 
     def add_layout(
         self,
-        child_layout_name: str,
-        child_layout: "QLayout",
-        parent_layout_name: str
+        layout_name: str,
+        layout: "QLayout",
+        parent_layout_name: str = None
     ) -> None:
         """
         Args:
-            child_layout_name (str): Name of the layout
-            child_layout (QGridLayout): Child layout object
+            layout_name (str): Name of the layout
+            layout (Qt layout): Child layout object
             parent_layout_name (str): Parent layout name
         """
-        if LayoutRegistry.contains(child_layout_name):
+        if LayoutRegistry.contains(layout_name):
             raise PieError(f"Layout \"{parent_layout_name}\" already exists")
 
-        LayoutRegistry.add(child_layout_name, child_layout, parent_layout_name)
+        LayoutRegistry.add(layout_name, layout, parent_layout_name)
 
     def remove_layout(self, name: str, unregister_children: bool = True) -> None:
         if not LayoutRegistry.contains(name):
@@ -80,4 +87,4 @@ class MainLayoutPlugin(PiePlugin):
 
 
 def main(parent, plugin_path):
-    return MainLayoutPlugin(parent, plugin_path)
+    return LayoutPlugin(parent, plugin_path)

@@ -12,6 +12,7 @@ from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
 
 from pieapp.api.globals import Global
+from pieapp.api.models.plugins import SysPlugin
 from pieapp.api.plugins.mixins import DialogWidgetMixin
 from pieapp.api.plugins.widgets import PiePluginWidget, DialogType
 from pieapp.api.registries.locales.helpers import translate
@@ -31,6 +32,7 @@ from metadata.widgets.albumpicker import AlbumCoverPicker
 
 
 class MetadataEditorWidget(PiePluginWidget, ThemeAccessorMixin, DialogWidgetMixin):
+    name = SysPlugin.MetadataEditor
     dialog_type = DialogType.Dialog
 
     sig_album_cover_changed = Signal(str, str, int)

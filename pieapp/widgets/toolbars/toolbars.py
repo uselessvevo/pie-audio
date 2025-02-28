@@ -21,6 +21,7 @@ class PieToolBar(QToolBar):
 
         self.set_object_name(self.name.capitalize())
         self.set_floatable(False)
+        self.set_movable(False)
         self.set_contents_margins(6, 0, 10, 0)
         self.set_size_policy(QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         self.set_attribute(Qt.WidgetAttribute.WA_StyledBackground)

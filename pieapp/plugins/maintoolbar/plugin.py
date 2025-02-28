@@ -2,9 +2,9 @@ from __feature__ import snake_case
 
 from PySide6.QtWidgets import QGridLayout
 
-from layout.plugin import Layout
-from pieapp.api.models.tabs import Tabs
+from pieapp.api.models.layouts import Layout
 from pieapp.api.models.plugins import SysPlugin
+from pieapp.api.models.tabs import Tabs
 from pieapp.api.plugins.helpers import get_plugin
 from pieapp.api.plugins.plugins import PiePlugin
 from pieapp.api.plugins.decorators import on_plugin_available
@@ -36,12 +36,11 @@ class MainToolBarPlugin(PiePlugin, TabBarAccessorMixin, ToolBarAccessorMixin):
         self.toolbar.call()
 
     @on_plugin_available(plugin=SysPlugin.Layout)
-    def _on_layout_manager_available(self) -> None:
-        layout_manager = get_plugin(SysPlugin.Layout)
-        tools_layout = layout_manager.get_layout(Layout.Tools)
-        if tools_layout:
-            tools_layout.add_layout(self.layout)
-            layout_manager.add_layout(self.name, tools_layout, Layout.Tools)
+    def on_layout_available(self) -> None:
+        layout_plugin = get_plugin(SysPlugin.Layout)
+        tools_layout = layout_plugin.get_layout(Layout.Tools)
+        tools_layout.add_layout(self.layout)
+        layout_plugin.add_layout(self.name, self.layout, Layout.WorkspaceRight)
 
 
 def main(parent, plugin_path):

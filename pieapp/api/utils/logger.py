@@ -5,7 +5,7 @@ logger = loguru.logger
 logger.remove()
 logger.add(
     sys.stderr,
-    level="DEBUG",
+    level="INFO",
     format="<green>[{time:HH:mm:ss}] [{level}]</green>"
            "<white> - {name}:{function}:{line}</white> - <yellow>{message}</yellow>"
 )

@@ -2,7 +2,7 @@ from __feature__ import snake_case
 
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QIcon, Qt
-from PySide6.QtWidgets import QWidget, QDockWidget, QGridLayout
+from PySide6.QtWidgets import QWidget, QDockWidget, QGridLayout, QMainWindow, QVBoxLayout
 
 
 class DialogType:
@@ -44,7 +44,7 @@ class PiePluginWidget(QWidget):
         self._icon = QIcon()
         self._title = None
 
-        if self.dialog_type is not None and isinstance(self, PiePluginDockableWidget) is False:
+        if self.dialog_type is not None and isinstance(self, PieDockableWidget) is False:
             self.set_window_flags(self.dialog_type)
 
     def set_icon(self, icon: QIcon) -> None:
@@ -87,24 +87,32 @@ class PiePluginWidget(QWidget):
         super().close_event(event)
 
 
-class PiePluginDockableWidget(QDockWidget):
+class PieDockableWidget(QDockWidget):
     """
     Dockable plugin widget
     """
     dock_location = Qt.DockWidgetArea.LeftDockWidgetArea
-    dock_areas = Qt.DockWidgetArea.AllDockWidgetAreas
+    dock_area = Qt.DockWidgetArea.AllDockWidgetAreas
     dock_features = (QDockWidget.DockWidgetFeature.DockWidgetClosable |
                      QDockWidget.DockWidgetFeature.DockWidgetMovable)
 
-    def __init__(self, main: QObject, plugin: "PiePlugin") -> None:
+    def __init__(self, main: QMainWindow, plugin: "PiePlugin") -> None:
         super().__init__("Dock", main)
         self._main = main
         self._plugin = plugin
+        self._name = plugin.name
         self._icon = QIcon()
         self._title = None
+        self._parent_layout = None
 
-        self.set_allowed_areas(self.dock_areas)
+        self.set_allowed_areas(self.dock_area)
         self.set_features(self.dock_features)
+
+        self._main_layout = QVBoxLayout()
+        self._main_layout.set_spacing(0)
+        self._main_layout.set_contents_margins(0, 0, 0, 0)
+        self.set_layout(self._main_layout)
+        self._main.add_dock_widget(self.dock_area, self)
 
     def set_icon(self, icon: QIcon) -> None:
         self._icon = icon
@@ -115,9 +123,6 @@ class PiePluginDockableWidget(QDockWidget):
         self.set_window_title(title)
 
     def get_main_layout(self) -> QGridLayout:
-        raise NotImplementedError
-
-    def dock_widget(self) -> None:
         raise NotImplementedError
 
     @property

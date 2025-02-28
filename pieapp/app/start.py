@@ -25,8 +25,8 @@ def start_application(*args, **kwargs) -> None:
     Global.import_module("pieapp.app.globals")
 
     # Swapping the exception hook
-    # if bool(int(Global.USE_EXCEPTION_HOOK)):
-    #     sys.excepthook = exception_hook
+    if bool(int(Global.USE_EXCEPTION_HOOK)):
+        sys.excepthook = exception_hook
 
     # Initialize "QApplication" instance
     splash = None
