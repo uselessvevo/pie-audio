@@ -10,25 +10,33 @@
 
 Before we start, I want to say a special thanks to the creators of the [spyder-ide](https://github.com/spyder-ide/spyder) project, as some code is based on it.
 
+> [!NOTE]
+> I've tested this program only under Windows 10. Feature releases will touch this problem.
+
 ## Installing and running the application
 Since the project is under active development, the installation package available on pypi is not yet available. This means that you will need the git versioning program and the pip package manager. Let's get started.
 
 * Clone the project via git: `git clone https://github.com/uselessvevo/pie-audio`
 * Create virtual environment via `python3-venv`
 * Install all dependencies (`python -m pip install -r requirements.txt`) or install through the package manager (`pip install .`)
+* Open terminal and type `pyside6-genpyi all --feature snake_case` to generate the PySide6's [snake case feature](https://doc-snapshots.qt.io/qtforpython-6.2/considerations.html#snake-case).
+Then do next in your favourite code editor
 * Run the program: `python pie-audio.py` or `pie-audio.exe`
 
 ## Development 
-Open terminal and type `pyside6-genpyi all --feature snake_case` to generate the PySide6's [snake case feature](https://doc-snapshots.qt.io/qtforpython-6.2/considerations.html#snake-case).
-Then do next in your favourite code editor
 
 ## In Pycharm
-Mark folder as source <br><br>
+* Mark folder as source <br><br>
 ![Pycharm](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/Pycharm.%20Mark%20source%20folder.png)
+
 <br>
-Add or load environment variables <br><br>
+
+* Add or load environment variables <br><br>
+
 ![Pycharm](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/Pycharm.%20Add%20env%20file.png)
+
 <br>
+
 ## In Visual Studio Code <br>
 Add environment variables file <br><br>
 ![VSCode](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/VSCode.%20Add%20env%20file.png)
