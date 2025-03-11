@@ -12,6 +12,9 @@ class ThemeAccessorMixin:
     ThemeManager mixins
     """
 
+    def apply_theme(self) -> None:
+        ThemeRegistry.apply_theme()
+
     def get_file_path(
         self,
         key: Any,
