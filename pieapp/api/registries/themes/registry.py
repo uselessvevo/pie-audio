@@ -1,6 +1,7 @@
+from __feature__ import snake_case
+
 import os
 import re
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, Union
 
@@ -178,6 +179,15 @@ class ThemeRegistryClass(BaseRegistry, ConfigAccessorMixin):
         except KeyError:
             logger.debug(f"File {key} not found")
             return default
+
+    def apply_theme(self) -> None:
+        self.destroy()
+        self.init()
+
+    def destroy(self) -> None:
+        self._files = {}
+        self._stylesheet = ""
+        self._stylesheet_props = {}
 
     def get_theme(self) -> str:
         return self._current_theme

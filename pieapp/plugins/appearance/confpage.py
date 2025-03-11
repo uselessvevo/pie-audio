@@ -66,6 +66,7 @@ class AppearanceConfigPage(
 
     def _theme_cbox_connect(self) -> None:
         new_theme = self._theme_cbox.current_text()
+        self.apply_theme()
         self.update_app_config("config.theme", Scope.User, new_theme)
         self.set_modified(True)
 
