@@ -10,6 +10,10 @@
 
 Before we start, I want to say a special thanks to the creators of the [spyder-ide](https://github.com/spyder-ide/spyder) project, as some code is based on it.
 
+> [!WARNING]
+>  The project is under active development!
+> Most of the things announced will be changed, are running unstable, or are under development.
+
 > [!NOTE]
 > I've tested this program only under Windows 10. Feature releases will touch this problem.
 
@@ -41,4 +45,6 @@ Then do next in your favourite code editor
 Add environment variables file <br><br>
 ![VSCode](https://github.com/uselessvevo/pie-audio/blob/main/docs/images/VSCode.%20Add%20env%20file.png)
 
-## After that, you good to go and write your own code :)
+## Writing your own plugin
+
+This repository contains all examples - https://github.com/uselessvevo/pie-audio-plugin-templates
