@@ -31,12 +31,14 @@ from pieapp.api.converter.utils import get_cover_album
 
 ARCHIVE_URL_NAME: dict[str, str] = {
     "nt": "ffmpeg-master-latest-win64-gpl",
-    "linux": "ffmpeg-master-latest-linux64-lgpl"
+    "linux": "ffmpeg-master-latest-linux64-lgpl",
+    "posix": "ffmpeg-master-latest-linux64-lgpl"
 }
 
 ARCHIVE_TYPE_NAME: dict[str, str] = {
     "nt": "zip",
-    "linux": "tar.xz"
+    "linux": "tar.xz",
+    "posix": "tar.xz"
 }
 
 
